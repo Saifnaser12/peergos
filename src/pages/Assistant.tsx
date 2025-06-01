@@ -36,7 +36,6 @@ const Assistant: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { t } = useTranslation();
 
   // Get current page tips
   const getPageTips = (): PageTip[] => {
@@ -248,8 +247,6 @@ Feel free to ask about any of these topics!`;
       setIsLoading(false);
     }
   };
-
-  const pageTips = getPageTips();
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

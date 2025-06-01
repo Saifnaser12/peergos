@@ -60,11 +60,6 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [searchTRN, setSearchTRN] = useState('');
   const [searchResult, setSearchResult] = useState<CompanySearchResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [showResults, setShowResults] = useState(false);
-  const [selectedReport, setSelectedReport] = useState<'pdf' | 'excel' | null>(null);
-  const [isExporting, setIsExporting] = useState(false);
-  const [showComplianceDetails, setShowComplianceDetails] = useState(false);
   const [selectedChartView, setSelectedChartView] = useState<'line' | 'bar'>('line');
   const [complianceBreakdown, setComplianceBreakdown] = useState<ComplianceBreakdown[]>([]);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
@@ -125,9 +120,36 @@ const Dashboard: React.FC = () => {
   }, [state.expenses]);
 
   // Alert conditions
-  const showVATAlert = totalRevenue > 375000 && !state.revenues.some(r => r.vatAmount > 0);
-  const showCITAlert = totalRevenue > 3000000;
-  const showNoExpensesAlert = state.expenses.length === 0;
+  const taxRegistrationAlerts = useMemo(() => {
+    const alerts = [];
+    const totalRevenue = state.revenues.reduce((sum, entry) => sum + entry.amount, 0);
+    
+    if (totalRevenue > 375000 && !state.profile?.vatRegistered) {
+      alerts.push({
+        type: 'warning' as const,
+        title: 'VAT Registration Required',
+        message: 'Your revenue exceeds AED 375,000. VAT registration is mandatory.',
+        action: {
+          label: 'Register for VAT',
+          onClick: () => window.open('https://www.tax.gov.ae/vat', '_blank')
+        }
+      });
+    }
+
+    if (totalRevenue > 3000000 && !state.profile?.citRegistered) {
+      alerts.push({
+        type: 'error' as const,
+        title: 'Corporate Tax Registration Required',
+        message: 'Your revenue exceeds AED 3,000,000. Corporate Tax registration is mandatory.',
+        action: {
+          label: 'Register for CIT',
+          onClick: () => window.open('https://www.tax.gov.ae/ct', '_blank')
+        }
+      });
+    }
+
+    return alerts;
+  }, [state.revenues, state.profile]);
 
   // Enhanced TRN validation
   const validateTRN = (trn: string): { isValid: boolean; message: string } => {
@@ -142,35 +164,21 @@ const Dashboard: React.FC = () => {
     return { isValid: true, message: '' };
   };
 
-  const handleTRNChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 15); // Only allow digits
-    setSearchTRN(value);
-    const validation = validateTRN(value);
-    setError(validation.isValid ? null : validation.message);
-  };
-
   const handleSearch = () => {
-    setError(null);
-    setSearchResult(null);
-    setShowResults(false);
-
     const validation = validateTRN(searchTRN);
     if (!validation.isValid) {
-      setError(validation.message);
       return;
     }
 
     // Get all company profiles from localStorage
     const storedData = localStorage.getItem('taxState');
     if (!storedData) {
-      setError('No company data available');
       return;
     }
 
     try {
       const allData = JSON.parse(storedData);
       if (!allData.profile || allData.profile.trnNumber !== searchTRN) {
-        setError('Company not found for this TRN');
         return;
       }
 
@@ -195,24 +203,8 @@ const Dashboard: React.FC = () => {
         };
       }).reverse();
 
-      // Calculate totals
-      const totalRevenue = allData.revenues.reduce((sum: number, entry: any) => sum + entry.amount, 0);
-      const totalExpenses = allData.expenses.reduce((sum: number, entry: any) => sum + entry.amount, 0);
-      const netIncome = totalRevenue - totalExpenses;
-      const vatDue = allData.revenues.reduce((sum: number, entry: any) => sum + entry.vatAmount, 0);
-      const citDue = calculateCIT(netIncome);
-
-      // Determine tax applicability
-      const isVATApplicable = totalRevenue > 375000;
-      const isCITApplicable = netIncome > 375000;
-      
-      // For demo purposes, assume CIT is submitted if there's a submission date in the profile
-      const hasCITSubmission = Boolean(allData.profile.citSubmissionDate);
-
       const complianceDetails = calculateDetailedComplianceScore(allData);
       setComplianceBreakdown(complianceDetails.breakdown);
-
-      const complianceScore = complianceDetails.score;
 
       setSearchResult({
         name: allData.profile.companyName,
@@ -220,19 +212,13 @@ const Dashboard: React.FC = () => {
         status: allData.profile.licenseType,
         monthlyTrend: monthlyTrend
       });
-
-      // Enhanced animation sequence
-      setTimeout(() => setShowResults(true), 50);
     } catch (err) {
-      setError('Error processing company data');
+      console.error('Error processing company data');
     }
   };
 
   const handleExport = async (type: 'pdf' | 'excel') => {
     if (!searchResult) return;
-    
-    setIsExporting(true);
-    setSelectedReport(type);
     
     try {
       const reportData = {
@@ -257,9 +243,6 @@ const Dashboard: React.FC = () => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Export failed:', error);
-    } finally {
-      setIsExporting(false);
-      setSelectedReport(null);
     }
   };
 
@@ -516,38 +499,6 @@ const Dashboard: React.FC = () => {
     
     return missing;
   }, [state.profile]);
-
-  // Check for tax registration requirements
-  const taxRegistrationAlerts = useMemo(() => {
-    const alerts = [];
-    const totalRevenue = state.revenues.reduce((sum, entry) => sum + entry.amount, 0);
-    
-    if (totalRevenue > 375000 && !state.profile?.vatRegistered) {
-      alerts.push({
-        type: 'warning' as const,
-        title: 'VAT Registration Required',
-        message: 'Your revenue exceeds AED 375,000. VAT registration is mandatory.',
-        action: {
-          label: 'Register for VAT',
-          onClick: () => window.open('https://www.tax.gov.ae/vat', '_blank')
-        }
-      });
-    }
-
-    if (totalRevenue > 3000000 && !state.profile?.citRegistered) {
-      alerts.push({
-        type: 'error' as const,
-        title: 'Corporate Tax Registration Required',
-        message: 'Your revenue exceeds AED 3,000,000. Corporate Tax registration is mandatory.',
-        action: {
-          label: 'Register for CIT',
-          onClick: () => window.open('https://www.tax.gov.ae/ct', '_blank')
-        }
-      });
-    }
-
-    return alerts;
-  }, [state.revenues, state.profile]);
 
   return (
     <div className="space-y-6">
