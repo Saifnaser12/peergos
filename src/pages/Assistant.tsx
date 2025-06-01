@@ -13,6 +13,7 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 import { LoadingOverlay } from '../components/Spinner';
 import PermissionGate from '../components/PermissionGate';
+import { useTranslation } from 'react-i18next';
 
 interface Message {
   id: string;
@@ -35,6 +36,7 @@ const Assistant: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   // Get current page tips
   const getPageTips = (): PageTip[] => {

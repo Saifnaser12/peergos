@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  ChartBarIcon,
-  ChartLineIcon,
-  ArrowDownTrayIcon,
-  ArrowTrendingUpIcon
-} from '@heroicons/react/24/outline';
+import { ChartBarIcon, ChartPieIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 export type ChartType = 'line' | 'bar';
 
@@ -35,7 +30,7 @@ const ChartControls: React.FC<ChartControlsProps> = ({
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            <ChartLineIcon className="h-4 w-4 mr-1.5" />
+            <ChartPieIcon className="h-4 w-4 mr-1.5" />
             Line
           </button>
           <button

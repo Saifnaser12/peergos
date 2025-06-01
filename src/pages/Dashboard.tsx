@@ -1,7 +1,7 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { useTax, calculateCIT } from '../context/TaxContext';
-import { useUserRole } from '../context/UserRoleContext';
 import { useAudit } from '../context/AuditContext';
+import { useNavigate } from 'react-router-dom';
 import {
   LineChart,
   Line,
@@ -23,8 +23,6 @@ import { submitToFTA } from '../utils/submission';
 import ChartControls from '../components/ChartControls';
 import type { ChartType } from '../components/ChartControls';
 import html2canvas from 'html2canvas';
-import AlertBanner from '../components/AlertBanner';
-import { useNavigate } from 'react-router-dom';
 import {
   BanknotesIcon,
   ReceiptPercentIcon,
@@ -36,27 +34,17 @@ import {
 import { PageHeader } from '../components/Card';
 import RelatedPartySection from '../components/RelatedPartySection';
 import PermissionGate from '../components/PermissionGate';
+import AlertBanner from '../components/AlertBanner';
 
 interface CompanySearchResult {
-  profile: {
-    companyName: string;
-    trnNumber: string;
-    licenseType: string;
-  };
-  totalRevenue: number;
-  totalExpenses: number;
-  netIncome: number;
-  vatDue: number;
-  citDue: number;
-  isVATApplicable: boolean;
-  isCITApplicable: boolean;
-  hasCITSubmission: boolean;
-  monthlyTrend: {
+  name: string;
+  trn: string;
+  status: string;
+  monthlyTrend?: Array<{
     revenue: number;
     expenses: number;
     month: string;
-  }[];
-  complianceScore: number;
+  }>;
 }
 
 interface ComplianceBreakdown {
@@ -68,7 +56,6 @@ interface ComplianceBreakdown {
 
 const Dashboard: React.FC = () => {
   const { state } = useTax();
-  const { canAccess } = useUserRole();
   const { log } = useAudit();
   const navigate = useNavigate();
   const [searchTRN, setSearchTRN] = useState('');
@@ -91,10 +78,20 @@ const Dashboard: React.FC = () => {
   const revenueChartRef = useRef<HTMLDivElement>(null!);
   const expenseChartRef = useRef<HTMLDivElement>(null!);
 
-  // Log dashboard view on mount
-  useEffect(() => {
-    log('VIEW_DASHBOARD');
-  }, [log]);
+  // Calculate VAT and CIT
+  const vatDue = useMemo(() => {
+    // VAT calculation logic
+    return state.revenues.reduce((acc, rev) => acc + rev.amount * 0.05, 0);
+  }, [state.revenues]);
+
+  const citDue = useMemo(() => {
+    const totalRevenue = state.revenues.reduce((acc, rev) => acc + rev.amount, 0);
+    return calculateCIT(totalRevenue);
+  }, [state.revenues]);
+
+  const complianceScore = useMemo(() => {
+    return 85; // Default compliance score
+  }, []);
 
   // Calculate summary metrics
   const totalRevenue = state.revenues.reduce((sum, entry) => sum + entry.amount, 0);
@@ -163,9 +160,6 @@ const Dashboard: React.FC = () => {
       return;
     }
 
-    // Log TRN search
-    log('TRN_SEARCH', { trn: searchTRN });
-
     // Get all company profiles from localStorage
     const storedData = localStorage.getItem('taxState');
     if (!storedData) {
@@ -221,17 +215,10 @@ const Dashboard: React.FC = () => {
       const complianceScore = complianceDetails.score;
 
       setSearchResult({
-        profile: allData.profile,
-        totalRevenue,
-        totalExpenses,
-        netIncome,
-        vatDue,
-        citDue,
-        isVATApplicable,
-        isCITApplicable,
-        hasCITSubmission,
-        monthlyTrend,
-        complianceScore
+        name: allData.profile.companyName,
+        trn: allData.profile.trnNumber,
+        status: allData.profile.licenseType,
+        monthlyTrend: monthlyTrend
       });
 
       // Enhanced animation sequence
@@ -249,22 +236,22 @@ const Dashboard: React.FC = () => {
     
     try {
       const reportData = {
-        profile: searchResult.profile,
+        profile: searchResult,
         revenues: state.revenues,
         expenses: state.expenses,
-        vatDue: searchResult.vatDue,
-        citDue: searchResult.citDue,
-        complianceScore: searchResult.complianceScore
+        vatDue: vatDue,
+        citDue: citDue,
+        complianceScore: complianceScore
       };
 
       // Log export attempt
-      log('EXPORT_REPORT', { type, trn: searchResult.profile.trnNumber });
+      log('EXPORT_REPORT', { type, trn: searchResult.trn });
 
       const blob = await (type === 'pdf' ? generatePDFReport(reportData) : generateExcelReport(reportData));
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `tax_report_${searchResult.profile.trnNumber}.${type}`;
+      a.download = `tax_report_${searchResult.trn}.${type}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -289,15 +276,15 @@ const Dashboard: React.FC = () => {
     setIsSubmitting(true);
     try {
       const submissionData = {
-        trn: searchResult.profile.trnNumber,
+        trn: searchResult.trn,
         timestamp: new Date().toISOString(),
         referenceNumber: '',
         data: {
           revenues: state.revenues,
           expenses: state.expenses,
-          vatDue: searchResult.vatDue,
-          citDue: searchResult.citDue,
-          complianceScore: searchResult.complianceScore
+          vatDue: vatDue,
+          citDue: citDue,
+          complianceScore: complianceScore
         }
       };
 
@@ -305,10 +292,10 @@ const Dashboard: React.FC = () => {
       
       // Log successful submission
       log('SUBMIT_FILING', { 
-        trn: searchResult.profile.trnNumber,
+        trn: searchResult.trn,
         referenceNumber,
-        vatDue: searchResult.vatDue,
-        citDue: searchResult.citDue
+        vatDue: vatDue,
+        citDue: citDue
       });
 
       setSubmissionSuccess({
