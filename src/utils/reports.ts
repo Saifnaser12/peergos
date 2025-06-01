@@ -1,9 +1,7 @@
-import type { CompanyProfile, RevenueEntry, ExpenseEntry } from '../types';
-
 interface ReportData {
-  profile: CompanyProfile;
-  revenues: RevenueEntry[];
-  expenses: ExpenseEntry[];
+  profile: any;
+  revenues: any[];
+  expenses: any[];
   vatDue: number;
   citDue: number;
   complianceScore: number;

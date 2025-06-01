@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import { useTax, calculateVAT, calculateCIT } from '../context/TaxContext';
+import React, { useMemo, useState } from 'react';
+import { useTax, calculateCIT } from '../context/TaxContext';
 import { useUserRole } from '../context/UserRoleContext';
 import {
   LineChart,
@@ -18,7 +18,6 @@ import {
   RadialBarChart,
   RadialBar
 } from 'recharts';
-import type { ExpenseEntry, CompanyProfile } from '../types';
 import { generatePDFReport, generateExcelReport, calculateDetailedComplianceScore } from '../utils/reports';
 import SubmissionModal from '../components/SubmissionModal';
 import SuccessAlert from '../components/SuccessAlert';
@@ -27,7 +26,11 @@ import { submitToFTA } from '../utils/submission';
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 interface CompanySearchResult {
-  profile: CompanyProfile;
+  profile: {
+    companyName: string;
+    trnNumber: string;
+    licenseType: string;
+  };
   totalRevenue: number;
   totalExpenses: number;
   netIncome: number;
@@ -124,18 +127,6 @@ const Dashboard: React.FC = () => {
     setSearchTRN(value);
     const validation = validateTRN(value);
     setError(validation.isValid ? null : validation.message);
-  };
-
-  const calculateComplianceScore = (data: any): number => {
-    let score = 100;
-    
-    // Deduct points for missing or late submissions
-    if (data.profile.vatRegistered && !data.lastVATSubmission) score -= 20;
-    if (data.isCITApplicable && !data.hasCITSubmission) score -= 20;
-    if (data.expenses.length === 0) score -= 10;
-    if (!data.profile.licenseFile) score -= 10;
-    
-    return Math.max(0, score);
   };
 
   const handleExport = async (type: 'pdf' | 'excel') => {
@@ -774,7 +765,7 @@ const Dashboard: React.FC = () => {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {expenseData.map((entry, index) => (
+                  {expenseData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

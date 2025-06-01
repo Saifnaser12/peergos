@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useTax, calculateVAT, calculateCIT } from '../context/TaxContext';
+import { useTax, calculateCIT } from '../context/TaxContext';
 
 interface Message {
   id: string;
-  type: 'user' | 'assistant';
+  role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
 }
@@ -13,7 +13,7 @@ const Assistant: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      type: 'assistant',
+      role: 'assistant',
       content: 'Hello! I\'m your tax assistant. How can I help you today?',
       timestamp: new Date(),
     },
@@ -77,7 +77,7 @@ Feel free to ask about any of these topics!`;
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
-      type: 'user',
+      role: 'user',
       content: input,
       timestamp: new Date(),
     };
@@ -85,7 +85,7 @@ Feel free to ask about any of these topics!`;
     // Generate and add assistant response
     const assistantMessage: Message = {
       id: (Date.now() + 1).toString(),
-      type: 'assistant',
+      role: 'assistant',
       content: generateResponse(input),
       timestamp: new Date(),
     };
@@ -108,11 +108,11 @@ Feel free to ask about any of these topics!`;
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
                 className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                  message.type === 'user'
+                  message.role === 'user'
                     ? 'bg-indigo-600 text-white'
                     : 'bg-gray-100 text-gray-900'
                 }`}
@@ -120,7 +120,7 @@ Feel free to ask about any of these topics!`;
                 <div className="whitespace-pre-wrap">{message.content}</div>
                 <div
                   className={`text-xs mt-1 ${
-                    message.type === 'user' ? 'text-indigo-100' : 'text-gray-500'
+                    message.role === 'user' ? 'text-indigo-100' : 'text-gray-500'
                   }`}
                 >
                   {message.timestamp.toLocaleTimeString()}
