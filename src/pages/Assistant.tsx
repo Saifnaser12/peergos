@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useTax, calculateCIT } from '../context/TaxContext';
+import { useTax } from '../context/TaxContext';
 import { useAudit } from '../context/AuditContext';
 import { useLocation } from 'react-router-dom';
 import {

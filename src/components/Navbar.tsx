@@ -11,7 +11,6 @@ import {
   ChatBubbleLeftRightIcon,
   BuildingOfficeIcon,
   UserCircleIcon,
-  ChevronDownIcon,
   MagnifyingGlassIcon,
   SunIcon,
   MoonIcon,
@@ -29,7 +28,6 @@ const Navbar: React.FC = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
 

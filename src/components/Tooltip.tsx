@@ -3,10 +3,18 @@ import React, { useState } from 'react';
 interface TooltipProps {
   content: string;
   children: React.ReactNode;
+  position?: 'top' | 'right' | 'bottom' | 'left';
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
+const Tooltip: React.FC<TooltipProps> = ({ content, children, position = 'top' }) => {
   const [isVisible, setIsVisible] = useState(false);
+
+  const positionClasses = {
+    top: '-translate-x-1/2 left-1/2 bottom-full mb-2',
+    right: 'left-full top-1/2 -translate-y-1/2 ml-2',
+    bottom: '-translate-x-1/2 left-1/2 top-full mt-2',
+    left: 'right-full top-1/2 -translate-y-1/2 mr-2'
+  };
 
   return (
     <div className="relative inline-block">
@@ -17,9 +25,8 @@ const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
         {children}
       </div>
       {isVisible && (
-        <div className="absolute z-10 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm 
-          transition-opacity duration-300 dark:bg-gray-700 max-w-xs
-          -translate-x-1/2 left-1/2 bottom-full mb-2"
+        <div className={`absolute z-10 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm 
+          transition-opacity duration-300 dark:bg-gray-700 max-w-xs ${positionClasses[position]}`}
         >
           {content}
           <div className="absolute w-2 h-2 bg-gray-900 rotate-45 -bottom-1 left-1/2 -translate-x-1/2" />
@@ -33,7 +40,7 @@ export default Tooltip;
 
 // Info tooltip component with icon
 interface InfoTooltipProps {
-  content: React.ReactNode;
+  content: string;
   position?: 'top' | 'right' | 'bottom' | 'left';
 }
 

@@ -5,9 +5,6 @@ import { useAudit } from '../context/AuditContext';
 import {
   LineChart,
   Line,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -34,7 +31,6 @@ import {
   BuildingOfficeIcon,
   ArrowTrendingUpIcon,
   DocumentChartBarIcon,
-  ClockIcon,
   ExclamationTriangleIcon,
   ArrowDownTrayIcon,
   DocumentTextIcon
