@@ -31,20 +31,11 @@ import {
   BuildingOfficeIcon,
   ArrowTrendingUpIcon,
   DocumentChartBarIcon,
-  ExclamationTriangleIcon,
-  ArrowDownTrayIcon,
-  DocumentTextIcon
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
-import { EmptyState, illustrations } from '../components/Illustration';
-import TRNVerification from '../components/TRNVerification';
-import ComplianceGauge from '../components/ComplianceGauge';
-import AuditSchedule from '../components/AuditSchedule';
-import Button from '../components/Button';
-import PermissionGate from '../components/PermissionGate';
 import { PageHeader } from '../components/Card';
 import RelatedPartySection from '../components/RelatedPartySection';
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+import PermissionGate from '../components/PermissionGate';
 
 interface CompanySearchResult {
   profile: {
@@ -77,7 +68,7 @@ interface ComplianceBreakdown {
 
 const Dashboard: React.FC = () => {
   const { state } = useTax();
-  const { role } = useUserRole();
+  const { canAccess } = useUserRole();
   const { log } = useAudit();
   const navigate = useNavigate();
   const [searchTRN, setSearchTRN] = useState('');

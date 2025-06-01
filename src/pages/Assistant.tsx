@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useTax } from '../context/TaxContext';
 import { useAudit } from '../context/AuditContext';
 import { useLocation } from 'react-router-dom';
 import {
@@ -12,7 +11,6 @@ import {
 } from '@heroicons/react/24/outline';
 import Card from '../components/Card';
 import Button from '../components/Button';
-import { EmptyState, illustrations } from '../components/Illustration';
 import { LoadingOverlay } from '../components/Spinner';
 import PermissionGate from '../components/PermissionGate';
 
@@ -30,7 +28,6 @@ interface PageTip {
 }
 
 const Assistant: React.FC = () => {
-  const { state } = useTax();
   const { log } = useAudit();
   const location = useLocation();
   const [messages, setMessages] = useState<Message[]>([]);

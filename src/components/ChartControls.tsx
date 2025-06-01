@@ -1,9 +1,9 @@
 import React from 'react';
 import {
   ChartBarIcon,
-  ArrowTrendingUpIcon,
+  ChartLineIcon,
   ArrowDownTrayIcon,
-  ArrowPathIcon
+  ArrowTrendingUpIcon
 } from '@heroicons/react/24/outline';
 
 export type ChartType = 'line' | 'bar';
@@ -11,8 +11,8 @@ export type ChartType = 'line' | 'bar';
 interface ChartControlsProps {
   chartType: ChartType;
   onChartTypeChange: (type: ChartType) => void;
-  onDownload: () => void;
-  chartTitle: string;
+  onDownload?: () => void;
+  chartTitle?: string;
 }
 
 const ChartControls: React.FC<ChartControlsProps> = ({
@@ -35,7 +35,7 @@ const ChartControls: React.FC<ChartControlsProps> = ({
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            <ArrowTrendingUpIcon className="h-4 w-4 mr-1.5" />
+            <ChartLineIcon className="h-4 w-4 mr-1.5" />
             Line
           </button>
           <button

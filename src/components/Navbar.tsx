@@ -22,7 +22,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Navbar: React.FC = () => {
-  const { role, canAccess } = useUserRole();
+  const { canAccess } = useUserRole();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { currency, setCurrency, language, setLanguage } = useSettings();
   const { t } = useTranslation();
