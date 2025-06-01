@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useTax, calculateCIT } from '../context/TaxContext';
 import { useUserRole } from '../context/UserRoleContext';
+import { useAudit } from '../context/AuditContext';
 import {
   LineChart,
   Line,
@@ -22,6 +23,30 @@ import { generatePDFReport, generateExcelReport, calculateDetailedComplianceScor
 import SubmissionModal from '../components/SubmissionModal';
 import SuccessAlert from '../components/SuccessAlert';
 import { submitToFTA } from '../utils/submission';
+import ChartControls from '../components/ChartControls';
+import type { ChartType } from '../components/ChartControls';
+import html2canvas from 'html2canvas';
+import AlertBanner from '../components/AlertBanner';
+import { useNavigate } from 'react-router-dom';
+import {
+  BanknotesIcon,
+  ReceiptPercentIcon,
+  BuildingOfficeIcon,
+  ArrowTrendingUpIcon,
+  DocumentChartBarIcon,
+  ClockIcon,
+  ExclamationTriangleIcon,
+  ArrowDownTrayIcon,
+  DocumentTextIcon
+} from '@heroicons/react/24/outline';
+import { EmptyState, illustrations } from '../components/Illustration';
+import TRNVerification from '../components/TRNVerification';
+import ComplianceGauge from '../components/ComplianceGauge';
+import AuditSchedule from '../components/AuditSchedule';
+import Button from '../components/Button';
+import PermissionGate from '../components/PermissionGate';
+import { PageHeader } from '../components/Card';
+import RelatedPartySection from '../components/RelatedPartySection';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -57,6 +82,8 @@ interface ComplianceBreakdown {
 const Dashboard: React.FC = () => {
   const { state } = useTax();
   const { role } = useUserRole();
+  const { log } = useAudit();
+  const navigate = useNavigate();
   const [searchTRN, setSearchTRN] = useState('');
   const [searchResult, setSearchResult] = useState<CompanySearchResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -72,6 +99,15 @@ const Dashboard: React.FC = () => {
     message: string;
     referenceNumber: string;
   } | null>(null);
+  const [revenueChartType, setRevenueChartType] = useState<ChartType>('line');
+  const [expenseChartType, setExpenseChartType] = useState<ChartType>('bar');
+  const revenueChartRef = useRef<HTMLDivElement>(null!);
+  const expenseChartRef = useRef<HTMLDivElement>(null!);
+
+  // Log dashboard view on mount
+  useEffect(() => {
+    log('VIEW_DASHBOARD');
+  }, [log]);
 
   // Calculate summary metrics
   const totalRevenue = state.revenues.reduce((sum, entry) => sum + entry.amount, 0);
@@ -129,6 +165,95 @@ const Dashboard: React.FC = () => {
     setError(validation.isValid ? null : validation.message);
   };
 
+  const handleSearch = () => {
+    setError(null);
+    setSearchResult(null);
+    setShowResults(false);
+
+    const validation = validateTRN(searchTRN);
+    if (!validation.isValid) {
+      setError(validation.message);
+      return;
+    }
+
+    // Log TRN search
+    log('TRN_SEARCH', { trn: searchTRN });
+
+    // Get all company profiles from localStorage
+    const storedData = localStorage.getItem('taxState');
+    if (!storedData) {
+      setError('No company data available');
+      return;
+    }
+
+    try {
+      const allData = JSON.parse(storedData);
+      if (!allData.profile || allData.profile.trnNumber !== searchTRN) {
+        setError('Company not found for this TRN');
+        return;
+      }
+
+      // Calculate monthly trends
+      const monthlyTrend = Array.from({ length: 12 }, (_, i) => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        const monthKey = date.toISOString().slice(0, 7);
+        
+        const revenue = allData.revenues
+          .filter((r: any) => r.date.startsWith(monthKey))
+          .reduce((sum: number, r: any) => sum + r.amount, 0);
+          
+        const expenses = allData.expenses
+          .filter((e: any) => e.date.startsWith(monthKey))
+          .reduce((sum: number, e: any) => sum + e.amount, 0);
+          
+        return {
+          month: new Date(monthKey).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
+          revenue,
+          expenses
+        };
+      }).reverse();
+
+      // Calculate totals
+      const totalRevenue = allData.revenues.reduce((sum: number, entry: any) => sum + entry.amount, 0);
+      const totalExpenses = allData.expenses.reduce((sum: number, entry: any) => sum + entry.amount, 0);
+      const netIncome = totalRevenue - totalExpenses;
+      const vatDue = allData.revenues.reduce((sum: number, entry: any) => sum + entry.vatAmount, 0);
+      const citDue = calculateCIT(netIncome);
+
+      // Determine tax applicability
+      const isVATApplicable = totalRevenue > 375000;
+      const isCITApplicable = netIncome > 375000;
+      
+      // For demo purposes, assume CIT is submitted if there's a submission date in the profile
+      const hasCITSubmission = Boolean(allData.profile.citSubmissionDate);
+
+      const complianceDetails = calculateDetailedComplianceScore(allData);
+      setComplianceBreakdown(complianceDetails.breakdown);
+
+      const complianceScore = complianceDetails.score;
+
+      setSearchResult({
+        profile: allData.profile,
+        totalRevenue,
+        totalExpenses,
+        netIncome,
+        vatDue,
+        citDue,
+        isVATApplicable,
+        isCITApplicable,
+        hasCITSubmission,
+        monthlyTrend,
+        complianceScore
+      });
+
+      // Enhanced animation sequence
+      setTimeout(() => setShowResults(true), 50);
+    } catch (err) {
+      setError('Error processing company data');
+    }
+  };
+
   const handleExport = async (type: 'pdf' | 'excel') => {
     if (!searchResult) return;
     
@@ -144,6 +269,9 @@ const Dashboard: React.FC = () => {
         citDue: searchResult.citDue,
         complianceScore: searchResult.complianceScore
       };
+
+      // Log export attempt
+      log('EXPORT_REPORT', { type, trn: searchResult.profile.trnNumber });
 
       const blob = await (type === 'pdf' ? generatePDFReport(reportData) : generateExcelReport(reportData));
       const url = window.URL.createObjectURL(blob);
@@ -187,6 +315,15 @@ const Dashboard: React.FC = () => {
       };
 
       const referenceNumber = await submitToFTA(submissionData);
+      
+      // Log successful submission
+      log('SUBMIT_FILING', { 
+        trn: searchResult.profile.trnNumber,
+        referenceNumber,
+        vatDue: searchResult.vatDue,
+        citDue: searchResult.citDue
+      });
+
       setSubmissionSuccess({
         message: 'Tax report submitted successfully to FTA.',
         referenceNumber
@@ -309,97 +446,493 @@ const Dashboard: React.FC = () => {
     );
   };
 
-  const handleSearch = () => {
-    setError(null);
-    setSearchResult(null);
-    setShowResults(false);
-
-    const validation = validateTRN(searchTRN);
-    if (!validation.isValid) {
-      setError(validation.message);
-      return;
-    }
-
-    // Get all company profiles from localStorage
-    const storedData = localStorage.getItem('taxState');
-    if (!storedData) {
-      setError('No company data available');
-      return;
-    }
+  const handleChartDownload = async (chartRef: React.RefObject<HTMLDivElement>, chartName: string) => {
+    if (!chartRef.current) return;
 
     try {
-      const allData = JSON.parse(storedData);
-      if (!allData.profile || allData.profile.trnNumber !== searchTRN) {
-        setError('Company not found for this TRN');
-        return;
-      }
+      const canvas = await html2canvas(chartRef.current);
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `${chartName}-${new Date().toISOString()}.png`;
+      link.href = dataUrl;
+      link.click();
 
-      // Calculate monthly trends
-      const monthlyTrend = Array.from({ length: 12 }, (_, i) => {
-        const date = new Date();
-        date.setMonth(date.getMonth() - i);
-        const monthKey = date.toISOString().slice(0, 7);
-        
-        const revenue = allData.revenues
-          .filter((r: any) => r.date.startsWith(monthKey))
-          .reduce((sum: number, r: any) => sum + r.amount, 0);
-          
-        const expenses = allData.expenses
-          .filter((e: any) => e.date.startsWith(monthKey))
-          .reduce((sum: number, e: any) => sum + e.amount, 0);
-          
-        return {
-          month: new Date(monthKey).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
-          revenue,
-          expenses
-        };
-      }).reverse();
-
-      // Calculate totals
-      const totalRevenue = allData.revenues.reduce((sum: number, entry: any) => sum + entry.amount, 0);
-      const totalExpenses = allData.expenses.reduce((sum: number, entry: any) => sum + entry.amount, 0);
-      const netIncome = totalRevenue - totalExpenses;
-      const vatDue = allData.revenues.reduce((sum: number, entry: any) => sum + entry.vatAmount, 0);
-      const citDue = calculateCIT(netIncome);
-
-      // Determine tax applicability
-      const isVATApplicable = totalRevenue > 375000;
-      const isCITApplicable = netIncome > 375000;
-      
-      // For demo purposes, assume CIT is submitted if there's a submission date in the profile
-      const hasCITSubmission = Boolean(allData.profile.citSubmissionDate);
-
-      const complianceDetails = calculateDetailedComplianceScore(allData);
-      setComplianceBreakdown(complianceDetails.breakdown);
-
-      const complianceScore = complianceDetails.score;
-
-      setSearchResult({
-        profile: allData.profile,
-        totalRevenue,
-        totalExpenses,
-        netIncome,
-        vatDue,
-        citDue,
-        isVATApplicable,
-        isCITApplicable,
-        hasCITSubmission,
-        monthlyTrend,
-        complianceScore
-      });
-
-      // Enhanced animation sequence
-      setTimeout(() => setShowResults(true), 50);
-    } catch (err) {
-      setError('Error processing company data');
+      log('DOWNLOAD_CHART', { chartName });
+    } catch (error) {
+      console.error('Failed to download chart:', error);
     }
   };
 
-  if (role === 'FTA') {
+  const renderChart = (
+    type: ChartType,
+    data: any[],
+    dataKeys: { key: string; color: string }[]
+  ) => {
+    const commonProps = {
+      data,
+      margin: { top: 5, right: 30, left: 20, bottom: 5 }
+    };
+
+    if (type === 'line') {
+      return (
+        <LineChart {...commonProps}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          {dataKeys.map(({ key, color }) => (
+            <Line
+              key={key}
+              type="monotone"
+              dataKey={key}
+              stroke={color}
+              activeDot={{ r: 8 }}
+            />
+          ))}
+        </LineChart>
+      );
+    }
+
     return (
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <BarChart {...commonProps}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="date" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        {dataKeys.map(({ key, color }) => (
+          <Bar key={key} dataKey={key} fill={color} />
+        ))}
+      </BarChart>
+    );
+  };
+
+  // Check for missing setup information
+  const setupMissing = useMemo(() => {
+    if (!state.profile) return true;
+    return !state.profile.trnNumber || !state.profile.licenseType;
+  }, [state.profile]);
+
+  // Check for missing filings
+  const missingFilings = useMemo(() => {
+    const today = new Date();
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const lastMonthStr = lastMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+    
+    // Check if there are any revenues or expenses in the last month
+    const hasLastMonthEntries = [...state.revenues, ...state.expenses].some(entry => {
+      const entryDate = new Date(entry.date);
+      return entryDate.getMonth() === lastMonth.getMonth() && 
+             entryDate.getFullYear() === lastMonth.getFullYear();
+    });
+
+    return hasLastMonthEntries ? null : lastMonthStr;
+  }, [state.revenues, state.expenses]);
+
+  // Check for incomplete profile information
+  const incompleteProfile = useMemo(() => {
+    if (!state.profile) return [];
+    
+    const missing: string[] = [];
+    if (!state.profile.email) missing.push('Email');
+    if (!state.profile.phone) missing.push('Phone');
+    if (!state.profile.address) missing.push('Address');
+    if (!state.profile.businessActivity) missing.push('Business Activity');
+    
+    return missing;
+  }, [state.profile]);
+
+  // Check for tax registration requirements
+  const taxRegistrationAlerts = useMemo(() => {
+    const alerts = [];
+    const totalRevenue = state.revenues.reduce((sum, entry) => sum + entry.amount, 0);
+    
+    if (totalRevenue > 375000 && !state.profile?.vatRegistered) {
+      alerts.push({
+        type: 'warning' as const,
+        title: 'VAT Registration Required',
+        message: 'Your revenue exceeds AED 375,000. VAT registration is mandatory.',
+        action: {
+          label: 'Register for VAT',
+          onClick: () => window.open('https://www.tax.gov.ae/vat', '_blank')
+        }
+      });
+    }
+
+    if (totalRevenue > 3000000 && !state.profile?.citRegistered) {
+      alerts.push({
+        type: 'error' as const,
+        title: 'Corporate Tax Registration Required',
+        message: 'Your revenue exceeds AED 3,000,000. Corporate Tax registration is mandatory.',
+        action: {
+          label: 'Register for CIT',
+          onClick: () => window.open('https://www.tax.gov.ae/ct', '_blank')
+        }
+      });
+    }
+
+    return alerts;
+  }, [state.revenues, state.profile]);
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Tax Dashboard"
+        description="Monitor your tax compliance and financial metrics"
+      />
+      
+      <RelatedPartySection />
+      
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          {/* Header Section */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Tax Dashboard</h1>
+            <p className="mt-2 text-sm text-gray-600">
+              Monitor your tax compliance and financial metrics
+            </p>
+          </div>
+
+          {/* Alerts Section */}
+          <PermissionGate
+            resource="dashboard"
+            requiredPermission="view"
+            restrictedTo="Tax Agent or Admin"
+          >
+            <div className="space-y-4 mb-8">
+              {setupMissing && (
+                <AlertBanner
+                  type="error"
+                  title="Setup Not Completed"
+                  message="Please complete your company setup to ensure compliance."
+                  action={{
+                    label: 'Complete Setup',
+                    onClick: () => navigate('/setup')
+                  }}
+                />
+              )}
+
+              {missingFilings && (
+                <AlertBanner
+                  type="warning"
+                  title="Missing Filing"
+                  message={`No entries found for ${missingFilings}. Please ensure all transactions are recorded.`}
+                  action={{
+                    label: 'Add Entries',
+                    onClick: () => navigate('/filing')
+                  }}
+                />
+              )}
+
+              {incompleteProfile.length > 0 && (
+                <AlertBanner
+                  type="info"
+                  title="Incomplete Profile"
+                  message={`The following information is missing: ${incompleteProfile.join(', ')}`}
+                  action={{
+                    label: 'Update Profile',
+                    onClick: () => navigate('/setup')
+                  }}
+                />
+              )}
+
+              {taxRegistrationAlerts.map((alert, index) => (
+                <AlertBanner
+                  key={index}
+                  type={alert.type}
+                  title={alert.title}
+                  message={alert.message}
+                  action={alert.action}
+                />
+              ))}
+            </div>
+          </PermissionGate>
+
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+            <PermissionGate
+              resource="dashboard"
+              requiredPermission="view"
+              restrictedTo="Tax Agent or Admin"
+            >
+              {/* Revenue Card */}
+              <div className="bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100">
+                <div className="p-5">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <BanknotesIcon className="h-6 w-6 text-green-500" />
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dl>
+                        <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
+                        <dd className="text-lg font-semibold text-gray-900">
+                          AED {totalRevenue.toLocaleString()}
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-b from-green-50 to-white px-5 py-3">
+                  <div className="text-sm">
+                    <span className="text-green-700 font-medium">
+                      {state.revenues.length} transactions
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Expenses Card */}
+              <div className="bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100">
+                <div className="p-5">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <ReceiptPercentIcon className="h-6 w-6 text-red-500" />
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dl>
+                        <dt className="text-sm font-medium text-gray-500 truncate">Total Expenses</dt>
+                        <dd className="text-lg font-semibold text-gray-900">
+                          AED {totalExpenses.toLocaleString()}
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-b from-red-50 to-white px-5 py-3">
+                  <div className="text-sm">
+                    <span className="text-red-700 font-medium">
+                      {state.expenses.length} transactions
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </PermissionGate>
+
+            {/* Net Income Card - Admin Only */}
+            <PermissionGate
+              resource="dashboard"
+              requiredPermission="edit"
+              restrictedTo="Admins"
+            >
+              <div className="bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100">
+                <div className="p-5">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <BuildingOfficeIcon className="h-6 w-6 text-blue-500" />
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dl>
+                        <dt className="text-sm font-medium text-gray-500 truncate">Net Income</dt>
+                        <dd className="text-lg font-semibold text-gray-900">
+                          AED {netIncome.toLocaleString()}
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-b from-blue-50 to-white px-5 py-3">
+                  <div className="text-sm">
+                    <span className="text-blue-700 font-medium">
+                      Year to date
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </PermissionGate>
+
+            {/* Tax Due Card - Tax Agent and Admin */}
+            <PermissionGate
+              resource="dashboard"
+              requiredPermission="view"
+              restrictedTo="Tax Agent or Admin"
+            >
+              <div className="bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100">
+                <div className="p-5">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <DocumentChartBarIcon className="h-6 w-6 text-purple-500" />
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dl>
+                        <dt className="text-sm font-medium text-gray-500 truncate">Tax Due</dt>
+                        <dd className="text-lg font-semibold text-gray-900">
+                          AED {(totalVAT + citAmount).toLocaleString()}
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-b from-purple-50 to-white px-5 py-3">
+                  <div className="text-sm">
+                    <span className="text-purple-700 font-medium">
+                      VAT + CIT
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </PermissionGate>
+          </div>
+
+          {/* Charts Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Revenue Chart - Tax Agent and Admin */}
+            <PermissionGate
+              resource="dashboard"
+              requiredPermission="view"
+              restrictedTo="Tax Agent or Admin"
+            >
+              <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                <div ref={revenueChartRef}>
+                  <ChartControls
+                    chartType={revenueChartType}
+                    onChartTypeChange={setRevenueChartType}
+                    onDownload={() => handleChartDownload(revenueChartRef, 'revenue')}
+                    chartTitle="Monthly Revenue"
+                  />
+                  <div className="h-80 mt-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                      {revenueChartType === 'line' ? (
+                        <LineChart data={monthlyData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                          <XAxis dataKey="month" stroke="#6B7280" />
+                          <YAxis stroke="#6B7280" />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #E5E7EB',
+                              borderRadius: '0.5rem'
+                            }}
+                          />
+                          <Legend />
+                          <Line
+                            type="monotone"
+                            dataKey="amount"
+                            name="Revenue"
+                            stroke="#8B5CF6"
+                            strokeWidth={2}
+                            dot={{ r: 4, strokeWidth: 2 }}
+                            activeDot={{ r: 6 }}
+                          />
+                        </LineChart>
+                      ) : (
+                        <BarChart data={monthlyData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                          <XAxis dataKey="month" stroke="#6B7280" />
+                          <YAxis stroke="#6B7280" />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #E5E7EB',
+                              borderRadius: '0.5rem'
+                            }}
+                          />
+                          <Legend />
+                          <Bar dataKey="amount" name="Revenue" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      )}
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+            </PermissionGate>
+
+            {/* Expense Chart - Admin Only */}
+            <PermissionGate
+              resource="dashboard"
+              requiredPermission="edit"
+              restrictedTo="Admins"
+            >
+              <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                <div ref={expenseChartRef}>
+                  <ChartControls
+                    chartType={expenseChartType}
+                    onChartTypeChange={setExpenseChartType}
+                    onDownload={() => handleChartDownload(expenseChartRef, 'expenses')}
+                    chartTitle="Expense Categories"
+                  />
+                  <div className="h-80 mt-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                      {expenseChartType === 'line' ? (
+                        <LineChart data={expenseData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                          <XAxis dataKey="name" stroke="#6B7280" />
+                          <YAxis stroke="#6B7280" />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #E5E7EB',
+                              borderRadius: '0.5rem'
+                            }}
+                          />
+                          <Legend />
+                          <Line
+                            type="monotone"
+                            dataKey="value"
+                            name="Amount"
+                            stroke="#EF4444"
+                            strokeWidth={2}
+                            dot={{ r: 4, strokeWidth: 2 }}
+                            activeDot={{ r: 6 }}
+                          />
+                        </LineChart>
+                      ) : (
+                        <BarChart data={expenseData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                          <XAxis dataKey="name" stroke="#6B7280" />
+                          <YAxis stroke="#6B7280" />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #E5E7EB',
+                              borderRadius: '0.5rem'
+                            }}
+                          />
+                          <Legend />
+                          <Bar dataKey="value" name="Amount" fill="#EF4444" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      )}
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+            </PermissionGate>
+          </div>
+
+          {/* Action Buttons */}
+          <PermissionGate
+            resource="dashboard"
+            requiredPermission="edit"
+            restrictedTo="Admins"
+          >
+            <div className="mt-8 flex justify-end space-x-4">
+              <button
+                onClick={() => handleExport('pdf')}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
+                Export PDF
+              </button>
+              <button
+                onClick={() => handleExport('excel')}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                <DocumentChartBarIcon className="h-5 w-5 mr-2" />
+                Export Excel
+              </button>
+              <button
+                onClick={() => setIsSubmitModalOpen(true)}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <ArrowTrendingUpIcon className="h-5 w-5 mr-2" />
+                Submit to FTA
+              </button>
+            </div>
+          </PermissionGate>
+        </div>
+
         {submissionSuccess && (
-          <div className="mb-6">
+          <div className="mt-6">
             <SuccessAlert
               message={submissionSuccess.message}
               referenceNumber={submissionSuccess.referenceNumber}
@@ -408,194 +941,6 @@ const Dashboard: React.FC = () => {
           </div>
         )}
 
-        <div className="px-4 py-6 sm:px-0">
-          {/* TRN Search Panel */}
-          <div className="bg-white shadow rounded-lg mb-6">
-            <div className="px-4 py-5 sm:p-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Search Company by TRN</h2>
-              <div className="flex gap-4">
-                <div className="flex-grow">
-                  <label htmlFor="trn-search" className="block text-sm font-medium text-gray-700 mb-2">
-                    Search by TRN Number
-                  </label>
-                  <input
-                    type="text"
-                    id="trn-search"
-                    value={searchTRN}
-                    onChange={handleTRNChange}
-                    className={`shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md ${
-                      error && searchTRN ? 'border-red-300' : ''
-                    }`}
-                    placeholder="Enter 15-digit TRN"
-                    maxLength={15}
-                  />
-                  {error && searchTRN && (
-                    <p className="mt-1 text-sm text-red-600">{error}</p>
-                  )}
-                </div>
-                <div className="flex items-end">
-                  <button
-                    onClick={handleSearch}
-                    disabled={!validateTRN(searchTRN)}
-                    className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-                      validateTRN(searchTRN)
-                        ? 'bg-indigo-600 hover:bg-indigo-700'
-                        : 'bg-gray-400 cursor-not-allowed'
-                    } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                  >
-                    Search
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Error Message */}
-          {error && !searchTRN && (
-            <div className="rounded-md bg-red-50 p-4 mb-6">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-red-800">{error}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Search Results with enhanced animation */}
-          {searchResult && (
-            <div 
-              className={`transform transition-all duration-700 ease-in-out ${
-                showResults ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-              } ${
-                searchResult.isCITApplicable && !searchResult.hasCITSubmission
-                  ? 'border-2 border-red-500'
-                  : ''
-              } bg-white shadow-lg hover:shadow-xl rounded-lg`}
-            >
-              {/* Compliance Score */}
-              <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">Company Details</h3>
-                  <div className="flex items-center">
-                    <span className="text-sm text-gray-500 mr-2">Compliance Score:</span>
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                      searchResult.complianceScore >= 90 ? 'bg-green-100 text-green-800' :
-                      searchResult.complianceScore >= 70 ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {searchResult.complianceScore}%
-                    </span>
-                  </div>
-                </div>
-                {searchResult.isCITApplicable && !searchResult.hasCITSubmission && (
-                  <div className="mt-2 flex items-center text-sm text-red-600">
-                    <svg className="h-5 w-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    CIT submission required but not completed
-                  </div>
-                )}
-              </div>
-
-              {/* Compliance Details */}
-              <div className="px-4 py-5 sm:p-6 border-t border-gray-200">
-                <div className="flex justify-between items-center mb-4">
-                  <h4 className="text-base font-medium text-gray-900">Compliance Details</h4>
-                  <button
-                    onClick={() => setShowComplianceDetails(!showComplianceDetails)}
-                    className="text-sm text-indigo-600 hover:text-indigo-900"
-                  >
-                    {showComplianceDetails ? 'Hide Details' : 'Show Details'}
-                  </button>
-                </div>
-                {showComplianceDetails && (
-                  <div className="mt-4 space-y-4">
-                    {complianceBreakdown.map((category) => (
-                      <div key={category.category} className="bg-gray-50 rounded-lg p-4">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="font-medium">{category.category}</span>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            (category.score / category.maxScore) >= 0.7
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {category.score}/{category.maxScore}
-                          </span>
-                        </div>
-                        {category.issues.length > 0 && (
-                          <ul className="mt-2 text-sm text-red-600 list-disc list-inside">
-                            {category.issues.map((issue, index) => (
-                              <li key={index}>{issue}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {renderComplianceChart()}
-              </div>
-
-              {/* Trend Analysis */}
-              <div className="px-4 py-5 sm:p-6 border-t border-gray-200">
-                <h4 className="text-base font-medium text-gray-900 mb-4">12-Month Trend</h4>
-                {renderTrendChart()}
-              </div>
-
-              {/* Quick Actions */}
-              <div className="px-4 py-3 bg-gray-50 text-right sm:px-6 rounded-b-lg">
-                <div className="flex justify-between items-center">
-                  <div className="flex space-x-3">
-                    <button
-                      type="button"
-                      onClick={() => handleExport('pdf')}
-                      disabled={isExporting}
-                      className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-                        isExporting && selectedReport === 'pdf'
-                          ? 'bg-indigo-400 cursor-not-allowed'
-                          : 'bg-indigo-600 hover:bg-indigo-700'
-                      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                    >
-                      {isExporting && selectedReport === 'pdf' ? 'Exporting...' : 'Export PDF'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleExport('excel')}
-                      disabled={isExporting}
-                      className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-                        isExporting && selectedReport === 'excel'
-                          ? 'bg-green-400 cursor-not-allowed'
-                          : 'bg-green-600 hover:bg-green-700'
-                      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
-                    >
-                      {isExporting && selectedReport === 'excel' ? 'Exporting...' : 'Export Excel'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsSubmitModalOpen(true)}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      Submit to FTA
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleScheduleAudit}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                  >
-                    Schedule Audit
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
         <SubmissionModal
           isOpen={isSubmitModalOpen}
           isLoading={isSubmitting}
@@ -603,186 +948,6 @@ const Dashboard: React.FC = () => {
           onConfirm={handleSubmitToFTA}
         />
       </div>
-    );
-  }
-
-  // Regular dashboard for non-FTA roles
-  return (
-    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      {submissionSuccess && (
-        <div className="mb-6">
-          <SuccessAlert
-            message={submissionSuccess.message}
-            referenceNumber={submissionSuccess.referenceNumber}
-            onClose={() => setSubmissionSuccess(null)}
-          />
-        </div>
-      )}
-
-      {/* Alerts */}
-      <div className="mb-8 space-y-4">
-        {showVATAlert && (
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-yellow-700">
-                  Your revenue exceeds AED 375,000. VAT registration is required.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-        {showCITAlert && (
-          <div className="bg-red-50 border-l-4 border-red-400 p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-700">
-                  Your revenue exceeds AED 3,000,000. Corporate Income Tax registration is required.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-        {showNoExpensesAlert && (
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-blue-700">
-                  No expenses have been logged yet. Add your business expenses to get accurate tax calculations.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5 mb-8">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">
-              AED {totalRevenue.toLocaleString()}
-            </dd>
-          </div>
-        </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <dt className="text-sm font-medium text-gray-500 truncate">Total Expenses</dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">
-              AED {totalExpenses.toLocaleString()}
-            </dd>
-          </div>
-        </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <dt className="text-sm font-medium text-gray-500 truncate">Net Income</dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">
-              AED {netIncome.toLocaleString()}
-            </dd>
-          </div>
-        </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <dt className="text-sm font-medium text-gray-500 truncate">VAT Due</dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">
-              AED {totalVAT.toLocaleString()}
-            </dd>
-          </div>
-        </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <dt className="text-sm font-medium text-gray-500 truncate">CIT Due</dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">
-              AED {citAmount.toLocaleString()}
-            </dd>
-          </div>
-        </div>
-        <div className="col-span-full flex justify-end">
-          <button
-            type="button"
-            onClick={() => setIsSubmitModalOpen(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Submit to FTA
-          </button>
-        </div>
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Monthly Revenue Chart */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Monthly Revenue</h3>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value) => `AED ${value.toLocaleString()}`} />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="amount"
-                  name="Revenue"
-                  stroke="#8884d8"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Expense Categories Chart */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Expense Categories</h3>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={expenseData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {expenseData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => `AED ${value.toLocaleString()}`} />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      <SubmissionModal
-        isOpen={isSubmitModalOpen}
-        isLoading={isSubmitting}
-        onClose={() => setIsSubmitModalOpen(false)}
-        onConfirm={handleSubmitToFTA}
-      />
     </div>
   );
 };

@@ -1,41 +1,53 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import type { UserRole } from '../types';
+import React, { createContext, useContext, useState } from 'react';
+import type { ReactNode } from 'react';
+import { permissions } from '../config/permissions';
+import type { Permission, Resource } from '../config/permissions';
+import { useAudit } from './AuditContext';
+
+type Role = 'SME' | 'Tax Agent' | 'Admin' | 'FTA';
 
 interface UserRoleContextType {
-  role: UserRole;
-  setRole: (role: UserRole) => void;
-  canAccess: (page: string) => boolean;
+  role: Role;
+  setRole: (role: Role) => void;
+  hasPermission: (resource: Resource, permission: Permission) => boolean;
+  canAccess: (path: string) => boolean;
 }
 
-const UserRoleContext = createContext<UserRoleContextType | null>(null);
+const UserRoleContext = createContext<UserRoleContextType | undefined>(undefined);
 
-const pageAccessMap: Record<UserRole, string[]> = {
-  'SME': ['/', '/dashboard', '/setup', '/filing', '/assistant'],
-  'Tax Agent': ['/dashboard', '/filing'],
-  'Admin': ['/', '/dashboard', '/setup', '/filing', '/assistant', '/admin'],
-  'FTA': ['/dashboard']
-};
+export const UserRoleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [role, setRoleState] = useState<Role>('SME');
+  const { log } = useAudit();
 
-export const UserRoleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [role, setRoleState] = useState<UserRole>(() => {
-    const savedRole = localStorage.getItem('userRole');
-    return (savedRole as UserRole) || 'SME';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('userRole', role);
-  }, [role]);
-
-  const setRole = (newRole: UserRole) => {
+  const setRole = (newRole: Role) => {
+    log('SWITCH_ROLE', { from: role, to: newRole });
     setRoleState(newRole);
   };
 
-  const canAccess = (page: string): boolean => {
-    return pageAccessMap[role]?.includes(page) || false;
+  const hasPermission = (resource: Resource, permission: Permission): boolean => {
+    return permissions[role]?.[resource]?.[permission] ?? false;
+  };
+
+  const canAccess = (path: string): boolean => {
+    // Map paths to resources
+    const resourceMap: { [key: string]: Resource } = {
+      '/setup': 'setup',
+      '/filing': 'filing',
+      '/dashboard': 'dashboard',
+      '/assistant': 'assistant',
+      '/admin': 'dashboard',
+      '/': 'dashboard' // Default route
+    };
+
+    const resource = resourceMap[path];
+    if (!resource) return false;
+
+    // At minimum, user needs view permission to access a route
+    return hasPermission(resource, 'view');
   };
 
   return (
-    <UserRoleContext.Provider value={{ role, setRole, canAccess }}>
+    <UserRoleContext.Provider value={{ role, setRole, hasPermission, canAccess }}>
       {children}
     </UserRoleContext.Provider>
   );

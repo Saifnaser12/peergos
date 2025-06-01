@@ -1,0 +1,76 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "submit": "Submit",
+    "export": "Export",
+    "download": "Download",
+    "search": "Search",
+    "filter": "Filter",
+    "noData": "No data available",
+    "error": "Error",
+    "success": "Success"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "filing": "Filing",
+    "setup": "Setup",
+    "assistant": "Assistant",
+    "trnSearch": "TRN Search",
+    "financials": "Financials",
+    "systemOnline": "System Online"
+  },
+  "dashboard": {
+    "title": "Tax Dashboard",
+    "description": "Monitor your tax compliance and financial metrics",
+    "totalRevenue": "Total Revenue",
+    "totalExpenses": "Total Expenses",
+    "netIncome": "Net Income",
+    "taxDue": "Tax Due",
+    "transactions": "transactions",
+    "yearToDate": "Year to date",
+    "vatAndCit": "VAT + CIT"
+  },
+  "relatedParty": {
+    "title": "Related Party Transactions",
+    "description": "Manage and view your related party transactions",
+    "toggle": "Show Related Party Transactions",
+    "noTransactions": "No related party transactions found",
+    "partyName": "Party Name",
+    "relationship": "Relationship",
+    "country": "Country",
+    "transactionType": "Transaction Type",
+    "value": "Value (AED)"
+  },
+  "financials": {
+    "incomeStatement": "Income Statement",
+    "balanceSheet": "Balance Sheet",
+    "revenue": "Revenue",
+    "expenses": "Expenses",
+    "netIncome": "Net Income",
+    "assets": "Assets",
+    "liabilities": "Liabilities",
+    "equity": "Equity",
+    "currentAssets": "Current Assets",
+    "fixedAssets": "Fixed Assets",
+    "currentLiabilities": "Current Liabilities",
+    "longTermLiabilities": "Long Term Liabilities",
+    "retainedEarnings": "Retained Earnings",
+    "totalAssets": "Total Assets",
+    "totalLiabilities": "Total Liabilities",
+    "totalEquity": "Total Equity"
+  },
+  "currency": {
+    "select": "Select Currency",
+    "aed": "AED - UAE Dirham",
+    "usd": "USD - US Dollar"
+  },
+  "language": {
+    "select": "Select Language",
+    "english": "English",
+    "arabic": "العربية"
+  }
+} 

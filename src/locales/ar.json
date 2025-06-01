@@ -1,0 +1,76 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "submit": "إرسال",
+    "export": "تصدير",
+    "download": "تحميل",
+    "search": "بحث",
+    "filter": "تصفية",
+    "noData": "لا توجد بيانات متاحة",
+    "error": "خطأ",
+    "success": "نجاح"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "filing": "تقديم",
+    "setup": "إعداد",
+    "assistant": "المساعد",
+    "trnSearch": "بحث TRN",
+    "financials": "البيانات المالية",
+    "systemOnline": "النظام متصل"
+  },
+  "dashboard": {
+    "title": "لوحة تحكم الضرائب",
+    "description": "مراقبة الامتثال الضريبي والمقاييس المالية",
+    "totalRevenue": "إجمالي الإيرادات",
+    "totalExpenses": "إجمالي المصروفات",
+    "netIncome": "صافي الدخل",
+    "taxDue": "الضريبة المستحقة",
+    "transactions": "المعاملات",
+    "yearToDate": "السنة حتى تاريخه",
+    "vatAndCit": "ضريبة القيمة المضافة + ضريبة الشركات"
+  },
+  "relatedParty": {
+    "title": "معاملات الأطراف ذات العلاقة",
+    "description": "إدارة وعرض معاملات الأطراف ذات العلاقة",
+    "toggle": "عرض معاملات الأطراف ذات العلاقة",
+    "noTransactions": "لم يتم العثور على معاملات للأطراف ذات العلاقة",
+    "partyName": "اسم الطرف",
+    "relationship": "العلاقة",
+    "country": "الدولة",
+    "transactionType": "نوع المعاملة",
+    "value": "القيمة (درهم)"
+  },
+  "financials": {
+    "incomeStatement": "بيان الدخل",
+    "balanceSheet": "الميزانية العمومية",
+    "revenue": "الإيرادات",
+    "expenses": "المصروفات",
+    "netIncome": "صافي الدخل",
+    "assets": "الأصول",
+    "liabilities": "الالتزامات",
+    "equity": "حقوق الملكية",
+    "currentAssets": "الأصول المتداولة",
+    "fixedAssets": "الأصول الثابتة",
+    "currentLiabilities": "الالتزامات المتداولة",
+    "longTermLiabilities": "الالتزامات طويلة الأجل",
+    "retainedEarnings": "الأرباح المحتجزة",
+    "totalAssets": "إجمالي الأصول",
+    "totalLiabilities": "إجمالي الالتزامات",
+    "totalEquity": "إجمالي حقوق الملكية"
+  },
+  "currency": {
+    "select": "اختر العملة",
+    "aed": "درهم إماراتي - AED",
+    "usd": "دولار أمريكي - USD"
+  },
+  "language": {
+    "select": "اختر اللغة",
+    "english": "English",
+    "arabic": "العربية"
+  }
+} 

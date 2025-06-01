@@ -7,30 +7,42 @@ export interface UserRoleState {
 export interface CompanyProfile {
   companyName: string;
   trnNumber: string;
-  licenseType: 'mainland' | 'freezone' | 'offshore';
-  revenue: number;
+  licenseType: string;
+  email: string;
+  phone: string;
+  address: string;
+  businessActivity: string;
+  vatRegistered: boolean;
+  citRegistered: boolean;
+  citSubmissionDate?: string;
 }
 
 export interface RevenueEntry {
   id: string;
   date: string;
-  source: 'POS' | 'Bank Transfer' | 'Cash' | 'Other';
   amount: number;
-  vatIncluded: boolean;
-  proofUrl?: string;
+  source: string;
   vatAmount: number;
 }
 
 export interface ExpenseEntry {
   id: string;
   date: string;
-  category: 'Office' | 'Salaries' | 'Utilities' | 'Equipment' | 'Other';
   amount: number;
-  receiptUrl?: string;
+  category: string;
 }
 
 export interface TaxState {
   profile: CompanyProfile | null;
   revenues: RevenueEntry[];
   expenses: ExpenseEntry[];
-} 
+}
+
+export type AuditAction =
+  | 'PROFILE_UPDATE'
+  | 'REVENUE_ADD'
+  | 'EXPENSE_ADD'
+  | 'DOCUMENT_UPLOAD'
+  | 'SUBMISSION'
+  | 'ASSISTANT_RESPONSE'
+  | 'COMPLIANCE_CHECK'; 
