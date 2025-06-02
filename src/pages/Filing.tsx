@@ -47,10 +47,16 @@ interface FilingFormData {
 interface FilingState extends FilingFormData {
   step: number;
   isDeclarationAccepted: boolean;
+  selectedTab: string;
+  isSubmitting: boolean;
+  showConfirmation: boolean;
+  errors: Partial<FilingFormData>;
+  revenueEntries: RevenueEntry[];
+  expenseEntries: ExpenseEntry[];
 }
 
 const Filing: React.FC = () => {
-  const { state, dispatch } = useTax();
+  const { state: taxState, dispatch } = useTax();
   const { log } = useAudit();
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,14 +95,18 @@ const Filing: React.FC = () => {
 
   const { t } = useTranslation();
 
-  const [formState, setFormState] = useState<FilingState>({
+  const [filingFormState, setFilingFormState] = useState<FilingState>({
     step: 1,
     period: '',
     trn: '',
-    isDeclarationAccepted: false
+    isDeclarationAccepted: false,
+    selectedTab: 'revenue',
+    isSubmitting: false,
+    showConfirmation: false,
+    errors: {},
+    revenueEntries: [],
+    expenseEntries: []
   });
-  const [errors, setErrors] = useState<Partial<FilingFormData>>({});
-  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     log('VIEW_FILING');
@@ -142,32 +152,32 @@ const Filing: React.FC = () => {
 
   // Memoized filtered and sorted data
   const filteredSortedRevenues = useMemo(() => {
-    let result = filterEntries(state.revenues, revenueFilters);
+    let result = filterEntries(taxState.revenues, revenueFilters);
     return sortEntries(result, revenueSort);
-  }, [state.revenues, revenueFilters, revenueSort]);
+  }, [taxState.revenues, revenueFilters, revenueSort]);
 
   const filteredSortedExpenses = useMemo(() => {
-    let result = filterEntries(state.expenses, expenseFilters);
+    let result = filterEntries(taxState.expenses, expenseFilters);
     return sortEntries(result, expenseSort);
-  }, [state.expenses, expenseFilters, expenseSort]);
+  }, [taxState.expenses, expenseFilters, expenseSort]);
 
   // Get unique categories/sources for filter options
   const revenueSources = useMemo(() => 
-    Array.from(new Set(state.revenues.map(r => r.source))),
-    [state.revenues]
+    Array.from(new Set(taxState.revenues.map(r => r.source))),
+    [taxState.revenues]
   );
 
   const expenseCategories = useMemo(() => 
-    Array.from(new Set(state.expenses.map(e => e.category))),
-    [state.expenses]
+    Array.from(new Set(taxState.expenses.map(e => e.category))),
+    [taxState.expenses]
   );
 
   const handleDraftToggle = () => {
-    dispatch({ type: 'TOGGLE_DRAFT_MODE', payload: !state.isDraftMode });
+    dispatch({ type: 'TOGGLE_DRAFT_MODE', payload: !taxState.isDraftMode });
   };
 
   const handleSubmitToFTA = async () => {
-    if (!state.profile) {
+    if (!taxState.profile) {
       console.error('No profile data available');
       return;
     }
@@ -175,14 +185,14 @@ const Filing: React.FC = () => {
     setIsSubmitting(true);
     try {
       const submissionData = {
-        trn: state.profile.trnNumber,
+        trn: taxState.profile.trnNumber,
         timestamp: new Date().toISOString(),
         referenceNumber: '',
         data: {
-          revenues: state.revenues,
-          expenses: state.expenses,
-          vatDue: state.revenues.reduce((sum, entry) => sum + entry.vatAmount, 0),
-          citDue: state.revenues.reduce((sum, entry) => sum + (entry.amount * 0.09), 0),
+          revenues: taxState.revenues,
+          expenses: taxState.expenses,
+          vatDue: taxState.revenues.reduce((sum, entry) => sum + entry.vatAmount, 0),
+          citDue: taxState.revenues.reduce((sum, entry) => sum + (entry.amount * 0.09), 0),
           complianceScore: 100
         }
       };
@@ -190,14 +200,14 @@ const Filing: React.FC = () => {
       const referenceNumber = await submitToFTA(submissionData);
       
       log('SUBMIT_FILING', {
-        trn: state.profile.trnNumber,
+        trn: taxState.profile.trnNumber,
         referenceNumber,
         vatDue: submissionData.data.vatDue,
         citDue: submissionData.data.citDue
       });
 
       // Clear draft after successful submission
-      if (state.isDraftMode) {
+      if (taxState.isDraftMode) {
         dispatch({ type: 'CLEAR_DRAFT' });
       }
 
@@ -356,56 +366,48 @@ const Filing: React.FC = () => {
   );
 
   const validateStep1 = () => {
-    if (!formState.period) {
-      setErrors({ period: 'Period is required' });
+    if (!filingFormState.period) {
+      setFilingFormState(prev => ({ ...prev, errors: { period: 'Period is required' } }));
       return false;
     }
-    const trnValidation = Validator.validateTRN(formState.trn);
+    const trnValidation = Validator.validateTRN(filingFormState.trn);
     if (!trnValidation.isValid) {
-      setErrors({ trn: trnValidation.errors[0] });
+      setFilingFormState(prev => ({ ...prev, errors: { trn: trnValidation.errors[0] } }));
       return false;
     }
     return true;
   };
 
   const handleNext = () => {
-    if (formState.step === 1 && !validateStep1()) {
+    if (filingFormState.step === 1 && !validateStep1()) {
       return;
     }
-    setFormState(prev => ({ ...prev, step: prev.step + 1 }));
+    setFilingFormState(prev => ({ ...prev, step: prev.step + 1 }));
   };
 
   const handleBack = () => {
-    setFormState(prev => ({ ...prev, step: prev.step - 1 }));
+    setFilingFormState(prev => ({ ...prev, step: prev.step - 1 }));
   };
 
   const handleSubmit = () => {
     const submissionData = {
-      period: formState.period,
-      trn: formState.trn,
-      totalRevenue: state.revenues.reduce((sum, r) => sum + r.amount, 0),
-      totalExpenses: state.expenses.reduce((sum, e) => sum + e.amount, 0),
-      vatPayable: state.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0),
+      period: filingFormState.period,
+      trn: filingFormState.trn,
+      totalRevenue: taxState.revenues.reduce((sum, r) => sum + r.amount, 0),
+      totalExpenses: taxState.expenses.reduce((sum, e) => sum + e.amount, 0),
+      vatPayable: taxState.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0),
     };
 
     // Submit data to backend
     console.log('Submitting:', submissionData);
-    setSuccessMessage('Filing Submitted Successfully');
-    // Reset form after successful submission
-    setFormState({
-      step: 1,
-      period: '',
-      trn: '',
-      isDeclarationAccepted: false
-    });
+    setFilingFormState(prev => ({ ...prev, showConfirmation: true }));
   };
 
   const saveDraft = () => {
     SecureStorage.set('draftFiling', {
-      ...state,
+      ...taxState,
       lastUpdated: new Date().toISOString()
     });
-    setSuccessMessage('Draft Saved');
   };
 
   const renderStep1 = () => (
@@ -417,15 +419,15 @@ const Filing: React.FC = () => {
         </label>
         <select
           id="period"
-          value={formState.period}
-          onChange={e => setFormState(prev => ({ ...prev, period: e.target.value }))}
+          value={filingFormState.period}
+          onChange={e => setFilingFormState(prev => ({ ...prev, period: e.target.value }))}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
           <option value="">Select Period</option>
           <option value="2024-Q1">2024 Q1</option>
           <option value="2024-Q2">2024 Q2</option>
         </select>
-        {errors.period && <p className="mt-1 text-sm text-red-600">{errors.period}</p>}
+        {filingFormState.errors.period && <p className="mt-1 text-sm text-red-600">{filingFormState.errors.period}</p>}
       </div>
       <div>
         <label htmlFor="trn" className="block text-sm font-medium text-gray-700">
@@ -434,11 +436,11 @@ const Filing: React.FC = () => {
         <input
           type="text"
           id="trn"
-          value={formState.trn}
-          onChange={e => setFormState(prev => ({ ...prev, trn: e.target.value }))}
+          value={filingFormState.trn}
+          onChange={e => setFilingFormState(prev => ({ ...prev, trn: e.target.value }))}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         />
-        {errors.trn && <p className="mt-1 text-sm text-red-600">{errors.trn}</p>}
+        {filingFormState.errors.trn && <p className="mt-1 text-sm text-red-600">{filingFormState.errors.trn}</p>}
       </div>
     </div>
   );
@@ -456,7 +458,7 @@ const Filing: React.FC = () => {
                   style: 'decimal',
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0
-                }).format(state.revenues.reduce((sum, r) => sum + r.amount, 0))}{' '}
+                }).format(taxState.revenues.reduce((sum, r) => sum + r.amount, 0))}{' '}
                 AED
               </dd>
             </div>
@@ -467,7 +469,7 @@ const Filing: React.FC = () => {
                   style: 'decimal',
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0
-                }).format(state.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0))}{' '}
+                }).format(taxState.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0))}{' '}
                 AED
               </dd>
             </div>
@@ -490,7 +492,7 @@ const Filing: React.FC = () => {
                   style: 'decimal',
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0
-                }).format(state.expenses.reduce((sum, e) => sum + e.amount, 0))}{' '}
+                }).format(taxState.expenses.reduce((sum, e) => sum + e.amount, 0))}{' '}
                 AED
               </dd>
             </div>
@@ -501,9 +503,9 @@ const Filing: React.FC = () => {
   );
 
   const renderStep4 = () => {
-    const totalRevenue = state.revenues.reduce((sum, r) => sum + r.amount, 0);
-    const totalExpenses = state.expenses.reduce((sum, e) => sum + e.amount, 0);
-    const vatPayable = state.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0);
+    const totalRevenue = taxState.revenues.reduce((sum, r) => sum + r.amount, 0);
+    const totalExpenses = taxState.expenses.reduce((sum, e) => sum + e.amount, 0);
+    const vatPayable = taxState.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0);
 
     return (
       <div className="space-y-4">
@@ -516,8 +518,8 @@ const Filing: React.FC = () => {
             <label className="inline-flex items-center">
               <input
                 type="checkbox"
-                checked={formState.isDeclarationAccepted}
-                onChange={e => setFormState(prev => ({ ...prev, isDeclarationAccepted: e.target.checked }))}
+                checked={filingFormState.isDeclarationAccepted}
+                onChange={e => setFilingFormState(prev => ({ ...prev, isDeclarationAccepted: e.target.checked }))}
                 className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />
               <span className="ml-2 text-sm text-gray-600">
@@ -547,7 +549,7 @@ const Filing: React.FC = () => {
           </svg>
         </div>
         <div className="ml-3">
-          <p className="text-sm font-medium text-green-800">{successMessage}</p>
+          <p className="text-sm font-medium text-green-800">{filingFormState.showConfirmation ? 'Filing Submitted Successfully' : 'Filing Submitted Successfully'}</p>
         </div>
       </div>
     </div>
@@ -563,7 +565,7 @@ const Filing: React.FC = () => {
           {t('filing.description', 'Manage your tax returns and submissions')}
         </p>
       </div>
-      {!state.revenues.length && !state.expenses.length ? (
+      {!taxState.revenues.length && !taxState.expenses.length ? (
         <EmptyState
           illustration={illustrations.noDataFolder}
           title="No Records Found"
@@ -740,7 +742,7 @@ const Filing: React.FC = () => {
               <label className="inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={state.isDraftMode}
+                  checked={taxState.isDraftMode}
                   onChange={handleDraftToggle}
                   className="sr-only peer"
                 />
@@ -749,7 +751,7 @@ const Filing: React.FC = () => {
                   Save as Draft
                 </span>
               </label>
-              {state.isDraftMode && (
+              {taxState.isDraftMode && (
                 <span className="text-sm text-gray-500">
                   Auto-saving changes...
                 </span>
@@ -759,7 +761,7 @@ const Filing: React.FC = () => {
               type="button"
               onClick={() => setIsSubmitModalOpen(true)}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              disabled={!state.profile}
+              disabled={!taxState.profile}
             >
               Submit to FTA
             </button>
@@ -835,17 +837,17 @@ const Filing: React.FC = () => {
 
       {/* Filing Form */}
       <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        {successMessage ? (
+        {filingFormState.showConfirmation ? (
           renderSuccess()
         ) : (
           <div className="space-y-8">
-            {formState.step === 1 && renderStep1()}
-            {formState.step === 2 && renderStep2()}
-            {formState.step === 3 && renderStep3()}
-            {formState.step === 4 && renderStep4()}
+            {filingFormState.step === 1 && renderStep1()}
+            {filingFormState.step === 2 && renderStep2()}
+            {filingFormState.step === 3 && renderStep3()}
+            {filingFormState.step === 4 && renderStep4()}
 
             <div className="mt-8 flex justify-between">
-              {formState.step > 1 && (
+              {filingFormState.step > 1 && (
                 <button
                   type="button"
                   onClick={handleBack}
@@ -855,7 +857,7 @@ const Filing: React.FC = () => {
                 </button>
               )}
 
-              {formState.step < 4 ? (
+              {filingFormState.step < 4 ? (
                 <button
                   type="button"
                   onClick={handleNext}
@@ -867,7 +869,7 @@ const Filing: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  disabled={!formState.isDeclarationAccepted}
+                  disabled={!filingFormState.isDeclarationAccepted}
                   className="ml-auto inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
                 >
                   Submit Filing

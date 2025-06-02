@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ComponentType } from 'react';
+import type { ComponentType, FunctionComponent } from 'react';
 
 interface PerformanceMetric {
   componentName: string;
@@ -53,7 +53,7 @@ class PerformanceMonitor {
   }
 
   public getMetrics(): PerformanceMetric[] {
-    return this.metrics;
+    return [...this.metrics];
   }
 
   public getAverageMetrics(): Record<string, number> {
@@ -68,10 +68,10 @@ class PerformanceMonitor {
       averages[key].count += 1;
     });
 
-    return Object.entries(averages).reduce((acc, [key, { total, count }]) => {
+    return Object.entries(averages).reduce<Record<string, number>>((acc, [key, { total, count }]) => {
       acc[key] = total / count;
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
   }
 
   public clearMetrics(): void {
@@ -81,14 +81,14 @@ class PerformanceMonitor {
 
 // Performance monitoring decorator
 export function measurePerformance() {
-  return function (
-    target: any,
+  return function <T extends object>(
+    target: T,
     propertyKey: string,
     descriptor: PropertyDescriptor
-  ) {
+  ): PropertyDescriptor {
     const originalMethod = descriptor.value;
 
-    descriptor.value = function (...args: any[]) {
+    descriptor.value = function (...args: unknown[]): unknown {
       const monitor = PerformanceMonitor.getInstance();
       const startTime = monitor.startMeasure(
         target.constructor.name,
@@ -114,30 +114,31 @@ export function measurePerformance() {
 
 // React component performance HOC
 export function withPerformanceTracking<P extends object>(
-  WrappedComponent: ComponentType<P>,
-  componentName: string = WrappedComponent.displayName || WrappedComponent.name
-) {
-  return class PerformanceTrackedComponent extends React.Component<P> {
-    private startTime: number = 0;
-    private monitor = PerformanceMonitor.getInstance();
+  WrappedComponent: ComponentType<P>
+): FunctionComponent<P> {
+  const componentName = WrappedComponent.displayName || WrappedComponent.name;
+  
+  const WithPerformance: FunctionComponent<P> = (props) => {
+    const monitor = PerformanceMonitor.getInstance();
+    const startTimeRef = React.useRef(0);
 
-    componentDidMount() {
-      this.monitor.endMeasure(componentName, 'mount', this.startTime);
-    }
+    React.useEffect(() => {
+      monitor.endMeasure(componentName, 'mount', startTimeRef.current);
+      return () => {
+        monitor.endMeasure(componentName, 'unmount', startTimeRef.current);
+      };
+    }, []);
 
-    componentDidUpdate() {
-      this.monitor.endMeasure(componentName, 'update', this.startTime);
-    }
+    React.useEffect(() => {
+      monitor.endMeasure(componentName, 'update', startTimeRef.current);
+    });
 
-    componentWillUnmount() {
-      this.monitor.endMeasure(componentName, 'unmount', this.startTime);
-    }
-
-    render() {
-      this.startTime = this.monitor.startMeasure(componentName, 'render');
-      return <WrappedComponent {...this.props} />;
-    }
+    startTimeRef.current = monitor.startMeasure(componentName, 'render');
+    return React.createElement(WrappedComponent, props);
   };
+
+  WithPerformance.displayName = `WithPerformanceTracking(${componentName})`;
+  return WithPerformance;
 }
 
 export const Performance = PerformanceMonitor.getInstance(); 

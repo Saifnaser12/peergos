@@ -64,13 +64,13 @@ describe('PerformanceMonitor', () => {
   describe('Performance Decorator', () => {
     class TestClass {
       @measurePerformance()
-      async asyncMethod() {
+      async asyncMethod(): Promise<string> {
         await new Promise(resolve => setTimeout(resolve, 100));
         return 'result';
       }
 
       @measurePerformance()
-      syncMethod() {
+      syncMethod(): string {
         return 'result';
       }
     }
@@ -98,11 +98,19 @@ describe('PerformanceMonitor', () => {
   });
 
   describe('React Component HOC', () => {
-    const TestComponent = ({ text }: { text: string }) => <div>{text}</div>;
-    const WrappedComponent = withPerformanceTracking(TestComponent, 'TestComponent');
+    interface TestProps {
+      text: string;
+    }
+    
+    const TestComponent: React.FC<TestProps> = ({ text }) => {
+      return React.createElement('div', null, text);
+    };
+    TestComponent.displayName = 'TestComponent';
+
+    const WrappedComponent = withPerformanceTracking(TestComponent);
 
     it('tracks component lifecycle', () => {
-      const { rerender, unmount } = render(<WrappedComponent text="test" />);
+      const { rerender, unmount } = render(React.createElement(WrappedComponent, { text: 'test' }));
 
       // Check mount metrics
       let metrics = Performance.getMetrics();
@@ -111,7 +119,7 @@ describe('PerformanceMonitor', () => {
       expect(metrics.some(m => m.operation === 'render')).toBe(true);
 
       // Trigger update
-      rerender(<WrappedComponent text="updated" />);
+      rerender(React.createElement(WrappedComponent, { text: 'updated' }));
       metrics = Performance.getMetrics();
       expect(metrics.some(m => m.operation === 'update')).toBe(true);
 
@@ -122,7 +130,7 @@ describe('PerformanceMonitor', () => {
     });
 
     it('preserves component props and functionality', () => {
-      const { container } = render(<WrappedComponent text="test" />);
+      const { container } = render(React.createElement(WrappedComponent, { text: 'test' }));
       expect(container).toHaveTextContent('test');
     });
   });

@@ -236,52 +236,28 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleExport = async (type?: 'pdf' | 'excel') => {
-    if (!type) {
-      // Simulate export functionality
-      console.log('Exporting...');
-      setTimeout(() => {
-        console.log('Export complete');
-      }, 1000);
-      return;
-    }
-
+  const handleExport = async (type: 'pdf' | 'excel') => {
     try {
+      setExportStarted(true);
+      const reportData = {
+        revenues: state.revenues,
+        expenses: state.expenses,
+        profile: state.profile,
+        vatDue: state.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0),
+        citDue: state.revenues.reduce((sum, r) => sum + (r.amount * 0.09), 0),
+        complianceScore: calculateDetailedComplianceScore(state).score
+      };
+      
       if (type === 'pdf') {
-        // PDF export logic
-        const doc = new jsPDF();
-        // Add content to PDF
-        doc.save('tax-report.pdf');
+        await generatePDFReport(reportData);
       } else {
-        // Excel export logic using exceljs
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Tax Report');
-        
-        // Add headers
-        worksheet.addRow(['TRN', 'Company Name', 'Tax Period', 'VAT Due', 'CIT Due']);
-        
-        // Add data
-        worksheet.addRow([
-          searchResult?.trn || '',
-          searchResult?.name || '',
-          format(new Date(), 'MM/yyyy'),
-          vatDue.toFixed(2),
-          citDue.toFixed(2)
-        ]);
-
-        // Generate and save file
-        const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'tax-report.xlsx';
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
+        await generateExcelReport(reportData);
       }
     } catch (error) {
       console.error('Export failed:', error);
+      // Show error notification
+    } finally {
+      setExportStarted(false);
     }
   };
 
