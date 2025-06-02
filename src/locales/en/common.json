@@ -1,0 +1,8 @@
+{
+  "app": {
+    "title": "UAE Tax Compliance System",
+    "navigation": {
+      "transferPricing": "Transfer Pricing"
+    }
+  }
+} 

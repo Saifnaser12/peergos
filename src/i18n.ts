@@ -1,29 +1,41 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import enTranslations from './locales/en.json';
-import arTranslations from './locales/ar.json';
+
+import enCommon from './locales/en/common.json';
+import enTransferPricing from './locales/en/transferPricing.json';
+import arCommon from './locales/ar/common.json';
+import arTransferPricing from './locales/ar/transferPricing.json';
+
+const resources = {
+  en: {
+    common: enCommon,
+    transferPricing: enTransferPricing,
+  },
+  ar: {
+    common: arCommon,
+    transferPricing: arTransferPricing,
+  },
+};
+
+const savedLanguage = localStorage.getItem('language');
+document.dir = savedLanguage === 'ar' ? 'rtl' : 'ltr';
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: {
-      en: {
-        translation: enTranslations
-      },
-      ar: {
-        translation: arTranslations
-      }
-    },
+    resources,
+    lng: savedLanguage || 'en',
     fallbackLng: 'en',
+    ns: ['common', 'transferPricing'],
+    defaultNS: 'common',
     interpolation: {
-      escapeValue: false
+      escapeValue: false,
     },
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage']
-    }
+    react: {
+      useSuspense: false,
+    },
   });
 
 export default i18n; 

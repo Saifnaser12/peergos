@@ -13,7 +13,6 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 import { LoadingOverlay } from '../components/Spinner';
 import PermissionGate from '../components/PermissionGate';
-import { useTranslation } from 'react-i18next';
 
 interface Message {
   id: string;

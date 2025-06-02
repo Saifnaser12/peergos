@@ -1,0 +1,45 @@
+{
+  "title": "إفصاح تسعير المعاملات",
+  "relatedPartyName": "اسم الطرف ذو العلاقة",
+  "jurisdiction": "النطاق القضائي",
+  "transactionType": "نوع المعاملة",
+  "pricingMethod": "طريقة تسعير المعاملات",
+  "transactionValue": "قيمة المعاملة",
+  "notes": "ملاحظات",
+  "uploadFile": "تحميل الملف",
+  "submit": "تقديم الإفصاح",
+  
+  "masterFile": "الملف الرئيسي",
+  "localFile": "الملف المحلي",
+  "cbcReport": "تقرير الدولة بالدولة",
+  
+  "masterFileTooltip": "ملف رئيسي يقدم نظرة عامة على مجموعة الشركات متعددة الجنسيات، بما في ذلك الهيكل التنظيمي ووصف الأعمال والأصول غير الملموسة والأنشطة المالية",
+  "localFileTooltip": "ملف محلي يقدم معلومات مفصلة عن المعاملات ذات الصلة بين الشركات",
+  "cbcReportTooltip": "تقرير الدولة بالدولة يقدم معلومات عن التوزيع العالمي للدخل والضرائب المدفوعة",
+  
+  "transactionTypes": {
+    "TANGIBLE_GOODS": "السلع الملموسة",
+    "SERVICES": "الخدمات",
+    "INTANGIBLES": "الأصول غير الملموسة",
+    "FINANCIAL": "المعاملات المالية",
+    "COST_SHARING": "ترتيبات تقاسم التكاليف",
+    "OTHER": "أخرى"
+  },
+  
+  "pricingMethods": {
+    "COMPARABLE_UNCONTROLLED_PRICE": "طريقة السعر المحايد المقارن",
+    "RESALE_PRICE": "طريقة سعر إعادة البيع",
+    "COST_PLUS": "طريقة التكلفة المضافة",
+    "TRANSACTIONAL_NET_MARGIN": "طريقة هامش صافي المعاملة",
+    "PROFIT_SPLIT": "طريقة تقسيم الأرباح",
+    "OTHER": "طريقة أخرى"
+  },
+  
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "invalidValue": "الرجاء إدخال قيمة صحيحة",
+    "positiveNumber": "الرجاء إدخال رقم موجب",
+    "fileRequired": "الرجاء تحميل الملف المطلوب",
+    "maxFileSize": "يجب ألا يتجاوز حجم الملف 10 ميجابايت"
+  }
+} 

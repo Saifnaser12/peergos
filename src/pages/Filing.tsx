@@ -3,7 +3,6 @@ import { useTax } from '../context/TaxContext';
 import { useAudit } from '../context/AuditContext';
 import SubmissionModal from '../components/SubmissionModal';
 import SuccessAlert from '../components/SuccessAlert';
-import BulkUpload from '../components/BulkUpload';
 import { submitToFTA } from '../utils/submission';
 import { ChevronUpIcon, ChevronDownIcon, FunnelIcon, PlusIcon } from '@heroicons/react/24/outline';
 import type { RevenueEntry, ExpenseEntry } from '../types';
@@ -12,6 +11,16 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import PermissionGate from '../components/PermissionGate';
 import { useTranslation } from 'react-i18next';
+import { PageHeader } from '../components/Card';
+import { 
+  DocumentTextIcon,
+  CurrencyDollarIcon,
+  CalendarIcon,
+  TagIcon,
+  DocumentDuplicateIcon
+} from '@heroicons/react/24/outline';
+import { Validator } from '../utils/validation';
+import { SecureStorage } from '../utils/storage';
 
 interface FilterState {
   dateRange: {
@@ -28,6 +37,16 @@ interface FilterState {
 interface SortState {
   field: 'date' | 'amount';
   direction: 'asc' | 'desc';
+}
+
+interface FilingFormData {
+  period: string;
+  trn: string;
+}
+
+interface FilingState extends FilingFormData {
+  step: number;
+  isDeclarationAccepted: boolean;
 }
 
 const Filing: React.FC = () => {
@@ -69,6 +88,15 @@ const Filing: React.FC = () => {
   });
 
   const { t } = useTranslation();
+
+  const [formState, setFormState] = useState<FilingState>({
+    step: 1,
+    period: '',
+    trn: '',
+    isDeclarationAccepted: false
+  });
+  const [errors, setErrors] = useState<Partial<FilingFormData>>({});
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     log('VIEW_FILING');
@@ -321,6 +349,204 @@ const Filing: React.FC = () => {
         )}
       </div>
     </th>
+  );
+
+  const validateStep1 = () => {
+    if (!formState.period) {
+      setErrors({ period: 'Period is required' });
+      return false;
+    }
+    const trnValidation = Validator.validateTRN(formState.trn);
+    if (!trnValidation.isValid) {
+      setErrors({ trn: trnValidation.message });
+      return false;
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (formState.step === 1 && !validateStep1()) {
+      return;
+    }
+    setFormState(prev => ({ ...prev, step: prev.step + 1 }));
+  };
+
+  const handleBack = () => {
+    setFormState(prev => ({ ...prev, step: prev.step - 1 }));
+  };
+
+  const handleSubmit = () => {
+    const submissionData = {
+      period: formState.period,
+      trn: formState.trn,
+      totalRevenue: state.revenues.reduce((sum, r) => sum + r.amount, 0),
+      totalExpenses: state.expenses.reduce((sum, e) => sum + e.amount, 0),
+      vatPayable: state.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0),
+    };
+
+    // Submit data to backend
+    console.log('Submitting:', submissionData);
+    setSuccessMessage('Filing Submitted Successfully');
+    // Reset form after successful submission
+    setFormState({
+      step: 1,
+      period: '',
+      trn: '',
+      isDeclarationAccepted: false
+    });
+  };
+
+  const saveDraft = () => {
+    SecureStorage.set('draftFiling', {
+      ...state,
+      lastUpdated: new Date().toISOString()
+    });
+    setSuccessMessage('Draft Saved');
+  };
+
+  const renderStep1 = () => (
+    <div className="space-y-4">
+      <h2 className="text-xl font-semibold">Tax Filing Period</h2>
+      <div>
+        <label htmlFor="period" className="block text-sm font-medium text-gray-700">
+          Filing Period
+        </label>
+        <select
+          id="period"
+          value={state.period}
+          onChange={e => setFormState(prev => ({ ...prev, period: e.target.value }))}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        >
+          <option value="">Select Period</option>
+          <option value="2024-Q1">2024 Q1</option>
+          <option value="2024-Q2">2024 Q2</option>
+        </select>
+        {errors.period && <p className="mt-1 text-sm text-red-600">{errors.period}</p>}
+      </div>
+      <div>
+        <label htmlFor="trn" className="block text-sm font-medium text-gray-700">
+          Tax Registration Number (TRN)
+        </label>
+        <input
+          type="text"
+          id="trn"
+          value={state.trn}
+          onChange={e => setFormState(prev => ({ ...prev, trn: e.target.value }))}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        />
+        {errors.trn && <p className="mt-1 text-sm text-red-600">{errors.trn}</p>}
+      </div>
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div className="space-y-4">
+      <h2 className="text-xl font-semibold">Revenue Summary</h2>
+      <div className="rounded-lg bg-white shadow">
+        <div className="px-4 py-5 sm:p-6">
+          <dl className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Total Revenue</dt>
+              <dd className="mt-1 text-3xl font-semibold text-gray-900">
+                {new Intl.NumberFormat('en-AE', {
+                  style: 'decimal',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0
+                }).format(state.revenues.reduce((sum, r) => sum + r.amount, 0))}{' '}
+                AED
+              </dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Total VAT</dt>
+              <dd className="mt-1 text-3xl font-semibold text-gray-900">
+                {new Intl.NumberFormat('en-AE', {
+                  style: 'decimal',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0
+                }).format(state.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0))}{' '}
+                AED
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep3 = () => (
+    <div className="space-y-4">
+      <h2 className="text-xl font-semibold">Expense Summary</h2>
+      <div className="rounded-lg bg-white shadow">
+        <div className="px-4 py-5 sm:p-6">
+          <dl>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Total Expenses</dt>
+              <dd className="mt-1 text-3xl font-semibold text-gray-900">
+                {new Intl.NumberFormat('en-AE', {
+                  style: 'decimal',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0
+                }).format(state.expenses.reduce((sum, e) => sum + e.amount, 0))}{' '}
+                AED
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep4 = () => {
+    const totalRevenue = state.revenues.reduce((sum, r) => sum + r.amount, 0);
+    const totalExpenses = state.expenses.reduce((sum, e) => sum + e.amount, 0);
+    const vatPayable = state.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0);
+
+    return (
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Filing Summary</h2>
+        <div className="rounded-lg bg-white shadow p-6 space-y-4">
+          <p>Net Income: {totalRevenue - totalExpenses} AED</p>
+          <p>VAT Payable: {vatPayable} AED</p>
+          
+          <div className="mt-4">
+            <label className="inline-flex items-center">
+              <input
+                type="checkbox"
+                checked={state.isDeclarationAccepted}
+                onChange={e => setFormState(prev => ({ ...prev, isDeclarationAccepted: e.target.checked }))}
+                className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
+              <span className="ml-2 text-sm text-gray-600">
+                I declare that the information provided is true and accurate
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderSuccess = () => (
+    <div className="rounded-lg bg-green-50 p-4">
+      <div className="flex">
+        <div className="flex-shrink-0">
+          <svg
+            className="h-5 w-5 text-green-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </div>
+        <div className="ml-3">
+          <p className="text-sm font-medium text-green-800">{successMessage}</p>
+        </div>
+      </div>
+    </div>
   );
 
   return (
@@ -602,6 +828,51 @@ const Filing: React.FC = () => {
           </Card>
         </div>
       )}
+
+      {/* Filing Form */}
+      <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        {successMessage ? (
+          renderSuccess()
+        ) : (
+          <div className="space-y-8">
+            {formState.step === 1 && renderStep1()}
+            {formState.step === 2 && renderStep2()}
+            {formState.step === 3 && renderStep3()}
+            {formState.step === 4 && renderStep4()}
+
+            <div className="mt-8 flex justify-between">
+              {formState.step > 1 && (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Back
+                </button>
+              )}
+
+              {formState.step < 4 ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="ml-auto inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={!formState.isDeclarationAccepted}
+                  className="ml-auto inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  Submit Filing
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

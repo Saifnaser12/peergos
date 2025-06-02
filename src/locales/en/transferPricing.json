@@ -1,0 +1,45 @@
+{
+  "title": "Transfer Pricing Disclosure",
+  "relatedPartyName": "Related Party Name",
+  "jurisdiction": "Jurisdiction",
+  "transactionType": "Transaction Type",
+  "pricingMethod": "Transfer Pricing Method",
+  "transactionValue": "Transaction Value",
+  "notes": "Notes",
+  "uploadFile": "Upload File",
+  "submit": "Submit Disclosure",
+  
+  "masterFile": "Master File",
+  "localFile": "Local File",
+  "cbcReport": "Country-by-Country Report",
+  
+  "masterFileTooltip": "A master file providing an overview of the MNE group business, including organizational structure, description of businesses, intangibles, and financial activities",
+  "localFileTooltip": "A local file providing detailed information about relevant intercompany transactions",
+  "cbcReportTooltip": "A Country-by-Country report providing information about global allocation of income and taxes paid",
+  
+  "transactionTypes": {
+    "TANGIBLE_GOODS": "Tangible Goods",
+    "SERVICES": "Services",
+    "INTANGIBLES": "Intangibles",
+    "FINANCIAL": "Financial Transactions",
+    "COST_SHARING": "Cost Sharing Arrangements",
+    "OTHER": "Other"
+  },
+  
+  "pricingMethods": {
+    "COMPARABLE_UNCONTROLLED_PRICE": "Comparable Uncontrolled Price (CUP)",
+    "RESALE_PRICE": "Resale Price Method",
+    "COST_PLUS": "Cost Plus Method",
+    "TRANSACTIONAL_NET_MARGIN": "Transactional Net Margin Method (TNMM)",
+    "PROFIT_SPLIT": "Profit Split Method",
+    "OTHER": "Other Method"
+  },
+  
+  "validation": {
+    "required": "This field is required",
+    "invalidValue": "Please enter a valid value",
+    "positiveNumber": "Please enter a positive number",
+    "fileRequired": "Please upload the required file",
+    "maxFileSize": "File size should not exceed 10MB"
+  }
+} 

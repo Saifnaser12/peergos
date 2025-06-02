@@ -1,0 +1,60 @@
+{
+  "common": {
+    "cancel": "إلغاء",
+    "add": "إضافة",
+    "edit": "تعديل",
+    "save": "حفظ",
+    "delete": "حذف",
+    "export": "تصدير"
+  },
+  "balanceSheet": {
+    "title": "الميزانية العمومية",
+    "addAccount": "إضافة حساب",
+    "accountCode": "رمز الحساب",
+    "accountName": "اسم الحساب",
+    "accountType": "نوع الحساب",
+    "accountCategory": "فئة الحساب",
+    "initialBalance": "الرصيد الأولي",
+    "showChart": "عرض الرسم البياني",
+    "hideChart": "إخفاء الرسم البياني",
+    "breakdown": "تفصيل الميزانية العمومية",
+    "assets": "الأصول",
+    "currentAssets": "الأصول المتداولة",
+    "fixedAssets": "الأصول الثابتة",
+    "intangibleAssets": "الأصول غير الملموسة",
+    "otherAssets": "أصول أخرى",
+    "totalAssets": "إجمالي الأصول",
+    "liabilities": "الخصوم",
+    "currentLiabilities": "الخصوم المتداولة",
+    "longTermLiabilities": "الخصوم طويلة الأجل",
+    "otherLiabilities": "خصوم أخرى",
+    "totalLiabilities": "إجمالي الخصوم",
+    "equity": "حقوق الملكية",
+    "shareCapital": "رأس المال",
+    "retainedEarnings": "الأرباح المحتجزة",
+    "reserves": "الاحتياطيات",
+    "totalEquity": "إجمالي حقوق الملكية",
+    "balanced": "الميزانية العمومية متوازنة",
+    "notBalanced": "تحذير: الميزانية العمومية غير متوازنة",
+    "noData": "لا تتوفر بيانات للميزانية العمومية",
+    "accountTypes": {
+      "ASSET": "أصل",
+      "LIABILITY": "خصم",
+      "EQUITY": "حقوق ملكية",
+      "REVENUE": "إيراد",
+      "EXPENSE": "مصروف"
+    },
+    "accountCategories": {
+      "CURRENT_ASSETS": "أصول متداولة",
+      "FIXED_ASSETS": "أصول ثابتة",
+      "INTANGIBLE_ASSETS": "أصول غير ملموسة",
+      "OTHER_ASSETS": "أصول أخرى",
+      "CURRENT_LIABILITIES": "خصوم متداولة",
+      "LONG_TERM_LIABILITIES": "خصوم طويلة الأجل",
+      "OTHER_LIABILITIES": "خصوم أخرى",
+      "SHARE_CAPITAL": "رأس المال",
+      "RETAINED_EARNINGS": "أرباح محتجزة",
+      "RESERVES": "احتياطيات"
+    }
+  }
+} 

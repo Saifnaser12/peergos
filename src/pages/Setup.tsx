@@ -20,6 +20,10 @@ import ComplianceBadges from '../components/ComplianceBadges';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { validateTRN } from '../utils/validation';
+import { calculateTaxLiability } from '../utils/calculations';
+import { PageHeader } from '../components/Card';
 
 interface ValidationState {
   isValid: boolean;
@@ -46,6 +50,7 @@ interface FormData {
 const STORAGE_KEY = 'setup_form_data';
 
 const Setup: React.FC = () => {
+  const navigate = useNavigate();
   const { log } = useAudit();
   const { dispatch, state } = useTax();
   const { t } = useTranslation();
@@ -60,7 +65,7 @@ const Setup: React.FC = () => {
     businessActivity: state.profile?.businessActivity || '',
     vatRegistered: state.profile?.vatRegistered || false,
     citRegistered: state.profile?.citRegistered || false,
-    citSubmissionDate: state.profile?.citSubmissionDate || ''
+    citSubmissionDate: state.profile?.citSubmissionDate
   });
 
   const [errors, setErrors] = useState<FormErrors>({

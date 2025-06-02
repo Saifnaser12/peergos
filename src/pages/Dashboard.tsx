@@ -14,7 +14,10 @@ import {
   BarChart,
   Bar,
   RadialBarChart,
-  RadialBar
+  RadialBar,
+  PieChart,
+  Pie,
+  Cell
 } from 'recharts';
 import { generatePDFReport, generateExcelReport, calculateDetailedComplianceScore } from '../utils/reports';
 import SubmissionModal from '../components/SubmissionModal';
@@ -35,6 +38,8 @@ import { PageHeader } from '../components/Card';
 import RelatedPartySection from '../components/RelatedPartySection';
 import PermissionGate from '../components/PermissionGate';
 import AlertBanner from '../components/AlertBanner';
+import Button from '../components/Button';
+import { format } from 'date-fns';
 
 interface CompanySearchResult {
   name: string;
@@ -54,11 +59,17 @@ interface ComplianceBreakdown {
   issues: string[];
 }
 
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
+interface DateRange {
+  startDate: string;
+  endDate: string;
+}
+
 const Dashboard: React.FC = () => {
   const { state } = useTax();
   const { log } = useAudit();
   const navigate = useNavigate();
-  const [searchTRN, setSearchTRN] = useState('');
   const [searchResult, setSearchResult] = useState<CompanySearchResult | null>(null);
   const [selectedChartView, setSelectedChartView] = useState<'line' | 'bar'>('line');
   const [complianceBreakdown, setComplianceBreakdown] = useState<ComplianceBreakdown[]>([]);
@@ -72,6 +83,12 @@ const Dashboard: React.FC = () => {
   const [expenseChartType, setExpenseChartType] = useState<ChartType>('bar');
   const revenueChartRef = useRef<HTMLDivElement>(null!);
   const expenseChartRef = useRef<HTMLDivElement>(null!);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    startDate: '',
+    endDate: ''
+  });
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [exportStarted, setExportStarted] = useState(false);
 
   // Calculate VAT and CIT
   const vatDue = useMemo(() => {
@@ -151,7 +168,7 @@ const Dashboard: React.FC = () => {
     return alerts;
   }, [state.revenues, state.profile]);
 
-  // Enhanced TRN validation
+  // Validate TRN
   const validateTRN = (trn: string): { isValid: boolean; message: string } => {
     if (!trn) return { isValid: false, message: 'TRN is required' };
     if (!/^\d+$/.test(trn)) return { isValid: false, message: 'TRN must contain only digits' };
@@ -164,7 +181,7 @@ const Dashboard: React.FC = () => {
     return { isValid: true, message: '' };
   };
 
-  const handleSearch = () => {
+  const handleSearch = (searchTRN: string) => {
     const validation = validateTRN(searchTRN);
     if (!validation.isValid) {
       return;
@@ -217,33 +234,40 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleExport = async (type: 'pdf' | 'excel') => {
-    if (!searchResult) return;
+  const handleExport = async (type?: 'pdf' | 'excel') => {
+    setExportStarted(true);
     
-    try {
-      const reportData = {
-        profile: searchResult,
-        revenues: state.revenues,
-        expenses: state.expenses,
-        vatDue: vatDue,
-        citDue: citDue,
-        complianceScore: complianceScore
-      };
+    if (type && searchResult) {
+      try {
+        const reportData = {
+          profile: searchResult,
+          revenues: state.revenues,
+          expenses: state.expenses,
+          vatDue: vatDue,
+          citDue: citDue,
+          complianceScore: complianceScore
+        };
 
-      // Log export attempt
-      log('EXPORT_REPORT', { type, trn: searchResult.trn });
+        // Log export attempt
+        log('EXPORT_REPORT', { type, trn: searchResult.trn });
 
-      const blob = await (type === 'pdf' ? generatePDFReport(reportData) : generateExcelReport(reportData));
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `tax_report_${searchResult.trn}.${type}`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Export failed:', error);
+        const blob = await (type === 'pdf' ? generatePDFReport(reportData) : generateExcelReport(reportData));
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tax_report_${searchResult.trn}.${type}`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Export failed:', error);
+      }
+    } else {
+      // Simulating export delay for other cases
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
+    
+    setExportStarted(false);
   };
 
   const handleScheduleAudit = () => {
@@ -403,23 +427,6 @@ const Dashboard: React.FC = () => {
     );
   };
 
-  const handleChartDownload = async (chartRef: React.RefObject<HTMLDivElement>, chartName: string) => {
-    if (!chartRef.current) return;
-
-    try {
-      const canvas = await html2canvas(chartRef.current);
-      const dataUrl = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.download = `${chartName}-${new Date().toISOString()}.png`;
-      link.href = dataUrl;
-      link.click();
-
-      log('DOWNLOAD_CHART', { chartName });
-    } catch (error) {
-      console.error('Failed to download chart:', error);
-    }
-  };
-
   const renderChart = (
     type: ChartType,
     data: any[],
@@ -499,6 +506,69 @@ const Dashboard: React.FC = () => {
     
     return missing;
   }, [state.profile]);
+
+  const filteredData = useMemo(() => {
+    if (!dateRange.startDate || !dateRange.endDate) {
+      return state;
+    }
+
+    return {
+      revenues: state.revenues.filter(
+        r => r.date >= dateRange.startDate && r.date <= dateRange.endDate
+      ),
+      expenses: state.expenses.filter(
+        e => e.date >= dateRange.startDate && e.date <= dateRange.endDate
+      )
+    };
+  }, [state, dateRange]);
+
+  const metrics = useMemo(() => {
+    const totalRevenue = filteredData.revenues.reduce((sum, r) => sum + r.amount, 0);
+    const totalExpenses = filteredData.expenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalVAT = filteredData.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0);
+
+    return {
+      totalRevenue,
+      totalExpenses,
+      totalVAT,
+      netIncome: totalRevenue - totalExpenses
+    };
+  }, [filteredData]);
+
+  const revenueTrendData = useMemo(() => {
+    const monthlyData = new Map<string, number>();
+    
+    filteredData.revenues.forEach(revenue => {
+      const month = format(new Date(revenue.date), 'MMM yyyy');
+      monthlyData.set(month, (monthlyData.get(month) || 0) + revenue.amount);
+    });
+
+    return Array.from(monthlyData.entries()).map(([month, amount]) => ({
+      month,
+      amount
+    }));
+  }, [filteredData]);
+
+  const expenseBreakdownData = useMemo(() => {
+    const categoryData = new Map<string, number>();
+    
+    filteredData.expenses.forEach(expense => {
+      categoryData.set(expense.category, (categoryData.get(expense.category) || 0) + expense.amount);
+    });
+
+    return Array.from(categoryData.entries()).map(([category, amount]) => ({
+      category,
+      amount
+    }));
+  }, [filteredData]);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-AE', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
 
   return (
     <div className="space-y-6">
@@ -592,7 +662,7 @@ const Dashboard: React.FC = () => {
                       <dl>
                         <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
                         <dd className="text-lg font-semibold text-gray-900">
-                          AED {totalRevenue.toLocaleString()}
+                          AED {formatCurrency(metrics.totalRevenue)}
                         </dd>
                       </dl>
                     </div>
@@ -618,7 +688,7 @@ const Dashboard: React.FC = () => {
                       <dl>
                         <dt className="text-sm font-medium text-gray-500 truncate">Total Expenses</dt>
                         <dd className="text-lg font-semibold text-gray-900">
-                          AED {totalExpenses.toLocaleString()}
+                          AED {formatCurrency(metrics.totalExpenses)}
                         </dd>
                       </dl>
                     </div>
@@ -650,7 +720,7 @@ const Dashboard: React.FC = () => {
                       <dl>
                         <dt className="text-sm font-medium text-gray-500 truncate">Net Income</dt>
                         <dd className="text-lg font-semibold text-gray-900">
-                          AED {netIncome.toLocaleString()}
+                          AED {formatCurrency(metrics.netIncome)}
                         </dd>
                       </dl>
                     </div>
@@ -682,7 +752,7 @@ const Dashboard: React.FC = () => {
                       <dl>
                         <dt className="text-sm font-medium text-gray-500 truncate">Tax Due</dt>
                         <dd className="text-lg font-semibold text-gray-900">
-                          AED {(totalVAT + citAmount).toLocaleString()}
+                          AED {(metrics.totalVAT + citAmount).toLocaleString()}
                         </dd>
                       </dl>
                     </div>
@@ -699,126 +769,111 @@ const Dashboard: React.FC = () => {
             </PermissionGate>
           </div>
 
+          {/* Date Range Picker */}
+          {showDatePicker && (
+            <div className="mb-8 p-4 bg-white shadow rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    value={dateRange.startDate}
+                    onChange={e => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    value={dateRange.endDate}
+                    onChange={e => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+              <div className="mt-4 flex justify-end">
+                <Button
+                  onClick={() => {
+                    setDateRange({ startDate: '', endDate: '' });
+                    setShowDatePicker(false);
+                  }}
+                  variant="secondary"
+                  className="mr-3"
+                >
+                  Reset
+                </Button>
+                <Button onClick={() => setShowDatePicker(false)}>Apply</Button>
+              </div>
+            </div>
+          )}
+
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Revenue Chart - Tax Agent and Admin */}
+            {/* Revenue Trend Chart */}
             <PermissionGate
               resource="dashboard"
               requiredPermission="view"
               restrictedTo="Tax Agent or Admin"
             >
-              <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-                <div ref={revenueChartRef}>
-                  <ChartControls
-                    chartType={revenueChartType}
-                    onChartTypeChange={setRevenueChartType}
-                    onDownload={() => handleChartDownload(revenueChartRef, 'revenue')}
-                    chartTitle="Monthly Revenue"
-                  />
-                  <div className="h-80 mt-4">
-                    <ResponsiveContainer width="100%" height="100%">
-                      {revenueChartType === 'line' ? (
-                        <LineChart data={monthlyData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                          <XAxis dataKey="month" stroke="#6B7280" />
-                          <YAxis stroke="#6B7280" />
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: '#FFFFFF',
-                              border: '1px solid #E5E7EB',
-                              borderRadius: '0.5rem'
-                            }}
-                          />
-                          <Legend />
-                          <Line
-                            type="monotone"
-                            dataKey="amount"
-                            name="Revenue"
-                            stroke="#8B5CF6"
-                            strokeWidth={2}
-                            dot={{ r: 4, strokeWidth: 2 }}
-                            activeDot={{ r: 6 }}
-                          />
-                        </LineChart>
-                      ) : (
-                        <BarChart data={monthlyData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                          <XAxis dataKey="month" stroke="#6B7280" />
-                          <YAxis stroke="#6B7280" />
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: '#FFFFFF',
-                              border: '1px solid #E5E7EB',
-                              borderRadius: '0.5rem'
-                            }}
-                          />
-                          <Legend />
-                          <Bar dataKey="amount" name="Revenue" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
-                        </BarChart>
-                      )}
-                    </ResponsiveContainer>
-                  </div>
+              <div className="bg-white shadow rounded-lg p-6" data-testid="revenue-trend-chart">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Revenue Trend</h3>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={revenueTrendData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => `${formatCurrency(value as number)} AED`} />
+                      <Legend />
+                      <Line
+                        type="monotone"
+                        dataKey="amount"
+                        stroke="#0088FE"
+                        name="Revenue"
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             </PermissionGate>
 
-            {/* Expense Chart - Admin Only */}
+            {/* Expense Breakdown Chart */}
             <PermissionGate
               resource="dashboard"
               requiredPermission="edit"
               restrictedTo="Admins"
             >
-              <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-                <div ref={expenseChartRef}>
-                  <ChartControls
-                    chartType={expenseChartType}
-                    onChartTypeChange={setExpenseChartType}
-                    onDownload={() => handleChartDownload(expenseChartRef, 'expenses')}
-                    chartTitle="Expense Categories"
-                  />
-                  <div className="h-80 mt-4">
-                    <ResponsiveContainer width="100%" height="100%">
-                      {expenseChartType === 'line' ? (
-                        <LineChart data={expenseData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                          <XAxis dataKey="name" stroke="#6B7280" />
-                          <YAxis stroke="#6B7280" />
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: '#FFFFFF',
-                              border: '1px solid #E5E7EB',
-                              borderRadius: '0.5rem'
-                            }}
-                          />
-                          <Legend />
-                          <Line
-                            type="monotone"
-                            dataKey="value"
-                            name="Amount"
-                            stroke="#EF4444"
-                            strokeWidth={2}
-                            dot={{ r: 4, strokeWidth: 2 }}
-                            activeDot={{ r: 6 }}
-                          />
-                        </LineChart>
-                      ) : (
-                        <BarChart data={expenseData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                          <XAxis dataKey="name" stroke="#6B7280" />
-                          <YAxis stroke="#6B7280" />
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: '#FFFFFF',
-                              border: '1px solid #E5E7EB',
-                              borderRadius: '0.5rem'
-                            }}
-                          />
-                          <Legend />
-                          <Bar dataKey="value" name="Amount" fill="#EF4444" radius={[4, 4, 0, 0]} />
-                        </BarChart>
-                      )}
-                    </ResponsiveContainer>
-                  </div>
+              <div className="bg-white shadow rounded-lg p-6" data-testid="expense-breakdown-chart">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Expense Breakdown</h3>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={expenseBreakdownData}
+                        dataKey="amount"
+                        nameKey="category"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        label={({ category, percent }) =>
+                          `${category} (${(percent * 100).toFixed(0)}%)`
+                        }
+                      >
+                        {expenseBreakdownData.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => `${formatCurrency(value as number)} AED`} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             </PermissionGate>
@@ -872,6 +927,32 @@ const Dashboard: React.FC = () => {
           onClose={() => setIsSubmitModalOpen(false)}
           onConfirm={handleSubmitToFTA}
         />
+
+        {/* Export Started Toast */}
+        {exportStarted && (
+          <div className="fixed bottom-4 right-4">
+            <div className="rounded-lg bg-green-50 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-green-400"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-green-800">Export Started</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
