@@ -215,9 +215,13 @@ const Filing: React.FC = () => {
 
   const handleBulkUpload = (entries: (RevenueEntry | ExpenseEntry)[]) => {
     if (showBulkUpload === 'revenue') {
-      dispatch({ type: 'ADD_REVENUES', payload: entries as RevenueEntry[] });
+      entries.forEach(entry => {
+        dispatch({ type: 'ADD_REVENUE', payload: entry as RevenueEntry });
+      });
     } else {
-      dispatch({ type: 'ADD_EXPENSES', payload: entries as ExpenseEntry[] });
+      entries.forEach(entry => {
+        dispatch({ type: 'ADD_EXPENSE', payload: entry as ExpenseEntry });
+      });
     }
     setShowBulkUpload(null);
   };
@@ -358,7 +362,7 @@ const Filing: React.FC = () => {
     }
     const trnValidation = Validator.validateTRN(formState.trn);
     if (!trnValidation.isValid) {
-      setErrors({ trn: trnValidation.message });
+      setErrors({ trn: trnValidation.errors[0] });
       return false;
     }
     return true;
@@ -413,7 +417,7 @@ const Filing: React.FC = () => {
         </label>
         <select
           id="period"
-          value={state.period}
+          value={formState.period}
           onChange={e => setFormState(prev => ({ ...prev, period: e.target.value }))}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
@@ -430,7 +434,7 @@ const Filing: React.FC = () => {
         <input
           type="text"
           id="trn"
-          value={state.trn}
+          value={formState.trn}
           onChange={e => setFormState(prev => ({ ...prev, trn: e.target.value }))}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         />
@@ -512,7 +516,7 @@ const Filing: React.FC = () => {
             <label className="inline-flex items-center">
               <input
                 type="checkbox"
-                checked={state.isDeclarationAccepted}
+                checked={formState.isDeclarationAccepted}
                 onChange={e => setFormState(prev => ({ ...prev, isDeclarationAccepted: e.target.checked }))}
                 className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />

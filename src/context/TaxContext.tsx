@@ -16,9 +16,23 @@ export interface ExpenseEntry {
   category: string;
 }
 
+export interface CompanyProfile {
+  trnNumber: string;
+  companyName: string;
+  licenseType: string;
+  vatRegistered: boolean;
+  citRegistered: boolean;
+  email?: string;
+  phone?: string;
+  address?: string;
+  businessActivity?: string;
+}
+
 interface TaxState {
   revenues: RevenueEntry[];
   expenses: ExpenseEntry[];
+  profile?: CompanyProfile;
+  isDraftMode: boolean;
 }
 
 type TaxAction =
@@ -28,7 +42,9 @@ type TaxAction =
   | { type: 'UPDATE_REVENUE'; payload: { id: string; data: Partial<RevenueEntry> } }
   | { type: 'UPDATE_EXPENSE'; payload: { id: string; data: Partial<ExpenseEntry> } }
   | { type: 'DELETE_REVENUE'; payload: string }
-  | { type: 'DELETE_EXPENSE'; payload: string };
+  | { type: 'DELETE_EXPENSE'; payload: string }
+  | { type: 'TOGGLE_DRAFT_MODE'; payload: boolean }
+  | { type: 'CLEAR_DRAFT' };
 
 interface TaxContextType {
   state: TaxState;
@@ -39,7 +55,8 @@ const TaxContext = createContext<TaxContextType | undefined>(undefined);
 
 const initialState: TaxState = {
   revenues: [],
-  expenses: []
+  expenses: [],
+  isDraftMode: false
 };
 
 function taxReducer(state: TaxState, action: TaxAction): TaxState {
@@ -83,6 +100,18 @@ function taxReducer(state: TaxState, action: TaxAction): TaxState {
       return {
         ...state,
         expenses: state.expenses.filter(expense => expense.id !== action.payload)
+      };
+    case 'TOGGLE_DRAFT_MODE':
+      return {
+        ...state,
+        isDraftMode: action.payload
+      };
+    case 'CLEAR_DRAFT':
+      return {
+        ...state,
+        revenues: [],
+        expenses: [],
+        isDraftMode: false
       };
     default:
       return state;

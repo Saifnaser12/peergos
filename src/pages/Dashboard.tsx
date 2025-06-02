@@ -40,6 +40,8 @@ import PermissionGate from '../components/PermissionGate';
 import AlertBanner from '../components/AlertBanner';
 import Button from '../components/Button';
 import { format } from 'date-fns';
+import jsPDF from 'jspdf';
+import ExcelJS from 'exceljs';
 
 interface CompanySearchResult {
   name: string;
@@ -235,39 +237,52 @@ const Dashboard: React.FC = () => {
   };
 
   const handleExport = async (type?: 'pdf' | 'excel') => {
-    setExportStarted(true);
-    
-    if (type && searchResult) {
-      try {
-        const reportData = {
-          profile: searchResult,
-          revenues: state.revenues,
-          expenses: state.expenses,
-          vatDue: vatDue,
-          citDue: citDue,
-          complianceScore: complianceScore
-        };
+    if (!type) {
+      // Simulate export functionality
+      console.log('Exporting...');
+      setTimeout(() => {
+        console.log('Export complete');
+      }, 1000);
+      return;
+    }
 
-        // Log export attempt
-        log('EXPORT_REPORT', { type, trn: searchResult.trn });
+    try {
+      if (type === 'pdf') {
+        // PDF export logic
+        const doc = new jsPDF();
+        // Add content to PDF
+        doc.save('tax-report.pdf');
+      } else {
+        // Excel export logic using exceljs
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Tax Report');
+        
+        // Add headers
+        worksheet.addRow(['TRN', 'Company Name', 'Tax Period', 'VAT Due', 'CIT Due']);
+        
+        // Add data
+        worksheet.addRow([
+          searchResult?.trn || '',
+          searchResult?.name || '',
+          format(new Date(), 'MM/yyyy'),
+          vatDue.toFixed(2),
+          citDue.toFixed(2)
+        ]);
 
-        const blob = await (type === 'pdf' ? generatePDFReport(reportData) : generateExcelReport(reportData));
+        // Generate and save file
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `tax_report_${searchResult.trn}.${type}`;
+        a.download = 'tax-report.xlsx';
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error('Export failed:', error);
       }
-    } else {
-      // Simulating export delay for other cases
-      await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (error) {
+      console.error('Export failed:', error);
     }
-    
-    setExportStarted(false);
   };
 
   const handleScheduleAudit = () => {
