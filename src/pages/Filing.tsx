@@ -55,7 +55,11 @@ interface FilingState extends FilingFormData {
   expenseEntries: ExpenseEntry[];
 }
 
-const Filing: React.FC = () => {
+interface FilingProps {
+  // Add any props if needed
+}
+
+const Filing: React.FC<FilingProps> = () => {
   const { state: taxState, dispatch } = useTax();
   const { log } = useAudit();
   const { t } = useTranslation();

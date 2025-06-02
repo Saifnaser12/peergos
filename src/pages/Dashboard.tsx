@@ -68,7 +68,11 @@ interface DateRange {
   endDate: string;
 }
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  // Add any props if needed
+}
+
+const Dashboard: React.FC<DashboardProps> = () => {
   const { state } = useTax();
   const { log } = useAudit();
   const navigate = useNavigate();
