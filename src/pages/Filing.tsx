@@ -58,6 +58,8 @@ interface FilingState extends FilingFormData {
 const Filing: React.FC = () => {
   const { state: taxState, dispatch } = useTax();
   const { log } = useAudit();
+  const { t } = useTranslation();
+  
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState<{
@@ -92,8 +94,6 @@ const Filing: React.FC = () => {
     field: 'date',
     direction: 'desc'
   });
-
-  const { t } = useTranslation();
 
   const [filingFormState, setFilingFormState] = useState<FilingState>({
     step: 1,

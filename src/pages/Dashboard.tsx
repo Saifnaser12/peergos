@@ -255,7 +255,6 @@ const Dashboard: React.FC = () => {
       }
     } catch (error) {
       console.error('Export failed:', error);
-      // Show error notification
     } finally {
       setExportStarted(false);
     }
