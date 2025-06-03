@@ -137,7 +137,7 @@ export const InvoiceDashboard: React.FC = () => {
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box>
                 <TextField
                   select
                   fullWidth
@@ -155,24 +155,28 @@ export const InvoiceDashboard: React.FC = () => {
               </Box>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label="Start Date"
-                  value={filters.startDate}
-                  onChange={handleStartDateChange}
-                  slotProps={{ textField: { fullWidth: true } }}
-                />
-              </LocalizationProvider>
+              <Box>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="Start Date"
+                    value={filters.startDate}
+                    onChange={handleStartDateChange}
+                    slotProps={{ textField: { fullWidth: true } }}
+                  />
+                </LocalizationProvider>
+              </Box>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label="End Date"
-                  value={filters.endDate}
-                  onChange={handleEndDateChange}
-                  slotProps={{ textField: { fullWidth: true } }}
-                />
-              </LocalizationProvider>
+              <Box>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="End Date"
+                    value={filters.endDate}
+                    onChange={handleEndDateChange}
+                    slotProps={{ textField: { fullWidth: true } }}
+                  />
+                </LocalizationProvider>
+              </Box>
             </Grid>
           </Grid>
         </CardContent>

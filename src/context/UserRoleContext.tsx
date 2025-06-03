@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
-import { permissions } from '../config/permissions';
+import { adminPermissions, userPermissions, superAdminPermissions, auditorPermissions } from '../config/permissions';
 import type { Permission, Resource } from '../config/permissions';
 import { useAudit } from './AuditContext';
 
@@ -15,6 +15,13 @@ interface UserRoleContextType {
 
 const UserRoleContext = createContext<UserRoleContextType | undefined>(undefined);
 
+const permissionsByRole = {
+  Admin: adminPermissions,
+  SME: userPermissions,
+  'Tax Agent': auditorPermissions,
+  FTA: superAdminPermissions
+};
+
 export const UserRoleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [role, setRoleState] = useState<Role>('SME');
   const { log } = useAudit();
@@ -25,7 +32,7 @@ export const UserRoleProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   const hasPermission = (resource: Resource, permission: Permission): boolean => {
-    return permissions[role]?.[resource]?.[permission] ?? false;
+    return permissionsByRole[role]?.[resource]?.[permission] ?? false;
   };
 
   const canAccess = (path: string): boolean => {
@@ -36,6 +43,7 @@ export const UserRoleProvider: React.FC<{ children: ReactNode }> = ({ children }
       '/dashboard': 'dashboard',
       '/assistant': 'assistant',
       '/admin': 'dashboard',
+      '/transfer-pricing': 'transfer-pricing',
       '/': 'dashboard' // Default route
     };
 
