@@ -42,8 +42,11 @@ export const UserRoleProvider: React.FC<{ children: ReactNode }> = ({ children }
       '/filing': 'filing',
       '/dashboard': 'dashboard',
       '/assistant': 'assistant',
-      '/admin': 'dashboard',
+      '/admin': 'admin',
       '/transfer-pricing': 'transfer-pricing',
+      '/vat': 'vat',
+      '/cit': 'cit',
+      '/financials': 'financials',
       '/': 'dashboard' // Default route
     };
 

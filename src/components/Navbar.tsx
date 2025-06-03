@@ -34,13 +34,28 @@ const Navbar: React.FC = () => {
   const navItems = [
     {
       name: t('nav.dashboard'),
-      path: '/',
+      path: '/dashboard',
       icon: <HomeIcon className="h-5 w-5" />
     },
     {
-      name: t('nav.filing'),
-      path: '/filing',
+      name: t('nav.vat'),
+      path: '/vat',
       icon: <DocumentTextIcon className="h-5 w-5" />
+    },
+    {
+      name: t('nav.cit'),
+      path: '/cit',
+      icon: <DocumentTextIcon className="h-5 w-5" />
+    },
+    {
+      name: t('nav.financials'),
+      path: '/financials',
+      icon: <ChartBarIcon className="h-5 w-5" />
+    },
+    {
+      name: t('nav.transferPricing'),
+      path: '/transfer-pricing',
+      icon: <CurrencyDollarIcon className="h-5 w-5" />
     },
     {
       name: t('nav.setup'),
@@ -51,16 +66,6 @@ const Navbar: React.FC = () => {
       name: t('nav.assistant'),
       path: '/assistant',
       icon: <ChatBubbleLeftRightIcon className="h-5 w-5" />
-    },
-    {
-      name: t('nav.financials'),
-      path: '/financials',
-      icon: <ChartBarIcon className="h-5 w-5" />
-    },
-    {
-      name: t('nav.trnSearch'),
-      path: '/trn-search',
-      icon: <MagnifyingGlassIcon className="h-5 w-5" />
     }
   ];
 

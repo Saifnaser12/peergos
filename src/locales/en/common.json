@@ -4,5 +4,251 @@
     "navigation": {
       "transferPricing": "Transfer Pricing"
     }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "vat": "VAT",
+    "cit": "CIT",
+    "financials": "Financials",
+    "transferPricing": "Transfer Pricing",
+    "setup": "Setup",
+    "assistant": "Assistant"
+  },
+  "language": {
+    "select": "Select Language",
+    "en": "English",
+    "ar": "Arabic"
+  },
+  "currency": {
+    "select": "Select Currency",
+    "aed": "UAE Dirham",
+    "usd": "US Dollar"
+  },
+  "vat": {
+    "title": "VAT Management",
+    "subtitle": "Manage your VAT returns and compliance",
+    "upload": {
+      "title": "Upload VAT Return",
+      "subtitle": "Upload your VAT return in Excel or PDF format",
+      "button": "Choose File"
+    },
+    "export": {
+      "button": "Export Returns"
+    },
+    "returns": {
+      "title": "VAT Returns",
+      "period": "Period",
+      "status": "Status",
+      "sales": "Taxable Sales",
+      "purchases": "Taxable Purchases",
+      "payable": "VAT Payable",
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      }
+    }
+  },
+  "cit": {
+    "title": "Corporate Income Tax",
+    "subtitle": "Manage your CIT returns and compliance",
+    "upload": {
+      "title": "Upload CIT Return",
+      "subtitle": "Upload your CIT return in Excel or PDF format",
+      "button": "Choose File"
+    },
+    "export": {
+      "button": "Export Returns"
+    },
+    "returns": {
+      "title": "CIT Returns",
+      "period": "Period",
+      "status": "Status",
+      "income": "Taxable Income",
+      "payable": "Tax Payable",
+      "paid": "Tax Paid",
+      "balance": "Balance Due",
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      }
+    }
+  },
+  "financials": {
+    "title": "Financial Statements",
+    "subtitle": "View and manage your financial data",
+    "period": "Period",
+    "compare": "Compare with",
+    "export": {
+      "button": "Export Statements",
+      "success": "Financial statements exported successfully",
+      "error": "Error exporting financial statements"
+    },
+    "metrics": {
+      "revenue": "Revenue",
+      "revenueTooltip": "Total revenue for the selected period",
+      "expenses": "Expenses",
+      "expensesTooltip": "Total expenses for the selected period",
+      "profit": "Profit",
+      "profitTooltip": "Net profit for the selected period",
+      "assets": "Total Assets",
+      "assetsTooltip": "Total assets at the end of the period",
+      "liabilities": "Total Liabilities",
+      "liabilitiesTooltip": "Total liabilities at the end of the period",
+      "equity": "Total Equity",
+      "equityTooltip": "Total shareholders' equity at the end of the period",
+      "operatingMargin": "Operating Margin",
+      "operatingMarginTooltip": "Operating profit as a percentage of revenue",
+      "returnOnEquity": "ROE",
+      "returnOnEquityTooltip": "Return on Equity - Net income as a percentage of shareholders' equity"
+    },
+    "ratios": {
+      "currentRatio": "Current Ratio",
+      "currentRatioDesc": "Measures ability to pay short-term obligations",
+      "debtToEquity": "Debt to Equity",
+      "debtToEquityDesc": "Measures financial leverage",
+      "operatingMargin": "Operating Margin",
+      "operatingMarginDesc": "Measures operational efficiency"
+    },
+    "charts": {
+      "revenue": "Revenue",
+      "profit": "Profit",
+      "assets": "Assets",
+      "liabilities": "Liabilities",
+      "equity": "Equity",
+      "revenueTrend": "Revenue Trend",
+      "profitTrend": "Profit Trend",
+      "balanceSheet": "Balance Sheet"
+    }
+  },
+  "transferPricing": {
+    "title": "Transfer Pricing",
+    "subtitle": "Manage transfer pricing documentation and compliance",
+    "year": "Year",
+    "export": {
+      "button": "Export Documentation",
+      "success": "Transfer pricing documentation exported successfully",
+      "error": "Error exporting transfer pricing documentation"
+    },
+    "documentation": {
+      "masterFile": "Master File",
+      "masterFileTooltip": "Global documentation of transfer pricing policies",
+      "localFile": "Local File",
+      "localFileTooltip": "Country-specific transfer pricing documentation",
+      "cbcr": "CbCR",
+      "cbcrTooltip": "Country-by-Country Reporting",
+      "dueDate": "Due Date"
+    },
+    "status": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "transactions": {
+      "title": "Related Party Transactions",
+      "relatedParty": "Related Party",
+      "type": "Transaction Type",
+      "amount": "Amount",
+      "method": "Transfer Pricing Method",
+      "status": "Status",
+      "status": {
+        "compliant": "Compliant",
+        "non-compliant": "Non-compliant",
+        "pending": "Pending Review"
+      }
+    },
+    "actions": {
+      "upload": "Upload Documentation",
+      "uploadDesc": "Upload transfer pricing documentation",
+      "analyze": "Analyze Transactions",
+      "analyzeDesc": "Analyze related party transactions",
+      "report": "Generate Reports",
+      "reportDesc": "Generate transfer pricing reports"
+    }
+  },
+  "assistant": {
+    "title": "AI Assistant",
+    "subtitle": "Get instant guidance on tax compliance matters",
+    "input": {
+      "placeholder": "Ask a question about tax compliance...",
+      "send": "Send"
+    },
+    "response": "I am an AI assistant specialized in UAE tax compliance. I can help you with VAT, CIT, and transfer pricing matters. Please note that my responses are for guidance only and should not be considered as professional tax advice.",
+    "error": "Error getting response from assistant",
+    "suggestions": {
+      "title": "Common Questions",
+      "vat": {
+        "title": "VAT Registration Requirements",
+        "description": "Learn about VAT registration requirements in the UAE"
+      },
+      "cit": {
+        "title": "CIT Compliance Guide",
+        "description": "Understand Corporate Income Tax compliance requirements"
+      },
+      "transferPricing": {
+        "title": "Transfer Pricing Documentation",
+        "description": "Get guidance on transfer pricing documentation requirements"
+      }
+    }
+  },
+  "login": {
+    "title": "Sign in to your account",
+    "welcome": "Welcome to the Future of Tax Management",
+    "subtitle": "Streamline your tax compliance with our intelligent platform",
+    "companyName": "Company Name",
+    "email": "Email Address",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot your password?",
+    "signIn": "Sign in",
+    "or": "Or",
+    "createAccount": "Create a new account",
+    "error": "Invalid credentials. Please try again.",
+    "noAccount": "Don't have an account?"
+  },
+  "register": {
+    "title": "Create your account",
+    "welcome": "Join the Future of Tax Management",
+    "subtitle": "Create your account and start managing your tax compliance efficiently",
+    "companyName": "Company Name",
+    "email": "Email Address",
+    "taxNumber": "Tax Registration Number",
+    "address": "Company Address",
+    "phone": "Phone Number",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "createAccount": "Create Account",
+    "or": "Or",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "passwordMismatch": "Passwords do not match",
+    "error": "Registration failed. Please try again.",
+    "back": "Back",
+    "next": "Next",
+    "steps": {
+      "company": "Company Information",
+      "contact": "Contact Details",
+      "security": "Security"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "vatDue": "VAT Return Due",
+    "vatDueDesc": "Your VAT return for Q1 2024 is due in 5 days",
+    "citUpdate": "CIT Update",
+    "citUpdateDesc": "New CIT regulations have been published",
+    "transferPricing": "Transfer Pricing",
+    "transferPricingDesc": "Your transfer pricing documentation needs review"
+  },
+  "profile": {
+    "title": "Profile",
+    "settings": "Profile Settings"
+  },
+  "auth": {
+    "logout": "Logout"
   }
 } 

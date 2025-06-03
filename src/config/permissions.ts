@@ -1,5 +1,5 @@
 export type Permission = 'view' | 'edit';
-export type Resource = 'setup' | 'filing' | 'dashboard' | 'trnSearch' | 'assistant' | 'transfer-pricing';
+export type Resource = 'setup' | 'filing' | 'dashboard' | 'trnSearch' | 'assistant' | 'transfer-pricing' | 'vat' | 'cit' | 'financials' | 'admin';
 
 export interface ResourcePermissions {
   view: boolean;
@@ -16,7 +16,11 @@ export const adminPermissions: UserPermissions = {
   dashboard: { view: true, edit: false },
   trnSearch: { view: false, edit: false },
   assistant: { view: true, edit: false },
-  'transfer-pricing': { view: true, edit: true }
+  'transfer-pricing': { view: true, edit: true },
+  vat: { view: true, edit: true },
+  cit: { view: true, edit: true },
+  financials: { view: true, edit: true },
+  admin: { view: true, edit: true }
 };
 
 export const userPermissions: UserPermissions = {
@@ -25,7 +29,11 @@ export const userPermissions: UserPermissions = {
   dashboard: { view: true, edit: false },
   trnSearch: { view: false, edit: false },
   assistant: { view: true, edit: false },
-  'transfer-pricing': { view: true, edit: false }
+  'transfer-pricing': { view: true, edit: false },
+  vat: { view: true, edit: false },
+  cit: { view: true, edit: false },
+  financials: { view: true, edit: false },
+  admin: { view: false, edit: false }
 };
 
 export const superAdminPermissions: UserPermissions = {
@@ -34,7 +42,11 @@ export const superAdminPermissions: UserPermissions = {
   dashboard: { view: true, edit: true },
   trnSearch: { view: true, edit: true },
   assistant: { view: true, edit: true },
-  'transfer-pricing': { view: true, edit: true }
+  'transfer-pricing': { view: true, edit: true },
+  vat: { view: true, edit: true },
+  cit: { view: true, edit: true },
+  financials: { view: true, edit: true },
+  admin: { view: true, edit: true }
 };
 
 export const auditorPermissions: UserPermissions = {
@@ -43,5 +55,9 @@ export const auditorPermissions: UserPermissions = {
   dashboard: { view: true, edit: false },
   trnSearch: { view: true, edit: true },
   assistant: { view: false, edit: false },
-  'transfer-pricing': { view: true, edit: false }
+  'transfer-pricing': { view: true, edit: false },
+  vat: { view: true, edit: false },
+  cit: { view: true, edit: false },
+  financials: { view: true, edit: false },
+  admin: { view: false, edit: false }
 }; 
