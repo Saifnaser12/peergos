@@ -1,8 +1,7 @@
 /// <reference types="jest" />
 import '@testing-library/jest-dom';
 import React from 'react';
-import { render, screen, fireEvent } from '../../utils/test-utils';
-import type { ButtonProps } from '../Button';
+import { render, screen, fireEvent } from '@testing-library/react';
 import Button from '../Button';
 
 describe('Button', () => {

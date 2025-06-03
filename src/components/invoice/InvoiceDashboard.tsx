@@ -6,9 +6,6 @@ import {
   Button,
   TextField,
   IconButton,
-  Tooltip,
-  CircularProgress,
-  Alert,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -23,9 +20,9 @@ import {
   TableHead,
   TableRow,
   Chip,
-  Pagination
+  Pagination,
+  Grid
 } from '@mui/material';
-import { Grid } from '../common/Grid';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -138,24 +135,26 @@ export const InvoiceDashboard: React.FC = () => {
       {/* Filters */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField
-                select
-                fullWidth
-                label="Status"
-                value={filters.status}
-                onChange={handleStatusChange}
-              >
-                <MenuItem value="">All</MenuItem>
-                {Object.values(InvoiceStatus).map(status => (
-                  <MenuItem key={status} value={status}>
-                    {status}
-                  </MenuItem>
-                ))}
-              </TextField>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Status"
+                  value={filters.status}
+                  onChange={handleStatusChange}
+                >
+                  <MenuItem value="">All</MenuItem>
+                  {Object.values(InvoiceStatus).map(status => (
+                    <MenuItem key={status} value={status}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Box>
             </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
+            <Grid item xs={12} sm={4}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   label="Start Date"
@@ -165,7 +164,7 @@ export const InvoiceDashboard: React.FC = () => {
                 />
               </LocalizationProvider>
             </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
+            <Grid item xs={12} sm={4}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   label="End Date"
@@ -205,14 +204,17 @@ export const InvoiceDashboard: React.FC = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              invoices.map(invoice => (
+              invoices.map((invoice) => (
                 <TableRow key={invoice.id}>
                   <TableCell>{invoice.invoiceNumber}</TableCell>
                   <TableCell>
                     {format(new Date(invoice.issueDate), 'dd/MM/yyyy')}
                   </TableCell>
                   <TableCell>
-                    AED {invoice.totalAmount.toFixed(2)}
+                    {invoice.total.toLocaleString('en-AE', {
+                      style: 'currency',
+                      currency: 'AED'
+                    })}
                   </TableCell>
                   <TableCell>
                     <Chip
@@ -223,22 +225,22 @@ export const InvoiceDashboard: React.FC = () => {
                   </TableCell>
                   <TableCell align="right">
                     <IconButton
-                      color="primary"
-                      onClick={() => {/* Navigate to detail view */}}
+                      onClick={() => handleSubmitInvoice(invoice)}
+                      disabled={invoice.status !== InvoiceStatus.DRAFT}
+                      size="small"
+                    >
+                      <CloudUploadIcon />
+                    </IconButton>
+                    <IconButton
+                      component="a"
+                      href={`/invoices/${invoice.id}`}
+                      size="small"
                     >
                       <VisibilityIcon />
                     </IconButton>
-                    {invoice.status === InvoiceStatus.DRAFT && (
-                      <IconButton
-                        color="primary"
-                        onClick={() => handleSubmitInvoice(invoice)}
-                      >
-                        <CloudUploadIcon />
-                      </IconButton>
-                    )}
                     <IconButton
-                      color="error"
                       onClick={() => handleDeleteClick(invoice.id)}
+                      size="small"
                     >
                       <DeleteIcon />
                     </IconButton>

@@ -1,90 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Paper,
   Typography,
-  Grid as MuiGrid,
   Button,
   TextField,
   IconButton,
-  Tooltip,
-  CircularProgress,
-  Alert,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  MenuItem,
-  Divider
+  MenuItem
 } from '@mui/material';
 import {
   Edit as EditIcon,
   Save as SaveIcon,
-  Cancel as CancelIcon,
-  PictureAsPdf as PdfIcon,
-  BarChart as ChartIcon,
-  Add as AddIcon
+  Cancel as CancelIcon
 } from '@mui/icons-material';
 import { useBalanceSheet } from '../context/BalanceSheetContext';
 import { Account, AccountType, AccountCategory } from '../types/financials';
-import { Bar } from 'react-chartjs-2';
 import { useTranslation } from 'react-i18next';
 import { downloadBalanceSheetPDF } from '../utils/pdfExport';
-
-interface AccountRowProps {
-  account: Account;
-  onEdit: (account: Account) => void;
-}
-
-const AccountRow: React.FC<AccountRowProps> = ({ account, onEdit }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedBalance, setEditedBalance] = useState(account.balance.toString());
-
-  const handleSave = () => {
-    onEdit({
-      ...account,
-      balance: parseFloat(editedBalance)
-    });
-    setIsEditing(false);
-  };
-
-  return (
-    <Box display="flex" alignItems="center" my={1}>
-      <Typography flex={1}>{account.name}</Typography>
-      {isEditing ? (
-        <>
-          <TextField
-            size="small"
-            value={editedBalance}
-            onChange={(e) => setEditedBalance(e.target.value)}
-            type="number"
-            sx={{ width: 150, mx: 2 }}
-          />
-          <IconButton onClick={handleSave} color="primary">
-            <SaveIcon />
-          </IconButton>
-          <IconButton onClick={() => setIsEditing(false)} color="error">
-            <CancelIcon />
-          </IconButton>
-        </>
-      ) : (
-        <>
-          <Typography sx={{ width: 150, textAlign: 'right', mx: 2 }}>
-            {account.balance.toLocaleString('en-AE', {
-              style: 'currency',
-              currency: 'AED'
-            })}
-          </Typography>
-          {!account.isLocked && (
-            <IconButton onClick={() => setIsEditing(true)}>
-              <EditIcon />
-            </IconButton>
-          )}
-        </>
-      )}
-    </Box>
-  );
-};
 
 interface AddAccountDialogProps {
   open: boolean;
@@ -171,18 +106,14 @@ const AddAccountDialog: React.FC<AddAccountDialogProps> = ({ open, onClose, onAd
 };
 
 export const BalanceSheetGenerator: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const {
     accounts,
     currentBalanceSheet,
-    loading,
-    error,
     addAccount,
-    updateAccount,
     generateBalanceSheet
   } = useBalanceSheet();
 
-  const [showChart, setShowChart] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
 
   useEffect(() => {
@@ -191,220 +122,27 @@ export const BalanceSheetGenerator: React.FC = () => {
 
   const handleExportPDF = () => {
     if (currentBalanceSheet) {
-      downloadBalanceSheetPDF(currentBalanceSheet, t, i18n.language === 'ar');
+      downloadBalanceSheetPDF(currentBalanceSheet, t, false);
     }
   };
 
-  const chartData = {
-    labels: ['Assets', 'Liabilities', 'Equity'],
-    datasets: [
-      {
-        label: t('balanceSheet.breakdown'),
-        data: [
-          currentBalanceSheet?.assets.totalAssets || 0,
-          currentBalanceSheet?.liabilities.totalLiabilities || 0,
-          currentBalanceSheet?.equity.totalEquity || 0
-        ],
-        backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
-        borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
-        borderWidth: 1
-      }
-    ]
-  };
-
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight={400}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
-  }
-
-  if (!currentBalanceSheet) {
-    return <Alert severity="info">{t('balanceSheet.noData')}</Alert>;
-  }
-
   return (
-    <Paper sx={{ p: 3 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5">{t('balanceSheet.title')}</Typography>
-        <Box>
-          <Button
-            startIcon={<AddIcon />}
-            onClick={() => setShowAddDialog(true)}
-            sx={{ mr: 1 }}
-          >
-            {t('balanceSheet.addAccount')}
-          </Button>
-          <Button
-            startIcon={<ChartIcon />}
-            onClick={() => setShowChart(!showChart)}
-            sx={{ mr: 1 }}
-          >
-            {showChart ? t('balanceSheet.hideChart') : t('balanceSheet.showChart')}
-          </Button>
-          <Button
-            startIcon={<PdfIcon />}
-            onClick={handleExportPDF}
-          >
-            {t('common.export')}
-          </Button>
-        </Box>
-      </Box>
-
-      {showChart && (
-        <Box mb={4} height={300}>
-          <Bar
-            data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  beginAtZero: true
-                }
-              }
-            }}
-          />
-        </Box>
-      )}
-
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {/* Assets */}
-        <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
-          <Typography variant="h6" gutterBottom>
-            {t('balanceSheet.assets')}
-          </Typography>
-          <Box>
-            <Typography variant="subtitle1" color="primary" gutterBottom>
-              {t('balanceSheet.currentAssets')}
-            </Typography>
-            {currentBalanceSheet.assets.currentAssets.map((account) => (
-              <AccountRow key={account.id} account={account} onEdit={updateAccount} />
-            ))}
-          </Box>
-          <Box mt={2}>
-            <Typography variant="subtitle1" color="primary" gutterBottom>
-              {t('balanceSheet.fixedAssets')}
-            </Typography>
-            {currentBalanceSheet.assets.fixedAssets.map((account) => (
-              <AccountRow key={account.id} account={account} onEdit={updateAccount} />
-            ))}
-          </Box>
-          <Divider sx={{ my: 2 }} />
-          <Box display="flex" justifyContent="space-between">
-            <Typography variant="subtitle1" fontWeight="bold">
-              {t('balanceSheet.totalAssets')}
-            </Typography>
-            <Typography variant="subtitle1" fontWeight="bold">
-              {currentBalanceSheet.assets.totalAssets.toLocaleString('en-AE', {
-                style: 'currency',
-                currency: 'AED'
-              })}
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Liabilities */}
-        <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
-          <Typography variant="h6" gutterBottom>
-            {t('balanceSheet.liabilities')}
-          </Typography>
-          <Box>
-            <Typography variant="subtitle1" color="primary" gutterBottom>
-              {t('balanceSheet.currentLiabilities')}
-            </Typography>
-            {currentBalanceSheet.liabilities.currentLiabilities.map((account) => (
-              <AccountRow key={account.id} account={account} onEdit={updateAccount} />
-            ))}
-          </Box>
-          <Box mt={2}>
-            <Typography variant="subtitle1" color="primary" gutterBottom>
-              {t('balanceSheet.longTermLiabilities')}
-            </Typography>
-            {currentBalanceSheet.liabilities.longTermLiabilities.map((account) => (
-              <AccountRow key={account.id} account={account} onEdit={updateAccount} />
-            ))}
-          </Box>
-          <Divider sx={{ my: 2 }} />
-          <Box display="flex" justifyContent="space-between">
-            <Typography variant="subtitle1" fontWeight="bold">
-              {t('balanceSheet.totalLiabilities')}
-            </Typography>
-            <Typography variant="subtitle1" fontWeight="bold">
-              {currentBalanceSheet.liabilities.totalLiabilities.toLocaleString('en-AE', {
-                style: 'currency',
-                currency: 'AED'
-              })}
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Equity */}
-        <Box sx={{ flex: '1 1 300px', minWidth: 0 }}>
-          <Typography variant="h6" gutterBottom>
-            {t('balanceSheet.equity')}
-          </Typography>
-          <Box>
-            <Typography variant="subtitle1" color="primary" gutterBottom>
-              {t('balanceSheet.shareCapital')}
-            </Typography>
-            {currentBalanceSheet.equity.shareCapital.map((account) => (
-              <AccountRow key={account.id} account={account} onEdit={updateAccount} />
-            ))}
-          </Box>
-          <Box mt={2}>
-            <Typography variant="subtitle1" color="primary" gutterBottom>
-              {t('balanceSheet.retainedEarnings')}
-            </Typography>
-            {currentBalanceSheet.equity.retainedEarnings.map((account) => (
-              <AccountRow key={account.id} account={account} onEdit={updateAccount} />
-            ))}
-          </Box>
-          <Divider sx={{ my: 2 }} />
-          <Box display="flex" justifyContent="space-between">
-            <Typography variant="subtitle1" fontWeight="bold">
-              {t('balanceSheet.totalEquity')}
-            </Typography>
-            <Typography variant="subtitle1" fontWeight="bold">
-              {currentBalanceSheet.equity.totalEquity.toLocaleString('en-AE', {
-                style: 'currency',
-                currency: 'AED'
-              })}
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-
-      <Box mt={4}>
-        <Alert
-          severity={
-            Math.abs(
-              currentBalanceSheet.assets.totalAssets -
-              currentBalanceSheet.totalLiabilitiesAndEquity
-            ) < 0.01
-              ? 'success'
-              : 'error'
-          }
-        >
-          {Math.abs(
-            currentBalanceSheet.assets.totalAssets -
-            currentBalanceSheet.totalLiabilitiesAndEquity
-          ) < 0.01
-            ? t('balanceSheet.balanced')
-            : t('balanceSheet.notBalanced')}
-        </Alert>
-      </Box>
-
+    <Box>
+      <Typography variant="h4" gutterBottom>
+        {t('balanceSheet.title')}
+      </Typography>
+      <Button onClick={() => setShowAddDialog(true)}>
+        {t('balanceSheet.addAccount')}
+      </Button>
+      <Button onClick={handleExportPDF}>
+        {t('balanceSheet.exportPDF')}
+      </Button>
       <AddAccountDialog
         open={showAddDialog}
         onClose={() => setShowAddDialog(false)}
         onAdd={addAccount}
       />
-    </Paper>
+      {/* Render accounts here */}
+    </Box>
   );
 }; 

@@ -1,7 +1,7 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { FilingPage } from '../pages/Filing';
+import Filing from '../../pages/Filing';
 import { TaxProvider } from '../../context/TaxContext';
 import { SecureStorage } from '../../utils/storage';
 
@@ -35,7 +35,7 @@ describe('Filing Flow Integration', () => {
   it('completes the full filing flow', async () => {
     render(
       <TaxProvider>
-        <FilingPage />
+        <Filing />
       </TaxProvider>
     );
 
@@ -121,7 +121,7 @@ describe('Filing Flow Integration', () => {
   it('handles validation errors appropriately', async () => {
     render(
       <TaxProvider>
-        <FilingPage />
+        <Filing />
       </TaxProvider>
     );
 
@@ -144,7 +144,7 @@ describe('Filing Flow Integration', () => {
   it('saves draft filing', async () => {
     render(
       <TaxProvider>
-        <FilingPage />
+        <Filing />
       </TaxProvider>
     );
 

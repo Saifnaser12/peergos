@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useInvoice } from '../../context/InvoiceContext';
-import { Invoice, InvoiceStatus } from '../../types/invoice';
+import { InvoiceStatus } from '../../types/invoice';
 import {
   Box,
   Card,
@@ -14,24 +14,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  CircularProgress,
   Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  MenuItem,
-  Divider
+  Divider,
+  Grid,
+  CircularProgress
 } from '@mui/material';
-import { Grid } from '../common/Grid';
 import { format } from 'date-fns';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import DownloadIcon from '@mui/icons-material/Download';
-import { TextField } from '@mui/material';
-import { IconButton } from '@mui/material';
-import { Tooltip } from '@mui/material';
 
 interface InvoiceDetailProps {
   invoiceId: string;
@@ -135,8 +126,8 @@ export const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
       {/* Status and Dates */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid size={{ xs: 12, md: 4 }}>
+          <Grid container spacing={2} sx={{ alignItems: 'center' }}>
+            <Grid item xs={12} md={4}>
               <Typography variant="subtitle2" gutterBottom>
                 Status
               </Typography>
@@ -146,7 +137,7 @@ export const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
                 size="small"
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
+            <Grid item xs={12} md={4}>
               <Typography variant="subtitle2" gutterBottom>
                 Issue Date
               </Typography>
@@ -154,7 +145,7 @@ export const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
                 {format(new Date(currentInvoice.issueDate), 'dd/MM/yyyy')}
               </Typography>
             </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
+            <Grid item xs={12} md={4}>
               <Typography variant="subtitle2" gutterBottom>
                 Due Date
               </Typography>
@@ -175,19 +166,19 @@ export const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
             Seller Information
           </Typography>
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid item xs={12} md={6}>
               <Typography variant="subtitle2" gutterBottom>
                 Company Name
               </Typography>
               <Typography>{currentInvoice.seller.name}</Typography>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid item xs={12} md={6}>
               <Typography variant="subtitle2" gutterBottom>
                 TRN
               </Typography>
               <Typography>{currentInvoice.seller.trn}</Typography>
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid item xs={12}>
               <Typography variant="subtitle2" gutterBottom>
                 Address
               </Typography>
@@ -209,19 +200,19 @@ export const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
             Buyer Information
           </Typography>
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid item xs={12} md={6}>
               <Typography variant="subtitle2" gutterBottom>
                 Company Name
               </Typography>
               <Typography>{currentInvoice.buyer.name}</Typography>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid item xs={12} md={6}>
               <Typography variant="subtitle2" gutterBottom>
                 TRN
               </Typography>
               <Typography>{currentInvoice.buyer.trn}</Typography>
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid item xs={12}>
               <Typography variant="subtitle2" gutterBottom>
                 Address
               </Typography>
@@ -236,36 +227,47 @@ export const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
         </CardContent>
       </Card>
 
-      {/* Invoice Lines */}
+      {/* Invoice Items */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Invoice Lines
+            Invoice Items
           </Typography>
-          <TableContainer component={Paper}>
+          <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Product Code</TableCell>
                   <TableCell>Description</TableCell>
                   <TableCell align="right">Quantity</TableCell>
                   <TableCell align="right">Unit Price</TableCell>
-                  <TableCell align="right">Net Amount</TableCell>
-                  <TableCell align="right">VAT</TableCell>
+                  <TableCell align="right">VAT Rate</TableCell>
+                  <TableCell align="right">VAT Amount</TableCell>
                   <TableCell align="right">Total</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {currentInvoice.lines.map(line => (
-                  <TableRow key={line.id}>
-                    <TableCell>{line.productCode}</TableCell>
-                    <TableCell>{line.description}</TableCell>
-                    <TableCell align="right">{line.quantity}</TableCell>
-                    <TableCell align="right">AED {line.unitPrice.toFixed(2)}</TableCell>
-                    <TableCell align="right">AED {line.netAmount.toFixed(2)}</TableCell>
-                    <TableCell align="right">AED {line.taxBreakdown.taxAmount.toFixed(2)}</TableCell>
+                {currentInvoice.items.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{item.description}</TableCell>
+                    <TableCell align="right">{item.quantity}</TableCell>
                     <TableCell align="right">
-                      AED {(line.netAmount + line.taxBreakdown.taxAmount).toFixed(2)}
+                      {item.unitPrice.toLocaleString('en-AE', {
+                        style: 'currency',
+                        currency: 'AED'
+                      })}
+                    </TableCell>
+                    <TableCell align="right">{item.vatRate}%</TableCell>
+                    <TableCell align="right">
+                      {item.vatAmount.toLocaleString('en-AE', {
+                        style: 'currency',
+                        currency: 'AED'
+                      })}
+                    </TableCell>
+                    <TableCell align="right">
+                      {item.total.toLocaleString('en-AE', {
+                        style: 'currency',
+                        currency: 'AED'
+                      })}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -278,24 +280,34 @@ export const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
       {/* Totals */}
       <Card>
         <CardContent>
-          <Grid container spacing={2} justifyContent="flex-end">
-            <Grid size={{ xs: 12, md: 4 }}>
+          <Grid container spacing={2} sx={{ justifyContent: 'flex-end' }}>
+            <Grid item xs={12} md={4}>
               <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="subtitle1">Net Amount:</Typography>
-                <Typography variant="subtitle1">
-                  AED {(currentInvoice.totalAmount - currentInvoice.totalTaxAmount).toFixed(2)}
+                <Typography>Subtotal</Typography>
+                <Typography>
+                  {currentInvoice.subtotal.toLocaleString('en-AE', {
+                    style: 'currency',
+                    currency: 'AED'
+                  })}
                 </Typography>
               </Box>
               <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="subtitle1">VAT Amount:</Typography>
-                <Typography variant="subtitle1">
-                  AED {currentInvoice.totalTaxAmount.toFixed(2)}
+                <Typography>VAT Total</Typography>
+                <Typography>
+                  {currentInvoice.vatTotal.toLocaleString('en-AE', {
+                    style: 'currency',
+                    currency: 'AED'
+                  })}
                 </Typography>
               </Box>
+              <Divider sx={{ my: 1 }} />
               <Box display="flex" justifyContent="space-between">
-                <Typography variant="h6">Total Amount:</Typography>
+                <Typography variant="h6">Total</Typography>
                 <Typography variant="h6">
-                  AED {currentInvoice.totalAmount.toFixed(2)}
+                  {currentInvoice.total.toLocaleString('en-AE', {
+                    style: 'currency',
+                    currency: 'AED'
+                  })}
                 </Typography>
               </Box>
             </Grid>
