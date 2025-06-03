@@ -1,6 +1,6 @@
 import { DOMParser, XMLSerializer, Element } from '@xmldom/xmldom';
 import { SignedXml } from 'xml-crypto';
-import type { Invoice, InvoiceLine } from '../../types/invoice';
+import type { Invoice, InvoiceItem } from '../../types/invoice';
 
 export class InvoiceXMLGenerator {
   private static readonly parser = new DOMParser();
@@ -29,14 +29,13 @@ export class InvoiceXMLGenerator {
     return element;
   }
 
-  private static appendPartyInfo(parent: Element, partyType: 'seller' | 'buyer', invoice: Invoice): void {
-    const party = invoice[partyType];
+  private static appendPartyInfo(parent: Element, partyType: 'seller' | 'buyer', party: any): void {
     const partyElement = this.appendElement(parent, `cac:${partyType === 'seller' ? 'AccountingSupplierParty' : 'AccountingCustomerParty'}`);
     const partyDetails = this.appendElement(partyElement, 'cac:Party');
     
     // Party Identification
     const partyIdentification = this.appendElement(partyDetails, 'cac:PartyIdentification');
-    this.appendElement(partyIdentification, 'cbc:ID', party.trn);
+    this.appendElement(partyIdentification, 'cbc:ID', party.taxRegistrationNumber);
     
     // Party Name
     const partyName = this.appendElement(partyDetails, 'cac:PartyName');
@@ -54,7 +53,7 @@ export class InvoiceXMLGenerator {
     
     // Tax Scheme
     const partyTaxScheme = this.appendElement(partyDetails, 'cac:PartyTaxScheme');
-    this.appendElement(partyTaxScheme, 'cbc:CompanyID', party.trn);
+    this.appendElement(partyTaxScheme, 'cbc:CompanyID', party.taxRegistrationNumber);
     const taxScheme = this.appendElement(partyTaxScheme, 'cac:TaxScheme');
     this.appendElement(taxScheme, 'cbc:ID', 'VAT');
     
@@ -70,45 +69,45 @@ export class InvoiceXMLGenerator {
     }
   }
 
-  private static appendInvoiceLine(parent: Element, line: InvoiceLine): void {
-    const invoiceLine = this.appendElement(parent, 'cac:InvoiceLine');
-    this.appendElement(invoiceLine, 'cbc:ID', line.id);
-    this.appendElement(invoiceLine, 'cbc:InvoicedQuantity', line.quantity.toString());
-    this.appendElement(invoiceLine, 'cbc:LineExtensionAmount', line.netAmount.toString(), {
+  private static appendInvoiceItem(parent: Element, item: InvoiceItem): void {
+    const itemElement = this.appendElement(parent, 'cac:InvoiceLine');
+    this.appendElement(itemElement, 'cbc:ID', item.id);
+    this.appendElement(itemElement, 'cbc:InvoicedQuantity', item.quantity.toString());
+    this.appendElement(itemElement, 'cbc:LineExtensionAmount', item.totalAmount.toString(), {
       currencyID: 'AED'
     });
     
     // Item
-    const item = this.appendElement(invoiceLine, 'cac:Item');
-    this.appendElement(item, 'cbc:Name', line.description);
-    const sellersItem = this.appendElement(item, 'cac:SellersItemIdentification');
-    this.appendElement(sellersItem, 'cbc:ID', line.productCode);
+    const itemDetails = this.appendElement(itemElement, 'cac:Item');
+    this.appendElement(itemDetails, 'cbc:Name', item.description);
+    const sellersItem = this.appendElement(itemDetails, 'cac:SellersItemIdentification');
+    this.appendElement(sellersItem, 'cbc:ID', item.productCode);
     
     // Price
-    const price = this.appendElement(invoiceLine, 'cac:Price');
-    this.appendElement(price, 'cbc:PriceAmount', line.unitPrice.toString(), {
+    const price = this.appendElement(itemElement, 'cac:Price');
+    this.appendElement(price, 'cbc:PriceAmount', item.unitPrice.toString(), {
       currencyID: 'AED'
     });
     
     // Tax
-    const taxTotal = this.appendElement(invoiceLine, 'cac:TaxTotal');
-    this.appendElement(taxTotal, 'cbc:TaxAmount', line.taxBreakdown.taxAmount.toString(), {
+    const taxTotal = this.appendElement(itemElement, 'cac:TaxTotal');
+    this.appendElement(taxTotal, 'cbc:TaxAmount', item.vatAmount.toString(), {
       currencyID: 'AED'
     });
     
     const taxSubtotal = this.appendElement(taxTotal, 'cac:TaxSubtotal');
-    this.appendElement(taxSubtotal, 'cbc:TaxableAmount', line.taxBreakdown.taxableAmount.toString(), {
+    this.appendElement(taxSubtotal, 'cbc:TaxableAmount', item.taxableAmount.toString(), {
       currencyID: 'AED'
     });
-    this.appendElement(taxSubtotal, 'cbc:TaxAmount', line.taxBreakdown.taxAmount.toString(), {
+    this.appendElement(taxSubtotal, 'cbc:TaxAmount', item.taxAmount.toString(), {
       currencyID: 'AED'
     });
     
     const taxCategory = this.appendElement(taxSubtotal, 'cac:TaxCategory');
-    this.appendElement(taxCategory, 'cbc:ID', line.taxBreakdown.taxCategory);
-    this.appendElement(taxCategory, 'cbc:Percent', line.taxBreakdown.taxRate.toString());
-    if (line.taxBreakdown.exemptionReason) {
-      this.appendElement(taxCategory, 'cbc:TaxExemptionReason', line.taxBreakdown.exemptionReason);
+    this.appendElement(taxCategory, 'cbc:ID', item.taxCategory);
+    this.appendElement(taxCategory, 'cbc:Percent', item.taxRate.toString());
+    if (item.exemptionReason) {
+      this.appendElement(taxCategory, 'cbc:TaxExemptionReason', item.exemptionReason);
     }
     
     const taxScheme = this.appendElement(taxCategory, 'cac:TaxScheme');
@@ -120,18 +119,26 @@ export class InvoiceXMLGenerator {
       '<?xml version="1.0" encoding="UTF-8"?><Invoice></Invoice>',
       'application/xml'
     );
-    const root = doc.documentElement as Element;
+    const root = doc.documentElement;
     if (!root) throw new Error('Failed to create root element for Invoice XML');
-    
+
     // Add invoice details
     this.appendElement(root, 'InvoiceNumber', invoice.invoiceNumber);
     this.appendElement(root, 'IssueDate', invoice.issueDate);
-    if (invoice.dueDate) this.appendElement(root, 'DueDate', invoice.dueDate);
-    this.appendElement(root, 'TotalAmount', invoice.totalAmount.toString());
-    
-    // Add invoice lines
-    invoice.lines.forEach(line => this.appendInvoiceLine(root, line));
-    
+    this.appendElement(root, 'DueDate', invoice.dueDate);
+    this.appendElement(root, 'Currency', invoice.currency);
+    this.appendElement(root, 'TotalAmount', invoice.amount.toString());
+    this.appendElement(root, 'VATAmount', invoice.vatAmount.toString());
+
+    // Add seller and buyer information
+    this.appendPartyInfo(root, 'seller', invoice.seller);
+    this.appendPartyInfo(root, 'buyer', invoice.buyer);
+
+    // Add invoice items
+    const itemsElement = doc.createElement('Items');
+    root.appendChild(itemsElement);
+    invoice.items.forEach(item => this.appendInvoiceItem(itemsElement, item));
+
     return this.serializer.serializeToString(doc);
   }
 
@@ -147,5 +154,15 @@ export class InvoiceXMLGenerator {
     sig.signingKey = privateKey;
     sig.computeSignature(xml);
     return sig.getSignedXml();
+  }
+
+  public static validateXML(xmlString: string): boolean {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(xmlString, 'application/xml');
+      return !doc.getElementsByTagName('parsererror').length;
+    } catch (error) {
+      return false;
+    }
   }
 } 

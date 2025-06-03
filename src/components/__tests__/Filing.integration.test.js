@@ -1,7 +1,8 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 import Filing from '../../pages/Filing';
+import userEvent from '@testing-library/user-event';
 import { TaxProvider } from '../../context/TaxContext';
 import { SecureStorage } from '../../utils/storage';
 // Mock the storage to prevent actual localStorage operations

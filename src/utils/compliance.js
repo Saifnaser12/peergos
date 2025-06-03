@@ -1,4 +1,14 @@
-export const calculateComplianceScore = (data) => {
+export const calculateComplianceScore = (metrics) => {
+    return metrics.score;
+};
+export const getComplianceStatus = (score) => {
+    if (score >= 90)
+        return 'compliant';
+    if (score >= 70)
+        return 'pending';
+    return 'non-compliant';
+};
+export const calculateComplianceScoreFromData = (data) => {
     let score = 100;
     const totalRevenue = data.revenues.reduce((sum, entry) => sum + entry.amount, 0);
     // Check VAT registration compliance

@@ -9,12 +9,13 @@ interface PerformanceMetric {
   duration: number;
 }
 
-class PerformanceMonitor {
+export class PerformanceMonitor {
   private static instance: PerformanceMonitor;
-  private metrics: PerformanceMetric[] = [];
-  private readonly maxMetrics = 1000;
+  private measurements: Map<string, number[]>;
 
-  private constructor() {}
+  private constructor() {
+    this.measurements = new Map();
+  }
 
   public static getInstance(): PerformanceMonitor {
     if (!PerformanceMonitor.instance) {
@@ -23,59 +24,20 @@ class PerformanceMonitor {
     return PerformanceMonitor.instance;
   }
 
-  public startMeasure(componentName: string, operation: string): number {
-    return performance.now();
+  public measure(callback: () => void): number {
+    const start = performance.now();
+    callback();
+    const end = performance.now();
+    return end - start;
   }
 
-  public endMeasure(componentName: string, operation: string, startTime: number): void {
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-
-    const metric: PerformanceMetric = {
-      componentName,
-      operation,
-      startTime,
-      endTime,
-      duration
-    };
-
-    this.metrics.push(metric);
-
-    // Keep only the last maxMetrics entries
-    if (this.metrics.length > this.maxMetrics) {
-      this.metrics = this.metrics.slice(-this.maxMetrics);
-    }
-
-    // Log slow operations (> 16ms, which is roughly 60fps)
-    if (duration > 16) {
-      console.warn(`Slow operation detected: ${componentName} - ${operation} took ${duration.toFixed(2)}ms`);
-    }
+  public log(metric: string, duration: number): void {
+    console.log(`Performance [${metric}]: ${duration.toFixed(2)}ms`);
   }
 
-  public getMetrics(): PerformanceMetric[] {
-    return [...this.metrics];
-  }
-
-  public getAverageMetrics(): Record<string, number> {
-    const averages: Record<string, { total: number; count: number }> = {};
-
-    this.metrics.forEach(metric => {
-      const key = `${metric.componentName}-${metric.operation}`;
-      if (!averages[key]) {
-        averages[key] = { total: 0, count: 0 };
-      }
-      averages[key].total += metric.duration;
-      averages[key].count += 1;
-    });
-
-    return Object.entries(averages).reduce<Record<string, number>>((acc, [key, { total, count }]) => {
-      acc[key] = total / count;
-      return acc;
-    }, {});
-  }
-
-  public clearMetrics(): void {
-    this.metrics = [];
+  public measureOperation(operation: string, callback: () => void): void {
+    const duration = this.measure(callback);
+    this.log(operation, duration);
   }
 }
 
@@ -87,24 +49,18 @@ export function measurePerformance() {
     descriptor: PropertyDescriptor
   ): PropertyDescriptor {
     const originalMethod = descriptor.value;
+    const monitor = PerformanceMonitor.getInstance();
 
     descriptor.value = function (...args: unknown[]): unknown {
-      const monitor = PerformanceMonitor.getInstance();
-      const startTime = monitor.startMeasure(
-        target.constructor.name,
-        propertyKey
-      );
-
-      const result = originalMethod.apply(this, args);
+      const result = monitor.measure(() => originalMethod.apply(this, args));
 
       // Handle both synchronous and asynchronous functions
-      if (result instanceof Promise) {
-        return result.finally(() => {
-          monitor.endMeasure(target.constructor.name, propertyKey, startTime);
+      if (result && typeof result === 'object' && 'then' in result) {
+        return (result as Promise<unknown>).finally(() => {
+          monitor.log(`${target.constructor.name}.${propertyKey}`, performance.now());
         });
       }
 
-      monitor.endMeasure(target.constructor.name, propertyKey, startTime);
       return result;
     };
 
@@ -117,23 +73,20 @@ export function withPerformanceTracking<P extends object>(
   WrappedComponent: ComponentType<P>
 ): FunctionComponent<P> {
   const componentName = WrappedComponent.displayName || WrappedComponent.name;
+  const monitor = PerformanceMonitor.getInstance();
   
   const WithPerformance: FunctionComponent<P> = (props) => {
-    const monitor = PerformanceMonitor.getInstance();
-    const startTimeRef = React.useRef(0);
-
     React.useEffect(() => {
-      monitor.endMeasure(componentName, 'mount', startTimeRef.current);
+      monitor.measureOperation(`${componentName}.mount`, () => {});
       return () => {
-        monitor.endMeasure(componentName, 'unmount', startTimeRef.current);
+        monitor.measureOperation(`${componentName}.unmount`, () => {});
       };
     }, []);
 
     React.useEffect(() => {
-      monitor.endMeasure(componentName, 'update', startTimeRef.current);
+      monitor.measureOperation(`${componentName}.update`, () => {});
     });
 
-    startTimeRef.current = monitor.startMeasure(componentName, 'render');
     return React.createElement(WrappedComponent, props);
   };
 
@@ -141,4 +94,22 @@ export function withPerformanceTracking<P extends object>(
   return WithPerformance;
 }
 
-export const Performance = PerformanceMonitor.getInstance(); 
+export const Performance = PerformanceMonitor.getInstance();
+
+// Helper function to measure performance of async operations
+export const measureAsyncPerformance = async <T>(
+  operation: string,
+  callback: () => Promise<T>
+): Promise<T> => {
+  const start = performance.now();
+  try {
+    const result = await callback();
+    const duration = performance.now() - start;
+    Performance.log(operation, duration);
+    return result;
+  } catch (error) {
+    const duration = performance.now() - start;
+    Performance.log(`${operation} (error)`, duration);
+    throw error;
+  }
+}; 

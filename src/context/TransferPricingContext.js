@@ -1,6 +1,7 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { createContext, useContext, useReducer, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { TransactionType, TransferPricingMethod } from '../types/transferPricing';
 // Initial state
 const initialState = {
     relatedParties: [],

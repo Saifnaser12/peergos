@@ -1,8 +1,14 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { createContext, useContext, useState } from 'react';
-import { permissions } from '../config/permissions';
+import { adminPermissions, userPermissions, superAdminPermissions, auditorPermissions } from '../config/permissions';
 import { useAudit } from './AuditContext';
 const UserRoleContext = createContext(undefined);
+const permissionsByRole = {
+    Admin: adminPermissions,
+    SME: userPermissions,
+    'Tax Agent': auditorPermissions,
+    FTA: superAdminPermissions
+};
 export const UserRoleProvider = ({ children }) => {
     const [role, setRoleState] = useState('SME');
     const { log } = useAudit();
@@ -11,7 +17,7 @@ export const UserRoleProvider = ({ children }) => {
         setRoleState(newRole);
     };
     const hasPermission = (resource, permission) => {
-        return permissions[role]?.[resource]?.[permission] ?? false;
+        return permissionsByRole[role]?.[resource]?.[permission] ?? false;
     };
     const canAccess = (path) => {
         // Map paths to resources
@@ -20,7 +26,11 @@ export const UserRoleProvider = ({ children }) => {
             '/filing': 'filing',
             '/dashboard': 'dashboard',
             '/assistant': 'assistant',
-            '/admin': 'dashboard',
+            '/admin': 'admin',
+            '/transfer-pricing': 'transfer-pricing',
+            '/vat': 'vat',
+            '/cit': 'cit',
+            '/financials': 'financials',
             '/': 'dashboard' // Default route
         };
         const resource = resourceMap[path];

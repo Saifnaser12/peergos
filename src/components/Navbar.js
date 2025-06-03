@@ -5,7 +5,7 @@ import { useUserRole } from '../context/UserRoleContext';
 import { useTheme } from '../context/ThemeContext';
 import { useSettings } from '../context/SettingsContext';
 import { useTranslation } from 'react-i18next';
-import { HomeIcon, DocumentTextIcon, Cog6ToothIcon, ChatBubbleLeftRightIcon, BuildingOfficeIcon, UserCircleIcon, MagnifyingGlassIcon, SunIcon, MoonIcon, Bars3Icon, XMarkIcon, LanguageIcon, CurrencyDollarIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, DocumentTextIcon, Cog6ToothIcon, ChatBubbleLeftRightIcon, BuildingOfficeIcon, UserCircleIcon, SunIcon, MoonIcon, Bars3Icon, XMarkIcon, LanguageIcon, CurrencyDollarIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 const Navbar = () => {
     const { canAccess } = useUserRole();
     const { isDarkMode, toggleDarkMode } = useTheme();
@@ -17,13 +17,28 @@ const Navbar = () => {
     const navItems = [
         {
             name: t('nav.dashboard'),
-            path: '/',
+            path: '/dashboard',
             icon: _jsx(HomeIcon, { className: "h-5 w-5" })
         },
         {
-            name: t('nav.filing'),
-            path: '/filing',
+            name: t('nav.vat'),
+            path: '/vat',
             icon: _jsx(DocumentTextIcon, { className: "h-5 w-5" })
+        },
+        {
+            name: t('nav.cit'),
+            path: '/cit',
+            icon: _jsx(DocumentTextIcon, { className: "h-5 w-5" })
+        },
+        {
+            name: t('nav.financials'),
+            path: '/financials',
+            icon: _jsx(ChartBarIcon, { className: "h-5 w-5" })
+        },
+        {
+            name: t('nav.transferPricing'),
+            path: '/transfer-pricing',
+            icon: _jsx(CurrencyDollarIcon, { className: "h-5 w-5" })
         },
         {
             name: t('nav.setup'),
@@ -34,16 +49,6 @@ const Navbar = () => {
             name: t('nav.assistant'),
             path: '/assistant',
             icon: _jsx(ChatBubbleLeftRightIcon, { className: "h-5 w-5" })
-        },
-        {
-            name: t('nav.financials'),
-            path: '/financials',
-            icon: _jsx(ChartBarIcon, { className: "h-5 w-5" })
-        },
-        {
-            name: t('nav.trnSearch'),
-            path: '/trn-search',
-            icon: _jsx(MagnifyingGlassIcon, { className: "h-5 w-5" })
         }
     ];
     // Filter navItems based on user's permissions

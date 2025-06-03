@@ -1,9 +1,9 @@
 import type { CompanyProfile, RevenueEntry, ExpenseEntry } from '../types';
 
-interface ComplianceMetrics {
+export interface ComplianceMetrics {
   score: number;
-  issues: string[];
-  recommendations: string[];
+  status: 'compliant' | 'non-compliant' | 'pending';
+  lastUpdated: Date;
 }
 
 interface ComplianceData {
@@ -15,7 +15,17 @@ interface ComplianceData {
   };
 }
 
-export const calculateComplianceScore = (data: ComplianceData): number => {
+export const calculateComplianceScore = (metrics: ComplianceMetrics): number => {
+  return metrics.score;
+};
+
+export const getComplianceStatus = (score: number): ComplianceMetrics['status'] => {
+  if (score >= 90) return 'compliant';
+  if (score >= 70) return 'pending';
+  return 'non-compliant';
+};
+
+export const calculateComplianceScoreFromData = (data: ComplianceData): number => {
   let score = 100;
   const totalRevenue = data.revenues.reduce((sum, entry) => sum + entry.amount, 0);
 

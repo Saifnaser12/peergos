@@ -1,214 +1,77 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState, useRef, useEffect } from 'react';
-import { useAudit } from '../context/AuditContext';
-import { useLocation } from 'react-router-dom';
-import { ChatBubbleLeftRightIcon, PaperAirplaneIcon, SparklesIcon, DocumentCheckIcon, CalculatorIcon, ChartBarIcon } from '@heroicons/react/24/outline';
-import Card from '../components/Card';
-import Button from '../components/Button';
-import { LoadingOverlay } from '../components/Spinner';
-import PermissionGate from '../components/PermissionGate';
+import { Box, Typography, Paper, TextField, Button, Card, CardContent, Alert, Snackbar, CircularProgress } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { PaperAirplaneIcon, QuestionMarkCircleIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 const Assistant = () => {
-    const { log } = useAudit();
-    const location = useLocation();
+    const { t } = useTranslation();
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
-    const messagesEndRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
-    // Get current page tips
-    const getPageTips = () => {
-        const path = location.pathname;
-        if (path.includes('/setup')) {
-            return [
-                {
-                    icon: _jsx(DocumentCheckIcon, { className: "h-6 w-6 text-blue-500" }),
-                    title: 'License Types',
-                    content: 'Mainland: Full commercial rights in UAE\nFree Zone: 100% ownership, tax benefits\nOffshore: International operations only'
-                },
-                {
-                    icon: _jsx(CalculatorIcon, { className: "h-6 w-6 text-green-500" }),
-                    title: 'Revenue Thresholds',
-                    content: 'VAT Registration: AED 375,000\nVoluntary Registration: AED 187,500\nCIT Registration: AED 3,000,000'
-                }
-            ];
-        }
-        if (path.includes('/filing')) {
-            return [
-                {
-                    icon: _jsx(CalculatorIcon, { className: "h-6 w-6 text-purple-500" }),
-                    title: 'VAT Calculation',
-                    content: 'Standard Rate: 5%\nZero Rate: Exports, healthcare\nExempt: Financial services, local transport'
-                },
-                {
-                    icon: _jsx(ChartBarIcon, { className: "h-6 w-6 text-indigo-500" }),
-                    title: 'CIT Overview',
-                    content: '0% up to AED 375,000\n9% over AED 375,000\nExcludes certain free zone businesses'
-                }
-            ];
-        }
-        // Dashboard tips
-        return [
-            {
-                icon: _jsx(SparklesIcon, { className: "h-6 w-6 text-yellow-500" }),
-                title: 'Compliance Tips',
-                content: 'Keep records for 5 years\nSubmit returns on time\nMaintain proper documentation'
-            },
-            {
-                icon: _jsx(ChartBarIcon, { className: "h-6 w-6 text-green-500" }),
-                title: 'Performance Metrics',
-                content: 'Monitor revenue trends\nTrack tax obligations\nReview compliance score'
-            }
-        ];
-    };
-    useEffect(() => {
-        log('VIEW_ASSISTANT');
-        // Show welcome message based on current page
-        const pageTips = getPageTips();
-        const welcomeMessage = {
-            id: Date.now().toString(),
-            role: 'assistant',
-            content: `Welcome! I can help you with ${pageTips[0].title.toLowerCase()} and ${pageTips[1].title.toLowerCase()}. What would you like to know?`,
-            timestamp: new Date()
-        };
-        setMessages([welcomeMessage]);
-    }, [location.pathname]);
+    const [error, setError] = useState(null);
+    const messagesEndRef = useRef(null);
+    // Sample suggestions - replace with actual data from API
+    const suggestions = [
+        {
+            id: '1',
+            title: t('assistant.suggestions.vat.title', 'VAT Registration Requirements'),
+            description: t('assistant.suggestions.vat.description', 'Learn about VAT registration requirements in the UAE'),
+            category: 'vat',
+        },
+        {
+            id: '2',
+            title: t('assistant.suggestions.cit.title', 'CIT Compliance Guide'),
+            description: t('assistant.suggestions.cit.description', 'Understand Corporate Income Tax compliance requirements'),
+            category: 'cit',
+        },
+        {
+            id: '3',
+            title: t('assistant.suggestions.transferPricing.title', 'Transfer Pricing Documentation'),
+            description: t('assistant.suggestions.transferPricing.description', 'Get guidance on transfer pricing documentation requirements'),
+            category: 'transferPricing',
+        },
+    ];
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
-    const generateResponse = async (question) => {
-        const lowerQuestion = question.toLowerCase();
-        const path = location.pathname;
-        // Log the question
-        log('ASSISTANT_QUERY', { question, page: path });
-        // Simulate typing delay
-        setIsTyping(true);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setIsTyping(false);
-        if (path.includes('/setup')) {
-            if (lowerQuestion.includes('license')) {
-                return `There are three main license types in the UAE:
-
-1. Mainland License:
-- Full commercial rights within the UAE
-- Requires local sponsor (51% ownership)
-- No restrictions on business activities
-
-2. Free Zone License:
-- 100% foreign ownership
-- Tax benefits and exemptions
-- Limited to free zone and international trade
-
-3. Offshore License:
-- International business operations only
-- No physical office required
-- Tax-neutral structure`;
-            }
-            if (lowerQuestion.includes('revenue') || lowerQuestion.includes('threshold')) {
-                return `Revenue thresholds for tax registration:
-
-1. VAT Registration:
-- Mandatory: Over AED 375,000
-- Voluntary: AED 187,500 - 375,000
-- Below AED 187,500: Not eligible
-
-2. Corporate Income Tax:
-- 0% tax rate: Up to AED 375,000
-- 9% tax rate: Over AED 375,000
-- Special rates for free zones`;
-            }
-        }
-        if (path.includes('/filing')) {
-            if (lowerQuestion.includes('vat')) {
-                return `VAT in the UAE:
-
-1. Standard rate: 5%
-2. Zero-rated supplies:
-   - Exports
-   - Healthcare
-   - Education
-   - Investment precious metals
-3. Exempt supplies:
-   - Financial services
-   - Local passenger transport
-   - Residential property`;
-            }
-            if (lowerQuestion.includes('cit') || lowerQuestion.includes('corporate')) {
-                return `Corporate Income Tax (CIT):
-
-1. Tax rates:
-   - 0% for taxable income up to AED 375,000
-   - 9% for taxable income above AED 375,000
-2. Qualifying free zone businesses:
-   - 0% on qualifying income
-   - 9% on non-qualifying income
-3. Filing requirements:
-   - Annual return
-   - Audited financial statements
-   - Transfer pricing documentation`;
-            }
-        }
-        // Default dashboard-related responses
-        if (lowerQuestion.includes('compliance')) {
-            return `Key compliance requirements:
-
-1. Record keeping:
-   - Maintain records for 5 years
-   - Keep original invoices and receipts
-   - Document all transactions
-
-2. Filing deadlines:
-   - VAT: Monthly/Quarterly
-   - CIT: Annually
-   - Penalties for late submission
-
-3. Documentation:
-   - Tax registration certificates
-   - License documents
-   - Bank statements`;
-        }
-        return `I can help you with:
-• Understanding license types and requirements
-• Tax thresholds and calculations
-• Filing requirements and deadlines
-• Compliance guidelines
-
-Feel free to ask about any of these topics!`;
-    };
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSend = async () => {
         if (!input.trim())
             return;
         const userMessage = {
             id: Date.now().toString(),
-            role: 'user',
-            content: input.trim(),
-            timestamp: new Date()
+            content: input,
+            type: 'user',
+            timestamp: new Date(),
         };
         setMessages(prev => [...prev, userMessage]);
         setInput('');
         setIsLoading(true);
         try {
-            const response = await generateResponse(input);
+            // Simulate API call - replace with actual API integration
+            await new Promise(resolve => setTimeout(resolve, 1000));
             const assistantMessage = {
                 id: (Date.now() + 1).toString(),
-                role: 'assistant',
-                content: response,
-                timestamp: new Date()
+                content: t('assistant.response', 'I am an AI assistant specialized in UAE tax compliance. I can help you with VAT, CIT, and transfer pricing matters. Please note that my responses are for guidance only and should not be considered as professional tax advice.'),
+                type: 'assistant',
+                timestamp: new Date(),
             };
             setMessages(prev => [...prev, assistantMessage]);
         }
-        catch (error) {
-            console.error('Failed to get response:', error);
+        catch (err) {
+            setError(t('assistant.error', 'Error getting response from assistant'));
         }
         finally {
             setIsLoading(false);
         }
     };
-    return (_jsxs("div", { className: "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8", children: [_jsxs(Card, { children: [_jsx("div", { className: "px-4 py-5 sm:px-6 flex justify-between items-center border-b border-gray-200", children: _jsxs("div", { className: "flex items-center", children: [_jsx(ChatBubbleLeftRightIcon, { className: "h-6 w-6 text-indigo-500" }), _jsx("h2", { className: "ml-2 text-lg font-medium text-gray-900", children: "Tax Assistant" })] }) }), _jsxs(PermissionGate, { resource: "assistant", requiredPermission: "view", restrictedTo: "Tax Agent or Admin", children: [_jsxs("div", { className: "flex-1 overflow-y-auto p-4 space-y-4", children: [messages.map((message) => (_jsx("div", { className: `flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`, children: _jsxs("div", { className: `rounded-lg px-4 py-2 max-w-[80%] ${message.role === 'user'
-                                                ? 'bg-indigo-600 text-white'
-                                                : 'bg-gray-100 text-gray-900'}`, children: [_jsx("pre", { className: "whitespace-pre-wrap font-sans", children: message.content }), _jsx("div", { className: `text-xs mt-1 ${message.role === 'user' ? 'text-indigo-200' : 'text-gray-500'}`, children: message.timestamp.toLocaleTimeString() })] }) }, message.id))), isTyping && (_jsx("div", { className: "flex justify-start", children: _jsx("div", { className: "bg-gray-100 rounded-lg px-4 py-2", children: _jsxs("div", { className: "flex space-x-2", children: [_jsx("div", { className: "w-2 h-2 bg-gray-500 rounded-full animate-bounce" }), _jsx("div", { className: "w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-100" }), _jsx("div", { className: "w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-200" })] }) }) })), _jsx("div", { ref: messagesEndRef })] }), _jsx("div", { className: "border-t border-gray-200 px-4 py-4", children: _jsxs("form", { onSubmit: handleSubmit, className: "flex space-x-4", children: [_jsx("input", { type: "text", value: input, onChange: (e) => setInput(e.target.value), placeholder: "Ask about tax regulations, calculations, or filing requirements...", className: "flex-1 min-w-0 rounded-md border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" }), _jsx(Button, { type: "submit", variant: "primary", disabled: !input.trim() || isLoading, icon: _jsx(PaperAirplaneIcon, { className: "h-4 w-4" }), children: "Send" })] }) })] }), _jsx(PermissionGate, { resource: "assistant", requiredPermission: "view", restrictedTo: "SME or Tax Agent", children: _jsxs("div", { className: "border-t border-gray-200 px-4 py-4 bg-gray-50", children: [_jsx("h3", { className: "text-sm font-medium text-gray-900 mb-3", children: "Quick Tips" }), _jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-4", children: getPageTips().map((tip, index) => (_jsxs("div", { className: "bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-200", children: [_jsxs("div", { className: "flex items-center mb-2", children: [tip.icon, _jsx("h4", { className: "ml-2 text-sm font-medium text-gray-900", children: tip.title })] }), _jsx("p", { className: "text-sm text-gray-600 whitespace-pre-line", children: tip.content })] }, index))) })] }) })] }), isLoading && _jsx(LoadingOverlay, { isLoading: isLoading, text: "Getting response..." })] }));
+    const handleSuggestionClick = (suggestion) => {
+        setInput(suggestion.title);
+    };
+    return (_jsxs(Box, { children: [_jsxs(Paper, { elevation: 0, className: "p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm", children: [_jsxs(Box, { className: "flex items-center gap-4 mb-6", children: [_jsx(ChatBubbleLeftRightIcon, { className: "h-8 w-8 text-indigo-600 dark:text-indigo-400" }), _jsxs(Box, { children: [_jsx(Typography, { variant: "h4", className: "text-gray-900 dark:text-white mb-2", children: t('assistant.title', 'AI Assistant') }), _jsx(Typography, { variant: "body1", className: "text-gray-600 dark:text-gray-400", children: t('assistant.subtitle', 'Get instant guidance on tax compliance matters') })] })] }), _jsx(Box, { className: "mb-6", children: _jsxs(Paper, { className: "h-[500px] bg-gray-50 dark:bg-gray-700 rounded-lg p-4 overflow-y-auto", children: [messages.map((message) => (_jsx(Box, { className: `flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} mb-4`, children: _jsxs(Box, { className: `max-w-[70%] rounded-lg p-3 ${message.type === 'user'
+                                            ? 'bg-indigo-600 text-white'
+                                            : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white'}`, children: [_jsx(Typography, { variant: "body1", children: message.content }), _jsx(Typography, { variant: "caption", className: "text-gray-500 dark:text-gray-400 mt-1 block", children: message.timestamp.toLocaleTimeString() })] }) }, message.id))), isLoading && (_jsx(Box, { className: "flex justify-center mb-4", children: _jsx(CircularProgress, { size: 24 }) })), _jsx("div", { ref: messagesEndRef })] }) }), _jsxs(Box, { className: "flex gap-4 mb-6", children: [_jsx(TextField, { fullWidth: true, variant: "outlined", placeholder: t('assistant.input.placeholder', 'Ask a question about tax compliance...'), value: input, onChange: (e) => setInput(e.target.value), onKeyPress: (e) => e.key === 'Enter' && handleSend(), className: "bg-white dark:bg-gray-700" }), _jsx(Button, { variant: "contained", onClick: handleSend, disabled: isLoading || !input.trim(), className: "bg-indigo-600 hover:bg-indigo-700", startIcon: _jsx(PaperAirplaneIcon, { className: "h-5 w-5" }), children: t('assistant.input.send', 'Send') })] }), _jsxs(Box, { children: [_jsx(Typography, { variant: "h6", className: "text-gray-900 dark:text-white mb-4", children: t('assistant.suggestions.title', 'Common Questions') }), _jsx(Box, { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: suggestions.map((suggestion) => (_jsx(Card, { className: "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors", onClick: () => handleSuggestionClick(suggestion), children: _jsx(CardContent, { children: _jsxs(Box, { className: "flex items-start gap-4", children: [_jsx(QuestionMarkCircleIcon, { className: "h-6 w-6 text-indigo-600 dark:text-indigo-400 mt-1" }), _jsxs(Box, { children: [_jsx(Typography, { variant: "h6", className: "text-gray-900 dark:text-white mb-2", children: suggestion.title }), _jsx(Typography, { variant: "body2", className: "text-gray-600 dark:text-gray-400", children: suggestion.description })] })] }) }) }, suggestion.id))) })] })] }), _jsx(Snackbar, { open: !!error, autoHideDuration: 6000, onClose: () => setError(null), anchorOrigin: { vertical: 'bottom', horizontal: 'right' }, children: _jsx(Alert, { severity: "error", onClose: () => setError(null), children: error }) })] }));
 };
 export default Assistant;

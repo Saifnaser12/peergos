@@ -107,3 +107,12 @@ export function withPerformanceTracking(WrappedComponent) {
     return WithPerformance;
 }
 export const Performance = PerformanceMonitor.getInstance();
+export const measurePerformance = (callback) => {
+    const start = performance.now();
+    callback();
+    const end = performance.now();
+    return end - start;
+};
+export const logPerformance = (metric, duration) => {
+    console.log(`Performance [${metric}]: ${duration.toFixed(2)}ms`);
+};

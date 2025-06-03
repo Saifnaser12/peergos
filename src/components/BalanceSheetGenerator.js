@@ -1,26 +1,10 @@
-import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState, useEffect } from 'react';
-import { Box, Typography, Button, TextField, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, MenuItem } from '@mui/material';
-import { Edit as EditIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import { Box, Typography, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, MenuItem } from '@mui/material';
 import { useBalanceSheet } from '../context/BalanceSheetContext';
 import { AccountType, AccountCategory } from '../types/financials';
 import { useTranslation } from 'react-i18next';
 import { downloadBalanceSheetPDF } from '../utils/pdfExport';
-const AccountRow = ({ account, onEdit }) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedBalance, setEditedBalance] = useState(account.balance.toString());
-    const handleSave = () => {
-        onEdit({
-            ...account,
-            balance: parseFloat(editedBalance)
-        });
-        setIsEditing(false);
-    };
-    return (_jsxs(Box, { display: "flex", alignItems: "center", my: 1, children: [_jsx(Typography, { flex: 1, children: account.name }), isEditing ? (_jsxs(_Fragment, { children: [_jsx(TextField, { size: "small", value: editedBalance, onChange: (e) => setEditedBalance(e.target.value), type: "number", sx: { width: 150, mx: 2 } }), _jsx(IconButton, { onClick: handleSave, color: "primary", children: _jsx(SaveIcon, {}) }), _jsx(IconButton, { onClick: () => setIsEditing(false), color: "error", children: _jsx(CancelIcon, {}) })] })) : (_jsxs(_Fragment, { children: [_jsx(Typography, { sx: { width: 150, textAlign: 'right', mx: 2 }, children: account.balance.toLocaleString('en-AE', {
-                            style: 'currency',
-                            currency: 'AED'
-                        }) }), !account.isLocked && (_jsx(IconButton, { onClick: () => setIsEditing(true), children: _jsx(EditIcon, {}) }))] }))] }));
-};
 const AddAccountDialog = ({ open, onClose, onAdd }) => {
     const { t } = useTranslation();
     const [account, setAccount] = useState({
@@ -39,7 +23,7 @@ const AddAccountDialog = ({ open, onClose, onAdd }) => {
 };
 export const BalanceSheetGenerator = () => {
     const { t } = useTranslation();
-    const { accounts, currentBalanceSheet, addAccount, updateAccount, generateBalanceSheet } = useBalanceSheet();
+    const { accounts, currentBalanceSheet, addAccount, generateBalanceSheet } = useBalanceSheet();
     const [showAddDialog, setShowAddDialog] = useState(false);
     useEffect(() => {
         generateBalanceSheet();

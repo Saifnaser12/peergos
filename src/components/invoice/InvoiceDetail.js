@@ -2,7 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
 import { useEffect } from 'react';
 import { useInvoice } from '../../context/InvoiceContext';
 import { InvoiceStatus } from '../../types/invoice';
-import { Box, Card, CardContent, Typography, Chip, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress, Alert, Divider, Grid } from '@mui/material';
+import { Box, Card, CardContent, Typography, Chip, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, Divider, Grid, CircularProgress } from '@mui/material';
 import { format } from 'date-fns';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';

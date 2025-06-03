@@ -50,44 +50,32 @@ export interface InvoiceItem {
   description: string;
   quantity: number;
   unitPrice: number;
-  vatRate: number;
+  totalAmount: number;
   vatAmount: number;
-  total: number;
+  taxableAmount: number;
+  taxAmount: number;
+  productCode: string;
+  taxCategory: string;
+  taxRate: number;
+  exemptionReason?: string;
+}
+
+export interface Party {
+  name: string;
+  taxRegistrationNumber: string;
+  address: string;
 }
 
 export interface Invoice {
-  id: string;
-  type: InvoiceType;
-  status: InvoiceStatus;
-  issueDate: string;
-  dueDate?: string;
   invoiceNumber: string;
-  purchaseOrderRef?: string;
-  
-  seller: PartyInfo;
-  buyer: PartyInfo;
-  
+  issueDate: string;
+  dueDate: string;
+  currency: string;
+  amount: number;
+  vatAmount: number;
+  seller: Party;
+  buyer: Party;
   items: InvoiceItem[];
-  
-  subtotal: number;
-  vatTotal: number;
-  total: number;
-  
-  paymentTerms?: string;
-  notes?: string;
-  
-  // E-invoicing specific fields
-  uuid: string;
-  signatureValue?: string;
-  signatureDate?: string;
-  qrCode?: string;
-  
-  // Audit fields
-  createdAt: string;
-  updatedAt: string;
-  submittedAt?: string;
-  acknowledgedAt?: string;
-  rejectionReason?: string;
 }
 
 // Zod schema for validation

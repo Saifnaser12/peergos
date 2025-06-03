@@ -1,8 +1,9 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React, { useState } from 'react';
-import { Box, Paper, Typography, Button, TextField, IconButton, Tooltip, CircularProgress, Alert, Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, List, ListItem, ListItemText, ListItemSecondaryAction, Divider, Chip, InputAdornment } from '@mui/material';
-import { Add as AddIcon, Delete as DeleteIcon, Upload as UploadIcon, Info as InfoIcon } from '@mui/icons-material';
+import { Box, Paper, Typography, Button, TextField, IconButton, CircularProgress, Alert, Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, List, ListItem, ListItemText, ListItemSecondaryAction, Divider, Chip, InputAdornment } from '@mui/material';
+import { Add as AddIcon, Delete as DeleteIcon, Upload as UploadIcon } from '@mui/icons-material';
 import { useTransferPricing } from '../context/TransferPricingContext';
+import { TransactionType, TransferPricingMethod } from '../types/transferPricing';
 import { useTranslation } from 'react-i18next';
 const AddRelatedPartyDialog = ({ open, onClose, onAdd }) => {
     const { t } = useTranslation();
@@ -50,9 +51,11 @@ const AddTransactionDialog = ({ open, onClose, onAdd, relatedParties }) => {
             const newDocument = {
                 id: '', // Will be set by the context
                 type,
+                name: file.name,
+                url: '', // Will be set after upload
                 fileName: file.name,
                 fileSize: file.size,
-                uploadDate: '', // Will be set by the context
+                uploadedAt: new Date().toISOString(),
                 status: 'PENDING'
             };
             setTransaction({
@@ -61,10 +64,7 @@ const AddTransactionDialog = ({ open, onClose, onAdd, relatedParties }) => {
             });
         }
     };
-    return (_jsxs(Dialog, { open: open, onClose: onClose, maxWidth: "md", fullWidth: true, children: [_jsx(DialogTitle, { children: t('transferPricing.addTransaction') }), _jsx(DialogContent, { children: _jsxs(Box, { sx: { display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }, children: [_jsx(TextField, { fullWidth: true, select: true, label: t('transferPricing.relatedParty'), value: transaction.relatedPartyId, onChange: (e) => setTransaction({ ...transaction, relatedPartyId: e.target.value }), children: relatedParties.map((party) => (_jsxs(MenuItem, { value: party.id, children: [party.name, " (", party.jurisdiction, ")"] }, party.id))) }), _jsx(TextField, { fullWidth: true, select: true, label: t('transferPricing.transactionType'), value: transaction.transactionType, onChange: (e) => setTransaction({ ...transaction, transactionType: e.target.value }), children: Object.values(TransactionType).map((type) => (_jsx(MenuItem, { value: type, children: t(`transferPricing.transactionTypes.${type}`) }, type))) }), _jsx(TextField, { fullWidth: true, select: true, label: t('transferPricing.pricingMethod'), value: transaction.transferPricingMethod, onChange: (e) => setTransaction({
-                                ...transaction,
-                                transferPricingMethod: e.target.value
-                            }), helperText: _jsx(Tooltip, { title: t(`transferPricing.methodDescriptions.${transaction.transferPricingMethod}`), children: _jsx(InfoIcon, { fontSize: "small", sx: { ml: 1 } }) }), children: Object.values(TransferPricingMethod).map((method) => (_jsx(MenuItem, { value: method, children: t(`transferPricing.pricingMethods.${method}`) }, method))) }), _jsx(TextField, { fullWidth: true, type: "number", label: t('transferPricing.transactionValue'), value: transaction.transactionValue, onChange: (e) => setTransaction({ ...transaction, transactionValue: parseFloat(e.target.value) }), InputProps: {
+    return (_jsxs(Dialog, { open: open, onClose: onClose, maxWidth: "md", fullWidth: true, children: [_jsx(DialogTitle, { children: t('transferPricing.addTransaction') }), _jsx(DialogContent, { children: _jsxs(Box, { sx: { display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }, children: [_jsx(TextField, { fullWidth: true, select: true, label: t('transferPricing.relatedParty'), value: transaction.relatedPartyId, onChange: (e) => setTransaction({ ...transaction, relatedPartyId: e.target.value }), children: relatedParties.map((party) => (_jsxs(MenuItem, { value: party.id, children: [party.name, " (", party.jurisdiction, ")"] }, party.id))) }), _jsx(TextField, { fullWidth: true, select: true, label: t('transferPricing.transactionType'), value: transaction.transactionType, onChange: (e) => setTransaction({ ...transaction, transactionType: e.target.value }), children: Object.values(TransactionType).map((type) => (_jsx(MenuItem, { value: type, children: t(`transferPricing.transactionTypes.${type}`) }, type))) }), _jsx(TextField, { fullWidth: true, select: true, label: t('transferPricing.pricingMethod'), value: transaction.transferPricingMethod, onChange: (e) => setTransaction({ ...transaction, transferPricingMethod: e.target.value }), children: Object.values(TransferPricingMethod).map((method) => (_jsx(MenuItem, { value: method, children: t(`transferPricing.pricingMethods.${method}`) }, method))) }), _jsx(TextField, { fullWidth: true, type: "number", label: t('transferPricing.transactionValue'), value: transaction.transactionValue, onChange: (e) => setTransaction({ ...transaction, transactionValue: parseFloat(e.target.value) }), InputProps: {
                                 startAdornment: _jsx(InputAdornment, { position: "start", children: "AED" })
                             } }), _jsx(TextField, { fullWidth: true, label: t('transferPricing.fiscalYear'), value: transaction.fiscalYear, onChange: (e) => setTransaction({ ...transaction, fiscalYear: e.target.value }) }), _jsx(TextField, { fullWidth: true, multiline: true, rows: 4, label: t('transferPricing.description'), value: transaction.description, onChange: (e) => setTransaction({ ...transaction, description: e.target.value }) }), _jsxs(Box, { children: [_jsx(Typography, { variant: "subtitle1", gutterBottom: true, children: t('transferPricing.documents') }), _jsxs(Box, { sx: { display: 'flex', gap: 2 }, children: [_jsxs(Button, { variant: "outlined", startIcon: _jsx(UploadIcon, {}), component: "label", children: [t('transferPricing.uploadMasterFile'), _jsx("input", { type: "file", hidden: true, onChange: handleFileUpload('MASTER_FILE'), accept: ".pdf,.doc,.docx" })] }), _jsxs(Button, { variant: "outlined", startIcon: _jsx(UploadIcon, {}), component: "label", children: [t('transferPricing.uploadLocalFile'), _jsx("input", { type: "file", hidden: true, onChange: handleFileUpload('LOCAL_FILE'), accept: ".pdf,.doc,.docx" })] }), _jsxs(Button, { variant: "outlined", startIcon: _jsx(UploadIcon, {}), component: "label", children: [t('transferPricing.uploadCbcReport'), _jsx("input", { type: "file", hidden: true, onChange: handleFileUpload('CBC_REPORT'), accept: ".pdf,.doc,.docx" })] })] }), _jsx(List, { children: transaction.documents.map((doc) => (_jsxs(ListItem, { children: [_jsx(ListItemText, { primary: doc.fileName, secondary: `${doc.type} - ${(doc.fileSize / 1024 / 1024).toFixed(2)} MB` }), _jsx(ListItemSecondaryAction, { children: _jsx(IconButton, { edge: "end", onClick: () => {
                                                         setTransaction({

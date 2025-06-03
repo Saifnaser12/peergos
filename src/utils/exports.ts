@@ -1,4 +1,4 @@
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 import type { CompanyProfile, RevenueEntry, ExpenseEntry } from '../types';
 import { calculateComplianceScore } from './compliance';
@@ -39,14 +39,29 @@ const getComplianceColor = (score: number): string => {
   return PEERGOS_COLORS.error;
 };
 
-export const generatePDFReport = async (data: any) => {
-  // Implementation
-  return new Blob();
+export const exportToPDF = (data: any, filename: string) => {
+  const doc = new jsPDF();
+  // Add your PDF generation logic here
+  doc.save(filename);
 };
 
-export const generateExcelReport = async (data: any) => {
-  // Implementation
-  return new Blob();
+export const exportToExcel = (data: any, filename: string) => {
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+  XLSX.writeFile(wb, filename);
+};
+
+export const exportToXML = (data: any, filename: string) => {
+  // Add your XML generation logic here
+  const xmlString = JSON.stringify(data);
+  const blob = new Blob([xmlString], { type: 'application/xml' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  window.URL.revokeObjectURL(url);
 };
 
 export const calculateDetailedComplianceScore = (data: any) => {

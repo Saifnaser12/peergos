@@ -1,5 +1,6 @@
 import { DOMParser, XMLSerializer } from '@xmldom/xmldom';
 import { SignedXml } from 'xml-crypto';
+import { XMLDocument } from 'xmldom';
 export class InvoiceXMLGenerator {
     static appendElement(parent, name, value, attributes) {
         const doc = parent.ownerDocument;
@@ -88,10 +89,8 @@ export class InvoiceXMLGenerator {
         this.appendElement(taxScheme, 'cbc:ID', 'VAT');
     }
     static generateXML(invoice) {
-        const doc = this.parser.parseFromString('<?xml version="1.0" encoding="UTF-8"?><Invoice></Invoice>', 'application/xml');
-        const root = doc.documentElement;
-        if (!root)
-            throw new Error('Failed to create root element for Invoice XML');
+        const doc = new XMLDocument();
+        const root = doc.createElement('Invoice');
         // Add invoice details
         this.appendElement(root, 'InvoiceNumber', invoice.invoiceNumber);
         this.appendElement(root, 'IssueDate', invoice.issueDate);
@@ -100,7 +99,8 @@ export class InvoiceXMLGenerator {
         this.appendElement(root, 'TotalAmount', invoice.totalAmount.toString());
         // Add invoice lines
         invoice.lines.forEach(line => this.appendInvoiceLine(root, line));
-        return this.serializer.serializeToString(doc);
+        const xmlString = doc.toString();
+        return xmlString;
     }
     static signXML(xml, privateKey) {
         const sig = new SignedXml();
@@ -111,6 +111,16 @@ export class InvoiceXMLGenerator {
         sig.signingKey = privateKey;
         sig.computeSignature(xml);
         return sig.getSignedXml();
+    }
+    static validateXML(xmlString) {
+        try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(xmlString, 'application/xml');
+            return !doc.getElementsByTagName('parsererror').length;
+        }
+        catch (error) {
+            return false;
+        }
     }
 }
 Object.defineProperty(InvoiceXMLGenerator, "parser", {
