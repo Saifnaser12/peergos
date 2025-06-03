@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useInvoice } from '../../context/InvoiceContext';
-import { Invoice, InvoiceLine, InvoiceStatus, InvoiceType, PartyInfo, Address } from '../../types/invoice';
+import { Invoice, InvoiceItem, InvoiceStatus, InvoiceType, PartyInfo, Address } from '../../types/invoice';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Box,
@@ -16,33 +15,17 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  Grid
 } from '@mui/material';
-import { Grid } from '../common/Grid';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import type { Theme } from '@mui/material/styles';
-import type { SystemProps } from '@mui/system';
-
-type GridItemProps = {
-  size?: number | {
-    xs?: number;
-    sm?: number;
-    md?: number;
-    lg?: number;
-  };
-} & SystemProps<Theme>;
-
-const GridItem = ({ children, ...props }: GridItemProps & { children: React.ReactNode }) => (
-  <Grid {...props}>{children}</Grid>
-);
 
 interface InvoiceFormProps {
   initialInvoice?: Invoice;
@@ -50,19 +33,14 @@ interface InvoiceFormProps {
   onCancel: () => void;
 }
 
-const emptyInvoiceLine: InvoiceLine = {
+const emptyInvoiceItem: InvoiceItem = {
   id: '',
-  productCode: '',
   description: '',
   quantity: 0,
   unitPrice: 0,
-  netAmount: 0,
-  taxBreakdown: {
-    taxableAmount: 0,
-    taxRate: 5, // Default VAT rate in UAE
-    taxAmount: 0,
-    taxCategory: 'S'
-  }
+  vatRate: 5, // Default VAT rate in UAE
+  vatAmount: 0,
+  total: 0
 };
 
 const defaultInvoice: Invoice = {
@@ -94,9 +72,10 @@ const defaultInvoice: Invoice = {
     },
     trn: ''
   },
-  lines: [],
-  totalAmount: 0,
-  totalTaxAmount: 0,
+  items: [],
+  subtotal: 0,
+  vatTotal: 0,
+  total: 0,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString()
 };
@@ -107,11 +86,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   onCancel
 }) => {
   const [invoice, setInvoice] = useState<Invoice>(initialInvoice || defaultInvoice);
-  const [newLine, setNewLine] = useState<InvoiceLine>({
-    ...emptyInvoiceLine,
+  const [newItem, setNewItem] = useState<InvoiceItem>({
+    ...emptyInvoiceItem,
     id: uuidv4()
   });
-  const [addLineDialogOpen, setAddLineDialogOpen] = useState(false);
+  const [addItemDialogOpen, setAddItemDialogOpen] = useState(false);
 
   const handleInputChange = (
     field: keyof Invoice | keyof PartyInfo | keyof Address,
@@ -162,28 +141,26 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     }));
   };
 
-  const handleNewLineChange = (
-    field: keyof InvoiceLine | 'taxRate',
+  const handleNewItemChange = (
+    field: keyof InvoiceItem,
     value: string | number
   ) => {
-    setNewLine(prev => {
+    setNewItem(prev => {
       const updated = { ...prev, [field]: value };
       
       // Recalculate amounts
-      if (field === 'quantity' || field === 'unitPrice') {
+      if (field === 'quantity' || field === 'unitPrice' || field === 'vatRate') {
         const quantity = field === 'quantity' ? +value : prev.quantity;
         const unitPrice = field === 'unitPrice' ? +value : prev.unitPrice;
-        const netAmount = quantity * unitPrice;
-        const taxAmount = netAmount * (prev.taxBreakdown.taxRate / 100);
+        const vatRate = field === 'vatRate' ? +value : prev.vatRate;
+        const subtotal = quantity * unitPrice;
+        const vatAmount = subtotal * (vatRate / 100);
+        const total = subtotal + vatAmount;
         
         return {
           ...updated,
-          netAmount,
-          taxBreakdown: {
-            ...prev.taxBreakdown,
-            taxableAmount: netAmount,
-            taxAmount
-          }
+          vatAmount,
+          total
         };
       }
       
@@ -191,83 +168,76 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     });
   };
 
-  const handleAddLine = () => {
+  const handleAddItem = () => {
     setInvoice(prev => {
-      const updatedLines = [...prev.lines, newLine];
-      const totalAmount = updatedLines.reduce((sum, line) => 
-        sum + line.netAmount + line.taxBreakdown.taxAmount, 0
-      );
-      const totalTaxAmount = updatedLines.reduce((sum, line) => 
-        sum + line.taxBreakdown.taxAmount, 0
-      );
+      const updatedItems = [...prev.items, newItem];
+      const subtotal = updatedItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+      const vatTotal = updatedItems.reduce((sum, item) => sum + item.vatAmount, 0);
+      const total = subtotal + vatTotal;
       
       return {
         ...prev,
-        lines: updatedLines,
-        totalAmount,
-        totalTaxAmount
+        items: updatedItems,
+        subtotal,
+        vatTotal,
+        total,
+        updatedAt: new Date().toISOString()
       };
     });
     
-    setNewLine({
-      ...emptyInvoiceLine,
+    setNewItem({
+      ...emptyInvoiceItem,
       id: uuidv4()
     });
-    setAddLineDialogOpen(false);
+    setAddItemDialogOpen(false);
   };
 
-  const handleDeleteLine = (lineId: string) => {
+  const handleDeleteItem = (itemId: string) => {
     setInvoice(prev => {
-      const updatedLines = prev.lines.filter(line => line.id !== lineId);
-      const totalAmount = updatedLines.reduce((sum, line) => 
-        sum + line.netAmount + line.taxBreakdown.taxAmount, 0
-      );
-      const totalTaxAmount = updatedLines.reduce((sum, line) => 
-        sum + line.taxBreakdown.taxAmount, 0
-      );
+      const updatedItems = prev.items.filter(item => item.id !== itemId);
+      const subtotal = updatedItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+      const vatTotal = updatedItems.reduce((sum, item) => sum + item.vatAmount, 0);
+      const total = subtotal + vatTotal;
       
       return {
         ...prev,
-        lines: updatedLines,
-        totalAmount,
-        totalTaxAmount
+        items: updatedItems,
+        subtotal,
+        vatTotal,
+        total,
+        updatedAt: new Date().toISOString()
       };
     });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
-      ...invoice,
-      updatedAt: new Date().toISOString()
-    });
+    onSubmit(invoice);
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        {initialInvoice ? 'Edit Invoice' : 'Create Invoice'}
-      </Typography>
-
-      {/* Basic Information */}
+    <Box component="form" onSubmit={handleSubmit}>
       <Card sx={{ mb: 3 }}>
         <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Basic Information
+          </Typography>
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Invoice Number"
                 value={invoice.invoiceNumber}
-                onChange={e => handleInputChange('invoiceNumber', e.target.value)}
+                onChange={(e) => handleInputChange('invoiceNumber', e.target.value)}
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} md={6}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   label="Issue Date"
                   value={new Date(invoice.issueDate)}
-                  onChange={date => date && handleInputChange('issueDate', date.toISOString())}
+                  onChange={(date) => handleInputChange('issueDate', date?.toISOString() || '')}
                   slotProps={{ textField: { fullWidth: true } }}
                 />
               </LocalizationProvider>
@@ -283,49 +253,57 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             Seller Information
           </Typography>
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12 }}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Company Name"
                 value={invoice.seller.name}
-                onChange={e => handleInputChange('name', e.target.value, 'seller')}
+                onChange={(e) => handleInputChange('name', e.target.value, 'seller')}
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="TRN"
                 value={invoice.seller.trn}
-                onChange={e => handleInputChange('trn', e.target.value, 'seller')}
+                onChange={(e) => handleInputChange('trn', e.target.value, 'seller')}
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Street Address"
+                label="Street"
                 value={invoice.seller.address.street}
-                onChange={e => handleAddressChange('street', e.target.value, 'seller')}
+                onChange={(e) => handleAddressChange('street', e.target.value, 'seller')}
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 label="City"
                 value={invoice.seller.address.city}
-                onChange={e => handleAddressChange('city', e.target.value, 'seller')}
+                onChange={(e) => handleAddressChange('city', e.target.value, 'seller')}
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 label="Emirate"
                 value={invoice.seller.address.emirate}
-                onChange={e => handleAddressChange('emirate', e.target.value, 'seller')}
+                onChange={(e) => handleAddressChange('emirate', e.target.value, 'seller')}
                 required
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label="Postal Code"
+                value={invoice.seller.address.postalCode}
+                onChange={(e) => handleAddressChange('postalCode', e.target.value, 'seller')}
               />
             </Grid>
           </Grid>
@@ -339,224 +317,229 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             Buyer Information
           </Typography>
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12 }}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Company Name"
                 value={invoice.buyer.name}
-                onChange={e => handleInputChange('name', e.target.value, 'buyer')}
+                onChange={(e) => handleInputChange('name', e.target.value, 'buyer')}
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="TRN"
                 value={invoice.buyer.trn}
-                onChange={e => handleInputChange('trn', e.target.value, 'buyer')}
+                onChange={(e) => handleInputChange('trn', e.target.value, 'buyer')}
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Street Address"
+                label="Street"
                 value={invoice.buyer.address.street}
-                onChange={e => handleAddressChange('street', e.target.value, 'buyer')}
+                onChange={(e) => handleAddressChange('street', e.target.value, 'buyer')}
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 label="City"
                 value={invoice.buyer.address.city}
-                onChange={e => handleAddressChange('city', e.target.value, 'buyer')}
+                onChange={(e) => handleAddressChange('city', e.target.value, 'buyer')}
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 label="Emirate"
                 value={invoice.buyer.address.emirate}
-                onChange={e => handleAddressChange('emirate', e.target.value, 'buyer')}
+                onChange={(e) => handleAddressChange('emirate', e.target.value, 'buyer')}
                 required
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label="Postal Code"
+                value={invoice.buyer.address.postalCode}
+                onChange={(e) => handleAddressChange('postalCode', e.target.value, 'buyer')}
               />
             </Grid>
           </Grid>
         </CardContent>
       </Card>
 
-      {/* Invoice Lines */}
+      {/* Invoice Items */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h6">
-              Invoice Lines
+              Invoice Items
             </Typography>
             <Button
-              variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => setAddLineDialogOpen(true)}
+              onClick={() => setAddItemDialogOpen(true)}
             >
-              Add Line
+              Add Item
             </Button>
           </Box>
-          
-          <TableContainer component={Paper}>
+
+          <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Product Code</TableCell>
                   <TableCell>Description</TableCell>
-                  <TableCell>Quantity</TableCell>
-                  <TableCell>Unit Price</TableCell>
-                  <TableCell>Net Amount</TableCell>
-                  <TableCell>VAT</TableCell>
-                  <TableCell>Total</TableCell>
-                  <TableCell>Actions</TableCell>
+                  <TableCell align="right">Quantity</TableCell>
+                  <TableCell align="right">Unit Price</TableCell>
+                  <TableCell align="right">VAT Rate</TableCell>
+                  <TableCell align="right">VAT Amount</TableCell>
+                  <TableCell align="right">Total</TableCell>
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {invoice.lines.map(line => (
-                  <TableRow key={line.id}>
-                    <TableCell>{line.productCode}</TableCell>
-                    <TableCell>{line.description}</TableCell>
-                    <TableCell>{line.quantity}</TableCell>
-                    <TableCell>AED {line.unitPrice.toFixed(2)}</TableCell>
-                    <TableCell>AED {line.netAmount.toFixed(2)}</TableCell>
-                    <TableCell>AED {line.taxBreakdown.taxAmount.toFixed(2)}</TableCell>
-                    <TableCell>
-                      AED {(line.netAmount + line.taxBreakdown.taxAmount).toFixed(2)}
+                {invoice.items.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.description}</TableCell>
+                    <TableCell align="right">{item.quantity}</TableCell>
+                    <TableCell align="right">
+                      {item.unitPrice.toLocaleString('en-AE', {
+                        style: 'currency',
+                        currency: 'AED'
+                      })}
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="right">{item.vatRate}%</TableCell>
+                    <TableCell align="right">
+                      {item.vatAmount.toLocaleString('en-AE', {
+                        style: 'currency',
+                        currency: 'AED'
+                      })}
+                    </TableCell>
+                    <TableCell align="right">
+                      {item.total.toLocaleString('en-AE', {
+                        style: 'currency',
+                        currency: 'AED'
+                      })}
+                    </TableCell>
+                    <TableCell align="right">
                       <IconButton
-                        color="error"
-                        onClick={() => handleDeleteLine(line.id)}
+                        onClick={() => handleDeleteItem(item.id)}
+                        size="small"
                       >
                         <DeleteIcon />
                       </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
-                {invoice.lines.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={8} align="center">
-                      No items added
-                    </TableCell>
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
           </TableContainer>
+
+          <Box mt={2}>
+            <Grid container spacing={2} sx={{ justifyContent: 'flex-end' }}>
+              <Grid item xs={12} md={4}>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography>Subtotal</Typography>
+                  <Typography>
+                    {invoice.subtotal.toLocaleString('en-AE', {
+                      style: 'currency',
+                      currency: 'AED'
+                    })}
+                  </Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography>VAT Total</Typography>
+                  <Typography>
+                    {invoice.vatTotal.toLocaleString('en-AE', {
+                      style: 'currency',
+                      currency: 'AED'
+                    })}
+                  </Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="h6">Total</Typography>
+                  <Typography variant="h6">
+                    {invoice.total.toLocaleString('en-AE', {
+                      style: 'currency',
+                      currency: 'AED'
+                    })}
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
         </CardContent>
       </Card>
 
-      {/* Totals */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <Typography variant="subtitle1">
-                Net Amount: AED {(invoice.totalAmount - invoice.totalTaxAmount).toFixed(2)}
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <Typography variant="subtitle1">
-                VAT Amount: AED {invoice.totalTaxAmount.toFixed(2)}
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <Typography variant="h6">
-                Total Amount: AED {invoice.totalAmount.toFixed(2)}
-              </Typography>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-
-      {/* Actions */}
-      <Box display="flex" justifyContent="flex-end" gap={2}>
-        <Button variant="outlined" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button variant="contained" color="primary" type="submit">
-          Save
-        </Button>
-      </Box>
-
-      {/* Add Line Dialog */}
+      {/* Add Item Dialog */}
       <Dialog
-        open={addLineDialogOpen}
-        onClose={() => setAddLineDialogOpen(false)}
-        maxWidth="md"
+        open={addItemDialogOpen}
+        onClose={() => setAddItemDialogOpen(false)}
+        maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>Add Invoice Line</DialogTitle>
+        <DialogTitle>Add Invoice Item</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Product Code"
-                value={newLine.productCode}
-                onChange={e => handleNewLineChange('productCode', e.target.value)}
-                required
-              />
+          <Box sx={{ pt: 2 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Description"
+                  value={newItem.description}
+                  onChange={(e) => handleNewItemChange('description', e.target.value)}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Quantity"
+                  value={newItem.quantity}
+                  onChange={(e) => handleNewItemChange('quantity', +e.target.value)}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Unit Price"
+                  value={newItem.unitPrice}
+                  onChange={(e) => handleNewItemChange('unitPrice', +e.target.value)}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="VAT Rate (%)"
+                  value={newItem.vatRate}
+                  onChange={(e) => handleNewItemChange('vatRate', +e.target.value)}
+                  required
+                />
+              </Grid>
             </Grid>
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                fullWidth
-                label="Description"
-                value={newLine.description}
-                onChange={e => handleNewLineChange('description', e.target.value)}
-                required
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Quantity"
-                value={newLine.quantity}
-                onChange={e => handleNewLineChange('quantity', e.target.value)}
-                required
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Unit Price"
-                value={newLine.unitPrice}
-                onChange={e => handleNewLineChange('unitPrice', e.target.value)}
-                required
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography variant="subtitle1">
-                Net Amount: AED {newLine.netAmount.toFixed(2)}
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Typography variant="subtitle1">
-                VAT Amount: AED {newLine.taxBreakdown.taxAmount.toFixed(2)}
-              </Typography>
-            </Grid>
-          </Grid>
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setAddLineDialogOpen(false)}>Cancel</Button>
-          <Button
-            onClick={handleAddLine}
-            color="primary"
-            disabled={!newLine.productCode || !newLine.description || !newLine.quantity || !newLine.unitPrice}
-          >
-            Add
-          </Button>
+          <Button onClick={() => setAddItemDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleAddItem} variant="contained">Add</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Form Actions */}
+      <Box display="flex" justifyContent="flex-end" gap={2}>
+        <Button onClick={onCancel}>Cancel</Button>
+        <Button type="submit" variant="contained">Save</Button>
+      </Box>
     </Box>
   );
 }; 

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Box, Paper, Typography, Button, TextField, IconButton, Tooltip, CircularProgress, Alert, Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, List, ListItem, ListItemText, ListItemSecondaryAction, Divider, Chip, InputAdornment } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon, Upload as UploadIcon, Info as InfoIcon } from '@mui/icons-material';
 import { useTransferPricing } from '../context/TransferPricingContext';
-import { TransactionType, TransferPricingMethod } from '../types/transferPricing';
 import { useTranslation } from 'react-i18next';
 const AddRelatedPartyDialog = ({ open, onClose, onAdd }) => {
     const { t } = useTranslation();

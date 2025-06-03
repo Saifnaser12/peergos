@@ -1,7 +1,7 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { FilingPage } from '../pages/Filing';
+import Filing from '../../pages/Filing';
 import { TaxProvider } from '../../context/TaxContext';
 import { SecureStorage } from '../../utils/storage';
 // Mock the storage to prevent actual localStorage operations
@@ -29,7 +29,7 @@ describe('Filing Flow Integration', () => {
         jest.clearAllMocks();
     });
     it('completes the full filing flow', async () => {
-        render(_jsx(TaxProvider, { children: _jsx(FilingPage, {}) }));
+        render(_jsx(TaxProvider, { children: _jsx(Filing, {}) }));
         // Step 1: Initial Form
         await waitFor(() => {
             expect(screen.getByText('Tax Filing Period')).toBeInTheDocument();
@@ -91,7 +91,7 @@ describe('Filing Flow Integration', () => {
         ]));
     });
     it('handles validation errors appropriately', async () => {
-        render(_jsx(TaxProvider, { children: _jsx(FilingPage, {}) }));
+        render(_jsx(TaxProvider, { children: _jsx(Filing, {}) }));
         // Try to proceed without filling required fields
         const nextButton = screen.getByRole('button', { name: /next/i });
         fireEvent.click(nextButton);
@@ -105,7 +105,7 @@ describe('Filing Flow Integration', () => {
         expect(screen.getByText('TRN must be exactly 15 digits')).toBeInTheDocument();
     });
     it('saves draft filing', async () => {
-        render(_jsx(TaxProvider, { children: _jsx(FilingPage, {}) }));
+        render(_jsx(TaxProvider, { children: _jsx(Filing, {}) }));
         // Fill some data
         const periodSelect = screen.getByLabelText('Filing Period');
         fireEvent.change(periodSelect, { target: { value: '2024-Q1' } });

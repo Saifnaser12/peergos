@@ -100,9 +100,9 @@ describe('PerformanceMonitor', () => {
         });
     });
     describe('React Component HOC', () => {
-        function TestComponent({ text }) {
+        const TestComponent = ({ text }) => {
             return React.createElement('div', null, text);
-        }
+        };
         TestComponent.displayName = 'TestComponent';
         const WrappedComponent = withPerformanceTracking(TestComponent);
         it('tracks component lifecycle', () => {

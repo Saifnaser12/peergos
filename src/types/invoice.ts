@@ -45,15 +45,14 @@ export interface PartyInfo {
   contactDetails?: ContactDetails;
 }
 
-export interface InvoiceLine {
+export interface InvoiceItem {
   id: string;
-  productCode: string;
   description: string;
   quantity: number;
   unitPrice: number;
-  discountAmount?: number;
-  netAmount: number;
-  taxBreakdown: TaxBreakdown;
+  vatRate: number;
+  vatAmount: number;
+  total: number;
 }
 
 export interface Invoice {
@@ -68,11 +67,11 @@ export interface Invoice {
   seller: PartyInfo;
   buyer: PartyInfo;
   
-  lines: InvoiceLine[];
+  items: InvoiceItem[];
   
-  totalAmount: number;
-  totalTaxAmount: number;
-  totalDiscountAmount?: number;
+  subtotal: number;
+  vatTotal: number;
+  total: number;
   
   paymentTerms?: string;
   notes?: string;
@@ -135,26 +134,19 @@ export const invoiceSchema = z.object({
     }).optional()
   }),
   
-  lines: z.array(z.object({
+  items: z.array(z.object({
     id: z.string().uuid(),
-    productCode: z.string().min(1),
     description: z.string().min(1),
     quantity: z.number().positive(),
     unitPrice: z.number().nonnegative(),
-    discountAmount: z.number().nonnegative().optional(),
-    netAmount: z.number().nonnegative(),
-    taxBreakdown: z.object({
-      taxableAmount: z.number().nonnegative(),
-      taxRate: z.number().nonnegative(),
-      taxAmount: z.number().nonnegative(),
-      taxCategory: z.string().min(1),
-      exemptionReason: z.string().optional()
-    })
+    vatRate: z.number().nonnegative(),
+    vatAmount: z.number().nonnegative(),
+    total: z.number().nonnegative()
   })).min(1),
   
-  totalAmount: z.number().nonnegative(),
-  totalTaxAmount: z.number().nonnegative(),
-  totalDiscountAmount: z.number().nonnegative().optional(),
+  subtotal: z.number().nonnegative(),
+  vatTotal: z.number().nonnegative(),
+  total: z.number().nonnegative(),
   
   paymentTerms: z.string().optional(),
   notes: z.string().optional(),

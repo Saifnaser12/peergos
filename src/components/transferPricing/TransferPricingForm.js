@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Box, TextField, MenuItem, Button, Typography, IconButton, Tooltip, Paper, CircularProgress, Alert, } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { TransactionType, TransferPricingMethod } from '../../types/transferPricing';
 import { useTransferPricing } from '../../hooks/useTransferPricing';
 const FileUpload = ({ label, tooltip, onChange, accept = '.pdf,.doc,.docx' }) => {
     const { t } = useTranslation();

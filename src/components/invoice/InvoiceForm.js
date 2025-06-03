@@ -2,27 +2,20 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from 'react';
 import { InvoiceStatus, InvoiceType } from '../../types/invoice';
 import { v4 as uuidv4 } from 'uuid';
-import { Box, Button, Card, CardContent, TextField, Typography, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogActions, } from '@mui/material';
-import { Grid } from '../common/Grid';
+import { Box, Button, Card, CardContent, TextField, Typography, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Grid } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-const GridItem = ({ children, ...props }) => (_jsx(Grid, { ...props, children: children }));
-const emptyInvoiceLine = {
+const emptyInvoiceItem = {
     id: '',
-    productCode: '',
     description: '',
     quantity: 0,
     unitPrice: 0,
-    netAmount: 0,
-    taxBreakdown: {
-        taxableAmount: 0,
-        taxRate: 5, // Default VAT rate in UAE
-        taxAmount: 0,
-        taxCategory: 'S'
-    }
+    vatRate: 5, // Default VAT rate in UAE
+    vatAmount: 0,
+    total: 0
 };
 const defaultInvoice = {
     id: uuidv4(),
@@ -53,19 +46,20 @@ const defaultInvoice = {
         },
         trn: ''
     },
-    lines: [],
-    totalAmount: 0,
-    totalTaxAmount: 0,
+    items: [],
+    subtotal: 0,
+    vatTotal: 0,
+    total: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
 };
 export const InvoiceForm = ({ initialInvoice, onSubmit, onCancel }) => {
     const [invoice, setInvoice] = useState(initialInvoice || defaultInvoice);
-    const [newLine, setNewLine] = useState({
-        ...emptyInvoiceLine,
+    const [newItem, setNewItem] = useState({
+        ...emptyInvoiceItem,
         id: uuidv4()
     });
-    const [addLineDialogOpen, setAddLineDialogOpen] = useState(false);
+    const [addItemDialogOpen, setAddItemDialogOpen] = useState(false);
     const handleInputChange = (field, value, section, subfield) => {
         setInvoice(prev => {
             if (section && subfield) {
@@ -106,65 +100,84 @@ export const InvoiceForm = ({ initialInvoice, onSubmit, onCancel }) => {
             }
         }));
     };
-    const handleNewLineChange = (field, value) => {
-        setNewLine(prev => {
+    const handleNewItemChange = (field, value) => {
+        setNewItem(prev => {
             const updated = { ...prev, [field]: value };
             // Recalculate amounts
-            if (field === 'quantity' || field === 'unitPrice') {
+            if (field === 'quantity' || field === 'unitPrice' || field === 'vatRate') {
                 const quantity = field === 'quantity' ? +value : prev.quantity;
                 const unitPrice = field === 'unitPrice' ? +value : prev.unitPrice;
-                const netAmount = quantity * unitPrice;
-                const taxAmount = netAmount * (prev.taxBreakdown.taxRate / 100);
+                const vatRate = field === 'vatRate' ? +value : prev.vatRate;
+                const subtotal = quantity * unitPrice;
+                const vatAmount = subtotal * (vatRate / 100);
+                const total = subtotal + vatAmount;
                 return {
                     ...updated,
-                    netAmount,
-                    taxBreakdown: {
-                        ...prev.taxBreakdown,
-                        taxableAmount: netAmount,
-                        taxAmount
-                    }
+                    vatAmount,
+                    total
                 };
             }
             return updated;
         });
     };
-    const handleAddLine = () => {
+    const handleAddItem = () => {
         setInvoice(prev => {
-            const updatedLines = [...prev.lines, newLine];
-            const totalAmount = updatedLines.reduce((sum, line) => sum + line.netAmount + line.taxBreakdown.taxAmount, 0);
-            const totalTaxAmount = updatedLines.reduce((sum, line) => sum + line.taxBreakdown.taxAmount, 0);
+            const updatedItems = [...prev.items, newItem];
+            const subtotal = updatedItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+            const vatTotal = updatedItems.reduce((sum, item) => sum + item.vatAmount, 0);
+            const total = subtotal + vatTotal;
             return {
                 ...prev,
-                lines: updatedLines,
-                totalAmount,
-                totalTaxAmount
+                items: updatedItems,
+                subtotal,
+                vatTotal,
+                total,
+                updatedAt: new Date().toISOString()
             };
         });
-        setNewLine({
-            ...emptyInvoiceLine,
+        setNewItem({
+            ...emptyInvoiceItem,
             id: uuidv4()
         });
-        setAddLineDialogOpen(false);
+        setAddItemDialogOpen(false);
     };
-    const handleDeleteLine = (lineId) => {
+    const handleDeleteItem = (itemId) => {
         setInvoice(prev => {
-            const updatedLines = prev.lines.filter(line => line.id !== lineId);
-            const totalAmount = updatedLines.reduce((sum, line) => sum + line.netAmount + line.taxBreakdown.taxAmount, 0);
-            const totalTaxAmount = updatedLines.reduce((sum, line) => sum + line.taxBreakdown.taxAmount, 0);
+            const updatedItems = prev.items.filter(item => item.id !== itemId);
+            const subtotal = updatedItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+            const vatTotal = updatedItems.reduce((sum, item) => sum + item.vatAmount, 0);
+            const total = subtotal + vatTotal;
             return {
                 ...prev,
-                lines: updatedLines,
-                totalAmount,
-                totalTaxAmount
+                items: updatedItems,
+                subtotal,
+                vatTotal,
+                total,
+                updatedAt: new Date().toISOString()
             };
         });
     };
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit({
-            ...invoice,
-            updatedAt: new Date().toISOString()
-        });
+        onSubmit(invoice);
     };
-    return (_jsxs(Box, { component: "form", onSubmit: handleSubmit, sx: { p: 3 }, children: [_jsx(Typography, { variant: "h4", gutterBottom: true, children: initialInvoice ? 'Edit Invoice' : 'Create Invoice' }), _jsx(Card, { sx: { mb: 3 }, children: _jsx(CardContent, { children: _jsxs(Grid, { container: true, spacing: 2, children: [_jsx(Grid, { size: { xs: 12, sm: 6 }, children: _jsx(TextField, { fullWidth: true, label: "Invoice Number", value: invoice.invoiceNumber, onChange: e => handleInputChange('invoiceNumber', e.target.value), required: true }) }), _jsx(Grid, { size: { xs: 12, sm: 6 }, children: _jsx(LocalizationProvider, { dateAdapter: AdapterDateFns, children: _jsx(DatePicker, { label: "Issue Date", value: new Date(invoice.issueDate), onChange: date => date && handleInputChange('issueDate', date.toISOString()), slotProps: { textField: { fullWidth: true } } }) }) })] }) }) }), _jsx(Card, { sx: { mb: 3 }, children: _jsxs(CardContent, { children: [_jsx(Typography, { variant: "h6", gutterBottom: true, children: "Seller Information" }), _jsxs(Grid, { container: true, spacing: 2, children: [_jsx(Grid, { size: { xs: 12 }, children: _jsx(TextField, { fullWidth: true, label: "Company Name", value: invoice.seller.name, onChange: e => handleInputChange('name', e.target.value, 'seller'), required: true }) }), _jsx(Grid, { size: { xs: 12 }, children: _jsx(TextField, { fullWidth: true, label: "TRN", value: invoice.seller.trn, onChange: e => handleInputChange('trn', e.target.value, 'seller'), required: true }) }), _jsx(Grid, { size: { xs: 12 }, children: _jsx(TextField, { fullWidth: true, label: "Street Address", value: invoice.seller.address.street, onChange: e => handleAddressChange('street', e.target.value, 'seller'), required: true }) }), _jsx(Grid, { size: { xs: 12, sm: 6 }, children: _jsx(TextField, { fullWidth: true, label: "City", value: invoice.seller.address.city, onChange: e => handleAddressChange('city', e.target.value, 'seller'), required: true }) }), _jsx(Grid, { size: { xs: 12, sm: 6 }, children: _jsx(TextField, { fullWidth: true, label: "Emirate", value: invoice.seller.address.emirate, onChange: e => handleAddressChange('emirate', e.target.value, 'seller'), required: true }) })] })] }) }), _jsx(Card, { sx: { mb: 3 }, children: _jsxs(CardContent, { children: [_jsx(Typography, { variant: "h6", gutterBottom: true, children: "Buyer Information" }), _jsxs(Grid, { container: true, spacing: 2, children: [_jsx(Grid, { size: { xs: 12 }, children: _jsx(TextField, { fullWidth: true, label: "Company Name", value: invoice.buyer.name, onChange: e => handleInputChange('name', e.target.value, 'buyer'), required: true }) }), _jsx(Grid, { size: { xs: 12 }, children: _jsx(TextField, { fullWidth: true, label: "TRN", value: invoice.buyer.trn, onChange: e => handleInputChange('trn', e.target.value, 'buyer'), required: true }) }), _jsx(Grid, { size: { xs: 12 }, children: _jsx(TextField, { fullWidth: true, label: "Street Address", value: invoice.buyer.address.street, onChange: e => handleAddressChange('street', e.target.value, 'buyer'), required: true }) }), _jsx(Grid, { size: { xs: 12, sm: 6 }, children: _jsx(TextField, { fullWidth: true, label: "City", value: invoice.buyer.address.city, onChange: e => handleAddressChange('city', e.target.value, 'buyer'), required: true }) }), _jsx(Grid, { size: { xs: 12, sm: 6 }, children: _jsx(TextField, { fullWidth: true, label: "Emirate", value: invoice.buyer.address.emirate, onChange: e => handleAddressChange('emirate', e.target.value, 'buyer'), required: true }) })] })] }) }), _jsx(Card, { sx: { mb: 3 }, children: _jsxs(CardContent, { children: [_jsxs(Box, { display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, children: [_jsx(Typography, { variant: "h6", children: "Invoice Lines" }), _jsx(Button, { variant: "contained", startIcon: _jsx(AddIcon, {}), onClick: () => setAddLineDialogOpen(true), children: "Add Line" })] }), _jsx(TableContainer, { component: Paper, children: _jsxs(Table, { children: [_jsx(TableHead, { children: _jsxs(TableRow, { children: [_jsx(TableCell, { children: "Product Code" }), _jsx(TableCell, { children: "Description" }), _jsx(TableCell, { children: "Quantity" }), _jsx(TableCell, { children: "Unit Price" }), _jsx(TableCell, { children: "Net Amount" }), _jsx(TableCell, { children: "VAT" }), _jsx(TableCell, { children: "Total" }), _jsx(TableCell, { children: "Actions" })] }) }), _jsxs(TableBody, { children: [invoice.lines.map(line => (_jsxs(TableRow, { children: [_jsx(TableCell, { children: line.productCode }), _jsx(TableCell, { children: line.description }), _jsx(TableCell, { children: line.quantity }), _jsxs(TableCell, { children: ["AED ", line.unitPrice.toFixed(2)] }), _jsxs(TableCell, { children: ["AED ", line.netAmount.toFixed(2)] }), _jsxs(TableCell, { children: ["AED ", line.taxBreakdown.taxAmount.toFixed(2)] }), _jsxs(TableCell, { children: ["AED ", (line.netAmount + line.taxBreakdown.taxAmount).toFixed(2)] }), _jsx(TableCell, { children: _jsx(IconButton, { color: "error", onClick: () => handleDeleteLine(line.id), children: _jsx(DeleteIcon, {}) }) })] }, line.id))), invoice.lines.length === 0 && (_jsx(TableRow, { children: _jsx(TableCell, { colSpan: 8, align: "center", children: "No items added" }) }))] })] }) })] }) }), _jsx(Card, { sx: { mb: 3 }, children: _jsx(CardContent, { children: _jsxs(Grid, { container: true, spacing: 2, children: [_jsx(Grid, { size: { xs: 12, sm: 4 }, children: _jsxs(Typography, { variant: "subtitle1", children: ["Net Amount: AED ", (invoice.totalAmount - invoice.totalTaxAmount).toFixed(2)] }) }), _jsx(Grid, { size: { xs: 12, sm: 4 }, children: _jsxs(Typography, { variant: "subtitle1", children: ["VAT Amount: AED ", invoice.totalTaxAmount.toFixed(2)] }) }), _jsx(Grid, { size: { xs: 12, sm: 4 }, children: _jsxs(Typography, { variant: "h6", children: ["Total Amount: AED ", invoice.totalAmount.toFixed(2)] }) })] }) }) }), _jsxs(Box, { display: "flex", justifyContent: "flex-end", gap: 2, children: [_jsx(Button, { variant: "outlined", onClick: onCancel, children: "Cancel" }), _jsx(Button, { variant: "contained", color: "primary", type: "submit", children: "Save" })] }), _jsxs(Dialog, { open: addLineDialogOpen, onClose: () => setAddLineDialogOpen(false), maxWidth: "md", fullWidth: true, children: [_jsx(DialogTitle, { children: "Add Invoice Line" }), _jsx(DialogContent, { children: _jsxs(Grid, { container: true, spacing: 2, sx: { mt: 1 }, children: [_jsx(Grid, { size: { xs: 12, sm: 6 }, children: _jsx(TextField, { fullWidth: true, label: "Product Code", value: newLine.productCode, onChange: e => handleNewLineChange('productCode', e.target.value), required: true }) }), _jsx(Grid, { size: { xs: 12 }, children: _jsx(TextField, { fullWidth: true, label: "Description", value: newLine.description, onChange: e => handleNewLineChange('description', e.target.value), required: true }) }), _jsx(Grid, { size: { xs: 12, sm: 6 }, children: _jsx(TextField, { fullWidth: true, type: "number", label: "Quantity", value: newLine.quantity, onChange: e => handleNewLineChange('quantity', e.target.value), required: true }) }), _jsx(Grid, { size: { xs: 12, sm: 6 }, children: _jsx(TextField, { fullWidth: true, type: "number", label: "Unit Price", value: newLine.unitPrice, onChange: e => handleNewLineChange('unitPrice', e.target.value), required: true }) }), _jsx(Grid, { size: { xs: 12, sm: 6 }, children: _jsxs(Typography, { variant: "subtitle1", children: ["Net Amount: AED ", newLine.netAmount.toFixed(2)] }) }), _jsx(Grid, { size: { xs: 12, sm: 6 }, children: _jsxs(Typography, { variant: "subtitle1", children: ["VAT Amount: AED ", newLine.taxBreakdown.taxAmount.toFixed(2)] }) })] }) }), _jsxs(DialogActions, { children: [_jsx(Button, { onClick: () => setAddLineDialogOpen(false), children: "Cancel" }), _jsx(Button, { onClick: handleAddLine, color: "primary", disabled: !newLine.productCode || !newLine.description || !newLine.quantity || !newLine.unitPrice, children: "Add" })] })] })] }));
+    return (_jsxs(Box, { component: "form", onSubmit: handleSubmit, children: [_jsx(Card, { sx: { mb: 3 }, children: _jsxs(CardContent, { children: [_jsx(Typography, { variant: "h6", gutterBottom: true, children: "Basic Information" }), _jsxs(Grid, { container: true, spacing: 2, children: [_jsx(Grid, { item: true, xs: 12, md: 6, children: _jsx(TextField, { fullWidth: true, label: "Invoice Number", value: invoice.invoiceNumber, onChange: (e) => handleInputChange('invoiceNumber', e.target.value), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 6, children: _jsx(LocalizationProvider, { dateAdapter: AdapterDateFns, children: _jsx(DatePicker, { label: "Issue Date", value: new Date(invoice.issueDate), onChange: (date) => handleInputChange('issueDate', date?.toISOString() || ''), slotProps: { textField: { fullWidth: true } } }) }) })] })] }) }), _jsx(Card, { sx: { mb: 3 }, children: _jsxs(CardContent, { children: [_jsx(Typography, { variant: "h6", gutterBottom: true, children: "Seller Information" }), _jsxs(Grid, { container: true, spacing: 2, children: [_jsx(Grid, { item: true, xs: 12, md: 6, children: _jsx(TextField, { fullWidth: true, label: "Company Name", value: invoice.seller.name, onChange: (e) => handleInputChange('name', e.target.value, 'seller'), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 6, children: _jsx(TextField, { fullWidth: true, label: "TRN", value: invoice.seller.trn, onChange: (e) => handleInputChange('trn', e.target.value, 'seller'), required: true }) }), _jsx(Grid, { item: true, xs: 12, children: _jsx(TextField, { fullWidth: true, label: "Street", value: invoice.seller.address.street, onChange: (e) => handleAddressChange('street', e.target.value, 'seller'), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 4, children: _jsx(TextField, { fullWidth: true, label: "City", value: invoice.seller.address.city, onChange: (e) => handleAddressChange('city', e.target.value, 'seller'), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 4, children: _jsx(TextField, { fullWidth: true, label: "Emirate", value: invoice.seller.address.emirate, onChange: (e) => handleAddressChange('emirate', e.target.value, 'seller'), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 4, children: _jsx(TextField, { fullWidth: true, label: "Postal Code", value: invoice.seller.address.postalCode, onChange: (e) => handleAddressChange('postalCode', e.target.value, 'seller') }) })] })] }) }), _jsx(Card, { sx: { mb: 3 }, children: _jsxs(CardContent, { children: [_jsx(Typography, { variant: "h6", gutterBottom: true, children: "Buyer Information" }), _jsxs(Grid, { container: true, spacing: 2, children: [_jsx(Grid, { item: true, xs: 12, md: 6, children: _jsx(TextField, { fullWidth: true, label: "Company Name", value: invoice.buyer.name, onChange: (e) => handleInputChange('name', e.target.value, 'buyer'), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 6, children: _jsx(TextField, { fullWidth: true, label: "TRN", value: invoice.buyer.trn, onChange: (e) => handleInputChange('trn', e.target.value, 'buyer'), required: true }) }), _jsx(Grid, { item: true, xs: 12, children: _jsx(TextField, { fullWidth: true, label: "Street", value: invoice.buyer.address.street, onChange: (e) => handleAddressChange('street', e.target.value, 'buyer'), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 4, children: _jsx(TextField, { fullWidth: true, label: "City", value: invoice.buyer.address.city, onChange: (e) => handleAddressChange('city', e.target.value, 'buyer'), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 4, children: _jsx(TextField, { fullWidth: true, label: "Emirate", value: invoice.buyer.address.emirate, onChange: (e) => handleAddressChange('emirate', e.target.value, 'buyer'), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 4, children: _jsx(TextField, { fullWidth: true, label: "Postal Code", value: invoice.buyer.address.postalCode, onChange: (e) => handleAddressChange('postalCode', e.target.value, 'buyer') }) })] })] }) }), _jsx(Card, { sx: { mb: 3 }, children: _jsxs(CardContent, { children: [_jsxs(Box, { display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, children: [_jsx(Typography, { variant: "h6", children: "Invoice Items" }), _jsx(Button, { startIcon: _jsx(AddIcon, {}), onClick: () => setAddItemDialogOpen(true), children: "Add Item" })] }), _jsx(TableContainer, { children: _jsxs(Table, { children: [_jsx(TableHead, { children: _jsxs(TableRow, { children: [_jsx(TableCell, { children: "Description" }), _jsx(TableCell, { align: "right", children: "Quantity" }), _jsx(TableCell, { align: "right", children: "Unit Price" }), _jsx(TableCell, { align: "right", children: "VAT Rate" }), _jsx(TableCell, { align: "right", children: "VAT Amount" }), _jsx(TableCell, { align: "right", children: "Total" }), _jsx(TableCell, { align: "right", children: "Actions" })] }) }), _jsx(TableBody, { children: invoice.items.map((item) => (_jsxs(TableRow, { children: [_jsx(TableCell, { children: item.description }), _jsx(TableCell, { align: "right", children: item.quantity }), _jsx(TableCell, { align: "right", children: item.unitPrice.toLocaleString('en-AE', {
+                                                        style: 'currency',
+                                                        currency: 'AED'
+                                                    }) }), _jsxs(TableCell, { align: "right", children: [item.vatRate, "%"] }), _jsx(TableCell, { align: "right", children: item.vatAmount.toLocaleString('en-AE', {
+                                                        style: 'currency',
+                                                        currency: 'AED'
+                                                    }) }), _jsx(TableCell, { align: "right", children: item.total.toLocaleString('en-AE', {
+                                                        style: 'currency',
+                                                        currency: 'AED'
+                                                    }) }), _jsx(TableCell, { align: "right", children: _jsx(IconButton, { onClick: () => handleDeleteItem(item.id), size: "small", children: _jsx(DeleteIcon, {}) }) })] }, item.id))) })] }) }), _jsx(Box, { mt: 2, children: _jsx(Grid, { container: true, spacing: 2, sx: { justifyContent: 'flex-end' }, children: _jsxs(Grid, { item: true, xs: 12, md: 4, children: [_jsxs(Box, { display: "flex", justifyContent: "space-between", mb: 1, children: [_jsx(Typography, { children: "Subtotal" }), _jsx(Typography, { children: invoice.subtotal.toLocaleString('en-AE', {
+                                                        style: 'currency',
+                                                        currency: 'AED'
+                                                    }) })] }), _jsxs(Box, { display: "flex", justifyContent: "space-between", mb: 1, children: [_jsx(Typography, { children: "VAT Total" }), _jsx(Typography, { children: invoice.vatTotal.toLocaleString('en-AE', {
+                                                        style: 'currency',
+                                                        currency: 'AED'
+                                                    }) })] }), _jsxs(Box, { display: "flex", justifyContent: "space-between", children: [_jsx(Typography, { variant: "h6", children: "Total" }), _jsx(Typography, { variant: "h6", children: invoice.total.toLocaleString('en-AE', {
+                                                        style: 'currency',
+                                                        currency: 'AED'
+                                                    }) })] })] }) }) })] }) }), _jsxs(Dialog, { open: addItemDialogOpen, onClose: () => setAddItemDialogOpen(false), maxWidth: "sm", fullWidth: true, children: [_jsx(DialogTitle, { children: "Add Invoice Item" }), _jsx(DialogContent, { children: _jsx(Box, { sx: { pt: 2 }, children: _jsxs(Grid, { container: true, spacing: 2, children: [_jsx(Grid, { item: true, xs: 12, children: _jsx(TextField, { fullWidth: true, label: "Description", value: newItem.description, onChange: (e) => handleNewItemChange('description', e.target.value), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 4, children: _jsx(TextField, { fullWidth: true, type: "number", label: "Quantity", value: newItem.quantity, onChange: (e) => handleNewItemChange('quantity', +e.target.value), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 4, children: _jsx(TextField, { fullWidth: true, type: "number", label: "Unit Price", value: newItem.unitPrice, onChange: (e) => handleNewItemChange('unitPrice', +e.target.value), required: true }) }), _jsx(Grid, { item: true, xs: 12, md: 4, children: _jsx(TextField, { fullWidth: true, type: "number", label: "VAT Rate (%)", value: newItem.vatRate, onChange: (e) => handleNewItemChange('vatRate', +e.target.value), required: true }) })] }) }) }), _jsxs(DialogActions, { children: [_jsx(Button, { onClick: () => setAddItemDialogOpen(false), children: "Cancel" }), _jsx(Button, { onClick: handleAddItem, variant: "contained", children: "Add" })] })] }), _jsxs(Box, { display: "flex", justifyContent: "flex-end", gap: 2, children: [_jsx(Button, { onClick: onCancel, children: "Cancel" }), _jsx(Button, { type: "submit", variant: "contained", children: "Save" })] })] }));
 };

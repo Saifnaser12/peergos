@@ -16,7 +16,7 @@ import AlertBanner from '../components/AlertBanner';
 import Button from '../components/Button';
 import { format } from 'date-fns';
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-const Dashboard = () => {
+export const Dashboard = () => {
     const { state } = useTax();
     const { log } = useAudit();
     const navigate = useNavigate();
@@ -36,6 +36,8 @@ const Dashboard = () => {
     });
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [exportStarted, setExportStarted] = useState(false);
+    const [searchTRN, setSearchTRN] = useState('');
+    const [selectedPeriod, setSelectedPeriod] = useState('2024-Q1');
     // Calculate VAT and CIT
     const vatDue = useMemo(() => {
         // VAT calculation logic
@@ -164,26 +166,23 @@ const Dashboard = () => {
     const handleExport = async (type) => {
         try {
             setExportStarted(true);
+            const reportData = {
+                revenues: state.revenues,
+                expenses: state.expenses,
+                profile: state.profile,
+                vatDue: state.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0),
+                citDue: state.revenues.reduce((sum, r) => sum + (r.amount * 0.09), 0),
+                complianceScore: calculateDetailedComplianceScore(state).score
+            };
             if (type === 'pdf') {
-                await generatePDFReport({
-                    revenues: state.revenues,
-                    expenses: state.expenses,
-                    profile: state.profile,
-                    metrics: Performance.getMetrics()
-                });
+                await generatePDFReport(reportData);
             }
             else {
-                await generateExcelReport({
-                    revenues: state.revenues,
-                    expenses: state.expenses,
-                    profile: state.profile,
-                    metrics: Performance.getMetrics()
-                });
+                await generateExcelReport(reportData);
             }
         }
         catch (error) {
             console.error('Export failed:', error);
-            // Show error notification
         }
         finally {
             setExportStarted(false);

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { useTax, calculateCIT } from '../context/TaxContext';
 import { useAudit } from '../context/AuditContext';
 import { useNavigate } from 'react-router-dom';
@@ -42,6 +42,25 @@ import Button from '../components/Button';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import ExcelJS from 'exceljs';
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  TextField,
+  IconButton,
+  Card,
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  Pagination
+} from '@mui/material';
+import { RevenueEntry, ExpenseEntry } from '../types';
 
 interface CompanySearchResult {
   name: string;
@@ -72,7 +91,7 @@ interface DashboardProps {
   // Add any props if needed
 }
 
-const Dashboard: React.FC<DashboardProps> = () => {
+export const Dashboard: React.FC<DashboardProps> = () => {
   const { state } = useTax();
   const { log } = useAudit();
   const navigate = useNavigate();
@@ -95,6 +114,8 @@ const Dashboard: React.FC<DashboardProps> = () => {
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [exportStarted, setExportStarted] = useState(false);
+  const [searchTRN, setSearchTRN] = useState('');
+  const [selectedPeriod, setSelectedPeriod] = useState('2024-Q1');
 
   // Calculate VAT and CIT
   const vatDue = useMemo(() => {

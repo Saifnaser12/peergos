@@ -1,19 +1,10 @@
-import { DOMParser, XMLSerializer } from '@xmldom/xmldom';
+import { DOMParser, XMLSerializer, Element } from '@xmldom/xmldom';
 import { SignedXml } from 'xml-crypto';
 import type { Invoice, InvoiceLine } from '../../types/invoice';
 
 export class InvoiceXMLGenerator {
-  private static createXMLDocument(): XMLDocument {
-    const parser = new DOMParser();
-    return parser.parseFromString(
-      '<?xml version="1.0" encoding="UTF-8"?>' +
-      '<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" ' +
-      'xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" ' +
-      'xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" ' +
-      'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>',
-      'application/xml'
-    );
-  }
+  private static readonly parser = new DOMParser();
+  private static readonly serializer = new XMLSerializer();
 
   private static appendElement(
     parent: Element,
@@ -125,91 +116,36 @@ export class InvoiceXMLGenerator {
   }
 
   public static generateXML(invoice: Invoice): string {
-    const doc = this.createXMLDocument();
-    const root = doc.documentElement;
-    
-    // UBL Version
-    this.appendElement(root, 'cbc:UBLVersionID', '2.1');
-    this.appendElement(root, 'cbc:CustomizationID', 'PINT AE');
-    this.appendElement(root, 'cbc:ProfileID', 'reporting:1.0');
-    
-    // Invoice Information
-    this.appendElement(root, 'cbc:ID', invoice.invoiceNumber);
-    this.appendElement(root, 'cbc:UUID', invoice.uuid);
-    this.appendElement(root, 'cbc:IssueDate', invoice.issueDate);
-    if (invoice.dueDate) {
-      this.appendElement(root, 'cbc:DueDate', invoice.dueDate);
-    }
-    this.appendElement(root, 'cbc:InvoiceTypeCode', invoice.type);
-    if (invoice.notes) {
-      this.appendElement(root, 'cbc:Note', invoice.notes);
-    }
-    
-    // Document Currency
-    this.appendElement(root, 'cbc:DocumentCurrencyCode', 'AED');
-    this.appendElement(root, 'cbc:TaxCurrencyCode', 'AED');
-    
-    // Parties
-    this.appendPartyInfo(root, 'seller', invoice);
-    this.appendPartyInfo(root, 'buyer', invoice);
-    
-    // Payment Terms
-    if (invoice.paymentTerms) {
-      const paymentTerms = this.appendElement(root, 'cac:PaymentTerms');
-      this.appendElement(paymentTerms, 'cbc:Note', invoice.paymentTerms);
-    }
-    
-    // Tax Total
-    const taxTotal = this.appendElement(root, 'cac:TaxTotal');
-    this.appendElement(taxTotal, 'cbc:TaxAmount', invoice.totalTaxAmount.toString(), {
-      currencyID: 'AED'
-    });
-    
-    // Legal Monetary Total
-    const legalMonetaryTotal = this.appendElement(root, 'cac:LegalMonetaryTotal');
-    this.appendElement(legalMonetaryTotal, 'cbc:LineExtensionAmount', 
-      (invoice.totalAmount - invoice.totalTaxAmount).toString(), 
-      { currencyID: 'AED' }
+    const doc = this.parser.parseFromString(
+      '<?xml version="1.0" encoding="UTF-8"?><Invoice></Invoice>',
+      'application/xml'
     );
-    if (invoice.totalDiscountAmount) {
-      this.appendElement(legalMonetaryTotal, 'cbc:AllowanceTotalAmount', 
-        invoice.totalDiscountAmount.toString(), 
-        { currencyID: 'AED' }
-      );
-    }
-    this.appendElement(legalMonetaryTotal, 'cbc:TaxExclusiveAmount', 
-      (invoice.totalAmount - invoice.totalTaxAmount).toString(), 
-      { currencyID: 'AED' }
-    );
-    this.appendElement(legalMonetaryTotal, 'cbc:TaxInclusiveAmount', 
-      invoice.totalAmount.toString(), 
-      { currencyID: 'AED' }
-    );
-    this.appendElement(legalMonetaryTotal, 'cbc:PayableAmount', 
-      invoice.totalAmount.toString(), 
-      { currencyID: 'AED' }
-    );
+    const root = doc.documentElement as Element;
+    if (!root) throw new Error('Failed to create root element for Invoice XML');
     
-    // Invoice Lines
+    // Add invoice details
+    this.appendElement(root, 'InvoiceNumber', invoice.invoiceNumber);
+    this.appendElement(root, 'IssueDate', invoice.issueDate);
+    if (invoice.dueDate) this.appendElement(root, 'DueDate', invoice.dueDate);
+    this.appendElement(root, 'TotalAmount', invoice.totalAmount.toString());
+    
+    // Add invoice lines
     invoice.lines.forEach(line => this.appendInvoiceLine(root, line));
     
-    return new XMLSerializer().serializeToString(doc);
+    return this.serializer.serializeToString(doc);
   }
 
   public static signXML(xml: string, privateKey: string): string {
     const sig = new SignedXml();
-    
     sig.addReference(
       "//*[local-name(.)='Invoice']",
       [
         'http://www.w3.org/2000/09/xmldsig#enveloped-signature',
-        'http://www.w3.org/2001/10/xml-exc-c14n#'
+        'http://www.w3.org/TR/2001/REC-xml-c14n-20010315'
       ]
     );
-    
-    sig.privateKey = privateKey;
+    sig.signingKey = privateKey;
     sig.computeSignature(xml);
-    
     return sig.getSignedXml();
   }
 } 
