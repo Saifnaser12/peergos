@@ -32,6 +32,11 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { format } from 'date-fns';
 import { useInvoice } from '../../context/InvoiceContext';
 import { Invoice, InvoiceStatus } from '../../types/invoice';
+import { SearchIcon, FilterIcon } from '@heroicons/react/24/outline';
+import InvoiceList from './InvoiceList';
+import InvoiceDetail from './InvoiceDetail';
+import { useInvoices } from '../../hooks/useInvoices';
+import { useTranslation } from 'react-i18next';
 
 const statusColors: Record<InvoiceStatus, 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'> = {
   [InvoiceStatus.DRAFT]: 'default',
@@ -135,7 +140,7 @@ export const InvoiceDashboard: React.FC = () => {
       {/* Filters */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Grid container spacing={2}>
+          <Grid container spacing={3} sx={{ alignItems: 'center' }}>
             <Grid item xs={12} sm={4}>
               <Box>
                 <TextField
