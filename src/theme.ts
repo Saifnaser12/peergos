@@ -5,8 +5,10 @@ const getDirection = (): Direction => {
   return (document.dir || 'ltr') as Direction;
 };
 
+const direction = getDirection();
+
 export const theme = createTheme({
-  direction: getDirection(),
+  direction,
   palette: {
     primary: {
       main: '#4F46E5', // Indigo 600
@@ -44,7 +46,7 @@ export const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: getDirection() === 'rtl'
+    fontFamily: direction === 'rtl'
       ? '"Cairo", "Roboto", "Helvetica", "Arial", sans-serif'
       : '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
@@ -128,9 +130,9 @@ export const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          direction: getDirection(),
+          direction,
         },
       },
     },
   },
-}, getDirection() === 'rtl' ? arEG : enUS); 
+}, direction === 'rtl' ? arEG : enUS); 

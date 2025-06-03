@@ -1,319 +1,146 @@
-import React, { useEffect } from 'react';
-import { useInvoice } from '../../context/InvoiceContext';
-import { InvoiceStatus } from '../../types/invoice';
+import React from 'react';
 import {
   Box,
+  Grid,
   Card,
   CardContent,
   Typography,
-  Chip,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Alert,
-  Divider,
-  Grid,
-  CircularProgress
+  IconButton,
+  Tooltip,
 } from '@mui/material';
-import { format } from 'date-fns';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import DownloadIcon from '@mui/icons-material/Download';
+import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import type { Invoice } from '../../types/invoice';
 
 interface InvoiceDetailProps {
-  invoiceId: string;
-  onEdit?: () => void;
+  invoice: Invoice;
+  onEdit: (invoice: Invoice) => void;
+  onDelete: (invoice: Invoice) => void;
 }
 
-const statusColors: Record<InvoiceStatus, 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'> = {
-  [InvoiceStatus.DRAFT]: 'default',
-  [InvoiceStatus.SIGNED]: 'info',
-  [InvoiceStatus.SUBMITTED]: 'primary',
-  [InvoiceStatus.ACKNOWLEDGED]: 'success',
-  [InvoiceStatus.REJECTED]: 'error',
-  [InvoiceStatus.CANCELLED]: 'warning'
-};
-
-export const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
-  invoiceId,
-  onEdit
+const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
+  invoice,
+  onEdit,
+  onDelete,
 }) => {
-  const {
-    currentInvoice,
-    loading,
-    error,
-    getInvoice,
-    submitInvoice
-  } = useInvoice();
-
-  useEffect(() => {
-    getInvoice(invoiceId);
-  }, [invoiceId, getInvoice]);
-
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box p={3}>
-        <Alert severity="error">{error}</Alert>
-      </Box>
-    );
-  }
-
-  if (!currentInvoice) {
-    return (
-      <Box p={3}>
-        <Alert severity="warning">Invoice not found</Alert>
-      </Box>
-    );
-  }
-
-  const handleSubmit = async () => {
-    await submitInvoice(currentInvoice);
-  };
-
   return (
-    <Box p={3}>
-      {/* Header */}
+    <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4">
-          Invoice #{currentInvoice.invoiceNumber}
+        <Typography variant="h5" component="h1">
+          Invoice Details
         </Typography>
-        <Box display="flex" gap={2}>
-          {currentInvoice.status === InvoiceStatus.DRAFT && (
-            <>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<CloudUploadIcon />}
-                onClick={handleSubmit}
-              >
-                Submit
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={onEdit}
-              >
-                Edit
-              </Button>
-            </>
-          )}
-          <Button
-            variant="outlined"
-            startIcon={<PictureAsPdfIcon />}
-          >
-            View PDF
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-          >
-            Download XML
-          </Button>
+        <Box>
+          <Tooltip title="Edit">
+            <IconButton
+              size="small"
+              onClick={() => onEdit(invoice)}
+              sx={{ mr: 1 }}
+            >
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton
+              size="small"
+              onClick={() => onDelete(invoice)}
+              color="error"
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
 
-      {/* Status and Dates */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={2} sx={{ alignItems: 'center' }}>
-            <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" gutterBottom>
-                Status
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Invoice Information
               </Typography>
-              <Chip
-                label={currentInvoice.status}
-                color={statusColors[currentInvoice.status]}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" gutterBottom>
-                Issue Date
-              </Typography>
-              <Typography>
-                {format(new Date(currentInvoice.issueDate), 'dd/MM/yyyy')}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" gutterBottom>
-                Due Date
-              </Typography>
-              <Typography>
-                {currentInvoice.dueDate
-                  ? format(new Date(currentInvoice.dueDate), 'dd/MM/yyyy')
-                  : 'N/A'}
-              </Typography>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+              <Box display="flex" flexDirection="column" gap={1}>
+                <Typography>
+                  <strong>Invoice Number:</strong> {invoice.invoiceNumber}
+                </Typography>
+                <Typography>
+                  <strong>Issue Date:</strong> {invoice.issueDate}
+                </Typography>
+                <Typography>
+                  <strong>Due Date:</strong> {invoice.dueDate}
+                </Typography>
+                <Typography>
+                  <strong>Currency:</strong> {invoice.currency}
+                </Typography>
+                <Typography>
+                  <strong>Total Amount:</strong> AED {invoice.amount.toLocaleString()}
+                </Typography>
+                <Typography>
+                  <strong>VAT Amount:</strong> AED {invoice.vatAmount.toLocaleString()}
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
 
-      {/* Seller Information */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Seller Information
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" gutterBottom>
-                Company Name
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Seller Information
               </Typography>
-              <Typography>{currentInvoice.seller.name}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" gutterBottom>
-                TRN
-              </Typography>
-              <Typography>{currentInvoice.seller.trn}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="subtitle2" gutterBottom>
-                Address
-              </Typography>
-              <Typography>
-                {currentInvoice.seller.address.street}<br />
-                {currentInvoice.seller.address.city}, {currentInvoice.seller.address.emirate}<br />
-                {currentInvoice.seller.address.country}
-                {currentInvoice.seller.address.postalCode && ` - ${currentInvoice.seller.address.postalCode}`}
-              </Typography>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+              <Box display="flex" flexDirection="column" gap={1}>
+                <Typography>
+                  <strong>Name:</strong> {invoice.seller.name}
+                </Typography>
+                <Typography>
+                  <strong>Tax Registration Number:</strong> {invoice.seller.taxRegistrationNumber}
+                </Typography>
+                <Typography>
+                  <strong>Address:</strong> {invoice.seller.address.street}, {invoice.seller.address.city}, {invoice.seller.address.emirate}
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
 
-      {/* Buyer Information */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Buyer Information
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" gutterBottom>
-                Company Name
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Items
               </Typography>
-              <Typography>{currentInvoice.buyer.name}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" gutterBottom>
-                TRN
-              </Typography>
-              <Typography>{currentInvoice.buyer.trn}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="subtitle2" gutterBottom>
-                Address
-              </Typography>
-              <Typography>
-                {currentInvoice.buyer.address.street}<br />
-                {currentInvoice.buyer.address.city}, {currentInvoice.buyer.address.emirate}<br />
-                {currentInvoice.buyer.address.country}
-                {currentInvoice.buyer.address.postalCode && ` - ${currentInvoice.buyer.address.postalCode}`}
-              </Typography>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-
-      {/* Invoice Items */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Invoice Items
-          </Typography>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Description</TableCell>
-                  <TableCell align="right">Quantity</TableCell>
-                  <TableCell align="right">Unit Price</TableCell>
-                  <TableCell align="right">VAT Rate</TableCell>
-                  <TableCell align="right">VAT Amount</TableCell>
-                  <TableCell align="right">Total</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {currentInvoice.items.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{item.description}</TableCell>
-                    <TableCell align="right">{item.quantity}</TableCell>
-                    <TableCell align="right">
-                      {item.unitPrice.toLocaleString('en-AE', {
-                        style: 'currency',
-                        currency: 'AED'
-                      })}
-                    </TableCell>
-                    <TableCell align="right">{item.vatRate}%</TableCell>
-                    <TableCell align="right">
-                      {item.vatAmount.toLocaleString('en-AE', {
-                        style: 'currency',
-                        currency: 'AED'
-                      })}
-                    </TableCell>
-                    <TableCell align="right">
-                      {item.total.toLocaleString('en-AE', {
-                        style: 'currency',
-                        currency: 'AED'
-                      })}
-                    </TableCell>
-                  </TableRow>
+              <Box display="flex" flexDirection="column" gap={2}>
+                {invoice.items.map((item) => (
+                  <Box
+                    key={item.id}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    p={2}
+                    sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1 }}
+                  >
+                    <Box>
+                      <Typography variant="subtitle1">{item.description}</Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Quantity: {item.quantity} × AED {item.unitPrice.toLocaleString()}
+                      </Typography>
+                    </Box>
+                    <Box textAlign="right">
+                      <Typography variant="subtitle1">
+                        AED {item.totalAmount.toLocaleString()}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        VAT: AED {item.taxAmount.toLocaleString()}
+                      </Typography>
+                    </Box>
+                  </Box>
                 ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
-
-      {/* Totals */}
-      <Card>
-        <CardContent>
-          <Grid container spacing={2} sx={{ justifyContent: 'flex-end' }}>
-            <Grid item xs={12} md={4}>
-              <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography>Subtotal</Typography>
-                <Typography>
-                  {currentInvoice.subtotal.toLocaleString('en-AE', {
-                    style: 'currency',
-                    currency: 'AED'
-                  })}
-                </Typography>
               </Box>
-              <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography>VAT Total</Typography>
-                <Typography>
-                  {currentInvoice.vatTotal.toLocaleString('en-AE', {
-                    style: 'currency',
-                    currency: 'AED'
-                  })}
-                </Typography>
-              </Box>
-              <Divider sx={{ my: 1 }} />
-              <Box display="flex" justifyContent="space-between">
-                <Typography variant="h6">Total</Typography>
-                <Typography variant="h6">
-                  {currentInvoice.total.toLocaleString('en-AE', {
-                    style: 'currency',
-                    currency: 'AED'
-                  })}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </Box>
   );
-}; 
+};
+
+export default InvoiceDetail; 

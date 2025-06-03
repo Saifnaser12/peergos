@@ -63,7 +63,8 @@ export interface InvoiceItem {
 export interface Party {
   name: string;
   taxRegistrationNumber: string;
-  address: string;
+  address: Address;
+  contactDetails?: ContactDetails;
 }
 
 export interface Invoice {
@@ -127,14 +128,19 @@ export const invoiceSchema = z.object({
     description: z.string().min(1),
     quantity: z.number().positive(),
     unitPrice: z.number().nonnegative(),
-    vatRate: z.number().nonnegative(),
+    totalAmount: z.number().nonnegative(),
     vatAmount: z.number().nonnegative(),
-    total: z.number().nonnegative()
+    taxableAmount: z.number().nonnegative(),
+    taxAmount: z.number().nonnegative(),
+    productCode: z.string(),
+    taxCategory: z.string(),
+    taxRate: z.number().nonnegative(),
+    exemptionReason: z.string().optional()
   })).min(1),
   
-  subtotal: z.number().nonnegative(),
-  vatTotal: z.number().nonnegative(),
-  total: z.number().nonnegative(),
+  currency: z.string(),
+  amount: z.number().nonnegative(),
+  vatAmount: z.number().nonnegative(),
   
   paymentTerms: z.string().optional(),
   notes: z.string().optional(),
