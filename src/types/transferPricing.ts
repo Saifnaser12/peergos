@@ -1,32 +1,53 @@
 export enum TransactionType {
   SALE_OF_GOODS = 'SALE_OF_GOODS',
-  SALE_OF_SERVICES = 'SALE_OF_SERVICES',
   PURCHASE_OF_GOODS = 'PURCHASE_OF_GOODS',
-  PURCHASE_OF_SERVICES = 'PURCHASE_OF_SERVICES',
+  SERVICES = 'SERVICES',
   ROYALTIES = 'ROYALTIES',
   INTEREST = 'INTEREST',
-  MANAGEMENT_FEES = 'MANAGEMENT_FEES',
-  COST_SHARING = 'COST_SHARING',
   OTHER = 'OTHER'
 }
 
 export enum TransferPricingMethod {
-  CUP = 'CUP', // Comparable Uncontrolled Price
-  RESALE_PRICE = 'RESALE_PRICE',
+  CUP = 'CUP',
+  RESALE_MINUS = 'RESALE_MINUS',
   COST_PLUS = 'COST_PLUS',
-  TNMM = 'TNMM', // Transactional Net Margin Method
-  PSM = 'PSM', // Profit Split Method
-  OTHER = 'OTHER'
+  TNMM = 'TNMM',
+  PROFIT_SPLIT = 'PROFIT_SPLIT'
+}
+
+export type DocumentType = 'MASTER_FILE' | 'LOCAL_FILE' | 'CBC_REPORT';
+
+export interface RelatedPartyTransaction {
+  id: string;
+  type: TransactionType;
+  date: string;
+  amount: number;
+  currency: string;
+  relatedParty: string;
+  description: string;
+  method: TransferPricingMethod;
+  documentation: string[];
+}
+
+export interface TransferPricingDisclosure {
+  id: string;
+  period: string;
+  transactions: RelatedPartyTransaction[];
+  documentation: string[];
+  status: 'draft' | 'submitted' | 'approved' | 'rejected';
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface TransferPricingDocument {
   id: string;
-  type: 'MASTER_FILE' | 'LOCAL_FILE' | 'CBC_REPORT';
+  type: DocumentType;
+  name: string;
+  url: string;
+  uploadedAt: string;
   fileName: string;
   fileSize: number;
-  uploadDate: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  comments?: string;
+  status: 'PENDING' | 'UPLOADED' | 'FAILED';
 }
 
 export interface RelatedParty {

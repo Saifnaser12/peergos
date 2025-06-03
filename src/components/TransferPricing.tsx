@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Paper,
@@ -37,7 +37,8 @@ import {
   TransferPricingMethod,
   RelatedParty,
   TransferPricingTransaction,
-  TransferPricingDocument
+  TransferPricingDocument,
+  DocumentType
 } from '../types/transferPricing';
 import { useTranslation } from 'react-i18next';
 
@@ -126,7 +127,7 @@ const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({
     currency: 'AED',
     fiscalYear: new Date().getFullYear().toString(),
     description: '',
-    documents: [],
+    documents: [] as TransferPricingDocument[],
     status: 'DRAFT',
     isCompliant: false
   });
@@ -142,7 +143,7 @@ const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({
     onClose();
   };
 
-  const handleFileUpload = (type: 'MASTER_FILE' | 'LOCAL_FILE' | 'CBC_REPORT') => (
+  const handleFileUpload = (type: DocumentType) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
@@ -150,9 +151,11 @@ const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({
       const newDocument: TransferPricingDocument = {
         id: '', // Will be set by the context
         type,
+        name: file.name,
+        url: '', // Will be set after upload
         fileName: file.name,
         fileSize: file.size,
-        uploadDate: '', // Will be set by the context
+        uploadedAt: new Date().toISOString(),
         status: 'PENDING'
       };
       setTransaction({
@@ -186,9 +189,7 @@ const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({
             select
             label={t('transferPricing.transactionType')}
             value={transaction.transactionType}
-            onChange={(e) =>
-              setTransaction({ ...transaction, transactionType: e.target.value as TransactionType })
-            }
+            onChange={(e) => setTransaction({ ...transaction, transactionType: e.target.value as TransactionType })}
           >
             {Object.values(TransactionType).map((type) => (
               <MenuItem key={type} value={type}>
@@ -202,17 +203,7 @@ const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({
             select
             label={t('transferPricing.pricingMethod')}
             value={transaction.transferPricingMethod}
-            onChange={(e) =>
-              setTransaction({
-                ...transaction,
-                transferPricingMethod: e.target.value as TransferPricingMethod
-              })
-            }
-            helperText={
-              <Tooltip title={t(`transferPricing.methodDescriptions.${transaction.transferPricingMethod}`)}>
-                <InfoIcon fontSize="small" sx={{ ml: 1 }} />
-              </Tooltip>
-            }
+            onChange={(e) => setTransaction({ ...transaction, transferPricingMethod: e.target.value as TransferPricingMethod })}
           >
             {Object.values(TransferPricingMethod).map((method) => (
               <MenuItem key={method} value={method}>
@@ -303,12 +294,15 @@ const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({
                     secondary={`${doc.type} - ${(doc.fileSize / 1024 / 1024).toFixed(2)} MB`}
                   />
                   <ListItemSecondaryAction>
-                    <IconButton edge="end" onClick={() => {
-                      setTransaction({
-                        ...transaction,
-                        documents: transaction.documents.filter(d => d.fileName !== doc.fileName)
-                      });
-                    }}>
+                    <IconButton
+                      edge="end"
+                      onClick={() => {
+                        setTransaction({
+                          ...transaction,
+                          documents: transaction.documents.filter(d => d.fileName !== doc.fileName)
+                        });
+                      }}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </ListItemSecondaryAction>
