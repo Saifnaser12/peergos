@@ -1,4 +1,4 @@
-import { DOMParser, XMLSerializer, Element } from '@xmldom/xmldom';
+import { DOMParser, XMLSerializer, Element, Document } from '@xmldom/xmldom';
 import { SignedXml } from 'xml-crypto';
 import type { Invoice, InvoiceItem } from '../../types/invoice';
 
@@ -91,7 +91,7 @@ export class InvoiceXMLGenerator {
     
     // Tax
     const taxTotal = this.appendElement(itemElement, 'cac:TaxTotal');
-    this.appendElement(taxTotal, 'cbc:TaxAmount', item.vatAmount.toString(), {
+    this.appendElement(taxTotal, 'cbc:TaxAmount', item.taxAmount.toString(), {
       currencyID: 'AED'
     });
     
@@ -118,7 +118,7 @@ export class InvoiceXMLGenerator {
     const doc = this.parser.parseFromString(
       '<?xml version="1.0" encoding="UTF-8"?><Invoice></Invoice>',
       'application/xml'
-    );
+    ) as Document;
     const root = doc.documentElement;
     if (!root) throw new Error('Failed to create root element for Invoice XML');
 

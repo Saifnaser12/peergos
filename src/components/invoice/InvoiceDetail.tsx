@@ -6,7 +6,6 @@ import {
   CardContent,
   Typography,
   IconButton,
-  Tooltip,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import type { Invoice } from '../../types/invoice';
@@ -29,24 +28,20 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
           Invoice Details
         </Typography>
         <Box>
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              onClick={() => onEdit(invoice)}
-              sx={{ mr: 1 }}
-            >
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              onClick={() => onDelete(invoice)}
-              color="error"
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            size="small"
+            onClick={() => onEdit(invoice)}
+            sx={{ mr: 1 }}
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => onDelete(invoice)}
+            color="error"
+          >
+            <DeleteIcon />
+          </IconButton>
         </Box>
       </Box>
 

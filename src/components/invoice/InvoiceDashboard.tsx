@@ -7,9 +7,6 @@ import {
   Typography,
   Button,
   IconButton,
-  Tooltip,
-  CircularProgress,
-  Alert,
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import type { Invoice } from '../../types/invoice';
@@ -34,7 +31,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-        <CircularProgress />
+        <Typography>Loading...</Typography>
       </Box>
     );
   }
@@ -42,7 +39,7 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
   if (error) {
     return (
       <Box mt={2}>
-        <Alert severity="error">{error}</Alert>
+        <Typography color="error">{error}</Typography>
       </Box>
     );
   }
@@ -91,24 +88,20 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
                 </Box>
 
                 <Box display="flex" justifyContent="flex-end" mt={2}>
-                  <Tooltip title="Edit">
-                    <IconButton
-                      size="small"
-                      onClick={() => onEdit(invoice)}
-                      sx={{ mr: 1 }}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete">
-                    <IconButton
-                      size="small"
-                      onClick={() => onDelete(invoice)}
-                      color="error"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <IconButton
+                    size="small"
+                    onClick={() => onEdit(invoice)}
+                    sx={{ mr: 1 }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    onClick={() => onDelete(invoice)}
+                    color="error"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                 </Box>
               </CardContent>
             </Card>
