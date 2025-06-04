@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -21,14 +20,14 @@ import {
   useTheme,
   alpha,
 } from '@mui/material';
-import {
-  Upload,
+import { 
+  WbSunny as Sun, 
+  NightlightRound as Moon, 
+  Upload, 
+  Description as FileText, 
   Download,
   Calculate,
-  Description as FileText,
   TableChart as TableCells,
-  DarkMode as Moon,
-  LightMode as Sun,
 } from '@mui/icons-material';
 
 interface VATFormData {
@@ -56,7 +55,7 @@ const VAT: React.FC = () => {
   const theme = useTheme();
   const [darkMode, setDarkMode] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  
+
   const [formData, setFormData] = useState<VATFormData>({
     standardRatedSales: 0,
     zeroRatedSales: 0,
@@ -85,7 +84,7 @@ const VAT: React.FC = () => {
   ) => {
     const value = parseFloat(event.target.value) || 0;
     const error = validateField(field, value);
-    
+
     setFormData(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: error }));
   }, [validateField]);
@@ -94,7 +93,7 @@ const VAT: React.FC = () => {
     const outputVAT = formData.standardRatedSales * 0.05;
     const inputVAT = formData.purchasesWithVAT * 0.05;
     const netVAT = outputVAT - inputVAT;
-    
+
     return {
       outputVAT,
       inputVAT,
@@ -359,7 +358,7 @@ const VAT: React.FC = () => {
               <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
                 {t('VAT Calculation Summary')}
               </Typography>
-              
+
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2">{t('Output VAT')}</Typography>
