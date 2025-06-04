@@ -261,5 +261,4 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
     </Box>
   );
 };
-export { TransactionTable };
 export default TransactionTable;
