@@ -1,5 +1,3 @@
-
-
 // Enhanced polyfills for browser compatibility
 declare global {
   interface Window {
@@ -175,12 +173,12 @@ const bufferPolyfill = {
   concat: function(list: any[], totalLength?: number) {
     const arrays = list.filter(item => item && item.length > 0);
     if (arrays.length === 0) return new Uint8Array(0);
-    
+
     const length = totalLength !== undefined ? totalLength : 
       arrays.reduce((acc, curr) => acc + curr.length, 0);
     const result = new Uint8Array(length);
     let offset = 0;
-    
+
     for (let i = 0; i < arrays.length && offset < length; i++) {
       const item = arrays[i];
       const copyLength = Math.min(item.length, length - offset);
@@ -234,4 +232,3 @@ if (typeof self !== 'undefined') {
 }
 
 export {};
-

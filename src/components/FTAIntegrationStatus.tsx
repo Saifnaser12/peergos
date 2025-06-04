@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ftaService } from '../services/ftaService';
 
-interface FTAIntegrationStatusProps {
+interface FTAIntegrationStatusComponentProps {
   trn?: string;
   showDetails?: boolean;
   variant?: 'badge' | 'card';
 }
 
-const FTAIntegrationStatusComponent: React.FC<FTAIntegrationStatusProps> = ({
+const FTAIntegrationStatusComponent: React.FC<FTAIntegrationStatusComponentProps> = ({
   trn,
   showDetails = false,
   variant = 'badge'
