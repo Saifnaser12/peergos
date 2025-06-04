@@ -8,7 +8,7 @@ interface FTAIntegrationStatusProps {
   variant?: 'badge' | 'card';
 }
 
-const FTAIntegrationStatus: React.FC<FTAIntegrationStatusProps> = ({
+const FTAIntegrationStatusComponent: React.FC<FTAIntegrationStatusProps> = ({
   trn,
   showDetails = false,
   variant = 'badge'
@@ -80,4 +80,4 @@ const FTAIntegrationStatus: React.FC<FTAIntegrationStatusProps> = ({
   return null;
 };
 
-export default FTAIntegrationStatus;
+export default FTAIntegrationStatusComponent;
