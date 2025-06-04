@@ -6,7 +6,11 @@ export default defineConfig({
   plugins: [react()],
   define: {
     global: 'globalThis',
-    'process.env': {}
+    'process.env': {},
+    process: {
+      env: {},
+      browser: true
+    }
   },
   server: {
     host: '0.0.0.0',

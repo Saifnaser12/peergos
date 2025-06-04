@@ -19,7 +19,6 @@ const FTAIntegrationStatus: React.FC<FTAIntegrationStatusProps> = ({
   const [lastSync, setLastSync] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate checking FTA connection status
     const checkStatus = async () => {
       try {
         const isConnected = await ftaService.checkConnection();
