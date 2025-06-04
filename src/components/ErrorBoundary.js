@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Component } from 'react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-export class ErrorBoundary extends Component {
+class ErrorBoundary extends Component {
     constructor() {
         super(...arguments);
         Object.defineProperty(this, "state", {
@@ -52,3 +52,5 @@ export class ErrorBoundary extends Component {
         return this.props.children;
     }
 }
+
+export default ErrorBoundary;

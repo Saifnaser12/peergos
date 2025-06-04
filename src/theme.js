@@ -133,3 +133,5 @@ export const theme = createTheme({
         },
     },
 }, direction === 'rtl' ? arEG : enUS);
+
+export default theme;
