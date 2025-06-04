@@ -9,6 +9,27 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Early polyfills before module loading
+      if (typeof globalThis.process === 'undefined') {
+        globalThis.process = {
+          env: {},
+          browser: true,
+          version: '18.0.0',
+          versions: { node: '18.0.0' },
+          platform: 'browser',
+          nextTick: function(fn) { setTimeout(fn, 0); },
+          cwd: function() { return '/'; },
+          argv: ['node'],
+          exit: function() {},
+          stdout: { write: function(data) { console.log(data); } },
+          stderr: { write: function(data) { console.error(data); } }
+        };
+      }
+      if (typeof globalThis.global === 'undefined') {
+        globalThis.global = globalThis;
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

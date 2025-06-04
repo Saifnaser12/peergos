@@ -5,8 +5,10 @@ export default defineConfig({
   plugins: [react()],
   define: {
     global: 'globalThis',
-    'process.env': 'import.meta.env',
-    'process': 'globalThis.process'
+    'process.env': '{}',
+    'process.browser': 'true',
+    __dirname: '""',
+    __filename: '""'
   },
   server: {
     host: '0.0.0.0',
