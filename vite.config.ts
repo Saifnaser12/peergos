@@ -8,8 +8,7 @@ export default defineConfig({
     port: 5000,
     strictPort: true,
     hmr: {
-      port: 443,
-      clientPort: 443,
+      overlay: false,
     },
     fs: {
       allow: ['..']
