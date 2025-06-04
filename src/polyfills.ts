@@ -1,37 +1,30 @@
-// Essential polyfills for browser compatibility
-declare global {
-  interface Window {
-    process: any;
-    global: any;
-    Buffer: any;
-  }
-}
 
-// Only add if not already defined
-if (typeof globalThis.process === 'undefined') {
-  globalThis.process = {
-    env: {},
+// Polyfills for browser compatibility
+(window as any).global = window;
+
+// Define process object for browser environment
+if (typeof window !== 'undefined' && !window.process) {
+  (window as any).process = {
+    env: {
+      NODE_ENV: 'development'
+    },
     browser: true,
-    version: '18.0.0',
-    versions: { node: '18.0.0' },
-    platform: 'browser',
-    nextTick: (fn: Function, ...args: any[]) => setTimeout(() => fn(...args), 0),
+    version: '',
+    versions: {},
+    nextTick: (fn: Function) => setTimeout(fn, 0),
     cwd: () => '/',
-    argv: ['node'],
-    exit: () => {},
-    stdout: { write: (data: any) => console.log(data) },
-    stderr: { write: (data: any) => console.error(data) }
+    chdir: () => {},
+    stdout: { write: () => {} },
+    stderr: { write: () => {} }
   };
 }
 
-if (typeof globalThis.global === 'undefined') {
-  globalThis.global = globalThis;
+// Buffer polyfill
+if (typeof window !== 'undefined' && !window.Buffer) {
+  try {
+    const { Buffer } = require('buffer');
+    (window as any).Buffer = Buffer;
+  } catch (e) {
+    // Buffer not available
+  }
 }
-
-// Ensure window has these as well
-if (typeof window !== 'undefined') {
-  window.process = globalThis.process;
-  window.global = globalThis.global;
-}
-
-export {};

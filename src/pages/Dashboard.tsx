@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '../i18n';
 import { useTax } from '../context/TaxContext';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import TRNLookup from '../components/TRNLookup';
@@ -176,7 +175,7 @@ const Dashboard: React.FC = () => {
             variant="card" 
           />
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
             {t('dashboard.trnLookup', 'TRN Lookup')}
@@ -205,7 +204,7 @@ const Dashboard: React.FC = () => {
                 Submit your quarterly VAT return
               </p>
             </button>
-            
+
             <button
               onClick={() => navigate('/cit')}
               className="text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
@@ -217,7 +216,7 @@ const Dashboard: React.FC = () => {
                 Estimate your corporate tax liability
               </p>
             </button>
-            
+
             <button
               onClick={() => navigate('/financials')}
               className="text-left p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
