@@ -13,7 +13,7 @@ from = "/*"
 to = "/index.html"
 
 [workflows]
-runButton = "Development Server"
+runButton = "Dev Server"
 
 [[workflows.workflow]]
 name = "Development Server"
@@ -24,10 +24,19 @@ mode = "sequential"
 task = "shell.exec"
 args = "npm run dev -- --host 0.0.0.0 --port 5000"
 
+[[workflows.workflow]]
+name = "Dev Server"
+author = 43486346
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev -- --host 0.0.0.0 --port 3000"
+
 [[ports]]
-localPort = 5000
-externalPort = 80
+localPort = 3000
+externalPort = 3000
 
 [[ports]]
 localPort = 5000
-externalPort = 443
+externalPort = 80

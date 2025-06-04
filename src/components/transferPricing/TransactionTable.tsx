@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Box,
@@ -262,3 +261,5 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
     </Box>
   );
 };
+export { TransactionTable };
+export default TransactionTable;
