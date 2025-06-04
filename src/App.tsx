@@ -15,7 +15,7 @@ import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Setup from './pages/Setup';
-import createTheme from './theme';
+import { createTheme } from './theme';
 import './i18n';
 
 function App() {
