@@ -1,86 +1,140 @@
+
 export enum TransactionType {
   SALE_OF_GOODS = 'SALE_OF_GOODS',
-  PURCHASE_OF_GOODS = 'PURCHASE_OF_GOODS',
-  SERVICES = 'SERVICES',
+  PROVISION_OF_SERVICES = 'PROVISION_OF_SERVICES',
+  FINANCING_LOANS = 'FINANCING_LOANS',
+  IP_LICENSING = 'IP_LICENSING',
+  COST_SHARING = 'COST_SHARING',
+  MANAGEMENT_FEES = 'MANAGEMENT_FEES',
   ROYALTIES = 'ROYALTIES',
-  INTEREST = 'INTEREST',
   OTHER = 'OTHER'
 }
 
 export enum TransferPricingMethod {
-  CUP = 'CUP',
-  RESALE_MINUS = 'RESALE_MINUS',
+  COMPARABLE_UNCONTROLLED_PRICE = 'COMPARABLE_UNCONTROLLED_PRICE',
+  RESALE_PRICE = 'RESALE_PRICE',
   COST_PLUS = 'COST_PLUS',
-  TNMM = 'TNMM',
-  PROFIT_SPLIT = 'PROFIT_SPLIT'
+  TRANSACTIONAL_NET_MARGIN = 'TRANSACTIONAL_NET_MARGIN',
+  PROFIT_SPLIT = 'PROFIT_SPLIT',
+  OTHER = 'OTHER'
 }
 
-export type DocumentType = 'MASTER_FILE' | 'LOCAL_FILE' | 'CBC_REPORT';
+export enum RelationshipType {
+  SUBSIDIARY = 'SUBSIDIARY',
+  PARENT_COMPANY = 'PARENT_COMPANY',
+  SISTER_COMPANY = 'SISTER_COMPANY',
+  ASSOCIATED_ENTERPRISE = 'ASSOCIATED_ENTERPRISE',
+  BRANCH = 'BRANCH',
+  PERMANENT_ESTABLISHMENT = 'PERMANENT_ESTABLISHMENT',
+  OTHER = 'OTHER'
+}
 
-export interface RelatedPartyTransaction {
+export enum DocumentType {
+  MASTER_FILE = 'MASTER_FILE',
+  LOCAL_FILE = 'LOCAL_FILE',
+  CBC_REPORT = 'CBC_REPORT',
+  AGREEMENT = 'AGREEMENT',
+  BENCHMARKING_STUDY = 'BENCHMARKING_STUDY',
+  ECONOMIC_ANALYSIS = 'ECONOMIC_ANALYSIS',
+  SUPPORTING_DOCUMENT = 'SUPPORTING_DOCUMENT'
+}
+
+export interface CompanyInfo {
+  legalName: string;
+  trn: string;
+  fiscalYearStart: string;
+  fiscalYearEnd: string;
+  isPartOfTaxGroup: boolean;
+  isPartOfMultinationalGroup: boolean;
+  consolidatedRevenue?: number;
+  consolidatedAssets?: number;
+}
+
+export interface RelatedParty {
   id: string;
-  type: TransactionType;
-  date: string;
+  name: string;
+  country: string;
+  relationshipType: RelationshipType;
+  ownershipPercentage?: number;
+  taxIdentificationNumber?: string;
+  isActive: boolean;
+  description?: string;
+}
+
+export interface IntercompanyTransaction {
+  id: string;
+  relatedPartyId: string;
+  relatedPartyName: string;
+  transactionType: TransactionType;
   amount: number;
   currency: string;
-  relatedParty: string;
+  transferPricingMethod: TransferPricingMethod;
+  hasDocumentation: boolean;
+  documentationDescription?: string;
+  dateOfTransaction: string;
   description: string;
-  method: TransferPricingMethod;
-  documentation: string[];
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  notes?: string;
 }
 
-export interface TransferPricingDisclosure {
-  id: string;
-  period: string;
-  transactions: RelatedPartyTransaction[];
-  documentation: string[];
-  status: 'draft' | 'submitted' | 'approved' | 'rejected';
-  createdAt: string;
-  updatedAt: string;
+export interface ComplianceAnswers {
+  requiresMasterFile: boolean;
+  hasPreparedLocalFile: boolean;
+  meetsConsolidatedThreshold: boolean; // AED 200M
+  hasCbCRFiled: boolean;
+  hasTransferPricingPolicy: boolean;
+  hasDocumentedArmLength: boolean;
+  hasEconomicAnalysis: boolean;
 }
 
 export interface TransferPricingDocument {
   id: string;
   type: DocumentType;
   name: string;
-  url: string;
-  uploadedAt: string;
   fileName: string;
   fileSize: number;
+  uploadDate: string;
   status: 'PENDING' | 'UPLOADED' | 'FAILED';
+  url?: string;
 }
 
-export interface RelatedParty {
+export interface TransferPricingRisk {
   id: string;
-  name: string;
-  jurisdiction: string;
-  taxId?: string;
-  relationshipType: string;
-  isActive: boolean;
-}
-
-export interface TransferPricingTransaction {
-  id: string;
-  relatedPartyId: string;
-  transactionType: TransactionType;
-  transferPricingMethod: TransferPricingMethod;
-  transactionValue: number;
-  currency: string;
-  fiscalYear: string;
+  type: 'HIGH_VALUE_TRANSACTION' | 'MISSING_DOCUMENTATION' | 'COMPLEX_STRUCTURE' | 'TAX_HAVEN_JURISDICTION' | 'RELATED_PARTY_LOANS' | 'IP_WITHOUT_SUPPORT';
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   description: string;
+  recommendation: string;
+  transactionId?: string;
+  relatedPartyId?: string;
+}
+
+export interface TransferPricingSummary {
+  totalTransactionsByType: Record<TransactionType, { count: number; amount: number }>;
+  totalValue: number;
+  riskFlags: TransferPricingRisk[];
+  complianceScore: number;
+  requiredDocuments: DocumentType[];
+  uploadedDocuments: TransferPricingDocument[];
+}
+
+export interface TransferPricingDisclosure {
+  id: string;
+  companyInfo: CompanyInfo;
+  relatedParties: RelatedParty[];
+  transactions: IntercompanyTransaction[];
+  complianceAnswers: ComplianceAnswers;
   documents: TransferPricingDocument[];
-  status: 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
-  submissionDate?: string;
-  lastModified: string;
-  notes?: string;
-  isCompliant: boolean;
-  complianceNotes?: string;
+  summary: TransferPricingSummary;
+  status: 'DRAFT' | 'REVIEW' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
+  createdAt: string;
+  updatedAt: string;
+  submittedAt?: string;
+  reviewedAt?: string;
 }
 
 export interface TransferPricingState {
-  relatedParties: RelatedParty[];
-  transactions: TransferPricingTransaction[];
-  documents: TransferPricingDocument[];
+  currentDisclosure: TransferPricingDisclosure | null;
+  disclosures: TransferPricingDisclosure[];
   loading: boolean;
   error: string | null;
-} 
+}
