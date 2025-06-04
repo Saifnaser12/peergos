@@ -1,4 +1,5 @@
-// Load polyfills FIRST - before React or any other imports
+
+// Import polyfills first before anything else
 import './polyfills';
 
 import React, { StrictMode } from 'react'
@@ -10,12 +11,12 @@ import { AuditProvider } from './context/AuditContext'
 import { UserRoleProvider } from './context/UserRoleContext'
 import { AppContextProvider } from './context/AppContext'
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error('Root element not found');
-}
+const container = document.getElementById('root')
+if (!container) throw new Error('Root element not found')
 
-createRoot(rootElement).render(
+const root = createRoot(container)
+
+root.render(
   <StrictMode>
     <AppContextProvider>
       <AuditProvider>
