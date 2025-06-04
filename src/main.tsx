@@ -8,7 +8,6 @@ import App from './App.tsx'
 import './index.css'
 import './i18n'
 import { AuditProvider } from './context/AuditContext'
-import { UserRoleProvider } from './context/UserRoleContext'
 import { AppContextProvider } from './context/AppContext'
 
 const container = document.getElementById('root')
@@ -20,9 +19,7 @@ root.render(
   <StrictMode>
     <AppContextProvider>
       <AuditProvider>
-        <UserRoleProvider>
-          <App />
-        </UserRoleProvider>
+        <App />
       </AuditProvider>
     </AppContextProvider>
   </StrictMode>

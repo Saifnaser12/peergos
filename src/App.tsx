@@ -52,8 +52,8 @@ function App() {
       <SettingsProvider>
         <CustomThemeProvider>
           <TaxProvider>
-            <NotificationProvider>
-              <UserRoleProvider>
+            <UserRoleProvider>
+              <NotificationProvider>
                 <ThemeProvider theme={theme}>
                   <CssBaseline />
                   <ErrorBoundary>
@@ -97,8 +97,8 @@ function App() {
                     </Router>
                   </ErrorBoundary>
                 </ThemeProvider>
-              </UserRoleProvider>
-            </NotificationProvider>
+              </NotificationProvider>
+            </UserRoleProvider>
           </TaxProvider>
         </CustomThemeProvider>
       </SettingsProvider>
