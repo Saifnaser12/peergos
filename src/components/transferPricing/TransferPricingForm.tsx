@@ -101,7 +101,7 @@ export const TransferPricingForm: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     try {
       // Create the disclosure first
       const transaction: Omit<RelatedPartyTransaction, 'id' | 'createdAt' | 'updatedAt'> = {
@@ -151,7 +151,7 @@ export const TransferPricingForm: React.FC = () => {
           {error.message}
         </Alert>
       )}
-      
+
       <form onSubmit={handleSubmit}>
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
           <Box>
@@ -278,4 +278,4 @@ export const TransferPricingForm: React.FC = () => {
       </form>
     </Paper>
   );
-}; 
+};
