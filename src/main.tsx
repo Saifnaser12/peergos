@@ -1,9 +1,13 @@
-import './polyfills'
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+// Load polyfills first before any other imports
+import './polyfills';
+
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
 import './index.css'
 import './i18n'
-import App from './App'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
 import { AuditProvider } from './context/AuditContext'
 import { UserRoleProvider } from './context/UserRoleContext'
 import { AppContextProvider } from './context/AppContext'

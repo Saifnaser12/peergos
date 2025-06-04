@@ -6,30 +6,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Peergos Tax System</title>
     <script>
-      // Critical polyfills - must execute before any other scripts
-      (function() {
-        if (typeof window !== 'undefined' && !window.process) {
-          window.process = {
-            env: {},
-            version: '18.0.0',
-            platform: 'browser',
-            browser: true,
-            nextTick: function(cb) { setTimeout(cb, 0); },
-            cwd: function() { return '/'; },
-            argv: ['node'],
-            exit: function() {},
-            stdout: { write: function(data) { console.log(data); } },
-            stderr: { write: function(data) { console.error(data); } }
-          };
-        }
-        if (typeof window !== 'undefined' && !window.global) {
-          window.global = window;
-        }
-        if (typeof globalThis !== 'undefined' && !globalThis.process) {
-          globalThis.process = window.process;
-          globalThis.global = globalThis;
-        }
-      })();
+      // Immediate polyfills before any modules load
+      if (typeof globalThis.process === 'undefined') {
+        globalThis.process = {
+          env: {},
+          version: '18.0.0',
+          versions: { node: '18.0.0' },
+          platform: 'browser',
+          arch: 'x64',
+          nextTick: (fn, ...args) => setTimeout(() => fn(...args), 0),
+          cwd: () => '/',
+          argv: ['node'],
+          exit: () => {},
+          stdout: { write: (data) => console.log(data) },
+          stderr: { write: (data) => console.error(data) },
+          pid: 1,
+          ppid: 0,
+          title: 'browser',
+          browser: true
+        };
+      }
+      if (typeof globalThis.global === 'undefined') {
+        globalThis.global = globalThis;
+      }
+      if (typeof globalThis.Buffer === 'undefined') {
+        globalThis.Buffer = {
+          from: (data) => new Uint8Array(data),
+          alloc: (size) => new Uint8Array(size),
+          isBuffer: () => false
+        };
+      }
     </script>
   </head>
   <body>
