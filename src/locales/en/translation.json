@@ -24,8 +24,7 @@
   "Purchases": "Purchases",
   "Purchases with Recoverable VAT": "Purchases with Recoverable VAT",
   "Business purchases where VAT can be recovered": "Business purchases where VAT can be recovered",
-  "Purchases without Recoverable VAT": "Purchases without Recoverable VAT",
-  "Purchases where VAT cannot be recovered": "Purchases where VAT cannot be recovered",
+  "Purchases without Recoverable VAT": "Purchases where VAT cannot be recovered",
   "Reverse Charge Mechanism": "Reverse Charge Mechanism",
   "Imports of Goods/Services": "Imports of Goods/Services",
   "Imported goods and services subject to reverse charge": "Imported goods and services subject to reverse charge",
@@ -51,5 +50,59 @@
   "Excel": "Excel",
   "This VAT return complies with UAE Federal Tax Authority requirements. Ensure all amounts are accurate before submission.": "This VAT return complies with UAE Federal Tax Authority requirements. Ensure all amounts are accurate before submission.",
   "Invalid number format": "Invalid number format",
-  "Amount cannot be negative": "Amount cannot be negative"
+  "Amount cannot be negative": "Amount cannot be negative",
+  "financials": {
+    "title": "Financial Reports",
+    "subtitle": "Comprehensive financial reporting for UAE SMEs",
+    "incomeStatement": "Income Statement",
+    "balanceSheet": "Balance Sheet",
+    "revenue": "Revenue",
+    "expenses": "Expenses",
+    "netIncome": "Net Income",
+    "assets": "Assets",
+    "liabilities": "Liabilities",
+    "equity": "Equity",
+    "balanced": "Balanced",
+    "imbalanceWarning": "Warning: Balance Sheet is not balanced. Assets must equal Liabilities + Equity.",
+    "addEntry": "Add Entry",
+    "editEntry": "Edit Entry",
+    "addNewEntry": "Add New Entry",
+    "exportPDF": "Export PDF",
+    "exportExcel": "Export Excel",
+    "uploadDocs": "Upload Documents",
+    "financialEntries": "Financial Entries",
+    "date": "Date",
+    "type": "Type",
+    "category": "Category",
+    "subcategory": "Subcategory",
+    "description": "Description",
+    "amount": "Amount",
+    "actions": "Actions",
+    "types": {
+      "revenue": "Revenue",
+      "expense": "Expense",
+      "asset": "Asset",
+      "liability": "Liability",
+      "equity": "Equity"
+    }
+  },
+  "vat": {
+    "title": "VAT Return Filing",
+    "subtitle": "File your VAT return for the UAE",
+    "sales": {
+      "title": "Sales",
+      "standardRated": "Standard-rated sales (5%)",
+      "zeroRated": "Zero-rated sales",
+      "exempt": "Exempt sales"
+    },
+    "purchases": {
+      "title": "Purchases"
+    },
+    "adjustments": {
+      "title": "Adjustments"
+    },
+    "vatCalculationSummary": {
+      "title": "VAT Calculation Summary"
+    }
+  }
 }

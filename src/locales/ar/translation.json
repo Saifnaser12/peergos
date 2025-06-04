@@ -1,5 +1,39 @@
-
 {
+  "financials": {
+    "title": "التقارير المالية",
+    "subtitle": "تقارير مالية شاملة للشركات الصغيرة والمتوسطة في الإمارات",
+    "incomeStatement": "بيان الدخل",
+    "balanceSheet": "الميزانية العمومية",
+    "revenue": "الإيرادات",
+    "expenses": "المصروفات",
+    "netIncome": "صافي الدخل",
+    "assets": "الأصول",
+    "liabilities": "الخصوم",
+    "equity": "حقوق الملكية",
+    "balanced": "متوازن",
+    "imbalanceWarning": "تحذير: الميزانية العمومية غير متوازنة. يجب أن تساوي الأصول الخصوم + حقوق الملكية.",
+    "addEntry": "إضافة قيد",
+    "editEntry": "تعديل القيد",
+    "addNewEntry": "إضافة قيد جديد",
+    "exportPDF": "تصدير PDF",
+    "exportExcel": "تصدير Excel",
+    "uploadDocs": "رفع المستندات",
+    "financialEntries": "القيود المالية",
+    "date": "التاريخ",
+    "type": "النوع",
+    "category": "الفئة",
+    "subcategory": "الفئة الفرعية",
+    "description": "الوصف",
+    "amount": "المبلغ",
+    "actions": "الإجراءات",
+    "types": {
+      "revenue": "إيرادات",
+      "expense": "مصروفات",
+      "asset": "أصول",
+      "liability": "خصوم",
+      "equity": "حقوق ملكية"
+    }
+  },
   "welcome": "مرحبا",
   "dashboard": "لوحة التحكم",
   "filing": "التقديم",
@@ -52,5 +86,38 @@
   "Excel": "Excel",
   "This VAT return complies with UAE Federal Tax Authority requirements. Ensure all amounts are accurate before submission.": "يتوافق هذا الإقرار مع متطلبات الهيئة الاتحادية للضرائب في دولة الإمارات. تأكد من دقة جميع المبالغ قبل التقديم.",
   "Invalid number format": "تنسيق رقم غير صالح",
-  "Amount cannot be negative": "لا يمكن أن يكون المبلغ سالباً"
+  "Amount cannot be negative": "لا يمكن أن يكون المبلغ سالباً",
+  "vat": {
+    "title": "تقديم إقرار ضريبة القيمة المضافة",
+    "subtitle": "قدم إقرار ضريبة القيمة المضافة للإمارات العربية المتحدة",
+    "sales": {
+      "title": "المبيعات",
+      "standardRated": "المبيعات بالمعدل القياسي (5%)",
+      "zeroRated": "المبيعات بمعدل صفر",
+      "exempt": "المبيعات المعفاة"
+    },
+    "purchases": {
+      "title": "المشتريات",
+      "recoverableVat": "ضريبة القيمة المضافة القابلة للاسترداد",
+      "nonRecoverableVat": "ضريبة القيمة المضافة غير القابلة للاسترداد"
+    },
+    "reverseCharge": {
+      "title": "آلية الرسوم العكسية",
+      "imports": "واردات",
+      "localServices": "الخدمات المحلية"
+    },
+    "adjustments": {
+      "title": "تعديلات",
+      "lateInvoices": "فواتير متأخرة",
+      "badDebtRelief": "إعفاء الديون المعدومة",
+      "vatCorrections": "تصحيحات ضريبة القيمة المضافة"
+    },
+    "supportingDocuments": "المستندات الداعمة",
+    "calculationSummary": "ملخص الحساب",
+    "outputVat": "ضريبة القيمة المضافة المستحقة",
+    "inputVat": "ضريبة القيمة المضافة المدفوعة",
+    "refundableVat": "ضريبة القيمة المضافة القابلة للاسترداد",
+    "payableVat": "ضريبة القيمة المضافة المستحقة الدفع",
+    "submitVatReturn": "تقديم إقرار ضريبة القيمة المضافة"
+  }
 }
