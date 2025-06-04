@@ -114,17 +114,14 @@ const VAT: React.FC = () => {
   };
 
   const handleExportPDF = () => {
-    // PDF export logic would go here
     console.log('Exporting PDF...');
   };
 
   const handleExportExcel = () => {
-    // Excel export logic would go here
     console.log('Exporting Excel...');
   };
 
   const handleSubmit = () => {
-    // Submission logic would go here
     console.log('Submitting VAT return...');
   };
 
@@ -167,8 +164,8 @@ const VAT: React.FC = () => {
             <Switch
               checked={darkMode}
               onChange={(e) => setDarkMode(e.target.checked)}
-              icon={<Sun size={16} />}
-              checkedIcon={<Moon size={16} />}
+              icon={<Sun />}
+              checkedIcon={<Moon />}
             />
           }
           label={t('Dark Mode')}
@@ -344,7 +341,7 @@ const VAT: React.FC = () => {
                 },
               }}
             >
-              <Upload size={32} color={theme.palette.primary.main} />
+              <Upload sx={{ fontSize: 32, color: theme.palette.primary.main }} />
               <Typography variant="body1" sx={{ mt: 2, fontWeight: 500 }}>
                 {t('Upload invoices, receipts, and reports')}
               </Typography>
