@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
   <head>
@@ -6,6 +5,32 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Peergos Tax System</title>
+    <script>
+      // Critical polyfills - must execute before any other scripts
+      (function() {
+        if (typeof window !== 'undefined' && !window.process) {
+          window.process = {
+            env: {},
+            version: '18.0.0',
+            platform: 'browser',
+            browser: true,
+            nextTick: function(cb) { setTimeout(cb, 0); },
+            cwd: function() { return '/'; },
+            argv: ['node'],
+            exit: function() {},
+            stdout: { write: function(data) { console.log(data); } },
+            stderr: { write: function(data) { console.error(data); } }
+          };
+        }
+        if (typeof window !== 'undefined' && !window.global) {
+          window.global = window;
+        }
+        if (typeof globalThis !== 'undefined' && !globalThis.process) {
+          globalThis.process = window.process;
+          globalThis.global = globalThis;
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

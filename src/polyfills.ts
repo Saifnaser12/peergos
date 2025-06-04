@@ -1,14 +1,11 @@
-
-// Enhanced polyfills for Node.js globals in browser environment
-// This must be loaded before any other modules
-
-(function() {
+// Immediately executed global polyfills - must run before any imports
+(() => {
   'use strict';
-  
-  // Process polyfill with comprehensive API
-  if (typeof globalThis.process === 'undefined') {
-    globalThis.process = {
-      env: import.meta?.env || {},
+
+  // Ensure process exists globally before any module loading
+  if (typeof window !== 'undefined' && !window.process) {
+    window.process = {
+      env: {},
       version: '18.0.0',
       versions: { 
         node: '18.0.0',
@@ -29,15 +26,7 @@
       },
       platform: 'browser',
       arch: 'x64',
-      release: {
-        name: 'node',
-        sourceUrl: 'https://nodejs.org/download/release/v18.0.0/node-v18.0.0.tar.gz',
-        headersUrl: 'https://nodejs.org/download/release/v18.0.0/node-v18.0.0-headers.tar.gz'
-      },
       nextTick: function(callback, ...args) {
-        if (typeof callback !== 'function') {
-          throw new TypeError('Callback must be a function');
-        }
         setTimeout(() => callback.apply(null, args), 0);
       },
       cwd: () => '/',
@@ -46,23 +35,22 @@
       argv0: 'node',
       execArgv: [],
       execPath: '/usr/local/bin/node',
-      exit: (code) => { console.warn('process.exit called with code:', code); },
+      exit: (code) => { 
+        console.warn('process.exit called with code:', code); 
+      },
       exitCode: 0,
-      getgid: () => 1000,
-      setgid: () => {},
-      getuid: () => 1000,
-      setuid: () => {},
-      geteuid: () => 1000,
-      getegid: () => 1000,
-      getgroups: () => [1000],
-      setgroups: () => {},
-      initgroups: () => {},
       stdout: { 
-        write: (data) => { console.log(data); return true; },
+        write: (data) => { 
+          console.log(data); 
+          return true; 
+        },
         isTTY: false
       },
       stderr: { 
-        write: (data) => { console.error(data); return true; },
+        write: (data) => { 
+          console.error(data); 
+          return true; 
+        },
         isTTY: false
       },
       stdin: {
@@ -83,24 +71,6 @@
         arrayBuffers: 0
       }),
       cpuUsage: () => ({ user: 0, system: 0 }),
-      resourceUsage: () => ({
-        userCPUTime: 0,
-        systemCPUTime: 0,
-        maxRSS: 0,
-        sharedMemorySize: 0,
-        unsharedDataSize: 0,
-        unsharedStackSize: 0,
-        minorPageFault: 0,
-        majorPageFault: 0,
-        swappedOut: 0,
-        fsRead: 0,
-        fsWrite: 0,
-        ipcSent: 0,
-        ipcReceived: 0,
-        signalsCount: 0,
-        voluntaryContextSwitches: 0,
-        involuntaryContextSwitches: 0
-      }),
       umask: () => 0o022,
       binding: () => {},
       _linkedBinding: () => {},
@@ -110,31 +80,25 @@
       domain: null,
       _exiting: false,
       config: {},
-      debugPort: 9229,
-      _debugProcess: () => {},
-      _debugEnd: () => {},
-      _startProfilerIdleNotifier: () => {},
-      _stopProfilerIdleNotifier: () => {},
-      stdout: { write: (data) => console.log(data) },
-      stderr: { write: (data) => console.error(data) }
+      debugPort: 9229
     };
   }
 
   // Global polyfill
-  if (typeof globalThis.global === 'undefined') {
-    globalThis.global = globalThis;
+  if (typeof window !== 'undefined' && !window.global) {
+    window.global = window;
   }
 
   // Buffer polyfill
-  if (typeof globalThis.Buffer === 'undefined') {
-    globalThis.Buffer = {
+  if (typeof window !== 'undefined' && !window.Buffer) {
+    window.Buffer = {
       from: function(data, encoding) {
         if (typeof data === 'string') {
           return new TextEncoder().encode(data);
         }
         return new Uint8Array(data);
       },
-      alloc: function(size, fill, encoding) {
+      alloc: function(size, fill) {
         const buffer = new Uint8Array(size);
         if (fill !== undefined) {
           buffer.fill(fill);
@@ -147,7 +111,7 @@
       isBuffer: function(obj) {
         return obj instanceof Uint8Array;
       },
-      byteLength: function(string, encoding) {
+      byteLength: function(string) {
         return new TextEncoder().encode(string).length;
       },
       compare: function(buf1, buf2) {
@@ -170,12 +134,27 @@
   }
 
   // __dirname and __filename polyfills
-  if (typeof globalThis.__dirname === 'undefined') {
-    globalThis.__dirname = '/';
+  if (typeof window !== 'undefined') {
+    if (!window.__dirname) {
+      window.__dirname = '/';
+    }
+
+    if (!window.__filename) {
+      window.__filename = '/index.js';
+    }
   }
-  
-  if (typeof globalThis.__filename === 'undefined') {
-    globalThis.__filename = '/index.js';
+
+  // Also set on globalThis for compatibility
+  if (typeof globalThis !== 'undefined') {
+    if (!globalThis.process) {
+      globalThis.process = window.process;
+    }
+    if (!globalThis.global) {
+      globalThis.global = globalThis;
+    }
+    if (!globalThis.Buffer) {
+      globalThis.Buffer = window.Buffer;
+    }
   }
 
 })();
