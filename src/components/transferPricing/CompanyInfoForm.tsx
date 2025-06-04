@@ -14,9 +14,9 @@ import {
   alpha,
   useTheme
 } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DatePicker } from '@mui/lab';
+import { LocalizationProvider } from '@mui/lab';
+import { AdapterDateFns } from '@mui/lab';
 import { Info as InfoIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { CompanyInfo } from '../../types/transferPricing';

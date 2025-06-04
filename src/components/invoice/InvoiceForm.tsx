@@ -21,9 +21,9 @@ import {
   DialogActions,
   Grid
 } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/lab';
+import { AdapterDateFns } from '@mui/lab';
+import { LocalizationProvider } from '@mui/lab';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
