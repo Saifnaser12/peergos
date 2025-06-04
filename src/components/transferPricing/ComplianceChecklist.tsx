@@ -56,4 +56,5 @@ const ComplianceChecklist: React.FC<ComplianceChecklistProps> = ({
   );
 };
 
+export { ComplianceChecklist };
 export default ComplianceChecklist;
