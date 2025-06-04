@@ -5,11 +5,14 @@ export default defineConfig({
   plugins: [react()],
   define: {
     global: 'globalThis',
-    'process.env': {}
+    'process.env': 'import.meta.env',
+    'process': {
+      env: 'import.meta.env'
+    }
   },
   server: {
     host: '0.0.0.0',
-    port: 5000,
+    port: 3000,
     strictPort: true,
     hmr: {
       overlay: false,
