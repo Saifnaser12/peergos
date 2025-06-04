@@ -52,15 +52,64 @@
   },
   "cit": {
     "title": "Corporate Income Tax",
-    "subtitle": "Manage your CIT returns and compliance",
+    "subtitle": "Manage your CIT returns and compliance with UAE FTA regulations",
+    "form": {
+      "title": "CIT Return Information",
+      "companyInfo": "Company Information",
+      "companyName": "Company Name",
+      "trn": "Tax Registration Number (TRN)",
+      "financialYearEnd": "Financial Year End Date",
+      "financialData": "Financial Data",
+      "revenue": "Total Revenue",
+      "expenses": "Total Expenses", 
+      "taxAdjustments": "Tax Adjustments",
+      "taxAdjustmentsHelp": "Enter positive for additions, negative for deductions",
+      "exemptIncome": "Exempt Income",
+      "carriedForwardLosses": "Carried Forward Losses",
+      "lossesCapHelp": "Maximum 75% of adjusted profit can be offset",
+      "elections": "Tax Elections",
+      "smallBusinessRelief": "Small Business Relief Election",
+      "smallBusinessReliefHelp": "Available for companies with revenue ≤ AED 3 million",
+      "taxGroupElection": "Tax Group Election",
+      "taxGroupElectionHelp": "Elect to be treated as part of a tax group"
+    },
+    "calculation": {
+      "title": "CIT Calculation",
+      "calculate": "Calculate",
+      "calculating": "Calculating...",
+      "complete": "Calculation completed successfully",
+      "netProfit": "Net Profit",
+      "allowedLosses": "Allowed Losses (Capped at 75%)",
+      "lossesCapped": "Losses capped at 75% of adjusted profit",
+      "taxableIncome": "Taxable Income",
+      "citPayable": "CIT Payable",
+      "effectiveRate": "Effective Tax Rate",
+      "smallBusinessReliefApplied": "Small Business Relief Applied"
+    },
+    "compliance": {
+      "noCitDue": "No CIT is due for this period",
+      "citDue": "CIT payment is required"
+    },
     "upload": {
-      "title": "Upload CIT Return",
-      "subtitle": "Upload your CIT return in Excel or PDF format",
-      "button": "Choose File"
+      "title": "Supporting Documents",
+      "button": "Upload Documents",
+      "uploading": "Uploading...",
+      "uploadedFiles": "Uploaded Files",
+      "success": "Files uploaded successfully",
+      "error": "Error uploading files",
+      "invalidFileType": "Invalid file type. Please upload PDF, Excel, or CSV files only",
+      "fileTooLarge": "File size exceeds 10MB limit"
     },
     "export": {
-      "button": "Export Returns"
-    },
+      "title": "Export Options",
+      "description": "Choose your preferred export format",
+      "button": "Export CIT Return",
+      "pdf": "Export as PDF Report",
+      "excel": "Export as Excel/CSV Data",
+      "pdfSuccess": "PDF exported successfully",
+      "excelSuccess": "Excel file exported successfully"
+    }
+  },
     "returns": {
       "title": "CIT Returns",
       "period": "Period",
@@ -169,6 +218,16 @@
       "report": "Generate Reports",
       "reportDesc": "Generate transfer pricing reports"
     }
+  },
+  "validation": {
+    "companyNameTooShort": "Company name must be at least 2 characters",
+    "amountNegative": "Amount cannot be negative",
+    "smallBusinessReliefNotEligible": "Small Business Relief is only available for companies with revenue ≤ AED 3 million"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close"
   },
   "assistant": {
     "title": "AI Assistant",
