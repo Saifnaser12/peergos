@@ -112,3 +112,31 @@ export const useUserRole = () => {
   }
   return context;
 };
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+interface UserRoleContextType {
+  userRole: string;
+  setUserRole: (role: string) => void;
+  permissions: string[];
+}
+
+const UserRoleContext = createContext<UserRoleContextType | undefined>(undefined);
+
+export const useUserRole = () => {
+  const context = useContext(UserRoleContext);
+  if (!context) {
+    throw new Error('useUserRole must be used within a UserRoleProvider');
+  }
+  return context;
+};
+
+export const UserRoleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [userRole, setUserRole] = useState<string>('user');
+  const [permissions] = useState<string[]>(['read', 'write']);
+
+  return (
+    <UserRoleContext.Provider value={{ userRole, setUserRole, permissions }}>
+      {children}
+    </UserRoleContext.Provider>
+  );
+};

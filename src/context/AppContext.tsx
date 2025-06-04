@@ -57,3 +57,32 @@ export const useAppContext = () => {
   }
   return context;
 };
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+interface AppContextType {
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
+  user: any;
+  setUser: (user: any) => void;
+}
+
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+export const useApp = () => {
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error('useApp must be used within an AppContextProvider');
+  }
+  return context;
+};
+
+export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState(null);
+
+  return (
+    <AppContext.Provider value={{ isLoading, setIsLoading, user, setUser }}>
+      {children}
+    </AppContext.Provider>
+  );
+};

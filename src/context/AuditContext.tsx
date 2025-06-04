@@ -109,3 +109,33 @@ export const useAuditContext = () => {
   }
   return context;
 };
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+interface AuditContextType {
+  auditLogs: any[];
+  addAuditLog: (log: any) => void;
+}
+
+const AuditContext = createContext<AuditContextType | undefined>(undefined);
+
+export const useAudit = () => {
+  const context = useContext(AuditContext);
+  if (!context) {
+    throw new Error('useAudit must be used within an AuditProvider');
+  }
+  return context;
+};
+
+export const AuditProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+
+  const addAuditLog = (log: any) => {
+    setAuditLogs(prev => [...prev, { ...log, timestamp: new Date() }]);
+  };
+
+  return (
+    <AuditContext.Provider value={{ auditLogs, addAuditLog }}>
+      {children}
+    </AuditContext.Provider>
+  );
+};
