@@ -1,60 +1,13 @@
 {
-  "common": {
-    "cancel": "Cancel",
-    "add": "Add",
-    "edit": "Edit",
-    "save": "Save",
-    "delete": "Delete",
-    "export": "Export"
-  },
-  "balanceSheet": {
-    "title": "Balance Sheet",
-    "addAccount": "Add Account",
-    "accountCode": "Account Code",
-    "accountName": "Account Name",
-    "accountType": "Account Type",
-    "accountCategory": "Account Category",
-    "initialBalance": "Initial Balance",
-    "showChart": "Show Chart",
-    "hideChart": "Hide Chart",
-    "breakdown": "Balance Sheet Breakdown",
-    "assets": "Assets",
-    "currentAssets": "Current Assets",
-    "fixedAssets": "Fixed Assets",
-    "intangibleAssets": "Intangible Assets",
-    "otherAssets": "Other Assets",
-    "totalAssets": "Total Assets",
-    "liabilities": "Liabilities",
-    "currentLiabilities": "Current Liabilities",
-    "longTermLiabilities": "Long Term Liabilities",
-    "otherLiabilities": "Other Liabilities",
-    "totalLiabilities": "Total Liabilities",
-    "equity": "Equity",
-    "shareCapital": "Share Capital",
-    "retainedEarnings": "Retained Earnings",
-    "reserves": "Reserves",
-    "totalEquity": "Total Equity",
-    "balanced": "The balance sheet is balanced",
-    "notBalanced": "Warning: The balance sheet is not balanced",
-    "noData": "No balance sheet data available",
-    "accountTypes": {
-      "ASSET": "Asset",
-      "LIABILITY": "Liability",
-      "EQUITY": "Equity",
-      "REVENUE": "Revenue",
-      "EXPENSE": "Expense"
-    },
-    "accountCategories": {
-      "CURRENT_ASSETS": "Current Assets",
-      "FIXED_ASSETS": "Fixed Assets",
-      "INTANGIBLE_ASSETS": "Intangible Assets",
-      "OTHER_ASSETS": "Other Assets",
-      "CURRENT_LIABILITIES": "Current Liabilities",
-      "LONG_TERM_LIABILITIES": "Long Term Liabilities",
-      "OTHER_LIABILITIES": "Other Liabilities",
-      "SHARE_CAPITAL": "Share Capital",
-      "RETAINED_EARNINGS": "Retained Earnings",
-      "RESERVES": "Reserves"
-    }
-  }
-} 
+  "welcome": "Welcome",
+  "dashboard": "Dashboard",
+  "filing": "Filing",
+  "login": "Login",
+  "logout": "Logout",
+  "save": "Save",
+  "cancel": "Cancel",
+  "submit": "Submit",
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success"
+}
