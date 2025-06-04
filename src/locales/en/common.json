@@ -175,48 +175,138 @@
   },
   "transferPricing": {
     "title": "Transfer Pricing",
-    "subtitle": "Manage transfer pricing documentation and compliance",
-    "year": "Year",
-    "export": {
-      "button": "Export Documentation",
-      "success": "Transfer pricing documentation exported successfully",
-      "error": "Error exporting transfer pricing documentation"
-    },
-    "documentation": {
-      "masterFile": "Master File",
-      "masterFileTooltip": "Global documentation of transfer pricing policies",
-      "localFile": "Local File",
-      "localFileTooltip": "Country-specific transfer pricing documentation",
-      "cbcr": "CbCR",
-      "cbcrTooltip": "Country-by-Country Reporting",
-      "dueDate": "Due Date"
-    },
-    "status": {
-      "draft": "Draft",
-      "submitted": "Submitted",
-      "approved": "Approved",
-      "rejected": "Rejected"
-    },
+    "subtitle": "UAE-compliant transfer pricing module for SMEs",
+    "description": "Manage your transfer pricing documentation and compliance requirements.",
+    "relatedParties": "Related Parties",
+    "addParty": "Add Related Party",
     "transactions": {
       "title": "Related Party Transactions",
+      "addTransaction": "Add Transaction",
+      "editTransaction": "Edit Transaction",
+      "noTransactions": "No transactions added yet",
       "relatedParty": "Related Party",
       "type": "Transaction Type",
+      "description": "Description",
       "amount": "Amount",
+      "currency": "Currency",
       "method": "Transfer Pricing Method",
-      "status": "Status",
-      "status": {
-        "compliant": "Compliant",
-        "non-compliant": "Non-compliant",
-        "pending": "Pending Review"
-      }
+      "pricingMethod": "Pricing Method",
+      "date": "Transaction Date",
+      "documentation": "Documentation",
+      "status": "Status"
     },
-    "actions": {
-      "upload": "Upload Documentation",
-      "uploadDesc": "Upload transfer pricing documentation",
-      "analyze": "Analyze Transactions",
-      "analyzeDesc": "Analyze related party transactions",
-      "report": "Generate Reports",
-      "reportDesc": "Generate transfer pricing reports"
+    "transactionTypes": {
+      "GOODS": "Sale of Goods",
+      "SERVICES": "Provision of Services",
+      "FINANCING": "Financing/Loans",
+      "IP_LICENSING": "IP Licensing",
+      "COST_SHARING": "Cost Sharing"
+    },
+    "compliance": {
+      "title": "Compliance Checklist",
+      "score": "Compliance Score",
+      "scoreDesc": "Based on UAE FTA Transfer Pricing Guidelines",
+      "compliant": "Compliant",
+      "needsAttention": "Needs Attention",
+      "required": "Required",
+      "uaeGuidance": "Based on 2023 UAE FTA Transfer Pricing Guidelines and OECD standards",
+      "masterFile": "Master File Required",
+      "masterFileDesc": "Required for groups with consolidated revenue over AED 3.15 billion",
+      "localFile": "Local File Prepared",
+      "localFileDesc": "Required for entities with controlled transactions over AED 200 million",
+      "threshold": "Meets Consolidated Threshold",
+      "thresholdDesc": "Group consolidated revenue exceeds AED 200 million",
+      "cbcr": "Country-by-Country Report Filed",
+      "cbcrDesc": "Required for multinational groups with revenue over AED 3.15 billion",
+      "policy": "Transfer Pricing Policy Documented",
+      "policyDesc": "Written transfer pricing policy covering all controlled transactions",
+      "armLength": "Arm's Length Principle Documented",
+      "armLengthDesc": "Documentation showing compliance with arm's length principle",
+      "economicAnalysis": "Economic Analysis Conducted",
+      "economicAnalysisDesc": "Benchmarking study or economic analysis supporting pricing",
+      "lowScoreWarning": "Low Compliance Score Detected",
+      "lowScoreAdvice": "Consider consulting with transfer pricing specialists to improve compliance."
+    },
+    "documents": {
+      "title": "Document Upload",
+      "uploadProgress": "Upload Progress",
+      "completed": "Completed",
+      "complete": "Complete",
+      "guidelines": "Upload Guidelines",
+      "acceptedFormats": "Accepted formats",
+      "maxSize": "Maximum file size",
+      "naming": "File naming",
+      "namingAdvice": "Use descriptive names including document type and date",
+      "upload": "Upload File",
+      "required": "Required",
+      "missingRequired": "This document is required for compliance"
+    },
+    "documentTypes": {
+      "MASTER_FILE": "Master File",
+      "LOCAL_FILE": "Local File",
+      "CBCR": "Country-by-Country Report",
+      "BENCHMARKING_STUDY": "Benchmarking Study",
+      "ECONOMIC_ANALYSIS": "Economic Analysis",
+      "AGREEMENT": "Intercompany Agreement",
+      "OTHER": "Other Documentation"
+    },
+    "documentDescriptions": {
+      "MASTER_FILE": "Standardized information on the MNE group's organizational structure, business activities, intangibles, intercompany financial activities, and financial and tax position",
+      "LOCAL_FILE": "Detailed information about the specific controlled transactions of the local entity",
+      "CBCR": "Country-by-Country Report providing tax administration with information on global allocation of income and taxes paid",
+      "BENCHMARKING_STUDY": "Economic analysis comparing controlled transaction terms with arm's length terms",
+      "ECONOMIC_ANALYSIS": "Supporting economic analysis demonstrating arm's length nature of transactions",
+      "AGREEMENT": "Legal agreements governing intercompany transactions",
+      "OTHER": "Additional supporting documentation"
+    },
+    "summary": {
+      "title": "Transfer Pricing Summary",
+      "totalTransactions": "Total Transactions",
+      "totalValue": "Total Value",
+      "complianceScore": "Compliance Score",
+      "riskLevel": "Risk Level",
+      "riskLevels": {
+        "low": "Low Risk",
+        "medium": "Medium Risk", 
+        "high": "High Risk"
+      },
+      "transactionsByType": "Transactions by Type",
+      "riskFlags": "Risk Flags",
+      "noRiskFlags": "No risk flags identified",
+      "noTransactions": "No transactions to display",
+      "documentationStatus": "Documentation Status",
+      "documentedTransactions": "Documented Transactions",
+      "uploadedDocuments": "Uploaded Documents",
+      "highRiskWarning": "High Risk Assessment",
+      "highRiskAdvice": "Your transfer pricing setup has been flagged as high risk. We recommend immediate consultation with transfer pricing specialists.",
+      "mediumRiskWarning": "Medium Risk Assessment",
+      "mediumRiskAdvice": "Some areas need attention to ensure full compliance with UAE transfer pricing requirements.",
+      "lowRiskCongrats": "Low Risk - Well Done!",
+      "lowRiskAdvice": "Your transfer pricing documentation appears to be in good order. Continue monitoring and updating as needed."
+    },
+    "riskFlags": {
+      "HIGH_VALUE_TRANSACTIONS": "High Value Transactions",
+      "HIGH_VALUE_TRANSACTIONSDesc": "Transactions exceed AED 10 million threshold requiring enhanced documentation",
+      "INSUFFICIENT_DOCUMENTATION": "Insufficient Documentation",
+      "INSUFFICIENT_DOCUMENTATIONDesc": "Less than 80% of transactions have adequate documentation",
+      "NO_TP_POLICY": "No Transfer Pricing Policy",
+      "NO_TP_POLICYDesc": "Written transfer pricing policy is missing or incomplete",
+      "NO_ARM_LENGTH_DOCUMENTATION": "No Arm's Length Documentation",
+      "NO_ARM_LENGTH_DOCUMENTATIONDesc": "Lack of documentation demonstrating arm's length nature of transactions"
+    },
+    "export": {
+      "export": "Export",
+      "exporting": "Exporting...",
+      "pdfSummary": "PDF Summary Report",
+      "excelData": "Excel Data Export"
+    },
+    "steps": {
+      "companyInfo": "Company Information",
+      "relatedParties": "Related Parties",
+      "transactions": "Transactions",
+      "compliance": "Compliance",
+      "documents": "Documents",
+      "summary": "Summary"
     }
   },
   "validation": {
@@ -310,4 +400,4 @@
   "auth": {
     "logout": "Logout"
   }
-} 
+}
