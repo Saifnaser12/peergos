@@ -6,6 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import Layout from './components/Layout';
 import { createTheme } from './theme';
+import { ThemeProvider as CustomThemeProvider } from './context/ThemeContext';
 
 // Import your existing pages
 import Dashboard from './pages/Dashboard';
@@ -23,11 +24,12 @@ function App() {
   const theme = createTheme('ltr');
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <ErrorBoundary>
-        <Router>
-          <Routes>
+    <CustomThemeProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <ErrorBoundary>
+          <Router>
+            <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/" element={
@@ -76,9 +78,10 @@ function App() {
               </Layout>
             } />
           </Routes>
-        </Router>
-      </ErrorBoundary>
-    </ThemeProvider>
+          </Router>
+        </ErrorBoundary>
+      </ThemeProvider>
+    </CustomThemeProvider>
   );
 }
 
