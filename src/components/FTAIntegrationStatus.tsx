@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import React from 'react';
+// import { useTranslation } from 'react-i18next';
 import { ftaService } from '../services/ftaService';
 
-interface FTAIntegrationStatusComponentProps {
+interface FTAIntegrationStatusProps {
   trn?: string;
   showDetails?: boolean;
   variant?: 'badge' | 'card';
 }
 
-const FTAIntegrationStatusComponent: React.FC<FTAIntegrationStatusComponentProps> = ({
+const FTAIntegrationStatus: React.FC<FTAIntegrationStatusProps> = ({
   trn,
   showDetails = false,
   variant = 'badge'
@@ -80,4 +80,4 @@ const FTAIntegrationStatusComponent: React.FC<FTAIntegrationStatusComponentProps
   return null;
 };
 
-export default FTAIntegrationStatusComponent;
+export default FTAIntegrationStatus;
