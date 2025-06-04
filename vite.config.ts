@@ -15,7 +15,10 @@ export default defineConfig({
     fs: {
       allow: ['..']
     },
-    allowedHosts: 'all'
+    allowedHosts: [
+      'all',
+      '04d74696-48b6-49ed-b46b-b28d6dd648f8-00-2exwgkv38g3ls.pike.replit.dev'
+    ]
   },
   build: {
     outDir: 'dist',
