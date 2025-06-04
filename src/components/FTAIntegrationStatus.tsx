@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ftaService } from '../services/ftaService';
@@ -5,7 +6,7 @@ import { ftaService } from '../services/ftaService';
 interface FTAIntegrationStatusProps {
   trn?: string;
   showDetails?: boolean;
-  variant?: 'badge' | 'card' | 'full';
+  variant?: 'badge' | 'card';
 }
 
 const FTAIntegrationStatus: React.FC<FTAIntegrationStatusProps> = ({

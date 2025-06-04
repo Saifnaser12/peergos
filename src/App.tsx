@@ -97,8 +97,8 @@ function App() {
                     </Router>
                   </ErrorBoundary>
                 </ThemeProvider>
-              </NotificationProvider>
-            </UserRoleProvider>
+              </UserRoleProvider>
+            </NotificationProvider>
           </TaxProvider>
         </CustomThemeProvider>
       </SettingsProvider>
