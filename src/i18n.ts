@@ -2,17 +2,20 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Import translation files
-import enTranslation from './locales/en/translation.json';
-import arTranslation from './locales/ar/translation.json';
-
+// Simple fallback resources
 const resources = {
   en: {
-    translation: enTranslation,
+    translation: {
+      welcome: "Welcome",
+      loading: "Loading..."
+    }
   },
   ar: {
-    translation: arTranslation,
-  },
+    translation: {
+      welcome: "مرحبا",
+      loading: "جاري التحميل..."
+    }
+  }
 };
 
 i18n
