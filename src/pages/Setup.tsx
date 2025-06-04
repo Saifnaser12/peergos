@@ -520,3 +520,219 @@ const Setup: React.FC = () => {
 };
 
 export default Setup; 
+import React, { useState } from 'react';
+import { 
+  Box, 
+  Typography, 
+  TextField, 
+  Button, 
+  Card, 
+  CardContent,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Switch,
+  FormControlLabel,
+  Alert,
+  Divider
+} from '@mui/material';
+
+const Setup: React.FC = () => {
+  const [settings, setSettings] = useState({
+    companyName: '',
+    taxNumber: '',
+    currency: 'AED',
+    defaultVatRate: '5',
+    citRate: '9',
+    emailNotifications: true,
+    autoBackup: true,
+    twoFactorAuth: false,
+    language: 'en'
+  });
+
+  const [saved, setSaved] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Save settings to localStorage (in a real app, this would go to a backend)
+    localStorage.setItem('appSettings', JSON.stringify(settings));
+    setSaved(true);
+    
+    setTimeout(() => setSaved(false), 3000);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSettings({
+      ...settings,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSettings({
+      ...settings,
+      [e.target.name]: e.target.checked
+    });
+  };
+
+  return (
+    <Box>
+      <Typography variant="h4" component="h1" gutterBottom>
+        System Setup & Configuration
+      </Typography>
+      
+      {saved && (
+        <Alert severity="success" sx={{ mb: 3 }}>
+          Settings saved successfully!
+        </Alert>
+      )}
+      
+      <Box component="form" onSubmit={handleSubmit}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Company Information
+                </Typography>
+                <TextField
+                  fullWidth
+                  label="Company Name"
+                  name="companyName"
+                  value={settings.companyName}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Tax Registration Number"
+                  name="taxNumber"
+                  value={settings.taxNumber}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Default Currency</InputLabel>
+                  <Select
+                    name="currency"
+                    value={settings.currency}
+                    label="Default Currency"
+                    onChange={(e) => setSettings({...settings, currency: e.target.value})}
+                  >
+                    <MenuItem value="AED">AED - UAE Dirham</MenuItem>
+                    <MenuItem value="USD">USD - US Dollar</MenuItem>
+                    <MenuItem value="EUR">EUR - Euro</MenuItem>
+                    <MenuItem value="GBP">GBP - British Pound</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Language</InputLabel>
+                  <Select
+                    name="language"
+                    value={settings.language}
+                    label="Language"
+                    onChange={(e) => setSettings({...settings, language: e.target.value})}
+                  >
+                    <MenuItem value="en">English</MenuItem>
+                    <MenuItem value="ar">Arabic</MenuItem>
+                  </Select>
+                </FormControl>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Tax Configuration
+                </Typography>
+                <TextField
+                  fullWidth
+                  label="Default VAT Rate (%)"
+                  name="defaultVatRate"
+                  type="number"
+                  value={settings.defaultVatRate}
+                  onChange={handleChange}
+                  margin="normal"
+                />
+                <TextField
+                  fullWidth
+                  label="Corporate Income Tax Rate (%)"
+                  name="citRate"
+                  type="number"
+                  value={settings.citRate}
+                  onChange={handleChange}
+                  margin="normal"
+                />
+              </CardContent>
+            </Card>
+            
+            <Card sx={{ mt: 2 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  System Preferences
+                </Typography>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={settings.emailNotifications}
+                      onChange={handleSwitchChange}
+                      name="emailNotifications"
+                    />
+                  }
+                  label="Email Notifications"
+                />
+                <br />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={settings.autoBackup}
+                      onChange={handleSwitchChange}
+                      name="autoBackup"
+                    />
+                  }
+                  label="Auto Backup"
+                />
+                <br />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={settings.twoFactorAuth}
+                      onChange={handleSwitchChange}
+                      name="twoFactorAuth"
+                    />
+                  }
+                  label="Two-Factor Authentication"
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={12}>
+            <Divider sx={{ my: 2 }} />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                Make sure to save your settings before leaving this page.
+              </Typography>
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+              >
+                Save Settings
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+    </Box>
+  );
+};
+
+export default Setup;

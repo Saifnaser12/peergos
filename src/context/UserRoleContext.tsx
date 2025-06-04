@@ -71,3 +71,44 @@ export const useUserRole = () => {
   }
   return context;
 }; 
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+type UserRole = 'admin' | 'user' | 'accountant' | 'auditor';
+
+interface UserRoleContextType {
+  role: UserRole;
+  setRole: (role: UserRole) => void;
+  hasPermission: (permission: string) => boolean;
+}
+
+const UserRoleContext = createContext<UserRoleContextType | undefined>(undefined);
+
+export const UserRoleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [role, setRole] = useState<UserRole>('user');
+
+  const hasPermission = (permission: string): boolean => {
+    // Basic permission logic - can be expanded
+    const permissions = {
+      admin: ['all'],
+      accountant: ['view_financials', 'edit_financials', 'view_tax'],
+      auditor: ['view_audit', 'view_financials'],
+      user: ['view_basic'],
+    };
+    
+    return permissions[role]?.includes(permission) || permissions[role]?.includes('all') || false;
+  };
+
+  return (
+    <UserRoleContext.Provider value={{ role, setRole, hasPermission }}>
+      {children}
+    </UserRoleContext.Provider>
+  );
+};
+
+export const useUserRole = () => {
+  const context = useContext(UserRoleContext);
+  if (context === undefined) {
+    throw new Error('useUserRole must be used within a UserRoleProvider');
+  }
+  return context;
+};

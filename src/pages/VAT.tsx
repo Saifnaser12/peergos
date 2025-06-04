@@ -225,3 +225,173 @@ const VAT: React.FC = () => {
 };
 
 export default VAT; 
+import React, { useState } from 'react';
+import { 
+  Box, 
+  Typography, 
+  TextField, 
+  Button, 
+  Card, 
+  CardContent,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper
+} from '@mui/material';
+
+interface VATRecord {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  vatAmount: number;
+  vatRate: number;
+}
+
+const VAT: React.FC = () => {
+  const [vatRecords, setVatRecords] = useState<VATRecord[]>([]);
+  const [formData, setFormData] = useState({
+    description: '',
+    amount: '',
+    vatRate: '15'
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const amount = parseFloat(formData.amount);
+    const vatRate = parseFloat(formData.vatRate);
+    const vatAmount = (amount * vatRate) / 100;
+
+    const newRecord: VATRecord = {
+      id: Date.now().toString(),
+      date: new Date().toLocaleDateString(),
+      description: formData.description,
+      amount: amount,
+      vatAmount: vatAmount,
+      vatRate: vatRate
+    };
+
+    setVatRecords([...vatRecords, newRecord]);
+    setFormData({ description: '', amount: '', vatRate: '15' });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const totalVAT = vatRecords.reduce((sum, record) => sum + record.vatAmount, 0);
+
+  return (
+    <Box>
+      <Typography variant="h4" component="h1" gutterBottom>
+        VAT Management
+      </Typography>
+      
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Add VAT Record
+              </Typography>
+              <Box component="form" onSubmit={handleSubmit}>
+                <TextField
+                  fullWidth
+                  label="Description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Amount"
+                  name="amount"
+                  type="number"
+                  value={formData.amount}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="VAT Rate (%)"
+                  name="vatRate"
+                  type="number"
+                  value={formData.vatRate}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ mt: 2 }}
+                  fullWidth
+                >
+                  Add Record
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                VAT Summary
+              </Typography>
+              <Typography variant="h4" color="primary">
+                ${totalVAT.toFixed(2)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Total VAT Amount
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12}>
+          <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+            VAT Records
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Date</TableCell>
+                  <TableCell>Description</TableCell>
+                  <TableCell align="right">Amount</TableCell>
+                  <TableCell align="right">VAT Rate</TableCell>
+                  <TableCell align="right">VAT Amount</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {vatRecords.map((record) => (
+                  <TableRow key={record.id}>
+                    <TableCell>{record.date}</TableCell>
+                    <TableCell>{record.description}</TableCell>
+                    <TableCell align="right">${record.amount.toFixed(2)}</TableCell>
+                    <TableCell align="right">{record.vatRate}%</TableCell>
+                    <TableCell align="right">${record.vatAmount.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+export default VAT;

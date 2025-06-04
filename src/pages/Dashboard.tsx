@@ -976,3 +976,89 @@ export const Dashboard: React.FC<DashboardProps> = () => {
 };
 
 export default Dashboard; 
+import React from 'react';
+import { Box, Typography, Grid, Card, CardContent, CardActions, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
+const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
+
+  const dashboardItems = [
+    {
+      title: 'VAT Management',
+      description: 'Manage VAT calculations and submissions',
+      path: '/vat',
+      color: '#1976d2'
+    },
+    {
+      title: 'Corporate Income Tax',
+      description: 'Handle CIT filings and calculations',
+      path: '/cit',
+      color: '#388e3c'
+    },
+    {
+      title: 'Financial Reports',
+      description: 'Generate and view financial statements',
+      path: '/financials',
+      color: '#f57c00'
+    },
+    {
+      title: 'Transfer Pricing',
+      description: 'Manage transfer pricing documentation',
+      path: '/transfer-pricing',
+      color: '#7b1fa2'
+    },
+    {
+      title: 'AI Assistant',
+      description: 'Get help with tax and compliance questions',
+      path: '/assistant',
+      color: '#c62828'
+    },
+    {
+      title: 'System Setup',
+      description: 'Configure system settings and preferences',
+      path: '/setup',
+      color: '#455a64'
+    }
+  ];
+
+  return (
+    <Box>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Tax Management Dashboard
+      </Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+        Welcome to Peergos Tax Management System
+      </Typography>
+      
+      <Grid container spacing={3}>
+        {dashboardItems.map((item) => (
+          <Grid item xs={12} sm={6} md={4} key={item.path}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography variant="h6" component="h2" gutterBottom sx={{ color: item.color }}>
+                  {item.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {item.description}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button 
+                  size="small" 
+                  variant="contained" 
+                  onClick={() => navigate(item.path)}
+                  sx={{ backgroundColor: item.color }}
+                >
+                  Open
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+};
+
+export default Dashboard;

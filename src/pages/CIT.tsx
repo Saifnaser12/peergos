@@ -234,3 +234,183 @@ const CIT: React.FC = () => {
 };
 
 export default CIT; 
+import React, { useState } from 'react';
+import { 
+  Box, 
+  Typography, 
+  TextField, 
+  Button, 
+  Card, 
+  CardContent,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Alert
+} from '@mui/material';
+
+const CIT: React.FC = () => {
+  const [formData, setFormData] = useState({
+    companyName: '',
+    taxYear: '2024',
+    grossIncome: '',
+    deductions: '',
+    taxableIncome: '',
+    taxRate: '25'
+  });
+  
+  const [calculationResult, setCalculationResult] = useState<{
+    taxableIncome: number;
+    taxDue: number;
+  } | null>(null);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const grossIncome = parseFloat(formData.grossIncome) || 0;
+    const deductions = parseFloat(formData.deductions) || 0;
+    const taxRate = parseFloat(formData.taxRate) || 0;
+    
+    const taxableIncome = Math.max(0, grossIncome - deductions);
+    const taxDue = (taxableIncome * taxRate) / 100;
+    
+    setCalculationResult({
+      taxableIncome,
+      taxDue
+    });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  return (
+    <Box>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Corporate Income Tax (CIT)
+      </Typography>
+      
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={8}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                CIT Calculation
+              </Typography>
+              <Box component="form" onSubmit={handleSubmit}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Company Name"
+                      name="companyName"
+                      value={formData.companyName}
+                      onChange={handleChange}
+                      margin="normal"
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <FormControl fullWidth margin="normal">
+                      <InputLabel>Tax Year</InputLabel>
+                      <Select
+                        name="taxYear"
+                        value={formData.taxYear}
+                        label="Tax Year"
+                        onChange={(e) => setFormData({...formData, taxYear: e.target.value})}
+                      >
+                        <MenuItem value="2024">2024</MenuItem>
+                        <MenuItem value="2023">2023</MenuItem>
+                        <MenuItem value="2022">2022</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Gross Income"
+                      name="grossIncome"
+                      type="number"
+                      value={formData.grossIncome}
+                      onChange={handleChange}
+                      margin="normal"
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Total Deductions"
+                      name="deductions"
+                      type="number"
+                      value={formData.deductions}
+                      onChange={handleChange}
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Tax Rate (%)"
+                      name="taxRate"
+                      type="number"
+                      value={formData.taxRate}
+                      onChange={handleChange}
+                      margin="normal"
+                      required
+                    />
+                  </Grid>
+                </Grid>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ mt: 3 }}
+                  size="large"
+                >
+                  Calculate CIT
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} md={4}>
+          {calculationResult && (
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  CIT Calculation Result
+                </Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Taxable Income
+                  </Typography>
+                  <Typography variant="h5">
+                    ${calculationResult.taxableIncome.toLocaleString()}
+                  </Typography>
+                </Box>
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Tax Due
+                  </Typography>
+                  <Typography variant="h4" color="primary">
+                    ${calculationResult.taxDue.toLocaleString()}
+                  </Typography>
+                </Box>
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  This is a preliminary calculation. Please consult with a tax professional for final filing.
+                </Alert>
+              </CardContent>
+            </Card>
+          )}
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+export default CIT;

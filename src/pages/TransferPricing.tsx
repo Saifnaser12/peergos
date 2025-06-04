@@ -352,3 +352,244 @@ const TransferPricing: React.FC = () => {
 };
 
 export default TransferPricing; 
+import React, { useState } from 'react';
+import { 
+  Box, 
+  Typography, 
+  TextField, 
+  Button, 
+  Card, 
+  CardContent,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip
+} from '@mui/material';
+
+interface TransferPricingRecord {
+  id: string;
+  date: string;
+  relatedParty: string;
+  transactionType: string;
+  amount: number;
+  method: string;
+  status: 'Draft' | 'Under Review' | 'Approved';
+}
+
+const TransferPricing: React.FC = () => {
+  const [records, setRecords] = useState<TransferPricingRecord[]>([
+    {
+      id: '1',
+      date: '2024-01-15',
+      relatedParty: 'Subsidiary A',
+      transactionType: 'Service Fee',
+      amount: 50000,
+      method: 'CUP',
+      status: 'Approved'
+    },
+    {
+      id: '2',
+      date: '2024-02-10',
+      relatedParty: 'Subsidiary B',
+      transactionType: 'Royalty',
+      amount: 25000,
+      method: 'CPI',
+      status: 'Under Review'
+    }
+  ]);
+
+  const [formData, setFormData] = useState({
+    relatedParty: '',
+    transactionType: '',
+    amount: '',
+    method: 'CUP'
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const newRecord: TransferPricingRecord = {
+      id: Date.now().toString(),
+      date: new Date().toISOString().split('T')[0],
+      relatedParty: formData.relatedParty,
+      transactionType: formData.transactionType,
+      amount: parseFloat(formData.amount),
+      method: formData.method,
+      status: 'Draft'
+    };
+
+    setRecords([...records, newRecord]);
+    setFormData({
+      relatedParty: '',
+      transactionType: '',
+      amount: '',
+      method: 'CUP'
+    });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Approved': return 'success';
+      case 'Under Review': return 'warning';
+      case 'Draft': return 'default';
+      default: return 'default';
+    }
+  };
+
+  return (
+    <Box>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Transfer Pricing Management
+      </Typography>
+      
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Add Transfer Pricing Record
+              </Typography>
+              <Box component="form" onSubmit={handleSubmit}>
+                <TextField
+                  fullWidth
+                  label="Related Party"
+                  name="relatedParty"
+                  value={formData.relatedParty}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Transaction Type"
+                  name="transactionType"
+                  value={formData.transactionType}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                />
+                <TextField
+                  fullWidth
+                  label="Amount"
+                  name="amount"
+                  type="number"
+                  value={formData.amount}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Pricing Method</InputLabel>
+                  <Select
+                    name="method"
+                    value={formData.method}
+                    label="Pricing Method"
+                    onChange={(e) => setFormData({...formData, method: e.target.value})}
+                  >
+                    <MenuItem value="CUP">Comparable Uncontrolled Price (CUP)</MenuItem>
+                    <MenuItem value="CPI">Cost Plus Index (CPI)</MenuItem>
+                    <MenuItem value="RPM">Resale Price Method (RPM)</MenuItem>
+                    <MenuItem value="TNMM">Transactional Net Margin Method (TNMM)</MenuItem>
+                    <MenuItem value="PSM">Profit Split Method (PSM)</MenuItem>
+                  </Select>
+                </FormControl>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ mt: 2 }}
+                  fullWidth
+                >
+                  Add Record
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Transfer Pricing Summary
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="h4" color="primary">
+                    {records.length}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Total Records
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="h4" color="success.main">
+                    ${records.reduce((sum, record) => sum + record.amount, 0).toLocaleString()}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Total Value
+                  </Typography>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12}>
+          <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+            Transfer Pricing Records
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Date</TableCell>
+                  <TableCell>Related Party</TableCell>
+                  <TableCell>Transaction Type</TableCell>
+                  <TableCell align="right">Amount</TableCell>
+                  <TableCell>Method</TableCell>
+                  <TableCell>Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {records.map((record) => (
+                  <TableRow key={record.id}>
+                    <TableCell>{record.date}</TableCell>
+                    <TableCell>{record.relatedParty}</TableCell>
+                    <TableCell>{record.transactionType}</TableCell>
+                    <TableCell align="right">${record.amount.toLocaleString()}</TableCell>
+                    <TableCell>{record.method}</TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={record.status} 
+                        color={getStatusColor(record.status) as any}
+                        size="small"
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+export default TransferPricing;

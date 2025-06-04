@@ -307,3 +307,70 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 export default Layout; 
+import React from 'react';
+import { Box, AppBar, Toolbar, Typography, Container } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const navigationItems = [
+    { label: 'Dashboard', path: '/' },
+    { label: 'VAT', path: '/vat' },
+    { label: 'CIT', path: '/cit' },
+    { label: 'Financials', path: '/financials' },
+    { label: 'Transfer Pricing', path: '/transfer-pricing' },
+    { label: 'Assistant', path: '/assistant' },
+    { label: 'Setup', path: '/setup' },
+  ];
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Peergos Tax Management
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            {navigationItems.map((item) => (
+              <Typography
+                key={item.path}
+                variant="body1"
+                sx={{
+                  cursor: 'pointer',
+                  textDecoration: location.pathname === item.path ? 'underline' : 'none',
+                  '&:hover': { textDecoration: 'underline' }
+                }}
+                onClick={() => navigate(item.path)}
+              >
+                {item.label}
+              </Typography>
+            ))}
+            <Typography
+              variant="body1"
+              sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+              onClick={handleLogout}
+            >
+              Logout
+            </Typography>
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        {children}
+      </Container>
+    </Box>
+  );
+};
+
+export default Layout;

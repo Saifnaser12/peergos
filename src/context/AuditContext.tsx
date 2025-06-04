@@ -61,3 +61,51 @@ export const useAudit = () => {
   }
   return context;
 }; 
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+interface AuditLog {
+  id: string;
+  timestamp: Date;
+  action: string;
+  user: string;
+  details: string;
+}
+
+interface AuditContextType {
+  logs: AuditLog[];
+  addLog: (log: Omit<AuditLog, 'id' | 'timestamp'>) => void;
+  clearLogs: () => void;
+}
+
+const AuditContext = createContext<AuditContextType | undefined>(undefined);
+
+export const AuditProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [logs, setLogs] = useState<AuditLog[]>([]);
+
+  const addLog = (logData: Omit<AuditLog, 'id' | 'timestamp'>) => {
+    const newLog: AuditLog = {
+      ...logData,
+      id: Date.now().toString(),
+      timestamp: new Date(),
+    };
+    setLogs(prev => [...prev, newLog]);
+  };
+
+  const clearLogs = () => {
+    setLogs([]);
+  };
+
+  return (
+    <AuditContext.Provider value={{ logs, addLog, clearLogs }}>
+      {children}
+    </AuditContext.Provider>
+  );
+};
+
+export const useAuditContext = () => {
+  const context = useContext(AuditContext);
+  if (context === undefined) {
+    throw new Error('useAuditContext must be used within an AuditProvider');
+  }
+  return context;
+};

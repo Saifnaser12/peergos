@@ -520,3 +520,191 @@ const Financials: React.FC = () => {
 };
 
 export default Financials; 
+import React, { useState } from 'react';
+import { 
+  Box, 
+  Typography, 
+  Button, 
+  Card, 
+  CardContent,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Tabs,
+  Tab
+} from '@mui/material';
+
+interface FinancialEntry {
+  account: string;
+  debit: number;
+  credit: number;
+}
+
+const Financials: React.FC = () => {
+  const [activeTab, setActiveTab] = useState(0);
+  
+  // Sample financial data
+  const balanceSheetData: FinancialEntry[] = [
+    { account: 'Cash', debit: 50000, credit: 0 },
+    { account: 'Accounts Receivable', debit: 25000, credit: 0 },
+    { account: 'Inventory', debit: 30000, credit: 0 },
+    { account: 'Accounts Payable', debit: 0, credit: 15000 },
+    { account: 'Equity', debit: 0, credit: 90000 },
+  ];
+
+  const incomeStatementData: FinancialEntry[] = [
+    { account: 'Revenue', debit: 0, credit: 200000 },
+    { account: 'Cost of Goods Sold', debit: 120000, credit: 0 },
+    { account: 'Operating Expenses', debit: 45000, credit: 0 },
+    { account: 'Interest Expense', debit: 2000, credit: 0 },
+  ];
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
+  const generateReport = () => {
+    // Mock report generation
+    alert('Financial report generated successfully!');
+  };
+
+  const exportToExcel = () => {
+    // Mock export functionality
+    alert('Data exported to Excel successfully!');
+  };
+
+  const renderFinancialTable = (data: FinancialEntry[], title: string) => (
+    <Box>
+      <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+        {title}
+      </Typography>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Account</TableCell>
+              <TableCell align="right">Debit</TableCell>
+              <TableCell align="right">Credit</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((entry, index) => (
+              <TableRow key={index}>
+                <TableCell>{entry.account}</TableCell>
+                <TableCell align="right">
+                  {entry.debit > 0 ? `$${entry.debit.toLocaleString()}` : '-'}
+                </TableCell>
+                <TableCell align="right">
+                  {entry.credit > 0 ? `$${entry.credit.toLocaleString()}` : '-'}
+                </TableCell>
+              </TableRow>
+            ))}
+            <TableRow sx={{ '& td': { fontWeight: 'bold' } }}>
+              <TableCell>Total</TableCell>
+              <TableCell align="right">
+                ${data.reduce((sum, entry) => sum + entry.debit, 0).toLocaleString()}
+              </TableCell>
+              <TableCell align="right">
+                ${data.reduce((sum, entry) => sum + entry.credit, 0).toLocaleString()}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  );
+
+  return (
+    <Box>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Financial Reports
+      </Typography>
+      
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" color="primary">
+                Total Assets
+              </Typography>
+              <Typography variant="h4">
+                $105,000
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" color="secondary">
+                Total Revenue
+              </Typography>
+              <Typography variant="h4">
+                $200,000
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" color="success.main">
+                Net Income
+              </Typography>
+              <Typography variant="h4">
+                $33,000
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" color="warning.main">
+                Total Expenses
+              </Typography>
+              <Typography variant="h4">
+                $167,000
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      <Box sx={{ mb: 3 }}>
+        <Button 
+          variant="contained" 
+          onClick={generateReport}
+          sx={{ mr: 2 }}
+        >
+          Generate Report
+        </Button>
+        <Button 
+          variant="outlined" 
+          onClick={exportToExcel}
+        >
+          Export to Excel
+        </Button>
+      </Box>
+
+      <Paper sx={{ width: '100%' }}>
+        <Tabs value={activeTab} onChange={handleTabChange}>
+          <Tab label="Balance Sheet" />
+          <Tab label="Income Statement" />
+        </Tabs>
+        
+        <Box sx={{ p: 3 }}>
+          {activeTab === 0 && renderFinancialTable(balanceSheetData, 'Balance Sheet')}
+          {activeTab === 1 && renderFinancialTable(incomeStatementData, 'Income Statement')}
+        </Box>
+      </Paper>
+    </Box>
+  );
+};
+
+export default Financials;
