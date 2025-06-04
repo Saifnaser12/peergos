@@ -10,7 +10,8 @@ export default defineConfig({
     strictPort: false,
     allowedHosts: 'all',
     hmr: {
-      overlay: false
+      overlay: false,
+      clientPort: 443
     }
   },
   build: {
