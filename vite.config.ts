@@ -5,6 +5,18 @@ export default defineConfig({
   plugins: [react()],
   define: {
     global: 'globalThis',
+    process: JSON.stringify({
+      env: {},
+      version: 'v18.0.0',
+      versions: { node: '18.0.0', npm: '9.0.0' },
+      platform: 'browser',
+      arch: 'x64',
+      pid: 1,
+      ppid: 0,
+      title: 'browser',
+      argv: ['node'],
+      browser: true
+    }),
     'process.env': '{}',
     'process.browser': 'true',
     'process.version': '"v18.0.0"',
