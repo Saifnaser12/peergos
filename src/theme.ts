@@ -1,6 +1,9 @@
-import { createTheme } from '@mui/material/styles';
 
-const theme = createTheme({
+import { createTheme } from '@mui/material/styles';
+import { arEG, enUS } from '@mui/x-date-pickers/locales';
+
+const theme = (direction: 'ltr' | 'rtl' = 'ltr') => createTheme({
+  direction,
   palette: {
     primary: {
       main: '#1976d2',
@@ -10,8 +13,17 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   },
-});
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
+  },
+}, direction === 'rtl' ? arEG : enUS);
 
 export default theme;

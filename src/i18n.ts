@@ -1,25 +1,26 @@
 
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 
-import enTranslations from './locales/en/translation.json';
-import arTranslations from './locales/ar/translation.json';
+// Import translation files
+import enTranslation from './locales/en/translation.json';
+import arTranslation from './locales/ar/translation.json';
+
+const resources = {
+  en: {
+    translation: enTranslation,
+  },
+  ar: {
+    translation: arTranslation,
+  },
+};
 
 i18n
-  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
+    resources,
+    lng: 'en',
     fallbackLng: 'en',
-    debug: false,
-    resources: {
-      en: {
-        translation: enTranslations,
-      },
-      ar: {
-        translation: arTranslations,
-      },
-    },
     interpolation: {
       escapeValue: false,
     },

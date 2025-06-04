@@ -15,10 +15,12 @@ import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Setup from './pages/Setup';
-import theme from './theme';
+import createTheme from './theme';
 import './i18n';
 
 function App() {
+  const theme = createTheme('ltr');
+  
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

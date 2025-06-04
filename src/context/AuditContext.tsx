@@ -1,67 +1,39 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
-
-interface AuditEntry {
-  id: string;
-  timestamp: string;
-  action: string;
-  role: string;
-  details?: Record<string, any>;
-}
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface AuditContextType {
-  log: (action: string, details?: Record<string, any>) => void;
-  getRecentEntries: (limit?: number) => AuditEntry[];
-  clearLog: () => void;
+  auditLogs: any[];
+  addAuditLog: (log: any) => void;
 }
 
 const AuditContext = createContext<AuditContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'audit_log';
+export const useAuditContext = () => {
+  const context = useContext(AuditContext);
+  if (!context) {
+    throw new Error('useAuditContext must be used within an AuditProvider');
+  }
+  return context;
+};
 
-export const AuditProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [auditLog, setAuditLog] = useState<{ entries: AuditEntry[] }>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : { entries: [] };
-  });
+interface AuditProviderProps {
+  children: ReactNode;
+}
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(auditLog));
-  }, [auditLog]);
+export const AuditProvider: React.FC<AuditProviderProps> = ({ children }) => {
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
-  const log = (action: string, details?: Record<string, any>) => {
-    const entry: AuditEntry = {
-      id: crypto.randomUUID(),
-      timestamp: new Date().toISOString(),
-      action,
-      role: 'SME', // Default role
-      details
-    };
-
-    setAuditLog(prev => ({
-      entries: [entry, ...prev.entries].slice(0, 1000)
-    }));
+  const addAuditLog = (log: any) => {
+    setAuditLogs(prev => [...prev, { ...log, timestamp: new Date() }]);
   };
 
-  const getRecentEntries = (limit = 50): AuditEntry[] => {
-    return auditLog.entries.slice(0, limit);
-  };
-
-  const clearLog = () => {
-    setAuditLog({ entries: [] });
+  const value = {
+    auditLogs,
+    addAuditLog,
   };
 
   return (
-    <AuditContext.Provider value={{ log, getRecentEntries, clearLog }}>
+    <AuditContext.Provider value={value}>
       {children}
     </AuditContext.Provider>
   );
-};
-
-export const useAudit = () => {
-  const context = useContext(AuditContext);
-  if (!context) {
-    throw new Error('useAudit must be used within an AuditProvider');
-  }
-  return context;
 };
