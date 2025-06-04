@@ -45,7 +45,7 @@ const transactionTypes = [
   'OTHER'
 ];
 
-export const TransactionTable: React.FC<TransactionTableProps> = ({ 
+const TransactionTable: React.FC<TransactionTableProps> = ({ 
   transactions, 
   relatedParties, 
   onUpdate 
