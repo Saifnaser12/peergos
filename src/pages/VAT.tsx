@@ -28,7 +28,11 @@ import {
   Download,
   Calculate,
   TableChart as TableCells,
+  CloudUpload,
 } from '@mui/icons-material';
+import SubmissionHistory from '../components/SubmissionHistory';
+import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
+import { ftaService } from '../services/ftaService';
 
 interface VATFormData {
   standardRatedSales: number;
@@ -41,6 +45,9 @@ interface VATFormData {
   lateInvoices: number;
   badDebtRelief: number;
   vatCorrections: number;
+  companyName: string;
+  trn: string;
+  taxPeriod: string;
 }
 
 interface VATCalculations {
@@ -67,6 +74,9 @@ const VAT: React.FC = () => {
     lateInvoices: 0,
     badDebtRelief: 0,
     vatCorrections: 0,
+    companyName: '',
+    trn: '',
+    taxPeriod: `${new Date().getFullYear()}-Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
   });
 
   const validateField = useCallback((name: string, value: number): string => {
@@ -124,6 +134,34 @@ const VAT: React.FC = () => {
     console.log('Submitting VAT return...');
   };
 
+  const handleSubmitToFTA = async () => {
+    if (!formData.companyName || !formData.trn) {
+      console.error('Missing company information for FTA submission');
+      return;
+    }
+
+    try {
+      const submissionData = {
+        trn: formData.trn,
+        companyName: formData.companyName,
+        submissionType: 'VAT' as const,
+        taxPeriod: formData.taxPeriod,
+        data: {
+          ...formData,
+          calculations,
+          vatDue: calculations.netVAT,
+          submittedAt: new Date().toISOString()
+        }
+      };
+
+      const response = await ftaService.submitVAT(submissionData);
+      console.log('VAT submitted to FTA:', response);
+      
+    } catch (error) {
+      console.error('FTA submission failed:', error);
+    }
+  };
+
   const inputFieldProps = {
     variant: 'outlined' as const,
     fullWidth: true,
@@ -175,6 +213,42 @@ const VAT: React.FC = () => {
         {/* Form Section */}
         <Grid item xs={12} lg={8}>
           <Paper sx={{ p: 3, borderRadius: 3, boxShadow: theme.shadows[2] }}>
+            {/* Company Information */}
+            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+              {t('Company Information')}
+            </Typography>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  label={t('Company Name')}
+                  placeholder={t('Enter company name')}
+                  value={formData.companyName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
+                  {...inputFieldProps}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  label={t('Tax Registration Number (TRN)')}
+                  placeholder="100123456700003"
+                  value={formData.trn}
+                  onChange={(e) => setFormData(prev => ({ ...prev, trn: e.target.value }))}
+                  {...inputFieldProps}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  label={t('Tax Period')}
+                  placeholder="2024-Q1"
+                  value={formData.taxPeriod}
+                  onChange={(e) => setFormData(prev => ({ ...prev, taxPeriod: e.target.value }))}
+                  {...inputFieldProps}
+                />
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 4 }} />
+
             {/* Sales Section */}
             <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
               {t('Sales')}
@@ -424,15 +498,29 @@ const VAT: React.FC = () => {
                 </Grid>
               </Grid>
 
-              <Button
-                variant="contained"
-                fullWidth
-                size="large"
-                onClick={handleSubmit}
-                sx={{ mt: 3, py: 1.5, fontWeight: 600 }}
-              >
-                {t('Submit VAT Return')}
-              </Button>
+              <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  size="large"
+                  onClick={handleSubmit}
+                  sx={{ py: 1.5, fontWeight: 600 }}
+                >
+                  {t('Submit VAT Return')}
+                </Button>
+                
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  size="large"
+                  onClick={handleSubmitToFTA}
+                  disabled={!formData.companyName || !formData.trn}
+                  startIcon={<CloudUpload />}
+                  sx={{ py: 1.5, fontWeight: 600 }}
+                >
+                  {t('Submit to FTA')}
+                </Button>
+              </Box>
 
               <Alert severity="info" sx={{ mt: 3, fontSize: '0.875rem' }}>
                 {t('This VAT return complies with UAE Federal Tax Authority requirements. Ensure all amounts are accurate before submission.')}
@@ -441,6 +529,17 @@ const VAT: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Submission History */}
+      {formData.trn && (
+        <Box sx={{ mt: 4 }}>
+          <SubmissionHistory 
+            trn={formData.trn} 
+            submissionType="VAT"
+            maxItems={5}
+          />
+        </Box>
+      )}
     </Box>
   );
 };

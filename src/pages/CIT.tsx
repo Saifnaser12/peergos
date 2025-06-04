@@ -41,6 +41,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import { TaxCalculator } from '../utils/calculations/tax';
 import { Validator } from '../utils/validation';
+import SubmissionHistory from '../components/SubmissionHistory';
+import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
+import { ftaService } from '../services/ftaService';
 
 interface CITFormData {
   revenue: number;
@@ -269,6 +272,43 @@ const CIT: React.FC = () => {
     setShowSuccessAlert(true);
   };
 
+  const handleSubmitToFTA = async () => {
+    if (!formData.companyName || !formData.trn) {
+      setAlertMessage(t('cit.fta.missingInfo'));
+      setShowWarningAlert(true);
+      return;
+    }
+
+    setIsCalculating(true);
+    
+    try {
+      const submissionData = {
+        trn: formData.trn,
+        companyName: formData.companyName,
+        submissionType: 'CIT' as const,
+        taxPeriod: `${new Date().getFullYear()}-${formData.financialYearEnd}`,
+        data: {
+          ...formData,
+          calculations: citCalculation,
+          submittedAt: new Date().toISOString()
+        }
+      };
+
+      const response = await ftaService.submitCIT(submissionData);
+      
+      setAlertMessage(t('cit.fta.submitSuccess', { 
+        referenceNumber: response.referenceNumber 
+      }));
+      setShowSuccessAlert(true);
+      
+    } catch (error: any) {
+      setAlertMessage(error.message || t('cit.fta.submitError'));
+      setShowWarningAlert(true);
+    } finally {
+      setIsCalculating(false);
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(i18n.language === 'ar' ? 'ar-AE' : 'en-AE', {
       style: 'currency',
@@ -282,12 +322,19 @@ const CIT: React.FC = () => {
     <Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h3" component="h1" sx={{ mb: 2, fontWeight: 300 }}>
-          {t('cit.title')}
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          {t('cit.subtitle')}
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          <Box>
+            <Typography variant="h3" component="h1" sx={{ mb: 1, fontWeight: 300 }}>
+              {t('cit.title')}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary">
+              {t('cit.subtitle')}
+            </Typography>
+          </Box>
+          {formData.trn && (
+            <FTAIntegrationStatus trn={formData.trn} variant="badge" />
+          )}
+        </Box>
       </Box>
 
       <Grid container spacing={3}>
@@ -621,16 +668,27 @@ const CIT: React.FC = () => {
                 </Typography>
               </Box>
 
-              {/* Export Buttons */}
-              <Box sx={{ mt: 3 }}>
+              {/* Action Buttons */}
+              <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <Button
                   fullWidth
                   variant="contained"
                   startIcon={<DownloadIcon />}
                   onClick={() => setShowExportDialog(true)}
-                  sx={{ mb: 1 }}
+                  disabled={isCalculating}
                 >
                   {t('cit.export.button')}
+                </Button>
+                
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleSubmitToFTA}
+                  disabled={isCalculating || !formData.companyName || !formData.trn}
+                  startIcon={<UploadIcon />}
+                >
+                  {isCalculating ? t('cit.fta.submitting') : t('cit.fta.submitToFTA')}
                 </Button>
               </Box>
 
@@ -651,6 +709,17 @@ const CIT: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Submission History */}
+      {formData.trn && (
+        <Box sx={{ mt: 4 }}>
+          <SubmissionHistory 
+            trn={formData.trn} 
+            submissionType="CIT"
+            maxItems={5}
+          />
+        </Box>
+      )}
 
       {/* Export Dialog */}
       <Dialog open={showExportDialog} onClose={() => setShowExportDialog(false)}>

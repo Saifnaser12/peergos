@@ -23,7 +23,73 @@
     "cancel": "Cancel",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "close": "Close"
+  },
+  "fta": {
+    "integration": {
+      "title": "FTA Integration",
+      "description": "Real-time connection to UAE Federal Tax Authority systems"
+    },
+    "status": {
+      "connected": "Connected",
+      "disconnected": "Disconnected", 
+      "attention": "Needs Attention",
+      "loading": "Checking...",
+      "loadingDetails": "Loading FTA integration status...",
+      "refresh": "Refresh Status",
+      "complianceScore": "Compliance Score",
+      "submissions": "Submissions",
+      "submissionsCount": "submissions",
+      "lastSync": "Last Sync",
+      "alerts": "Alerts"
+    },
+    "submissions": {
+      "title": "Submission History",
+      "noSubmissions": "No submissions found. Complete your first filing to see history.",
+      "reference": "Reference",
+      "type": "Type",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions",
+      "viewDetails": "View Details",
+      "downloadReceipt": "Download Receipt",
+      "trackOnline": "Track Online",
+      "expand": "Expand",
+      "collapse": "Collapse",
+      "submissionDetails": "Submission Details",
+      "submissionId": "Submission ID",
+      "taxPeriod": "Tax Period",
+      "vatDue": "VAT Due",
+      "citDue": "CIT Due",
+      "detailsTitle": "Submission Details",
+      "generalInfo": "General Information",
+      "company": "Company",
+      "trn": "TRN",
+      "submittedOn": "Submitted On",
+      "tracking": "Tracking",
+      "submittedData": "Submitted Data"
+    }
+  },
+  "trn": {
+    "lookup": {
+      "title": "TRN Lookup Service",
+      "description": "Verify TRN details and compliance status in real-time",
+      "label": "Tax Registration Number (TRN)",
+      "helperText": "Enter 15-digit TRN (e.g., 100123456700003)",
+      "search": "Search TRN",
+      "searching": "Searching...",
+      "invalidFormat": "Please enter a valid 15-digit TRN",
+      "notFound": "TRN not found in FTA database",
+      "error": "Error occurred during TRN lookup",
+      "businessType": "Business Type",
+      "emirate": "Emirate",
+      "registrationDate": "Registration Date",
+      "lastFiling": "Last Filing",
+      "complianceStatus": "Compliance Status",
+      "nonCompliantWarning": "This entity has compliance issues. Please contact FTA for details.",
+      "suspendedWarning": "This TRN is suspended. Business operations may be restricted."
+    }
   },
   "setup": {
     "title": "Setup Your Tax System",
@@ -50,6 +116,8 @@
     "subtitle": "Overview of your tax obligations and compliance status",
     "askAssistant": "Ask Tax Assistant",
     "quickActions": "Quick Actions",
+    "ftaIntegration": "FTA Integration",
+    "trnLookup": "TRN Lookup",
     "cit": {
       "title": "Corporate Income Tax"
     },
@@ -89,6 +157,13 @@
     "export": {
       "button": "Export Returns"
     },
+    "fta": {
+      "submitToFTA": "Submit to FTA",
+      "submitting": "Submitting to FTA...",
+      "submitSuccess": "Successfully submitted to FTA! Reference: {{referenceNumber}}",
+      "submitError": "Failed to submit to FTA. Please try again.",
+      "missingInfo": "Please fill in company name and TRN before submitting to FTA."
+    }
     "returns": {
       "title": "VAT Returns",
       "period": "Period",

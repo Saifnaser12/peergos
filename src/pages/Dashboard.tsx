@@ -3,6 +3,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTax } from '../context/TaxContext';
+import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
+import TRNLookup from '../components/TRNLookup';
 import {
   DocumentTextIcon,
   ReceiptPercentIcon,
@@ -161,6 +163,26 @@ const Dashboard: React.FC = () => {
             </div>
           );
         })}
+      </div>
+
+      {/* FTA Integration Status */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+            {t('dashboard.ftaIntegration', 'FTA Integration')}
+          </h3>
+          <FTAIntegrationStatus 
+            trn="100123456700003" 
+            variant="card" 
+          />
+        </div>
+        
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+            {t('dashboard.trnLookup', 'TRN Lookup')}
+          </h3>
+          <TRNLookup variant="embedded" />
+        </div>
       </div>
 
       {/* Quick Actions */}
