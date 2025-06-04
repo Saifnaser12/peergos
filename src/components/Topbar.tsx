@@ -2,8 +2,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bars3Icon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { useUserRole } from '../context/UserRoleContext';
+import { ROLE_LABELS } from '../types/roles';
 import ThemeToggle from './ThemeToggle';
 import LanguageSwitcher from './LanguageSwitcher';
+import RoleSwitcher from './RoleSwitcher';
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -11,6 +14,7 @@ interface TopbarProps {
 
 const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const { t } = useTranslation();
+  const { role } = useUserRole();
 
   return (
     <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
@@ -39,7 +43,10 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
           {/* Theme toggle */}
           <ThemeToggle />
 
-          {/* User menu - placeholder for now */}
+          {/* Role switcher */}
+          <RoleSwitcher />
+
+          {/* User menu */}
           <div className="flex items-center space-x-2">
             <UserCircleIcon className="h-8 w-8 text-gray-500 dark:text-gray-400" />
             <div className="hidden sm:block">
@@ -47,7 +54,7 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
                 {t('common.user', 'Admin User')}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                admin@company.ae
+                {ROLE_LABELS[role]} • admin@company.ae
               </p>
             </div>
           </div>

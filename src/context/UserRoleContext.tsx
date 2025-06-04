@@ -1,10 +1,19 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import type { Role } from '../types/roles';
+import { ROLE_PERMISSIONS, ROLES } from '../types/roles';
+import type { Permission, Resource } from '../config/permissions';
 
 interface UserRoleContextType {
-  role: string;
+  role: Role;
   permissions: string[];
-  setRole: (role: string) => void;
-  hasPermission: (permission: string) => boolean;
+  setRole: (role: Role) => void;
+  hasPermission: (resource: Resource, permission: Permission) => boolean;
+  canAccess: (path: string) => boolean;
+  isAdmin: boolean;
+  isAccountant: boolean;
+  isAssistant: boolean;
+  isViewer: boolean;
 }
 
 const UserRoleContext = createContext<UserRoleContextType | undefined>(undefined);
@@ -22,18 +31,51 @@ interface UserRoleProviderProps {
 }
 
 export const UserRoleProvider: React.FC<UserRoleProviderProps> = ({ children }) => {
-  const [role, setRole] = useState('user');
-  const [permissions, setPermissions] = useState<string[]>(['read']);
-
-  const hasPermission = (permission: string) => {
-    return permissions.includes(permission) || role === 'admin';
+  // Default role for demo - in production this would come from authentication
+  const [role, setRole] = useState<Role>(ROLES.ADMIN);
+  
+  const canAccess = (path: string): boolean => {
+    const allowedRoles = ROLE_PERMISSIONS[path];
+    if (!allowedRoles) {
+      return role === ROLES.ADMIN; // Default to admin only for undefined routes
+    }
+    return allowedRoles.includes(role);
   };
 
-  const value = {
+  const hasPermission = (resource: Resource, permission: Permission): boolean => {
+    // Simple permission check based on role
+    switch (role) {
+      case ROLES.ADMIN:
+        return true; // Admin has all permissions
+      case ROLES.ACCOUNTANT:
+        if (['dashboard', 'filing', 'vat', 'cit', 'financials', 'transfer-pricing', 'assistant'].includes(resource)) {
+          return permission === 'view' || permission === 'edit' || permission === 'create';
+        }
+        return false;
+      case ROLES.ASSISTANT:
+        if (['dashboard', 'cit', 'assistant'].includes(resource)) {
+          return permission === 'view' || permission === 'create' || permission === 'edit';
+        }
+        return false;
+      case ROLES.VIEWER:
+        return resource === 'dashboard' && permission === 'view';
+      default:
+        return false;
+    }
+  };
+
+  const permissions = Object.keys(ROLE_PERMISSIONS).filter(path => canAccess(path));
+
+  const value: UserRoleContextType = {
     role,
     permissions,
     setRole,
     hasPermission,
+    canAccess,
+    isAdmin: role === ROLES.ADMIN,
+    isAccountant: role === ROLES.ACCOUNTANT,
+    isAssistant: role === ROLES.ASSISTANT,
+    isViewer: role === ROLES.VIEWER,
   };
 
   return (

@@ -470,5 +470,14 @@
   },
   "auth": {
     "logout": "Logout"
+  },
+    "settings": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+  "unauthorized": {
+    "title": "Access Denied",
+    "message": "You don't have permission to access this page.",
+    "goBack": "Go Back",
+    "goHome": "Go to Dashboard"
   }
 }

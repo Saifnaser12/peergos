@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
@@ -14,16 +13,19 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 
 // Import your existing pages
+import Setup from './pages/Setup';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Unauthorized from './pages/Unauthorized';
+import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import VAT from './pages/VAT';
 import CIT from './pages/CIT';
 import Financials from './pages/Financials';
 import TransferPricing from './pages/TransferPricing';
 import Filing from './pages/Filing';
-import Setup from './pages/Setup';
 import Assistant from './pages/Assistant';
-import Login from './pages/Login';
-import Register from './pages/Register';
+
 
 function App() {
   const theme = createTheme('ltr');
@@ -58,10 +60,10 @@ function App() {
                       {/* Public routes */}
                       <Route path="/login" element={<Login />} />
                       <Route path="/register" element={<Register />} />
-                      
+
                       {/* Setup route - accessible without layout */}
                       <Route path="/setup" element={<Setup />} />
-                      
+
                       {/* Protected routes with layout */}
                       <Route path="/" element={
                         isSetupComplete ? (
@@ -80,7 +82,7 @@ function App() {
                         <Route path="filing" element={<Filing />} />
                         <Route path="assistant" element={<Assistant />} />
                       </Route>
-                      
+
                       {/* Catch all route */}
                       <Route path="*" element={
                         isSetupComplete ? (

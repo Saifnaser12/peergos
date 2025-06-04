@@ -24,54 +24,47 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
   const { role } = useUserRole();
 
+  const { canAccess } = useUserRole();
+
   const navigationItems = [
     {
       name: t('nav.dashboard'),
       path: '/dashboard',
       icon: HomeIcon,
-      roles: ['admin', 'accountant', 'assistant']
     },
     {
       name: t('nav.cit'),
       path: '/cit',
       icon: DocumentTextIcon,
-      roles: ['admin', 'accountant', 'assistant']
     },
     {
       name: t('nav.vat'),
       path: '/vat',
       icon: ReceiptPercentIcon,
-      roles: ['admin', 'accountant']
     },
     {
       name: t('nav.financials'),
       path: '/financials',
       icon: ChartBarIcon,
-      roles: ['admin', 'accountant']
     },
     {
       name: t('nav.transferPricing'),
       path: '/transfer-pricing',
       icon: CurrencyDollarIcon,
-      roles: ['admin', 'accountant']
     },
     {
       name: t('nav.assistant'),
       path: '/assistant',
       icon: ChatBubbleLeftRightIcon,
-      roles: ['admin', 'accountant', 'assistant']
     },
     {
       name: t('nav.setup'),
       path: '/setup',
       icon: Cog6ToothIcon,
-      roles: ['admin']
     }
   ];
 
-  const filteredNavItems = navigationItems.filter(item => 
-    item.roles.includes(role) || role === 'admin'
-  );
+  const filteredNavItems = navigationItems.filter(item => canAccess(item.path));
 
   const isActive = (path: string) => location.pathname === path;
 
