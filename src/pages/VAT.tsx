@@ -25,11 +25,11 @@ import {
   Upload,
   Download,
   Calculate,
-  FileText,
-  TableCells,
-  Moon,
-  Sun,
-} from 'lucide-react';
+  Description as FileText,
+  TableChart as TableCells,
+  DarkMode as Moon,
+  LightMode as Sun,
+} from '@mui/icons-material';
 
 interface VATFormData {
   standardRatedSales: number;
