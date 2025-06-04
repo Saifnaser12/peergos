@@ -554,5 +554,31 @@
     "message": "You don't have permission to access this page.",
     "goBack": "Go Back",
     "goHome": "Go to Dashboard"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "dismiss": "Dismiss",
+    "noNotifications": "No notifications",
+    "allCaughtUp": "You're all caught up!",
+    "justNow": "Just now",
+    "hoursAgo": "{{hours}}h ago",
+    "daysAgo": "{{days}}d ago",
+    "dueToday": "Due today",
+    "daysRemaining": "{{days}} days remaining",
+    "vatDeadline": "VAT Return Due Soon",
+    "vatDeadlineDesc": "Your VAT return is due in {{days}} days. File now to avoid penalties.",
+    "citDeadline": "CIT Return Due Soon",
+    "citDeadlineDesc": "Your Corporate Income Tax return is due in {{days}} days. Complete your filing to stay compliant.",
+    "setupIncomplete": "Setup Incomplete",
+    "setupIncompleteDesc": "Complete your company setup to access all features and ensure compliance.",
+    "missingAgentCert": "Missing Tax Agent Certificate",
+    "missingAgentCertDesc": "Upload your tax agent certificate to enable submission to FTA.",
+    "missingBankSlip": "Missing Bank Payment Slip",
+    "missingBankSlipDesc": "Upload your bank payment slip to complete your tax payment record.",
+    "fileNow": "File Now",
+    "completeSetup": "Complete Setup",
+    "uploadDocument": "Upload Document"
   }
 }

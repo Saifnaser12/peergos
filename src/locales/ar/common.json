@@ -308,5 +308,31 @@
   },
   "auth": {
     "logout": "تسجيل الخروج"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "markAsRead": "تحديد كمقروء",
+    "dismiss": "إغلاق",
+    "noNotifications": "لا توجد إشعارات",
+    "allCaughtUp": "أنت على اطلاع بكل شيء!",
+    "justNow": "الآن",
+    "hoursAgo": "منذ {{hours}} ساعة",
+    "daysAgo": "منذ {{days}} يوم",
+    "dueToday": "مستحق اليوم",
+    "daysRemaining": "{{days}} أيام متبقية",
+    "vatDeadline": "موعد تقديم ضريبة القيمة المضافة قريب",
+    "vatDeadlineDesc": "موعد تقديم إقرار ضريبة القيمة المضافة خلال {{days}} أيام. قدم الآن لتجنب الغرامات.",
+    "citDeadline": "موعد تقديم ضريبة الشركات قريب",
+    "citDeadlineDesc": "موعد تقديم إقرار ضريبة الشركات خلال {{days}} أيام. أكمل التقديم للامتثال.",
+    "setupIncomplete": "الإعداد غير مكتمل",
+    "setupIncompleteDesc": "أكمل إعداد شركتك للوصول إلى جميع الميزات وضمان الامتثال.",
+    "missingAgentCert": "شهادة وكيل الضرائب مفقودة",
+    "missingAgentCertDesc": "ارفع شهادة وكيل الضرائب لتمكين التقديم للهيئة الاتحادية للضرائب.",
+    "missingBankSlip": "إيصال الدفع المصرفي مفقود",
+    "missingBankSlipDesc": "ارفع إيصال الدفع المصرفي لإكمال سجل دفع الضرائب.",
+    "fileNow": "قدم الآن",
+    "completeSetup": "أكمل الإعداد",
+    "uploadDocument": "ارفع المستند"
   }
 }

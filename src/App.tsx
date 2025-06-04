@@ -11,6 +11,7 @@ import { UserRoleProvider } from './context/UserRoleContext';
 import { SettingsProvider } from './context/SettingsContext';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
+import { NotificationProvider } from './context/NotificationContext';
 
 // Import your existing pages
 import Setup from './pages/Setup';
@@ -50,53 +51,55 @@ function App() {
     <I18nextProvider i18n={i18n}>
       <SettingsProvider>
         <CustomThemeProvider>
-          <UserRoleProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <ErrorBoundary>
-                <TaxProvider>
-                  <Router>
-                    <Routes>
-                      {/* Public routes */}
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/register" element={<Register />} />
+          <TaxProvider>
+            <NotificationProvider>
+              <UserRoleProvider>
+                <ThemeProvider theme={theme}>
+                  <CssBaseline />
+                  <ErrorBoundary>
+                    <Router>
+                      <Routes>
+                        {/* Public routes */}
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
 
-                      {/* Setup route - accessible without layout */}
-                      <Route path="/setup" element={<Setup />} />
+                        {/* Setup route - accessible without layout */}
+                        <Route path="/setup" element={<Setup />} />
 
-                      {/* Protected routes with layout */}
-                      <Route path="/" element={
-                        isSetupComplete ? (
-                          <AppLayout />
-                        ) : (
-                          <Navigate to="/setup" replace />
-                        )
-                      }>
-                        {/* Nested routes that will render in the Outlet */}
-                        <Route index element={<Navigate to="/dashboard" replace />} />
-                        <Route path="dashboard" element={<Dashboard />} />
-                        <Route path="vat" element={<VAT />} />
-                        <Route path="cit" element={<CIT />} />
-                        <Route path="financials" element={<Financials />} />
-                        <Route path="transfer-pricing" element={<TransferPricing />} />
-                        <Route path="filing" element={<Filing />} />
-                        <Route path="assistant" element={<Assistant />} />
-                      </Route>
+                        {/* Protected routes with layout */}
+                        <Route path="/" element={
+                          isSetupComplete ? (
+                            <AppLayout />
+                          ) : (
+                            <Navigate to="/setup" replace />
+                          )
+                        }>
+                          {/* Nested routes that will render in the Outlet */}
+                          <Route index element={<Navigate to="/dashboard" replace />} />
+                          <Route path="dashboard" element={<Dashboard />} />
+                          <Route path="vat" element={<VAT />} />
+                          <Route path="cit" element={<CIT />} />
+                          <Route path="financials" element={<Financials />} />
+                          <Route path="transfer-pricing" element={<TransferPricing />} />
+                          <Route path="filing" element={<Filing />} />
+                          <Route path="assistant" element={<Assistant />} />
+                        </Route>
 
-                      {/* Catch all route */}
-                      <Route path="*" element={
-                        isSetupComplete ? (
-                          <Navigate to="/dashboard" replace />
-                        ) : (
-                          <Navigate to="/setup" replace />
-                        )
-                      } />
-                    </Routes>
-                  </Router>
-                </TaxProvider>
-              </ErrorBoundary>
-            </ThemeProvider>
-          </UserRoleProvider>
+                        {/* Catch all route */}
+                        <Route path="*" element={
+                          isSetupComplete ? (
+                            <Navigate to="/dashboard" replace />
+                          ) : (
+                            <Navigate to="/setup" replace />
+                          )
+                        } />
+                      </Routes>
+                    </Router>
+                  </ErrorBoundary>
+                </ThemeProvider>
+              </UserRoleProvider>
+            </NotificationProvider>
+          </TaxProvider>
         </CustomThemeProvider>
       </SettingsProvider>
     </I18nextProvider>

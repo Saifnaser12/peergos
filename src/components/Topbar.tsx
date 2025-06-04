@@ -7,6 +7,7 @@ import { ROLE_LABELS } from '../types/roles';
 import ThemeToggle from './ThemeToggle';
 import LanguageSwitcher from './LanguageSwitcher';
 import RoleSwitcher from './RoleSwitcher';
+import NotificationDropdown from './NotificationDropdown';
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -42,6 +43,9 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
 
           {/* Theme toggle */}
           <ThemeToggle />
+
+          {/* Notifications */}
+          <NotificationDropdown />
 
           {/* Role switcher */}
           <RoleSwitcher />
