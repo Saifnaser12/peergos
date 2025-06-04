@@ -120,29 +120,29 @@ export const Dashboard: React.FC<DashboardProps> = () => {
   // Calculate VAT and CIT
   const vatDue = useMemo(() => {
     // VAT calculation logic
-    return state.revenues.reduce((acc, rev) => acc + rev.amount * 0.05, 0);
-  }, [state.revenues]);
+    return state.revenue.reduce((acc: number, rev: RevenueEntry) => acc + rev.amount * 0.05, 0);
+  }, [state.revenue]);
 
   const citDue = useMemo(() => {
-    const totalRevenue = state.revenues.reduce((acc, rev) => acc + rev.amount, 0);
+    const totalRevenue = state.revenue.reduce((acc: number, rev: RevenueEntry) => acc + rev.amount, 0);
     return calculateCIT(totalRevenue);
-  }, [state.revenues]);
+  }, [state.revenue]);
 
   const complianceScore = useMemo(() => {
     return 85; // Default compliance score
   }, []);
 
   // Calculate summary metrics
-  const totalRevenue = state.revenues.reduce((sum, entry) => sum + entry.amount, 0);
-  const totalExpenses = state.expenses.reduce((sum, entry) => sum + entry.amount, 0);
+  const totalRevenue = state.revenue.reduce((sum: number, entry: RevenueEntry) => sum + entry.amount, 0);
+  const totalExpenses = state.expenses.reduce((sum: number, entry: ExpenseEntry) => sum + entry.amount, 0);
   const netIncome = totalRevenue - totalExpenses;
-  const totalVAT = state.revenues.reduce((sum, entry) => sum + entry.vatAmount, 0);
+  const totalVAT = state.revenue.reduce((sum: number, entry: RevenueEntry) => sum + entry.vatAmount, 0);
   const citAmount = calculateCIT(netIncome);
 
   // Prepare monthly revenue data
   const monthlyData = useMemo(() => {
     const monthlyMap = new Map<string, number>();
-    state.revenues.forEach(entry => {
+    state.revenue.forEach((entry: RevenueEntry) => {
       const date = new Date(entry.date);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       monthlyMap.set(monthKey, (monthlyMap.get(monthKey) || 0) + entry.amount);
@@ -151,12 +151,12 @@ export const Dashboard: React.FC<DashboardProps> = () => {
     return Array.from(monthlyMap.entries())
       .map(([month, amount]) => ({ month, amount }))
       .sort((a, b) => a.month.localeCompare(b.month));
-  }, [state.revenues]);
+  }, [state.revenue]);
 
   // Prepare expense categories data
   const expenseData = useMemo(() => {
     const categoryMap = new Map<string, number>();
-    state.expenses.forEach(entry => {
+    state.expenses.forEach((entry: ExpenseEntry) => {
       categoryMap.set(entry.category, (categoryMap.get(entry.category) || 0) + entry.amount);
     });
 
@@ -166,7 +166,7 @@ export const Dashboard: React.FC<DashboardProps> = () => {
   // Alert conditions
   const taxRegistrationAlerts = useMemo(() => {
     const alerts = [];
-    const totalRevenue = state.revenues.reduce((sum, entry) => sum + entry.amount, 0);
+    const totalRevenue = state.revenue.reduce((sum: number, entry: RevenueEntry) => sum + entry.amount, 0);
     
     if (totalRevenue > 375000 && !state.profile?.vatRegistered) {
       alerts.push({
@@ -193,7 +193,7 @@ export const Dashboard: React.FC<DashboardProps> = () => {
     }
 
     return alerts;
-  }, [state.revenues, state.profile]);
+  }, [state.revenue, state.profile]);
 
   // Validate TRN
   const validateTRN = (trn: string): { isValid: boolean; message: string } => {
@@ -232,7 +232,7 @@ export const Dashboard: React.FC<DashboardProps> = () => {
         date.setMonth(date.getMonth() - i);
         const monthKey = date.toISOString().slice(0, 7);
         
-        const revenue = allData.revenues
+        const revenue = allData.revenue
           .filter((r: any) => r.date.startsWith(monthKey))
           .reduce((sum: number, r: any) => sum + r.amount, 0);
           
@@ -265,11 +265,12 @@ export const Dashboard: React.FC<DashboardProps> = () => {
     try {
       setExportStarted(true);
       const reportData = {
-        revenues: state.revenues,
+        revenue: state.revenue,
+        revenues: state.revenue,
         expenses: state.expenses,
         profile: state.profile,
-        vatDue: state.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0),
-        citDue: state.revenues.reduce((sum, r) => sum + (r.amount * 0.09), 0),
+        vatDue: state.revenue.reduce((sum: number, r: RevenueEntry) => sum + (r.vatAmount || 0), 0),
+        citDue: state.revenue.reduce((sum: number, r: RevenueEntry) => sum + (r.amount * 0.09), 0),
         complianceScore: calculateDetailedComplianceScore(state).score
       };
       
@@ -302,11 +303,12 @@ export const Dashboard: React.FC<DashboardProps> = () => {
         timestamp: new Date().toISOString(),
         referenceNumber: '',
         data: {
-          revenues: state.revenues,
+          revenue: state.revenue,
+          revenues: state.revenue,
           expenses: state.expenses,
           vatDue: vatDue,
           citDue: citDue,
-          complianceScore: complianceScore
+          complianceScore: calculateDetailedComplianceScore(state).score
         }
       };
 
@@ -500,14 +502,14 @@ export const Dashboard: React.FC<DashboardProps> = () => {
     const lastMonthStr = lastMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
     
     // Check if there are any revenues or expenses in the last month
-    const hasLastMonthEntries = [...state.revenues, ...state.expenses].some(entry => {
+    const hasLastMonthEntries = [...state.revenue, ...state.expenses].some(entry => {
       const entryDate = new Date(entry.date);
       return entryDate.getMonth() === lastMonth.getMonth() && 
              entryDate.getFullYear() === lastMonth.getFullYear();
     });
 
     return hasLastMonthEntries ? null : lastMonthStr;
-  }, [state.revenues, state.expenses]);
+  }, [state.revenue, state.expenses]);
 
   // Check for incomplete profile information
   const incompleteProfile = useMemo(() => {
@@ -528,7 +530,7 @@ export const Dashboard: React.FC<DashboardProps> = () => {
     }
 
     return {
-      revenues: state.revenues.filter(
+      revenue: state.revenue.filter(
         r => r.date >= dateRange.startDate && r.date <= dateRange.endDate
       ),
       expenses: state.expenses.filter(
@@ -538,9 +540,9 @@ export const Dashboard: React.FC<DashboardProps> = () => {
   }, [state, dateRange]);
 
   const metrics = useMemo(() => {
-    const totalRevenue = filteredData.revenues.reduce((sum, r) => sum + r.amount, 0);
-    const totalExpenses = filteredData.expenses.reduce((sum, e) => sum + e.amount, 0);
-    const totalVAT = filteredData.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0);
+    const totalRevenue = filteredData.revenue.reduce((sum: number, r: RevenueEntry) => sum + r.amount, 0);
+    const totalExpenses = filteredData.expenses.reduce((sum: number, e: ExpenseEntry) => sum + e.amount, 0);
+    const totalVAT = filteredData.revenue.reduce((sum: number, r: RevenueEntry) => sum + (r.vatAmount || 0), 0);
 
     return {
       totalRevenue,
@@ -553,7 +555,7 @@ export const Dashboard: React.FC<DashboardProps> = () => {
   const revenueTrendData = useMemo(() => {
     const monthlyData = new Map<string, number>();
     
-    filteredData.revenues.forEach(revenue => {
+    filteredData.revenue.forEach((revenue: RevenueEntry) => {
       const month = format(new Date(revenue.date), 'MMM yyyy');
       monthlyData.set(month, (monthlyData.get(month) || 0) + revenue.amount);
     });
@@ -567,7 +569,7 @@ export const Dashboard: React.FC<DashboardProps> = () => {
   const expenseBreakdownData = useMemo(() => {
     const categoryData = new Map<string, number>();
     
-    filteredData.expenses.forEach(expense => {
+    filteredData.expenses.forEach((expense: ExpenseEntry) => {
       categoryData.set(expense.category, (categoryData.get(expense.category) || 0) + expense.amount);
     });
 
@@ -686,7 +688,7 @@ export const Dashboard: React.FC<DashboardProps> = () => {
                 <div className="bg-gradient-to-b from-green-50 to-white px-5 py-3">
                   <div className="text-sm">
                     <span className="text-green-700 font-medium">
-                      {state.revenues.length} transactions
+                      {state.revenue.length} transactions
                     </span>
                   </div>
                 </div>

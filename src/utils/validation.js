@@ -100,6 +100,9 @@ export class Validator {
         if (!entry.source) {
             errors.push('Revenue source is required');
         }
+        if (!entry.category) {
+            errors.push('Category is required');
+        }
         if (entry.vatAmount !== undefined) {
             const vatValidation = this.validateAmount(entry.vatAmount);
             if (!vatValidation.isValid) {
@@ -129,6 +132,15 @@ export class Validator {
         }
         if (!entry.category) {
             errors.push('Expense category is required');
+        }
+        if (!entry.description) {
+            errors.push('Description is required');
+        }
+        if (entry.vatAmount !== undefined) {
+            const vatValidation = this.validateAmount(entry.vatAmount);
+            if (!vatValidation.isValid) {
+                errors.push('Invalid VAT amount');
+            }
         }
         return {
             isValid: errors.length === 0,

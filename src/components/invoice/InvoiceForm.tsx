@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Invoice, InvoiceItem, InvoiceStatus, InvoiceType, PartyInfo, Address } from '../../types/invoice';
+import { Invoice, InvoiceItem, InvoiceStatus, InvoiceType, Party, Address } from '../../types/invoice';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Box,
@@ -38,9 +38,14 @@ const emptyInvoiceItem: InvoiceItem = {
   description: '',
   quantity: 0,
   unitPrice: 0,
-  vatRate: 5, // Default VAT rate in UAE
+  totalAmount: 0,
+  taxAmount: 0,
+  taxableAmount: 0,
+  productCode: '',
+  taxCategory: '',
+  taxRate: 5, // Default VAT rate in UAE
   vatAmount: 0,
-  total: 0
+  vatRate: 5
 };
 
 const defaultInvoice: Invoice = {
@@ -48,34 +53,34 @@ const defaultInvoice: Invoice = {
   type: InvoiceType.STANDARD,
   status: InvoiceStatus.DRAFT,
   issueDate: new Date().toISOString(),
+  dueDate: new Date().toISOString(),
   invoiceNumber: '',
-  uuid: uuidv4(),
+  currency: 'AED',
+  amount: 0,
+  vatAmount: 0,
   seller: {
     name: '',
+    taxRegistrationNumber: '',
     address: {
       street: '',
       city: '',
       emirate: '',
       country: 'UAE',
       postalCode: ''
-    },
-    trn: ''
+    }
   },
   buyer: {
     name: '',
+    taxRegistrationNumber: '',
     address: {
       street: '',
       city: '',
       emirate: '',
       country: 'UAE',
       postalCode: ''
-    },
-    trn: ''
+    }
   },
   items: [],
-  subtotal: 0,
-  vatTotal: 0,
-  total: 0,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString()
 };
@@ -93,10 +98,10 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const [addItemDialogOpen, setAddItemDialogOpen] = useState(false);
 
   const handleInputChange = (
-    field: keyof Invoice | keyof PartyInfo | keyof Address,
+    field: keyof Invoice | keyof Party | keyof Address,
     value: string,
     section?: 'seller' | 'buyer',
-    subfield?: keyof PartyInfo
+    subfield?: keyof Party
   ) => {
     setInvoice(prev => {
       if (section && subfield) {
@@ -149,18 +154,21 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       const updated = { ...prev, [field]: value };
       
       // Recalculate amounts
-      if (field === 'quantity' || field === 'unitPrice' || field === 'vatRate') {
+      if (field === 'quantity' || field === 'unitPrice' || field === 'taxRate') {
         const quantity = field === 'quantity' ? +value : prev.quantity;
         const unitPrice = field === 'unitPrice' ? +value : prev.unitPrice;
-        const vatRate = field === 'vatRate' ? +value : prev.vatRate;
-        const subtotal = quantity * unitPrice;
-        const vatAmount = subtotal * (vatRate / 100);
-        const total = subtotal + vatAmount;
+        const taxRate = field === 'taxRate' ? +value : prev.taxRate;
+        const taxableAmount = quantity * unitPrice;
+        const taxAmount = taxableAmount * (taxRate / 100);
+        const totalAmount = taxableAmount + taxAmount;
         
         return {
           ...updated,
-          vatAmount,
-          total
+          taxableAmount,
+          taxAmount,
+          totalAmount,
+          vatAmount: taxAmount,
+          vatRate: taxRate
         };
       }
       
@@ -171,16 +179,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const handleAddItem = () => {
     setInvoice(prev => {
       const updatedItems = [...prev.items, newItem];
-      const subtotal = updatedItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
-      const vatTotal = updatedItems.reduce((sum, item) => sum + item.vatAmount, 0);
-      const total = subtotal + vatTotal;
+      const amount = updatedItems.reduce((sum, item) => sum + item.totalAmount, 0);
+      const vatAmount = updatedItems.reduce((sum, item) => sum + item.taxAmount, 0);
       
       return {
         ...prev,
         items: updatedItems,
-        subtotal,
-        vatTotal,
-        total,
+        amount,
+        vatAmount,
         updatedAt: new Date().toISOString()
       };
     });
@@ -195,16 +201,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const handleDeleteItem = (itemId: string) => {
     setInvoice(prev => {
       const updatedItems = prev.items.filter(item => item.id !== itemId);
-      const subtotal = updatedItems.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
-      const vatTotal = updatedItems.reduce((sum, item) => sum + item.vatAmount, 0);
-      const total = subtotal + vatTotal;
+      const amount = updatedItems.reduce((sum, item) => sum + item.totalAmount, 0);
+      const vatAmount = updatedItems.reduce((sum, item) => sum + item.taxAmount, 0);
       
       return {
         ...prev,
         items: updatedItems,
-        subtotal,
-        vatTotal,
-        total,
+        amount,
+        vatAmount,
         updatedAt: new Date().toISOString()
       };
     });
@@ -266,8 +270,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <TextField
                 fullWidth
                 label="TRN"
-                value={invoice.seller.trn}
-                onChange={(e) => handleInputChange('trn', e.target.value, 'seller')}
+                value={invoice.seller.taxRegistrationNumber}
+                onChange={(e) => handleInputChange('taxRegistrationNumber', e.target.value, 'seller')}
                 required
               />
             </Grid>
@@ -330,8 +334,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <TextField
                 fullWidth
                 label="TRN"
-                value={invoice.buyer.trn}
-                onChange={(e) => handleInputChange('trn', e.target.value, 'buyer')}
+                value={invoice.buyer.taxRegistrationNumber}
+                onChange={(e) => handleInputChange('taxRegistrationNumber', e.target.value, 'buyer')}
                 required
               />
             </Grid>
@@ -396,9 +400,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <TableCell>Description</TableCell>
                   <TableCell align="right">Quantity</TableCell>
                   <TableCell align="right">Unit Price</TableCell>
-                  <TableCell align="right">VAT Rate</TableCell>
-                  <TableCell align="right">VAT Amount</TableCell>
-                  <TableCell align="right">Total</TableCell>
+                  <TableCell align="right">Tax Rate</TableCell>
+                  <TableCell align="right">Tax Amount</TableCell>
+                  <TableCell align="right">Total Amount</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -413,15 +417,15 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         currency: 'AED'
                       })}
                     </TableCell>
-                    <TableCell align="right">{item.vatRate}%</TableCell>
+                    <TableCell align="right">{item.taxRate}%</TableCell>
                     <TableCell align="right">
-                      {item.vatAmount.toLocaleString('en-AE', {
+                      {item.taxAmount.toLocaleString('en-AE', {
                         style: 'currency',
                         currency: 'AED'
                       })}
                     </TableCell>
                     <TableCell align="right">
-                      {item.total.toLocaleString('en-AE', {
+                      {item.totalAmount.toLocaleString('en-AE', {
                         style: 'currency',
                         currency: 'AED'
                       })}
@@ -444,27 +448,18 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
             <Grid container spacing={2} sx={{ justifyContent: 'flex-end' }}>
               <Grid item xs={12} md={4}>
                 <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography>Subtotal</Typography>
+                  <Typography>Total Amount</Typography>
                   <Typography>
-                    {invoice.subtotal.toLocaleString('en-AE', {
-                      style: 'currency',
-                      currency: 'AED'
-                    })}
-                  </Typography>
-                </Box>
-                <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography>VAT Total</Typography>
-                  <Typography>
-                    {invoice.vatTotal.toLocaleString('en-AE', {
+                    {invoice.amount.toLocaleString('en-AE', {
                       style: 'currency',
                       currency: 'AED'
                     })}
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between">
-                  <Typography variant="h6">Total</Typography>
-                  <Typography variant="h6">
-                    {invoice.total.toLocaleString('en-AE', {
+                  <Typography>VAT Amount</Typography>
+                  <Typography>
+                    {invoice.vatAmount.toLocaleString('en-AE', {
                       style: 'currency',
                       currency: 'AED'
                     })}
@@ -520,9 +515,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 <TextField
                   fullWidth
                   type="number"
-                  label="VAT Rate (%)"
-                  value={newItem.vatRate}
-                  onChange={(e) => handleNewItemChange('vatRate', +e.target.value)}
+                  label="Tax Rate (%)"
+                  value={newItem.taxRate}
+                  onChange={(e) => handleNewItemChange('taxRate', +e.target.value)}
                   required
                 />
               </Grid>

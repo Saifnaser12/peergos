@@ -16,126 +16,95 @@ interface InvoiceDetailProps {
   onDelete: (invoice: Invoice) => void;
 }
 
-const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
+export const InvoiceDetail: React.FC<InvoiceDetailProps> = ({
   invoice,
   onEdit,
   onDelete,
 }) => {
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5" component="h1">
-          Invoice Details
-        </Typography>
-        <Box>
-          <IconButton
-            size="small"
-            onClick={() => onEdit(invoice)}
-            sx={{ mr: 1 }}
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => onDelete(invoice)}
-            color="error"
-          >
-            <DeleteIcon />
-          </IconButton>
+    <Card>
+      <CardContent>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h6">Invoice #{invoice.invoiceNumber}</Typography>
+          <Box>
+            <IconButton onClick={() => onEdit(invoice)} size="small">
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => onDelete(invoice)} size="small">
+              <DeleteIcon />
+            </IconButton>
+          </Box>
         </Box>
-      </Box>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Invoice Information
-              </Typography>
-              <Box display="flex" flexDirection="column" gap={1}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Typography variant="subtitle2" color="textSecondary">Seller</Typography>
+            <Typography>{invoice.seller.name}</Typography>
+            <Typography>{invoice.seller.taxRegistrationNumber}</Typography>
+            <Typography>
+              {invoice.seller.address.street}, {invoice.seller.address.city}
+            </Typography>
+            <Typography>
+              {invoice.seller.address.emirate}, {invoice.seller.address.country}
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Typography variant="subtitle2" color="textSecondary">Buyer</Typography>
+            <Typography>{invoice.buyer.name}</Typography>
+            <Typography>{invoice.buyer.taxRegistrationNumber}</Typography>
+            <Typography>
+              {invoice.buyer.address.street}, {invoice.buyer.address.city}
+            </Typography>
+            <Typography>
+              {invoice.buyer.address.emirate}, {invoice.buyer.address.country}
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+              Items
+            </Typography>
+            {invoice.items.map((item) => (
+              <Box key={item.id} mb={1}>
                 <Typography>
-                  <strong>Invoice Number:</strong> {invoice.invoiceNumber}
+                  {item.description} - {item.quantity} x {item.unitPrice.toLocaleString('en-AE', {
+                    style: 'currency',
+                    currency: 'AED'
+                  })}
                 </Typography>
-                <Typography>
-                  <strong>Issue Date:</strong> {invoice.issueDate}
-                </Typography>
-                <Typography>
-                  <strong>Due Date:</strong> {invoice.dueDate}
-                </Typography>
-                <Typography>
-                  <strong>Currency:</strong> {invoice.currency}
-                </Typography>
-                <Typography>
-                  <strong>Total Amount:</strong> AED {invoice.amount.toLocaleString()}
-                </Typography>
-                <Typography>
-                  <strong>VAT Amount:</strong> AED {invoice.vatAmount.toLocaleString()}
+                <Typography variant="body2" color="textSecondary">
+                  Tax Rate: {item.taxRate}% - Tax Amount: {item.taxAmount.toLocaleString('en-AE', {
+                    style: 'currency',
+                    currency: 'AED'
+                  })}
                 </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+            ))}
+          </Grid>
 
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Seller Information
+          <Grid item xs={12}>
+            <Box display="flex" justifyContent="space-between" mt={2}>
+              <Typography variant="subtitle1">Total Amount</Typography>
+              <Typography variant="subtitle1">
+                {invoice.amount.toLocaleString('en-AE', {
+                  style: 'currency',
+                  currency: 'AED'
+                })}
               </Typography>
-              <Box display="flex" flexDirection="column" gap={1}>
-                <Typography>
-                  <strong>Name:</strong> {invoice.seller.name}
-                </Typography>
-                <Typography>
-                  <strong>Tax Registration Number:</strong> {invoice.seller.taxRegistrationNumber}
-                </Typography>
-                <Typography>
-                  <strong>Address:</strong> {invoice.seller.address.street}, {invoice.seller.address.city}, {invoice.seller.address.emirate}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Items
+            </Box>
+            <Box display="flex" justifyContent="space-between">
+              <Typography variant="subtitle1">VAT Amount</Typography>
+              <Typography variant="subtitle1">
+                {invoice.vatAmount.toLocaleString('en-AE', {
+                  style: 'currency',
+                  currency: 'AED'
+                })}
               </Typography>
-              <Box display="flex" flexDirection="column" gap={2}>
-                {invoice.items.map((item) => (
-                  <Box
-                    key={item.id}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    p={2}
-                    sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1 }}
-                  >
-                    <Box>
-                      <Typography variant="subtitle1">{item.description}</Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        Quantity: {item.quantity} × AED {item.unitPrice.toLocaleString()}
-                      </Typography>
-                    </Box>
-                    <Box textAlign="right">
-                      <Typography variant="subtitle1">
-                        AED {item.totalAmount.toLocaleString()}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        VAT: AED {item.taxAmount.toLocaleString()}
-                      </Typography>
-                    </Box>
-                  </Box>
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+      </CardContent>
+    </Card>
   );
-};
-
-export default InvoiceDetail; 
+}; 

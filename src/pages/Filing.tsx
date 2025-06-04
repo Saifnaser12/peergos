@@ -156,9 +156,9 @@ const Filing: React.FC<FilingProps> = () => {
 
   // Memoized filtered and sorted data
   const filteredSortedRevenues = useMemo(() => {
-    let result = filterEntries(taxState.revenues, revenueFilters);
+    let result = filterEntries(taxState.revenue, revenueFilters);
     return sortEntries(result, revenueSort);
-  }, [taxState.revenues, revenueFilters, revenueSort]);
+  }, [taxState.revenue, revenueFilters, revenueSort]);
 
   const filteredSortedExpenses = useMemo(() => {
     let result = filterEntries(taxState.expenses, expenseFilters);
@@ -167,8 +167,8 @@ const Filing: React.FC<FilingProps> = () => {
 
   // Get unique categories/sources for filter options
   const revenueSources = useMemo(() => 
-    Array.from(new Set(taxState.revenues.map(r => r.source))),
-    [taxState.revenues]
+    Array.from(new Set(taxState.revenue.map(r => r.source))),
+    [taxState.revenue]
   );
 
   const expenseCategories = useMemo(() => 
@@ -177,7 +177,7 @@ const Filing: React.FC<FilingProps> = () => {
   );
 
   const handleDraftToggle = () => {
-    dispatch({ type: 'TOGGLE_DRAFT_MODE', payload: !taxState.isDraftMode });
+    dispatch({ type: 'TOGGLE_DRAFT_MODE' });
   };
 
   const handleSubmitToFTA = async () => {
@@ -193,10 +193,11 @@ const Filing: React.FC<FilingProps> = () => {
         timestamp: new Date().toISOString(),
         referenceNumber: '',
         data: {
-          revenues: taxState.revenues,
+          revenue: taxState.revenue,
+          revenues: taxState.revenue,
           expenses: taxState.expenses,
-          vatDue: taxState.revenues.reduce((sum, entry) => sum + entry.vatAmount, 0),
-          citDue: taxState.revenues.reduce((sum, entry) => sum + (entry.amount * 0.09), 0),
+          vatDue: taxState.revenue.reduce((sum: number, entry: RevenueEntry) => sum + entry.vatAmount, 0),
+          citDue: taxState.revenue.reduce((sum: number, entry: RevenueEntry) => sum + (entry.amount * 0.09), 0),
           complianceScore: 100
         }
       };
@@ -230,11 +231,29 @@ const Filing: React.FC<FilingProps> = () => {
   const handleBulkUpload = (entries: (RevenueEntry | ExpenseEntry)[]) => {
     if (showBulkUpload === 'revenue') {
       entries.forEach(entry => {
-        dispatch({ type: 'ADD_REVENUE', payload: entry as RevenueEntry });
+        // Ensure all required fields for RevenueEntry
+        const revenueEntry: RevenueEntry = {
+          id: entry.id || String(Math.random()),
+          date: entry.date,
+          amount: entry.amount,
+          source: (entry as any).source || '',
+          vatAmount: (entry as any).vatAmount || 0,
+          category: (entry as any).category || ''
+        };
+        dispatch({ type: 'ADD_REVENUE', payload: revenueEntry });
       });
     } else {
       entries.forEach(entry => {
-        dispatch({ type: 'ADD_EXPENSE', payload: entry as ExpenseEntry });
+        // Ensure all required fields for ExpenseEntry
+        const expenseEntry: ExpenseEntry = {
+          id: entry.id || String(Math.random()),
+          date: entry.date,
+          amount: entry.amount,
+          description: (entry as any).description || '',
+          vatAmount: (entry as any).vatAmount || 0,
+          category: (entry as any).category || ''
+        };
+        dispatch({ type: 'ADD_EXPENSE', payload: expenseEntry });
       });
     }
     setShowBulkUpload(null);
@@ -397,9 +416,9 @@ const Filing: React.FC<FilingProps> = () => {
     const submissionData = {
       period: filingFormState.period,
       trn: filingFormState.trn,
-      totalRevenue: taxState.revenues.reduce((sum, r) => sum + r.amount, 0),
+      totalRevenue: taxState.revenue.reduce((sum, r) => sum + r.amount, 0),
       totalExpenses: taxState.expenses.reduce((sum, e) => sum + e.amount, 0),
-      vatPayable: taxState.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0),
+      vatPayable: taxState.revenue.reduce((sum, r) => sum + (r.vatAmount || 0), 0),
     };
 
     // Submit data to backend
@@ -462,7 +481,7 @@ const Filing: React.FC<FilingProps> = () => {
                   style: 'decimal',
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0
-                }).format(taxState.revenues.reduce((sum, r) => sum + r.amount, 0))}{' '}
+                }).format(taxState.revenue.reduce((sum, r) => sum + r.amount, 0))}{' '}
                 AED
               </dd>
             </div>
@@ -473,7 +492,7 @@ const Filing: React.FC<FilingProps> = () => {
                   style: 'decimal',
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0
-                }).format(taxState.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0))}{' '}
+                }).format(taxState.revenue.reduce((sum, r) => sum + (r.vatAmount || 0), 0))}{' '}
                 AED
               </dd>
             </div>
@@ -507,9 +526,9 @@ const Filing: React.FC<FilingProps> = () => {
   );
 
   const renderStep4 = () => {
-    const totalRevenue = taxState.revenues.reduce((sum, r) => sum + r.amount, 0);
+    const totalRevenue = taxState.revenue.reduce((sum, r) => sum + r.amount, 0);
     const totalExpenses = taxState.expenses.reduce((sum, e) => sum + e.amount, 0);
-    const vatPayable = taxState.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0);
+    const vatPayable = taxState.revenue.reduce((sum, r) => sum + (r.vatAmount || 0), 0);
 
     return (
       <div className="space-y-4">
@@ -569,7 +588,7 @@ const Filing: React.FC<FilingProps> = () => {
           {t('filing.description', 'Manage your tax returns and submissions')}
         </p>
       </div>
-      {!taxState.revenues.length && !taxState.expenses.length ? (
+      {!taxState.revenue.length && !taxState.expenses.length ? (
         <EmptyState
           illustration={illustrations.noDataFolder}
           title="No Records Found"

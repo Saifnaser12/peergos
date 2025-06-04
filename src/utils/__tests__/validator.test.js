@@ -115,7 +115,8 @@ describe('Validator', () => {
             date: '2024-01-01',
             amount: 1000,
             source: 'Sales',
-            vatAmount: 50
+            vatAmount: 50,
+            category: 'Sales'
         };
         it('validates correct revenue entry', () => {
             const result = Validator.validateRevenueEntry(validRevenue);
@@ -134,16 +135,25 @@ describe('Validator', () => {
             expect(result.errors).toContain('Date is required');
             expect(result.errors).toContain('Amount is required');
             expect(result.errors).toContain('Revenue source is required');
+            expect(result.errors).toContain('Category is required');
         });
     });
     describe('Expense Entry Validation', () => {
         const validExpense = {
             date: '2024-01-01',
             amount: 1000,
-            category: 'Operations'
+            category: 'Operations',
+            description: 'Office supplies',
+            vatAmount: 50
         };
         it('validates correct expense entry', () => {
             const result = Validator.validateExpenseEntry(validExpense);
+            expect(result.isValid).toBe(true);
+            expect(result.errors).toHaveLength(0);
+        });
+        it('validates expense entry without VAT amount', () => {
+            const { vatAmount, ...expenseWithoutVAT } = validExpense;
+            const result = Validator.validateExpenseEntry(expenseWithoutVAT);
             expect(result.isValid).toBe(true);
             expect(result.errors).toHaveLength(0);
         });
@@ -153,6 +163,7 @@ describe('Validator', () => {
             expect(result.errors).toContain('Date is required');
             expect(result.errors).toContain('Amount is required');
             expect(result.errors).toContain('Expense category is required');
+            expect(result.errors).toContain('Description is required');
         });
     });
     describe('Bulk Upload Validation', () => {

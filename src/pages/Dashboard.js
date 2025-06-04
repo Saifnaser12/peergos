@@ -41,25 +41,25 @@ export const Dashboard = () => {
     // Calculate VAT and CIT
     const vatDue = useMemo(() => {
         // VAT calculation logic
-        return state.revenues.reduce((acc, rev) => acc + rev.amount * 0.05, 0);
-    }, [state.revenues]);
+        return state.revenue.reduce((acc, rev) => acc + rev.amount * 0.05, 0);
+    }, [state.revenue]);
     const citDue = useMemo(() => {
-        const totalRevenue = state.revenues.reduce((acc, rev) => acc + rev.amount, 0);
+        const totalRevenue = state.revenue.reduce((acc, rev) => acc + rev.amount, 0);
         return calculateCIT(totalRevenue);
-    }, [state.revenues]);
+    }, [state.revenue]);
     const complianceScore = useMemo(() => {
         return 85; // Default compliance score
     }, []);
     // Calculate summary metrics
-    const totalRevenue = state.revenues.reduce((sum, entry) => sum + entry.amount, 0);
+    const totalRevenue = state.revenue.reduce((sum, entry) => sum + entry.amount, 0);
     const totalExpenses = state.expenses.reduce((sum, entry) => sum + entry.amount, 0);
     const netIncome = totalRevenue - totalExpenses;
-    const totalVAT = state.revenues.reduce((sum, entry) => sum + entry.vatAmount, 0);
+    const totalVAT = state.revenue.reduce((sum, entry) => sum + entry.vatAmount, 0);
     const citAmount = calculateCIT(netIncome);
     // Prepare monthly revenue data
     const monthlyData = useMemo(() => {
         const monthlyMap = new Map();
-        state.revenues.forEach(entry => {
+        state.revenue.forEach((entry) => {
             const date = new Date(entry.date);
             const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
             monthlyMap.set(monthKey, (monthlyMap.get(monthKey) || 0) + entry.amount);
@@ -67,11 +67,11 @@ export const Dashboard = () => {
         return Array.from(monthlyMap.entries())
             .map(([month, amount]) => ({ month, amount }))
             .sort((a, b) => a.month.localeCompare(b.month));
-    }, [state.revenues]);
+    }, [state.revenue]);
     // Prepare expense categories data
     const expenseData = useMemo(() => {
         const categoryMap = new Map();
-        state.expenses.forEach(entry => {
+        state.expenses.forEach((entry) => {
             categoryMap.set(entry.category, (categoryMap.get(entry.category) || 0) + entry.amount);
         });
         return Array.from(categoryMap.entries()).map(([name, value]) => ({ name, value }));
@@ -79,7 +79,7 @@ export const Dashboard = () => {
     // Alert conditions
     const taxRegistrationAlerts = useMemo(() => {
         const alerts = [];
-        const totalRevenue = state.revenues.reduce((sum, entry) => sum + entry.amount, 0);
+        const totalRevenue = state.revenue.reduce((sum, entry) => sum + entry.amount, 0);
         if (totalRevenue > 375000 && !state.profile?.vatRegistered) {
             alerts.push({
                 type: 'warning',
@@ -103,7 +103,7 @@ export const Dashboard = () => {
             });
         }
         return alerts;
-    }, [state.revenues, state.profile]);
+    }, [state.revenue, state.profile]);
     // Validate TRN
     const validateTRN = (trn) => {
         if (!trn)
@@ -138,7 +138,7 @@ export const Dashboard = () => {
                 const date = new Date();
                 date.setMonth(date.getMonth() - i);
                 const monthKey = date.toISOString().slice(0, 7);
-                const revenue = allData.revenues
+                const revenue = allData.revenue
                     .filter((r) => r.date.startsWith(monthKey))
                     .reduce((sum, r) => sum + r.amount, 0);
                 const expenses = allData.expenses
@@ -167,11 +167,12 @@ export const Dashboard = () => {
         try {
             setExportStarted(true);
             const reportData = {
-                revenues: state.revenues,
+                revenue: state.revenue,
+                revenues: state.revenue,
                 expenses: state.expenses,
                 profile: state.profile,
-                vatDue: state.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0),
-                citDue: state.revenues.reduce((sum, r) => sum + (r.amount * 0.09), 0),
+                vatDue: state.revenue.reduce((sum, r) => sum + (r.vatAmount || 0), 0),
+                citDue: state.revenue.reduce((sum, r) => sum + (r.amount * 0.09), 0),
                 complianceScore: calculateDetailedComplianceScore(state).score
             };
             if (type === 'pdf') {
@@ -204,11 +205,12 @@ export const Dashboard = () => {
                 timestamp: new Date().toISOString(),
                 referenceNumber: '',
                 data: {
-                    revenues: state.revenues,
+                    revenue: state.revenue,
+                    revenues: state.revenue,
                     expenses: state.expenses,
                     vatDue: vatDue,
                     citDue: citDue,
-                    complianceScore: complianceScore
+                    complianceScore: calculateDetailedComplianceScore(state).score
                 }
             };
             const referenceNumber = await submitToFTA(submissionData);
@@ -268,13 +270,13 @@ export const Dashboard = () => {
         const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
         const lastMonthStr = lastMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
         // Check if there are any revenues or expenses in the last month
-        const hasLastMonthEntries = [...state.revenues, ...state.expenses].some(entry => {
+        const hasLastMonthEntries = [...state.revenue, ...state.expenses].some(entry => {
             const entryDate = new Date(entry.date);
             return entryDate.getMonth() === lastMonth.getMonth() &&
                 entryDate.getFullYear() === lastMonth.getFullYear();
         });
         return hasLastMonthEntries ? null : lastMonthStr;
-    }, [state.revenues, state.expenses]);
+    }, [state.revenue, state.expenses]);
     // Check for incomplete profile information
     const incompleteProfile = useMemo(() => {
         if (!state.profile)
@@ -295,14 +297,14 @@ export const Dashboard = () => {
             return state;
         }
         return {
-            revenues: state.revenues.filter(r => r.date >= dateRange.startDate && r.date <= dateRange.endDate),
+            revenue: state.revenue.filter(r => r.date >= dateRange.startDate && r.date <= dateRange.endDate),
             expenses: state.expenses.filter(e => e.date >= dateRange.startDate && e.date <= dateRange.endDate)
         };
     }, [state, dateRange]);
     const metrics = useMemo(() => {
-        const totalRevenue = filteredData.revenues.reduce((sum, r) => sum + r.amount, 0);
+        const totalRevenue = filteredData.revenue.reduce((sum, r) => sum + r.amount, 0);
         const totalExpenses = filteredData.expenses.reduce((sum, e) => sum + e.amount, 0);
-        const totalVAT = filteredData.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0);
+        const totalVAT = filteredData.revenue.reduce((sum, r) => sum + (r.vatAmount || 0), 0);
         return {
             totalRevenue,
             totalExpenses,
@@ -312,7 +314,7 @@ export const Dashboard = () => {
     }, [filteredData]);
     const revenueTrendData = useMemo(() => {
         const monthlyData = new Map();
-        filteredData.revenues.forEach(revenue => {
+        filteredData.revenue.forEach((revenue) => {
             const month = format(new Date(revenue.date), 'MMM yyyy');
             monthlyData.set(month, (monthlyData.get(month) || 0) + revenue.amount);
         });
@@ -323,7 +325,7 @@ export const Dashboard = () => {
     }, [filteredData]);
     const expenseBreakdownData = useMemo(() => {
         const categoryData = new Map();
-        filteredData.expenses.forEach(expense => {
+        filteredData.expenses.forEach((expense) => {
             categoryData.set(expense.category, (categoryData.get(expense.category) || 0) + expense.amount);
         });
         return Array.from(categoryData.entries()).map(([category, amount]) => ({
@@ -347,7 +349,7 @@ export const Dashboard = () => {
                                             } })), incompleteProfile.length > 0 && (_jsx(AlertBanner, { type: "info", title: "Incomplete Profile", message: `The following information is missing: ${incompleteProfile.join(', ')}`, action: {
                                                 label: 'Update Profile',
                                                 onClick: () => navigate('/setup')
-                                            } })), taxRegistrationAlerts.map((alert, index) => (_jsx(AlertBanner, { type: alert.type, title: alert.title, message: alert.message, action: alert.action }, index)))] }) }), _jsxs("div", { className: "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8", children: [_jsxs(PermissionGate, { resource: "dashboard", requiredPermission: "view", restrictedTo: "Tax Agent or Admin", children: [_jsxs("div", { className: "bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100", children: [_jsx("div", { className: "p-5", children: _jsxs("div", { className: "flex items-center", children: [_jsx("div", { className: "flex-shrink-0", children: _jsx(BanknotesIcon, { className: "h-6 w-6 text-green-500" }) }), _jsx("div", { className: "ml-5 w-0 flex-1", children: _jsxs("dl", { children: [_jsx("dt", { className: "text-sm font-medium text-gray-500 truncate", children: "Total Revenue" }), _jsxs("dd", { className: "text-lg font-semibold text-gray-900", children: ["AED ", formatCurrency(metrics.totalRevenue)] })] }) })] }) }), _jsx("div", { className: "bg-gradient-to-b from-green-50 to-white px-5 py-3", children: _jsx("div", { className: "text-sm", children: _jsxs("span", { className: "text-green-700 font-medium", children: [state.revenues.length, " transactions"] }) }) })] }), _jsxs("div", { className: "bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100", children: [_jsx("div", { className: "p-5", children: _jsxs("div", { className: "flex items-center", children: [_jsx("div", { className: "flex-shrink-0", children: _jsx(ReceiptPercentIcon, { className: "h-6 w-6 text-red-500" }) }), _jsx("div", { className: "ml-5 w-0 flex-1", children: _jsxs("dl", { children: [_jsx("dt", { className: "text-sm font-medium text-gray-500 truncate", children: "Total Expenses" }), _jsxs("dd", { className: "text-lg font-semibold text-gray-900", children: ["AED ", formatCurrency(metrics.totalExpenses)] })] }) })] }) }), _jsx("div", { className: "bg-gradient-to-b from-red-50 to-white px-5 py-3", children: _jsx("div", { className: "text-sm", children: _jsxs("span", { className: "text-red-700 font-medium", children: [state.expenses.length, " transactions"] }) }) })] })] }), _jsx(PermissionGate, { resource: "dashboard", requiredPermission: "edit", restrictedTo: "Admins", children: _jsxs("div", { className: "bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100", children: [_jsx("div", { className: "p-5", children: _jsxs("div", { className: "flex items-center", children: [_jsx("div", { className: "flex-shrink-0", children: _jsx(BuildingOfficeIcon, { className: "h-6 w-6 text-blue-500" }) }), _jsx("div", { className: "ml-5 w-0 flex-1", children: _jsxs("dl", { children: [_jsx("dt", { className: "text-sm font-medium text-gray-500 truncate", children: "Net Income" }), _jsxs("dd", { className: "text-lg font-semibold text-gray-900", children: ["AED ", formatCurrency(metrics.netIncome)] })] }) })] }) }), _jsx("div", { className: "bg-gradient-to-b from-blue-50 to-white px-5 py-3", children: _jsx("div", { className: "text-sm", children: _jsx("span", { className: "text-blue-700 font-medium", children: "Year to date" }) }) })] }) }), _jsx(PermissionGate, { resource: "dashboard", requiredPermission: "view", restrictedTo: "Tax Agent or Admin", children: _jsxs("div", { className: "bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100", children: [_jsx("div", { className: "p-5", children: _jsxs("div", { className: "flex items-center", children: [_jsx("div", { className: "flex-shrink-0", children: _jsx(DocumentChartBarIcon, { className: "h-6 w-6 text-purple-500" }) }), _jsx("div", { className: "ml-5 w-0 flex-1", children: _jsxs("dl", { children: [_jsx("dt", { className: "text-sm font-medium text-gray-500 truncate", children: "Tax Due" }), _jsxs("dd", { className: "text-lg font-semibold text-gray-900", children: ["AED ", (metrics.totalVAT + citAmount).toLocaleString()] })] }) })] }) }), _jsx("div", { className: "bg-gradient-to-b from-purple-50 to-white px-5 py-3", children: _jsx("div", { className: "text-sm", children: _jsx("span", { className: "text-purple-700 font-medium", children: "VAT + CIT" }) }) })] }) })] }), showDatePicker && (_jsxs("div", { className: "mb-8 p-4 bg-white shadow rounded-lg", children: [_jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [_jsxs("div", { children: [_jsx("label", { htmlFor: "startDate", className: "block text-sm font-medium text-gray-700", children: "Start Date" }), _jsx("input", { type: "date", id: "startDate", value: dateRange.startDate, onChange: e => setDateRange(prev => ({ ...prev, startDate: e.target.value })), className: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" })] }), _jsxs("div", { children: [_jsx("label", { htmlFor: "endDate", className: "block text-sm font-medium text-gray-700", children: "End Date" }), _jsx("input", { type: "date", id: "endDate", value: dateRange.endDate, onChange: e => setDateRange(prev => ({ ...prev, endDate: e.target.value })), className: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" })] })] }), _jsxs("div", { className: "mt-4 flex justify-end", children: [_jsx(Button, { onClick: () => {
+                                            } })), taxRegistrationAlerts.map((alert, index) => (_jsx(AlertBanner, { type: alert.type, title: alert.title, message: alert.message, action: alert.action }, index)))] }) }), _jsxs("div", { className: "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8", children: [_jsxs(PermissionGate, { resource: "dashboard", requiredPermission: "view", restrictedTo: "Tax Agent or Admin", children: [_jsxs("div", { className: "bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100", children: [_jsx("div", { className: "p-5", children: _jsxs("div", { className: "flex items-center", children: [_jsx("div", { className: "flex-shrink-0", children: _jsx(BanknotesIcon, { className: "h-6 w-6 text-green-500" }) }), _jsx("div", { className: "ml-5 w-0 flex-1", children: _jsxs("dl", { children: [_jsx("dt", { className: "text-sm font-medium text-gray-500 truncate", children: "Total Revenue" }), _jsxs("dd", { className: "text-lg font-semibold text-gray-900", children: ["AED ", formatCurrency(metrics.totalRevenue)] })] }) })] }) }), _jsx("div", { className: "bg-gradient-to-b from-green-50 to-white px-5 py-3", children: _jsx("div", { className: "text-sm", children: _jsxs("span", { className: "text-green-700 font-medium", children: [state.revenue.length, " transactions"] }) }) })] }), _jsxs("div", { className: "bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100", children: [_jsx("div", { className: "p-5", children: _jsxs("div", { className: "flex items-center", children: [_jsx("div", { className: "flex-shrink-0", children: _jsx(ReceiptPercentIcon, { className: "h-6 w-6 text-red-500" }) }), _jsx("div", { className: "ml-5 w-0 flex-1", children: _jsxs("dl", { children: [_jsx("dt", { className: "text-sm font-medium text-gray-500 truncate", children: "Total Expenses" }), _jsxs("dd", { className: "text-lg font-semibold text-gray-900", children: ["AED ", formatCurrency(metrics.totalExpenses)] })] }) })] }) }), _jsx("div", { className: "bg-gradient-to-b from-red-50 to-white px-5 py-3", children: _jsx("div", { className: "text-sm", children: _jsxs("span", { className: "text-red-700 font-medium", children: [state.expenses.length, " transactions"] }) }) })] })] }), _jsx(PermissionGate, { resource: "dashboard", requiredPermission: "edit", restrictedTo: "Admins", children: _jsxs("div", { className: "bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100", children: [_jsx("div", { className: "p-5", children: _jsxs("div", { className: "flex items-center", children: [_jsx("div", { className: "flex-shrink-0", children: _jsx(BuildingOfficeIcon, { className: "h-6 w-6 text-blue-500" }) }), _jsx("div", { className: "ml-5 w-0 flex-1", children: _jsxs("dl", { children: [_jsx("dt", { className: "text-sm font-medium text-gray-500 truncate", children: "Net Income" }), _jsxs("dd", { className: "text-lg font-semibold text-gray-900", children: ["AED ", formatCurrency(metrics.netIncome)] })] }) })] }) }), _jsx("div", { className: "bg-gradient-to-b from-blue-50 to-white px-5 py-3", children: _jsx("div", { className: "text-sm", children: _jsx("span", { className: "text-blue-700 font-medium", children: "Year to date" }) }) })] }) }), _jsx(PermissionGate, { resource: "dashboard", requiredPermission: "view", restrictedTo: "Tax Agent or Admin", children: _jsxs("div", { className: "bg-white overflow-hidden shadow-lg rounded-2xl border border-gray-100", children: [_jsx("div", { className: "p-5", children: _jsxs("div", { className: "flex items-center", children: [_jsx("div", { className: "flex-shrink-0", children: _jsx(DocumentChartBarIcon, { className: "h-6 w-6 text-purple-500" }) }), _jsx("div", { className: "ml-5 w-0 flex-1", children: _jsxs("dl", { children: [_jsx("dt", { className: "text-sm font-medium text-gray-500 truncate", children: "Tax Due" }), _jsxs("dd", { className: "text-lg font-semibold text-gray-900", children: ["AED ", (metrics.totalVAT + citAmount).toLocaleString()] })] }) })] }) }), _jsx("div", { className: "bg-gradient-to-b from-purple-50 to-white px-5 py-3", children: _jsx("div", { className: "text-sm", children: _jsx("span", { className: "text-purple-700 font-medium", children: "VAT + CIT" }) }) })] }) })] }), showDatePicker && (_jsxs("div", { className: "mb-8 p-4 bg-white shadow rounded-lg", children: [_jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [_jsxs("div", { children: [_jsx("label", { htmlFor: "startDate", className: "block text-sm font-medium text-gray-700", children: "Start Date" }), _jsx("input", { type: "date", id: "startDate", value: dateRange.startDate, onChange: e => setDateRange(prev => ({ ...prev, startDate: e.target.value })), className: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" })] }), _jsxs("div", { children: [_jsx("label", { htmlFor: "endDate", className: "block text-sm font-medium text-gray-700", children: "End Date" }), _jsx("input", { type: "date", id: "endDate", value: dateRange.endDate, onChange: e => setDateRange(prev => ({ ...prev, endDate: e.target.value })), className: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" })] })] }), _jsxs("div", { className: "mt-4 flex justify-end", children: [_jsx(Button, { onClick: () => {
                                                     setDateRange({ startDate: '', endDate: '' });
                                                     setShowDatePicker(false);
                                                 }, variant: "secondary", className: "mr-3", children: "Reset" }), _jsx(Button, { onClick: () => setShowDatePicker(false), children: "Apply" })] })] })), _jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-8", children: [_jsx(PermissionGate, { resource: "dashboard", requiredPermission: "view", restrictedTo: "Tax Agent or Admin", children: _jsxs("div", { className: "bg-white shadow rounded-lg p-6", "data-testid": "revenue-trend-chart", children: [_jsx("h3", { className: "text-lg font-medium text-gray-900 mb-4", children: "Revenue Trend" }), _jsx("div", { className: "h-80", children: _jsx(ResponsiveContainer, { width: "100%", height: "100%", children: _jsxs(LineChart, { data: revenueTrendData, children: [_jsx(CartesianGrid, { strokeDasharray: "3 3" }), _jsx(XAxis, { dataKey: "month" }), _jsx(YAxis, {}), _jsx(Tooltip, { formatter: (value) => `${formatCurrency(value)} AED` }), _jsx(Legend, {}), _jsx(Line, { type: "monotone", dataKey: "amount", stroke: "#0088FE", name: "Revenue" })] }) }) })] }) }), _jsx(PermissionGate, { resource: "dashboard", requiredPermission: "edit", restrictedTo: "Admins", children: _jsxs("div", { className: "bg-white shadow rounded-lg p-6", "data-testid": "expense-breakdown-chart", children: [_jsx("h3", { className: "text-lg font-medium text-gray-900 mb-4", children: "Expense Breakdown" }), _jsx("div", { className: "h-80", children: _jsx(ResponsiveContainer, { width: "100%", height: "100%", children: _jsxs(PieChart, { children: [_jsx(Pie, { data: expenseBreakdownData, dataKey: "amount", nameKey: "category", cx: "50%", cy: "50%", outerRadius: 100, label: ({ category, percent }) => `${category} (${(percent * 100).toFixed(0)}%)`, children: expenseBreakdownData.map((_, index) => (_jsx(Cell, { fill: COLORS[index % COLORS.length] }, `cell-${index}`))) }), _jsx(Tooltip, { formatter: (value) => `${formatCurrency(value)} AED` }), _jsx(Legend, {})] }) }) })] }) })] }), _jsx(PermissionGate, { resource: "dashboard", requiredPermission: "edit", restrictedTo: "Admins", children: _jsxs("div", { className: "mt-8 flex justify-end space-x-4", children: [_jsxs("button", { onClick: () => handleExport('pdf'), className: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500", children: [_jsx(ArrowDownTrayIcon, { className: "h-5 w-5 mr-2" }), "Export PDF"] }), _jsxs("button", { onClick: () => handleExport('excel'), className: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500", children: [_jsx(DocumentChartBarIcon, { className: "h-5 w-5 mr-2" }), "Export Excel"] }), _jsxs("button", { onClick: () => setIsSubmitModalOpen(true), className: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500", children: [_jsx(ArrowTrendingUpIcon, { className: "h-5 w-5 mr-2" }), "Submit to FTA"] })] }) })] }), submissionSuccess && (_jsx("div", { className: "mt-6", children: _jsx(SuccessAlert, { message: submissionSuccess.message, referenceNumber: submissionSuccess.referenceNumber, onClose: () => setSubmissionSuccess(null) }) })), _jsx(SubmissionModal, { isOpen: isSubmitModalOpen, isLoading: isSubmitting, onClose: () => setIsSubmitModalOpen(false), onConfirm: handleSubmitToFTA }), exportStarted && (_jsx("div", { className: "fixed bottom-4 right-4", children: _jsx("div", { className: "rounded-lg bg-green-50 p-4", children: _jsxs("div", { className: "flex", children: [_jsx("div", { className: "flex-shrink-0", children: _jsx("svg", { className: "h-5 w-5 text-green-400", viewBox: "0 0 20 20", fill: "currentColor", children: _jsx("path", { fillRule: "evenodd", d: "M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z", clipRule: "evenodd" }) }) }), _jsx("div", { className: "ml-3", children: _jsx("p", { className: "text-sm font-medium text-green-800", children: "Export Started" }) })] }) }) }))] })] }));

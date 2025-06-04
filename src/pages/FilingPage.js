@@ -42,9 +42,9 @@ export const FilingPage = () => {
         const filing = {
             period: state.period,
             trn: state.trn,
-            totalRevenue: calculateTotal(taxData.revenues, 'amount'),
+            totalRevenue: calculateTotal(taxData.revenue, 'amount'),
             totalExpenses: calculateTotal(taxData.expenses, 'amount'),
-            vatPayable: calculateTotal(taxData.revenues, 'vatAmount'),
+            vatPayable: calculateTotal(taxData.revenue, 'vatAmount'),
             submittedAt: new Date().toISOString()
         };
         const existingFilings = SecureStorage.get('filings') || [];
@@ -70,20 +70,20 @@ export const FilingPage = () => {
                                                 style: 'decimal',
                                                 minimumFractionDigits: 0,
                                                 maximumFractionDigits: 0
-                                            }).format(calculateTotal(taxData.revenues, 'amount')), ' ', "AED"] })] }), _jsxs("div", { children: [_jsx("dt", { className: "text-sm font-medium text-gray-500", children: "Total VAT" }), _jsxs("dd", { className: "mt-1 text-3xl font-semibold text-gray-900", children: [new Intl.NumberFormat('en-AE', {
+                                            }).format(calculateTotal(taxData.revenue, 'amount')), ' ', "AED"] })] }), _jsxs("div", { children: [_jsx("dt", { className: "text-sm font-medium text-gray-500", children: "Total VAT" }), _jsxs("dd", { className: "mt-1 text-3xl font-semibold text-gray-900", children: [new Intl.NumberFormat('en-AE', {
                                                 style: 'decimal',
                                                 minimumFractionDigits: 0,
                                                 maximumFractionDigits: 0
-                                            }).format(calculateTotal(taxData.revenues, 'vatAmount')), ' ', "AED"] })] })] }) }) })] }));
+                                            }).format(calculateTotal(taxData.revenue, 'vatAmount')), ' ', "AED"] })] })] }) }) })] }));
     const renderStep3 = () => (_jsxs("div", { className: "space-y-4", children: [_jsx("h2", { className: "text-xl font-semibold", children: "Expense Summary" }), _jsx("div", { className: "rounded-lg bg-white shadow", children: _jsx("div", { className: "px-4 py-5 sm:p-6", children: _jsx("dl", { children: _jsxs("div", { children: [_jsx("dt", { className: "text-sm font-medium text-gray-500", children: "Total Expenses" }), _jsxs("dd", { className: "mt-1 text-3xl font-semibold text-gray-900", children: [new Intl.NumberFormat('en-AE', {
                                             style: 'decimal',
                                             minimumFractionDigits: 0,
                                             maximumFractionDigits: 0
                                         }).format(calculateTotal(taxData.expenses, 'amount')), ' ', "AED"] })] }) }) }) })] }));
     const renderStep4 = () => {
-        const totalRevenue = calculateTotal(taxData.revenues, 'amount');
+        const totalRevenue = calculateTotal(taxData.revenue, 'amount');
         const totalExpenses = calculateTotal(taxData.expenses, 'amount');
-        const vatPayable = calculateTotal(taxData.revenues, 'vatAmount');
+        const vatPayable = calculateTotal(taxData.revenue, 'vatAmount');
         return (_jsxs("div", { className: "space-y-4", children: [_jsx("h2", { className: "text-xl font-semibold", children: "Filing Summary" }), _jsxs("div", { className: "rounded-lg bg-white shadow p-6 space-y-4", children: [_jsxs("p", { children: ["Net Income: ", totalRevenue - totalExpenses, " AED"] }), _jsxs("p", { children: ["VAT Payable: ", vatPayable, " AED"] }), _jsx("div", { className: "mt-4", children: _jsxs("label", { className: "inline-flex items-center", children: [_jsx("input", { type: "checkbox", checked: state.isDeclarationAccepted, onChange: e => setState(prev => ({ ...prev, isDeclarationAccepted: e.target.checked })), className: "rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" }), _jsx("span", { className: "ml-2 text-sm text-gray-600", children: "I declare that the information provided is true and accurate" })] }) })] })] }));
     };
     const renderSuccess = () => (_jsx("div", { className: "rounded-lg bg-green-50 p-4", children: _jsxs("div", { className: "flex", children: [_jsx("div", { className: "flex-shrink-0", children: _jsx("svg", { className: "h-5 w-5 text-green-400", viewBox: "0 0 20 20", fill: "currentColor", children: _jsx("path", { fillRule: "evenodd", d: "M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z", clipRule: "evenodd" }) }) }), _jsx("div", { className: "ml-3", children: _jsx("p", { className: "text-sm font-medium text-green-800", children: successMessage }) })] }) }));

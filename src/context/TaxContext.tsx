@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { SecureStorage } from '../utils/storage';
+import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import { CompanyProfile } from '../types/company';
 
 export interface RevenueEntry {
   id: string;
@@ -7,43 +7,34 @@ export interface RevenueEntry {
   amount: number;
   source: string;
   vatAmount: number;
+  category: string;
 }
 
 export interface ExpenseEntry {
   id: string;
   date: string;
   amount: number;
+  description: string;
+  vatAmount: number;
   category: string;
 }
 
-export interface CompanyProfile {
-  trnNumber: string;
-  companyName: string;
-  licenseType: string;
-  vatRegistered: boolean;
-  citRegistered: boolean;
-  email?: string;
-  phone?: string;
-  address?: string;
-  businessActivity?: string;
-}
-
-interface TaxState {
-  revenues: RevenueEntry[];
+export interface TaxState {
+  profile: CompanyProfile | null;
+  revenue: RevenueEntry[];
   expenses: ExpenseEntry[];
-  profile?: CompanyProfile;
   isDraftMode: boolean;
 }
 
 type TaxAction =
-  | { type: 'SET_TAX_DATA'; payload: TaxState }
+  | { type: 'SET_PROFILE'; payload: CompanyProfile }
   | { type: 'ADD_REVENUE'; payload: RevenueEntry }
   | { type: 'ADD_EXPENSE'; payload: ExpenseEntry }
-  | { type: 'UPDATE_REVENUE'; payload: { id: string; data: Partial<RevenueEntry> } }
-  | { type: 'UPDATE_EXPENSE'; payload: { id: string; data: Partial<ExpenseEntry> } }
+  | { type: 'UPDATE_REVENUE'; payload: RevenueEntry }
+  | { type: 'UPDATE_EXPENSE'; payload: ExpenseEntry }
   | { type: 'DELETE_REVENUE'; payload: string }
   | { type: 'DELETE_EXPENSE'; payload: string }
-  | { type: 'TOGGLE_DRAFT_MODE'; payload: boolean }
+  | { type: 'TOGGLE_DRAFT_MODE' }
   | { type: 'CLEAR_DRAFT' };
 
 interface TaxContextType {
@@ -54,85 +45,72 @@ interface TaxContextType {
 const TaxContext = createContext<TaxContextType | undefined>(undefined);
 
 const initialState: TaxState = {
-  revenues: [],
+  profile: null,
+  revenue: [],
   expenses: [],
-  isDraftMode: false
+  isDraftMode: false,
 };
 
-function taxReducer(state: TaxState, action: TaxAction): TaxState {
+const taxReducer = (state: TaxState, action: TaxAction): TaxState => {
   switch (action.type) {
-    case 'SET_TAX_DATA':
-      return action.payload;
+    case 'SET_PROFILE':
+      return {
+        ...state,
+        profile: action.payload,
+      };
     case 'ADD_REVENUE':
       return {
         ...state,
-        revenues: [...state.revenues, action.payload]
+        revenue: [...state.revenue, action.payload],
       };
     case 'ADD_EXPENSE':
       return {
         ...state,
-        expenses: [...state.expenses, action.payload]
+        expenses: [...state.expenses, action.payload],
       };
     case 'UPDATE_REVENUE':
       return {
         ...state,
-        revenues: state.revenues.map(revenue =>
-          revenue.id === action.payload.id
-            ? { ...revenue, ...action.payload.data }
-            : revenue
-        )
+        revenue: state.revenue.map((item) =>
+          item.id === action.payload.id ? action.payload : item
+        ),
       };
     case 'UPDATE_EXPENSE':
       return {
         ...state,
-        expenses: state.expenses.map(expense =>
-          expense.id === action.payload.id
-            ? { ...expense, ...action.payload.data }
-            : expense
-        )
+        expenses: state.expenses.map((item) =>
+          item.id === action.payload.id ? action.payload : item
+        ),
       };
     case 'DELETE_REVENUE':
       return {
         ...state,
-        revenues: state.revenues.filter(revenue => revenue.id !== action.payload)
+        revenue: state.revenue.filter((item) => item.id !== action.payload),
       };
     case 'DELETE_EXPENSE':
       return {
         ...state,
-        expenses: state.expenses.filter(expense => expense.id !== action.payload)
+        expenses: state.expenses.filter((item) => item.id !== action.payload),
       };
     case 'TOGGLE_DRAFT_MODE':
       return {
         ...state,
-        isDraftMode: action.payload
+        isDraftMode: !state.isDraftMode,
       };
     case 'CLEAR_DRAFT':
       return {
         ...state,
-        revenues: [],
+        revenue: [],
         expenses: [],
-        isDraftMode: false
+        isDraftMode: false,
       };
     default:
       return state;
   }
-}
+};
 
-export const TaxProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const TaxProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(taxReducer, initialState);
-
-  useEffect(() => {
-    // Load initial data from storage
-    const storedData = SecureStorage.get<TaxState>('taxData');
-    if (storedData) {
-      dispatch({ type: 'SET_TAX_DATA', payload: storedData });
-    }
-  }, []);
-
-  useEffect(() => {
-    // Save state changes to storage
-    SecureStorage.set('taxData', state);
-  }, [state]);
 
   return (
     <TaxContext.Provider value={{ state, dispatch }}>

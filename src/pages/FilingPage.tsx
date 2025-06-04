@@ -61,9 +61,9 @@ export const FilingPage: React.FC = () => {
     const filing = {
       period: state.period,
       trn: state.trn,
-      totalRevenue: calculateTotal(taxData.revenues, 'amount'),
+      totalRevenue: calculateTotal(taxData.revenue, 'amount'),
       totalExpenses: calculateTotal(taxData.expenses, 'amount'),
-      vatPayable: calculateTotal(taxData.revenues, 'vatAmount'),
+      vatPayable: calculateTotal(taxData.revenue, 'vatAmount'),
       submittedAt: new Date().toISOString()
     };
 
@@ -136,7 +136,7 @@ export const FilingPage: React.FC = () => {
                   style: 'decimal',
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0
-                }).format(calculateTotal(taxData.revenues, 'amount'))}{' '}
+                }).format(calculateTotal(taxData.revenue, 'amount'))}{' '}
                 AED
               </dd>
             </div>
@@ -147,7 +147,7 @@ export const FilingPage: React.FC = () => {
                   style: 'decimal',
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0
-                }).format(calculateTotal(taxData.revenues, 'vatAmount'))}{' '}
+                }).format(calculateTotal(taxData.revenue, 'vatAmount'))}{' '}
                 AED
               </dd>
             </div>
@@ -181,9 +181,9 @@ export const FilingPage: React.FC = () => {
   );
 
   const renderStep4 = () => {
-    const totalRevenue = calculateTotal(taxData.revenues, 'amount');
+    const totalRevenue = calculateTotal(taxData.revenue, 'amount');
     const totalExpenses = calculateTotal(taxData.expenses, 'amount');
-    const vatPayable = calculateTotal(taxData.revenues, 'vatAmount');
+    const vatPayable = calculateTotal(taxData.revenue, 'vatAmount');
 
     return (
       <div className="space-y-4">

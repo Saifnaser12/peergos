@@ -37,12 +37,12 @@ export interface Address {
   postalCode?: string;
 }
 
-export interface PartyInfo {
+export interface Party {
   name: string;
+  taxRegistrationNumber: string;
   address: Address;
-  trn: string;
-  customerId?: string;
   contactDetails?: ContactDetails;
+  trn?: string; // For backward compatibility
 }
 
 export interface InvoiceItem {
@@ -51,23 +51,19 @@ export interface InvoiceItem {
   quantity: number;
   unitPrice: number;
   totalAmount: number;
-  vatAmount: number;
-  taxableAmount: number;
   taxAmount: number;
+  taxableAmount: number;
   productCode: string;
   taxCategory: string;
   taxRate: number;
   exemptionReason?: string;
-}
-
-export interface Party {
-  name: string;
-  taxRegistrationNumber: string;
-  address: Address;
-  contactDetails?: ContactDetails;
+  vatAmount?: number; // For backward compatibility
+  total?: number; // For backward compatibility
+  vatRate?: number; // For backward compatibility
 }
 
 export interface Invoice {
+  id?: string;
   invoiceNumber: string;
   issueDate: string;
   dueDate: string;
@@ -77,17 +73,30 @@ export interface Invoice {
   seller: Party;
   buyer: Party;
   items: InvoiceItem[];
+  type?: InvoiceType;
+  status?: InvoiceStatus;
+  total?: number; // For backward compatibility
+  vatTotal?: number; // For backward compatibility
+  subtotal?: number; // For backward compatibility
+  uuid?: string;
+  signatureValue?: string;
+  signatureDate?: string;
+  qrCode?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  submittedAt?: string;
+  acknowledgedAt?: string;
+  rejectionReason?: string;
 }
 
 // Zod schema for validation
 export const invoiceSchema = z.object({
-  id: z.string().uuid(),
-  type: z.nativeEnum(InvoiceType),
-  status: z.nativeEnum(InvoiceStatus),
+  id: z.string().uuid().optional(),
+  type: z.nativeEnum(InvoiceType).optional(),
+  status: z.nativeEnum(InvoiceStatus).optional(),
   issueDate: z.string().datetime(),
   dueDate: z.string().datetime().optional(),
   invoiceNumber: z.string().min(1),
-  purchaseOrderRef: z.string().optional(),
   
   seller: z.object({
     name: z.string().min(1),
@@ -98,8 +107,8 @@ export const invoiceSchema = z.object({
       country: z.string().min(1),
       postalCode: z.string().optional()
     }),
-    trn: z.string().regex(/^\d{15}$/, 'TRN must be exactly 15 digits'),
-    customerId: z.string().optional(),
+    taxRegistrationNumber: z.string().regex(/^\d{15}$/, 'TRN must be exactly 15 digits'),
+    trn: z.string().regex(/^\d{15}$/, 'TRN must be exactly 15 digits').optional(),
     contactDetails: z.object({
       phone: z.string().optional(),
       email: z.string().email().optional()
@@ -115,8 +124,8 @@ export const invoiceSchema = z.object({
       country: z.string().min(1),
       postalCode: z.string().optional()
     }),
-    trn: z.string().regex(/^\d{15}$/, 'TRN must be exactly 15 digits'),
-    customerId: z.string().optional(),
+    taxRegistrationNumber: z.string().regex(/^\d{15}$/, 'TRN must be exactly 15 digits'),
+    trn: z.string().regex(/^\d{15}$/, 'TRN must be exactly 15 digits').optional(),
     contactDetails: z.object({
       phone: z.string().optional(),
       email: z.string().email().optional()
@@ -129,29 +138,31 @@ export const invoiceSchema = z.object({
     quantity: z.number().positive(),
     unitPrice: z.number().nonnegative(),
     totalAmount: z.number().nonnegative(),
-    vatAmount: z.number().nonnegative(),
-    taxableAmount: z.number().nonnegative(),
     taxAmount: z.number().nonnegative(),
+    taxableAmount: z.number().nonnegative(),
     productCode: z.string(),
     taxCategory: z.string(),
     taxRate: z.number().nonnegative(),
-    exemptionReason: z.string().optional()
+    exemptionReason: z.string().optional(),
+    vatAmount: z.number().nonnegative().optional(),
+    total: z.number().nonnegative().optional(),
+    vatRate: z.number().nonnegative().optional()
   })).min(1),
   
   currency: z.string(),
   amount: z.number().nonnegative(),
   vatAmount: z.number().nonnegative(),
+  total: z.number().nonnegative().optional(),
+  vatTotal: z.number().nonnegative().optional(),
+  subtotal: z.number().nonnegative().optional(),
   
-  paymentTerms: z.string().optional(),
-  notes: z.string().optional(),
-  
-  uuid: z.string().uuid(),
+  uuid: z.string().uuid().optional(),
   signatureValue: z.string().optional(),
   signatureDate: z.string().datetime().optional(),
   qrCode: z.string().optional(),
   
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.string().datetime().optional(),
+  updatedAt: z.string().datetime().optional(),
   submittedAt: z.string().datetime().optional(),
   acknowledgedAt: z.string().datetime().optional(),
   rejectionReason: z.string().optional()

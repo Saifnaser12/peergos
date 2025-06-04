@@ -7,6 +7,8 @@ import {
   Typography,
   Button,
   IconButton,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import type { Invoice } from '../../types/invoice';
@@ -20,7 +22,7 @@ interface InvoiceDashboardProps {
   onDelete: (invoice: Invoice) => void;
 }
 
-const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
+export const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
   invoices,
   loading,
   error,
@@ -31,15 +33,15 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-        <Typography>Loading...</Typography>
+        <CircularProgress />
       </Box>
     );
   }
 
   if (error) {
     return (
-      <Box mt={2}>
-        <Typography color="error">{error}</Typography>
+      <Box mb={3}>
+        <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
@@ -62,46 +64,47 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
 
       <Grid container spacing={3}>
         {invoices.map((invoice) => (
-          <Grid item xs={12} sm={6} md={4} key={invoice.invoiceNumber}>
+          <Grid item xs={12} md={6} lg={4} key={invoice.id}>
             <Card>
               <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                  <Typography variant="h6">Invoice #{invoice.invoiceNumber}</Typography>
                   <Box>
-                    <Typography variant="h6" gutterBottom>
-                      {invoice.invoiceNumber}
-                    </Typography>
-                    <Typography color="textSecondary" gutterBottom>
-                      {invoice.issueDate}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      {invoice.seller.name}
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="h6" color="primary">
-                      AED {invoice.amount.toLocaleString()}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      VAT: AED {invoice.vatAmount.toLocaleString()}
-                    </Typography>
+                    <IconButton onClick={() => onEdit(invoice)} size="small">
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => onDelete(invoice)} size="small">
+                      <DeleteIcon />
+                    </IconButton>
                   </Box>
                 </Box>
 
-                <Box display="flex" justifyContent="flex-end" mt={2}>
-                  <IconButton
-                    size="small"
-                    onClick={() => onEdit(invoice)}
-                    sx={{ mr: 1 }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    onClick={() => onDelete(invoice)}
-                    color="error"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                <Typography variant="body2" color="textSecondary" gutterBottom>
+                  {new Date(invoice.issueDate).toLocaleDateString()}
+                </Typography>
+
+                <Typography variant="body1" gutterBottom>
+                  {invoice.seller.name}
+                </Typography>
+
+                <Box display="flex" justifyContent="space-between" mt={2}>
+                  <Typography variant="subtitle1">Amount</Typography>
+                  <Typography variant="subtitle1">
+                    {invoice.amount.toLocaleString('en-AE', {
+                      style: 'currency',
+                      currency: 'AED'
+                    })}
+                  </Typography>
+                </Box>
+
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="subtitle1">VAT</Typography>
+                  <Typography variant="subtitle1">
+                    {invoice.vatAmount.toLocaleString('en-AE', {
+                      style: 'currency',
+                      currency: 'AED'
+                    })}
+                  </Typography>
                 </Box>
               </CardContent>
             </Card>
@@ -110,6 +113,4 @@ const InvoiceDashboard: React.FC<InvoiceDashboardProps> = ({
       </Grid>
     </Box>
   );
-};
-
-export default InvoiceDashboard; 
+}; 

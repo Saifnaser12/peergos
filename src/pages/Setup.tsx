@@ -210,8 +210,8 @@ const Setup: React.FC = () => {
   };
 
   const totalRevenue = useMemo(() => {
-    return state.revenues.reduce((sum, entry) => sum + entry.amount, 0);
-  }, [state.revenues]);
+    return state.revenue.reduce((sum, entry) => sum + entry.amount, 0);
+  }, [state.revenue]);
 
   return (
     <div className="space-y-6">

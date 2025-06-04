@@ -1,79 +1,67 @@
 import { jsx as _jsx } from "react/jsx-runtime";
-import { createContext, useContext, useReducer, useEffect } from 'react';
-import { SecureStorage } from '../utils/storage';
+import { createContext, useContext, useReducer } from 'react';
 const TaxContext = createContext(undefined);
 const initialState = {
-    revenues: [],
+    profile: null,
+    revenue: [],
     expenses: [],
-    isDraftMode: false
+    isDraftMode: false,
 };
-function taxReducer(state, action) {
+const taxReducer = (state, action) => {
     switch (action.type) {
-        case 'SET_TAX_DATA':
-            return action.payload;
+        case 'SET_PROFILE':
+            return {
+                ...state,
+                profile: action.payload,
+            };
         case 'ADD_REVENUE':
             return {
                 ...state,
-                revenues: [...state.revenues, action.payload]
+                revenue: [...state.revenue, action.payload],
             };
         case 'ADD_EXPENSE':
             return {
                 ...state,
-                expenses: [...state.expenses, action.payload]
+                expenses: [...state.expenses, action.payload],
             };
         case 'UPDATE_REVENUE':
             return {
                 ...state,
-                revenues: state.revenues.map(revenue => revenue.id === action.payload.id
-                    ? { ...revenue, ...action.payload.data }
-                    : revenue)
+                revenue: state.revenue.map((item) => item.id === action.payload.id ? action.payload : item),
             };
         case 'UPDATE_EXPENSE':
             return {
                 ...state,
-                expenses: state.expenses.map(expense => expense.id === action.payload.id
-                    ? { ...expense, ...action.payload.data }
-                    : expense)
+                expenses: state.expenses.map((item) => item.id === action.payload.id ? action.payload : item),
             };
         case 'DELETE_REVENUE':
             return {
                 ...state,
-                revenues: state.revenues.filter(revenue => revenue.id !== action.payload)
+                revenue: state.revenue.filter((item) => item.id !== action.payload),
             };
         case 'DELETE_EXPENSE':
             return {
                 ...state,
-                expenses: state.expenses.filter(expense => expense.id !== action.payload)
+                expenses: state.expenses.filter((item) => item.id !== action.payload),
             };
         case 'TOGGLE_DRAFT_MODE':
             return {
                 ...state,
-                isDraftMode: action.payload
+                isDraftMode: !state.isDraftMode,
             };
         case 'CLEAR_DRAFT':
             return {
                 ...state,
-                revenues: [],
+                revenue: [],
                 expenses: [],
-                isDraftMode: false
+                isDraftMode: false,
             };
         default:
             return state;
     }
-}
+};
 export const TaxProvider = ({ children }) => {
     const [state, dispatch] = useReducer(taxReducer, initialState);
-    useEffect(() => {
-        // Load initial data from storage
-        const storedData = SecureStorage.get('taxData');
-        if (storedData) {
-            dispatch({ type: 'SET_TAX_DATA', payload: storedData });
-        }
-    }, []);
-    useEffect(() => {
-        // Save state changes to storage
-        SecureStorage.set('taxData', state);
-    }, [state]);
     return (_jsx(TaxContext.Provider, { value: { state, dispatch }, children: children }));
 };
 export const useTax = () => {

@@ -38,7 +38,10 @@ export const DashboardPage: React.FC = () => {
     }
 
     return {
-      revenues: taxData.revenues.filter(
+      revenue: taxData.revenue.filter(
+        r => r.date >= dateRange.startDate && r.date <= dateRange.endDate
+      ),
+      revenues: taxData.revenue.filter(
         r => r.date >= dateRange.startDate && r.date <= dateRange.endDate
       ),
       expenses: taxData.expenses.filter(
@@ -48,9 +51,9 @@ export const DashboardPage: React.FC = () => {
   }, [taxData, dateRange]);
 
   const metrics = useMemo(() => {
-    const totalRevenue = filteredData.revenues.reduce((sum, r) => sum + r.amount, 0);
+    const totalRevenue = filteredData.revenue.reduce((sum, r) => sum + r.amount, 0);
     const totalExpenses = filteredData.expenses.reduce((sum, e) => sum + e.amount, 0);
-    const totalVAT = filteredData.revenues.reduce((sum, r) => sum + (r.vatAmount || 0), 0);
+    const totalVAT = filteredData.revenue.reduce((sum, r) => sum + (r.vatAmount || 0), 0);
 
     return {
       totalRevenue,
@@ -63,7 +66,7 @@ export const DashboardPage: React.FC = () => {
   const revenueTrendData = useMemo(() => {
     const monthlyData = new Map<string, number>();
     
-    filteredData.revenues.forEach(revenue => {
+    filteredData.revenue.forEach(revenue => {
       const month = format(new Date(revenue.date), 'MMM yyyy');
       monthlyData.set(month, (monthlyData.get(month) || 0) + revenue.amount);
     });
@@ -318,32 +321,6 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Export Started Toast */}
-      {exportStarted && (
-        <div className="fixed bottom-4 right-4">
-          <div className="rounded-lg bg-green-50 p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5 text-green-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-green-800">Export Started</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
-}; 
+};
