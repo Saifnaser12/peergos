@@ -14,7 +14,8 @@ export default defineConfig({
     },
     fs: {
       allow: ['..']
-    }
+    },
+    disableHostCheck: true
   },
   build: {
     outDir: 'dist',
