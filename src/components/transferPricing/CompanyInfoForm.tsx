@@ -14,9 +14,7 @@ import {
   alpha,
   useTheme
 } from '@mui/material';
-import { DatePicker } from '@mui/lab';
-import { LocalizationProvider } from '@mui/lab';
-import { AdapterDateFns } from '@mui/lab';
+// Removed MUI date picker imports - using native HTML date inputs
 import { Info as InfoIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { CompanyInfo } from '../../types/transferPricing';
@@ -54,7 +52,6 @@ export const CompanyInfoForm: React.FC<CompanyInfoFormProps> = ({ companyInfo, o
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box>
         <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
           {t('transferPricing.companyInformation')}
@@ -114,32 +111,28 @@ export const CompanyInfoForm: React.FC<CompanyInfoFormProps> = ({ companyInfo, o
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <DatePicker
+                  <TextField
+                    fullWidth
+                    type="date"
                     label={t('transferPricing.fiscalYearStart')}
-                    value={companyInfo.fiscalYearStart ? new Date(companyInfo.fiscalYearStart) : null}
-                    onChange={handleDateChange('fiscalYearStart')}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        variant: 'outlined',
-                        sx: { '& .MuiOutlinedInput-root': { borderRadius: 2 } }
-                      }
-                    }}
+                    value={companyInfo.fiscalYearStart}
+                    onChange={handleChange('fiscalYearStart')}
+                    variant="outlined"
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                   />
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <DatePicker
+                  <TextField
+                    fullWidth
+                    type="date"
                     label={t('transferPricing.fiscalYearEnd')}
-                    value={companyInfo.fiscalYearEnd ? new Date(companyInfo.fiscalYearEnd) : null}
-                    onChange={handleDateChange('fiscalYearEnd')}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        variant: 'outlined',
-                        sx: { '& .MuiOutlinedInput-root': { borderRadius: 2 } }
-                      }
-                    }}
+                    value={companyInfo.fiscalYearEnd}
+                    onChange={handleChange('fiscalYearEnd')}
+                    variant="outlined"
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                   />
                 </Grid>
               </Grid>
@@ -262,6 +255,5 @@ export const CompanyInfoForm: React.FC<CompanyInfoFormProps> = ({ companyInfo, o
           </Grid>
         </Grid>
       </Box>
-    </LocalizationProvider>
   );
 };

@@ -21,9 +21,7 @@ import {
   DialogActions,
   Grid
 } from '@mui/material';
-import { DatePicker } from '@mui/lab';
-import { AdapterDateFns } from '@mui/lab';
-import { LocalizationProvider } from '@mui/lab';
+// Using native HTML date inputs instead of MUI date pickers
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -237,14 +235,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label="Issue Date"
-                  value={new Date(invoice.issueDate)}
-                  onChange={(date) => handleInputChange('issueDate', date?.toISOString() || '')}
-                  slotProps={{ textField: { fullWidth: true } }}
-                />
-              </LocalizationProvider>
+              <TextField
+                fullWidth
+                type="date"
+                label="Issue Date"
+                value={invoice.issueDate.split('T')[0]}
+                onChange={(e) => handleInputChange('issueDate', e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
             </Grid>
           </Grid>
         </CardContent>
