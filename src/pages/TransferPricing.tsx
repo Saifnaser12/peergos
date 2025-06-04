@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -46,7 +45,7 @@ const TransferPricing: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { isDarkMode } = useAppTheme();
-  
+
   const [activeStep, setActiveStep] = useState(0);
   const [disclosure, setDisclosure] = useState<TransferPricingDisclosure>({
     id: '',
