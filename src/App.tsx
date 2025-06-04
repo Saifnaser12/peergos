@@ -1,12 +1,17 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import Layout from './components/Layout';
+import AppLayout from './components/AppLayout';
 import { createTheme } from './theme';
 import { ThemeProvider as CustomThemeProvider } from './context/ThemeContext';
 import { TaxProvider } from './context/TaxContext';
+import { UserRoleProvider } from './context/UserRoleContext';
+import { SettingsProvider } from './context/SettingsContext';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n';
 
 // Import your existing pages
 import Dashboard from './pages/Dashboard';
@@ -22,68 +27,77 @@ import Register from './pages/Register';
 
 function App() {
   const theme = createTheme('ltr');
+  const [isSetupComplete, setIsSetupComplete] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    // Check if setup is complete
+    const setupComplete = localStorage.getItem('peergos_setup_complete') === 'true';
+    setIsSetupComplete(setupComplete);
+  }, []);
+
+  // Show loading while checking setup status
+  if (isSetupComplete === null) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   return (
-    <CustomThemeProvider>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <ErrorBoundary>
-          <TaxProvider>
-            <Router>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/" element={
-                  <Layout>
-                    <Dashboard />
-                  </Layout>
-                } />
-                <Route path="/dashboard" element={
-                  <Layout>
-                    <Dashboard />
-                  </Layout>
-                } />
-                <Route path="/vat" element={
-                  <Layout>
-                    <VAT />
-                  </Layout>
-                } />
-                <Route path="/cit" element={
-                  <Layout>
-                    <CIT />
-                  </Layout>
-                } />
-                <Route path="/financials" element={
-                  <Layout>
-                    <Financials />
-                  </Layout>
-                } />
-                <Route path="/transfer-pricing" element={
-                  <Layout>
-                    <TransferPricing />
-                  </Layout>
-                } />
-                <Route path="/filing" element={
-                  <Layout>
-                    <Filing />
-                  </Layout>
-                } />
-                <Route path="/setup" element={
-                  <Layout>
-                    <Setup />
-                  </Layout>
-                } />
-                <Route path="/assistant" element={
-                  <Layout>
-                    <Assistant />
-                  </Layout>
-                } />
-              </Routes>
-            </Router>
-          </TaxProvider>
-        </ErrorBoundary>
-      </ThemeProvider>
-    </CustomThemeProvider>
+    <I18nextProvider i18n={i18n}>
+      <SettingsProvider>
+        <CustomThemeProvider>
+          <UserRoleProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <ErrorBoundary>
+                <TaxProvider>
+                  <Router>
+                    <Routes>
+                      {/* Public routes */}
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/register" element={<Register />} />
+                      
+                      {/* Setup route - accessible without layout */}
+                      <Route path="/setup" element={<Setup />} />
+                      
+                      {/* Protected routes with layout */}
+                      <Route path="/" element={
+                        isSetupComplete ? (
+                          <AppLayout />
+                        ) : (
+                          <Navigate to="/setup" replace />
+                        )
+                      }>
+                        {/* Nested routes that will render in the Outlet */}
+                        <Route index element={<Navigate to="/dashboard" replace />} />
+                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="vat" element={<VAT />} />
+                        <Route path="cit" element={<CIT />} />
+                        <Route path="financials" element={<Financials />} />
+                        <Route path="transfer-pricing" element={<TransferPricing />} />
+                        <Route path="filing" element={<Filing />} />
+                        <Route path="assistant" element={<Assistant />} />
+                      </Route>
+                      
+                      {/* Catch all route */}
+                      <Route path="*" element={
+                        isSetupComplete ? (
+                          <Navigate to="/dashboard" replace />
+                        ) : (
+                          <Navigate to="/setup" replace />
+                        )
+                      } />
+                    </Routes>
+                  </Router>
+                </TaxProvider>
+              </ErrorBoundary>
+            </ThemeProvider>
+          </UserRoleProvider>
+        </CustomThemeProvider>
+      </SettingsProvider>
+    </I18nextProvider>
   );
 }
 

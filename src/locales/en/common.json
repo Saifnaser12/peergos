@@ -9,10 +9,64 @@
     "dashboard": "Dashboard",
     "vat": "VAT",
     "cit": "CIT",
-    "financials": "Financials",
+    "financials": "Financials", 
     "transferPricing": "Transfer Pricing",
     "setup": "Setup",
     "assistant": "Assistant"
+  },
+  "common": {
+    "appTitle": "UAE Tax Compliance",
+    "user": "Admin User",
+    "previous": "Previous",
+    "next": "Next",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "setup": {
+    "title": "Setup Your Tax System",
+    "subtitle": "Configure your organization details to get started",
+    "complete": "Complete Setup",
+    "step1": {
+      "title": "Organization Information",
+      "orgName": "Organization Name",
+      "trn": "Tax Registration Number (TRN)"
+    },
+    "step2": {
+      "title": "Fiscal Year Configuration",
+      "startDate": "Fiscal Year Start Date",
+      "endDate": "Fiscal Year End Date"
+    },
+    "step3": {
+      "title": "Business Details",
+      "businessType": "Business Type",
+      "address": "Business Address"
+    }
+  },
+  "dashboard": {
+    "title": "Tax Compliance Dashboard",
+    "subtitle": "Overview of your tax obligations and compliance status",
+    "askAssistant": "Ask Tax Assistant",
+    "quickActions": "Quick Actions",
+    "cit": {
+      "title": "Corporate Income Tax"
+    },
+    "vat": {
+      "title": "VAT Returns"
+    },
+    "financials": {
+      "title": "Net Income"
+    },
+    "transferPricing": {
+      "title": "Transfer Pricing"
+    },
+    "actions": {
+      "fileVAT": "File VAT Return",
+      "calculateCIT": "Calculate CIT",
+      "viewFinancials": "View Financials"
+    }
   },
   "language": {
     "select": "Select Language",
