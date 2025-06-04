@@ -61,3 +61,56 @@ export const auditorPermissions: UserPermissions = {
   financials: { view: true, edit: false },
   admin: { view: false, edit: false }
 }; 
+export type Permission = 'view' | 'create' | 'edit' | 'delete' | 'submit';
+export type Resource = 'dashboard' | 'filing' | 'vat' | 'cit' | 'financials' | 'transfer-pricing' | 'assistant' | 'admin' | 'setup';
+
+type PermissionSet = {
+  [key in Resource]?: {
+    [key in Permission]?: boolean;
+  };
+};
+
+export const userPermissions: PermissionSet = {
+  dashboard: { view: true },
+  filing: { view: true, create: true, edit: true },
+  vat: { view: true, create: true, edit: true, submit: true },
+  cit: { view: true, create: true, edit: true, submit: true },
+  financials: { view: true },
+  'transfer-pricing': { view: true, create: true, edit: true },
+  assistant: { view: true },
+  setup: { view: true, edit: true },
+};
+
+export const adminPermissions: PermissionSet = {
+  dashboard: { view: true },
+  filing: { view: true, create: true, edit: true, delete: true },
+  vat: { view: true, create: true, edit: true, delete: true, submit: true },
+  cit: { view: true, create: true, edit: true, delete: true, submit: true },
+  financials: { view: true, create: true, edit: true, delete: true },
+  'transfer-pricing': { view: true, create: true, edit: true, delete: true },
+  assistant: { view: true },
+  admin: { view: true, create: true, edit: true, delete: true },
+  setup: { view: true, edit: true },
+};
+
+export const auditorPermissions: PermissionSet = {
+  dashboard: { view: true },
+  filing: { view: true },
+  vat: { view: true },
+  cit: { view: true },
+  financials: { view: true },
+  'transfer-pricing': { view: true },
+  assistant: { view: true },
+};
+
+export const superAdminPermissions: PermissionSet = {
+  dashboard: { view: true, create: true, edit: true, delete: true },
+  filing: { view: true, create: true, edit: true, delete: true },
+  vat: { view: true, create: true, edit: true, delete: true, submit: true },
+  cit: { view: true, create: true, edit: true, delete: true, submit: true },
+  financials: { view: true, create: true, edit: true, delete: true },
+  'transfer-pricing': { view: true, create: true, edit: true, delete: true },
+  assistant: { view: true, create: true, edit: true, delete: true },
+  admin: { view: true, create: true, edit: true, delete: true },
+  setup: { view: true, edit: true },
+};

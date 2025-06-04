@@ -395,3 +395,22 @@ const VAT: React.FC = () => {
 };
 
 export default VAT;
+import React from 'react';
+import { Typography, Box, Paper } from '@mui/material';
+
+const VAT: React.FC = () => {
+  return (
+    <Box>
+      <Typography variant="h4" gutterBottom>
+        VAT Management
+      </Typography>
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="body1">
+          VAT filing and management features will be implemented here.
+        </Typography>
+      </Paper>
+    </Box>
+  );
+};
+
+export default VAT;

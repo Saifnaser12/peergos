@@ -374,3 +374,57 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 };
 
 export default Layout;
+import React from 'react';
+import { Box, AppBar, Toolbar, Typography, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Peergos Tax System
+          </Typography>
+          <Button color="inherit" onClick={() => navigate('/')}>
+            Dashboard
+          </Button>
+          <Button color="inherit" onClick={() => navigate('/vat')}>
+            VAT
+          </Button>
+          <Button color="inherit" onClick={() => navigate('/cit')}>
+            CIT
+          </Button>
+          <Button color="inherit" onClick={() => navigate('/financials')}>
+            Financials
+          </Button>
+          <Button color="inherit" onClick={() => navigate('/transfer-pricing')}>
+            Transfer Pricing
+          </Button>
+          <Button color="inherit" onClick={() => navigate('/assistant')}>
+            Assistant
+          </Button>
+          <Button color="inherit" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Box sx={{ p: 3 }}>
+        {children}
+      </Box>
+    </Box>
+  );
+};
+
+export default Layout;

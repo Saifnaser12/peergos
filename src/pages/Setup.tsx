@@ -736,3 +736,22 @@ const Setup: React.FC = () => {
 };
 
 export default Setup;
+import React from 'react';
+import { Typography, Box, Paper } from '@mui/material';
+
+const Setup: React.FC = () => {
+  return (
+    <Box>
+      <Typography variant="h4" gutterBottom>
+        System Setup
+      </Typography>
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="body1">
+          System configuration and setup features will be implemented here.
+        </Typography>
+      </Paper>
+    </Box>
+  );
+};
+
+export default Setup;

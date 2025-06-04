@@ -416,3 +416,22 @@ const Assistant: React.FC = () => {
 };
 
 export default Assistant;
+import React from 'react';
+import { Typography, Box, Paper } from '@mui/material';
+
+const Assistant: React.FC = () => {
+  return (
+    <Box>
+      <Typography variant="h4" gutterBottom>
+        Tax Assistant
+      </Typography>
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="body1">
+          AI-powered tax assistance features will be implemented here.
+        </Typography>
+      </Paper>
+    </Box>
+  );
+};
+
+export default Assistant;
