@@ -6,9 +6,7 @@ export default defineConfig({
   define: {
     global: 'globalThis',
     'process.env': 'import.meta.env',
-    'process': {
-      env: 'import.meta.env'
-    }
+    'process': 'globalThis.process'
   },
   server: {
     host: '0.0.0.0',
