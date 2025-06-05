@@ -625,5 +625,23 @@
     "fileNow": "File Now",
     "completeSetup": "Complete Setup",
     "uploadDocument": "Upload Document"
+  },
+  "submissionHistory": {
+    "filingPeriod": "Filing Period",
+    "amountPayable": "Amount Payable",
+    "status": "Status",
+    "taxAgentCert": "Tax Agent Certificate",
+    "bankSlip": "Bank Slip",
+    "actions": "Actions",
+    "missingDocs": "{{count}} missing",
+    "uploadCertificate": "Upload Tax Agent Certificate",
+    "uploadBankSlip": "Upload Bank Payment Slip",
+    "selectFile": "Select PDF File",
+    "pdfOnly": "PDF files only",
+    "maxSize": "Maximum file size: 5MB",
+    "invalidFileType": "Please upload a PDF file only",
+    "fileTooLarge": "File size must be less than 5MB",
+    "documentUploaded": "Document uploaded successfully",
+    "documentDeleted": "Document deleted successfully"
   }
 }

@@ -334,5 +334,23 @@
     "fileNow": "قدم الآن",
     "completeSetup": "أكمل الإعداد",
     "uploadDocument": "ارفع المستند"
+  },
+  "submissionHistory": {
+    "filingPeriod": "فترة التقديم",
+    "amountPayable": "المبلغ المستحق",
+    "status": "الحالة",
+    "taxAgentCert": "شهادة وكيل الضرائب",
+    "bankSlip": "إيصال البنك",
+    "actions": "الإجراءات",
+    "missingDocs": "{{count}} مفقود",
+    "uploadCertificate": "ارفع شهادة وكيل الضرائب",
+    "uploadBankSlip": "ارفع إيصال الدفع المصرفي",
+    "selectFile": "اختر ملف PDF",
+    "pdfOnly": "ملفات PDF فقط",
+    "maxSize": "الحد الأقصى لحجم الملف: 5 ميجابايت",
+    "invalidFileType": "يرجى رفع ملف PDF فقط",
+    "fileTooLarge": "يجب أن يكون حجم الملف أقل من 5 ميجابايت",
+    "documentUploaded": "تم رفع المستند بنجاح",
+    "documentDeleted": "تم حذف المستند بنجاح"
   }
 }

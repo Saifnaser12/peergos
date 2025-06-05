@@ -23,7 +23,10 @@ import {
   Alert,
   Paper,
   Collapse,
-  Link
+  Link,
+  Stack,
+  Divider,
+  LinearProgress
 } from '@mui/material';
 import {
   Visibility as VisibilityIcon,
@@ -31,7 +34,12 @@ import {
   Launch as LaunchIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
-  FileDownload as FileDownloadIcon
+  FileDownload as FileDownloadIcon,
+  CheckCircle as CheckCircleIcon,
+  Cancel as CancelIcon,
+  Warning as WarningIcon,
+  Upload as UploadIcon,
+  Delete as DeleteIcon
 } from '@mui/icons-material';
 import { ftaService, FTASubmissionResponse, FTASubmissionData } from '../services/ftaService';
 
@@ -42,7 +50,19 @@ interface SubmissionHistoryProps {
   showTitle?: boolean;
 }
 
-type SubmissionWithData = FTASubmissionResponse & { data: FTASubmissionData };
+type SubmissionWithData = FTASubmissionResponse & { 
+  data: FTASubmissionData;
+  taxAgentCertificate?: {
+    uploaded: boolean;
+    fileName?: string;
+    uploadDate?: string;
+  };
+  bankSlip?: {
+    uploaded: boolean;
+    fileName?: string;
+    uploadDate?: string;
+  };
+};
 
 const SubmissionHistory: React.FC<SubmissionHistoryProps> = ({
   trn,
@@ -55,6 +75,8 @@ const SubmissionHistory: React.FC<SubmissionHistoryProps> = ({
   const [selectedSubmission, setSelectedSubmission] = useState<SubmissionWithData | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [uploadingDoc, setUploadingDoc] = useState<{ submissionId: string; type: 'certificate' | 'bankSlip' } | null>(null);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
 
   useEffect(() => {
     const loadSubmissions = () => {
@@ -68,12 +90,27 @@ const SubmissionHistory: React.FC<SubmissionHistoryProps> = ({
       // Sort by timestamp (newest first)
       allSubmissions.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       
+      // Enhance submissions with document tracking
+      const enhancedSubmissions = allSubmissions.map(sub => ({
+        ...sub,
+        taxAgentCertificate: {
+          uploaded: Math.random() > 0.3, // Mock: 70% have certificates
+          fileName: Math.random() > 0.3 ? `tax_agent_cert_${sub.referenceNumber}.pdf` : undefined,
+          uploadDate: Math.random() > 0.3 ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString() : undefined
+        },
+        bankSlip: {
+          uploaded: Math.random() > 0.4, // Mock: 60% have bank slips
+          fileName: Math.random() > 0.4 ? `bank_slip_${sub.referenceNumber}.pdf` : undefined,
+          uploadDate: Math.random() > 0.4 ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString() : undefined
+        }
+      }));
+      
       // Limit items if specified
       if (maxItems) {
-        allSubmissions = allSubmissions.slice(0, maxItems);
+        setSubmissions(enhancedSubmissions.slice(0, maxItems));
+      } else {
+        setSubmissions(enhancedSubmissions);
       }
-      
-      setSubmissions(allSubmissions);
     };
 
     loadSubmissions();
@@ -145,6 +182,70 @@ Keep this for your records.
     }).format(amount);
   };
 
+  const handleDocumentUpload = (submissionId: string, type: 'certificate' | 'bankSlip') => {
+    setUploadingDoc({ submissionId, type });
+    setShowUploadDialog(true);
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !uploadingDoc) return;
+
+    // Validate file type
+    if (file.type !== 'application/pdf') {
+      alert(t('submissionHistory.invalidFileType'));
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert(t('submissionHistory.fileTooLarge'));
+      return;
+    }
+
+    // Simulate upload
+    setTimeout(() => {
+      setSubmissions(prev => prev.map(sub => {
+        if (sub.submissionId === uploadingDoc.submissionId) {
+          const docKey = uploadingDoc.type === 'certificate' ? 'taxAgentCertificate' : 'bankSlip';
+          return {
+            ...sub,
+            [docKey]: {
+              uploaded: true,
+              fileName: file.name,
+              uploadDate: new Date().toISOString()
+            }
+          };
+        }
+        return sub;
+      }));
+      setShowUploadDialog(false);
+      setUploadingDoc(null);
+    }, 1000);
+  };
+
+  const handleDeleteDocument = (submissionId: string, type: 'certificate' | 'bankSlip') => {
+    setSubmissions(prev => prev.map(sub => {
+      if (sub.submissionId === submissionId) {
+        const docKey = type === 'certificate' ? 'taxAgentCertificate' : 'bankSlip';
+        return {
+          ...sub,
+          [docKey]: {
+            uploaded: false
+          }
+        };
+      }
+      return sub;
+    }));
+  };
+
+  const getMissingDocuments = (submission: SubmissionWithData) => {
+    const missing = [];
+    if (!submission.taxAgentCertificate?.uploaded) missing.push('Tax Agent Certificate');
+    if (!submission.bankSlip?.uploaded) missing.push('Bank Slip');
+    return missing;
+  };
+
   if (submissions.length === 0) {
     return (
       <Card>
@@ -175,40 +276,109 @@ Keep this for your records.
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>{t('fta.submissions.reference')}</TableCell>
-                <TableCell>{t('fta.submissions.type')}</TableCell>
-                <TableCell>{t('fta.submissions.date')}</TableCell>
-                <TableCell>{t('fta.submissions.status')}</TableCell>
-                <TableCell align="center">{t('fta.submissions.actions')}</TableCell>
+                <TableCell>{t('submissionHistory.filingPeriod')}</TableCell>
+                <TableCell>{t('submissionHistory.amountPayable')}</TableCell>
+                <TableCell>{t('submissionHistory.status')}</TableCell>
+                <TableCell align="center">{t('submissionHistory.taxAgentCert')}</TableCell>
+                <TableCell align="center">{t('submissionHistory.bankSlip')}</TableCell>
+                <TableCell align="center">{t('submissionHistory.actions')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {submissions.map((submission) => (
-                <React.Fragment key={submission.submissionId}>
-                  <TableRow hover>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                        {submission.referenceNumber}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={submission.data.submissionType}
-                        size="small"
-                        variant="outlined"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {new Date(submission.timestamp).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={submission.status.toUpperCase()}
-                        color={getStatusColor(submission.status)}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell align="center">
+              {submissions.map((submission) => {
+                const missingDocs = getMissingDocuments(submission);
+                const amount = submission.data.submissionType === 'VAT' 
+                  ? submission.data.data.vatDue || 0
+                  : submission.data.data.citDue || 0;
+                
+                return (
+                  <React.Fragment key={submission.submissionId}>
+                    <TableRow hover sx={{ 
+                      backgroundColor: missingDocs.length > 0 ? 'rgba(255, 152, 0, 0.04)' : 'inherit',
+                      borderLeft: missingDocs.length > 0 ? '4px solid #ff9800' : 'none'
+                    }}>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {submission.data.taxPeriod}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+                          {submission.referenceNumber}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {formatCurrency(amount)}
+                        </Typography>
+                        <Chip
+                          label={submission.data.submissionType}
+                          size="small"
+                          variant="outlined"
+                          sx={{ mt: 0.5 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={submission.status.toUpperCase()}
+                          color={getStatusColor(submission.status)}
+                          size="small"
+                        />
+                        {missingDocs.length > 0 && (
+                          <Box sx={{ mt: 0.5 }}>
+                            <Chip
+                              icon={<WarningIcon />}
+                              label={t('submissionHistory.missingDocs', { count: missingDocs.length })}
+                              color="warning"
+                              size="small"
+                              variant="outlined"
+                            />
+                          </Box>
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
+                        {submission.taxAgentCertificate?.uploaded ? (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <CheckCircleIcon color="success" fontSize="small" />
+                            <Tooltip title={submission.taxAgentCertificate.fileName}>
+                              <IconButton size="small" onClick={() => handleDeleteDocument(submission.submissionId, 'certificate')}>
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        ) : (
+                          <Tooltip title={t('submissionHistory.uploadCertificate')}>
+                            <IconButton 
+                              size="small" 
+                              color="warning"
+                              onClick={() => handleDocumentUpload(submission.submissionId, 'certificate')}
+                            >
+                              <UploadIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
+                        {submission.bankSlip?.uploaded ? (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <CheckCircleIcon color="success" fontSize="small" />
+                            <Tooltip title={submission.bankSlip.fileName}>
+                              <IconButton size="small" onClick={() => handleDeleteDocument(submission.submissionId, 'bankSlip')}>
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        ) : (
+                          <Tooltip title={t('submissionHistory.uploadBankSlip')}>
+                            <IconButton 
+                              size="small" 
+                              color="warning"
+                              onClick={() => handleDocumentUpload(submission.submissionId, 'bankSlip')}
+                            >
+                              <UploadIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
                       <Box sx={{ display: 'flex', gap: 0.5 }}>
                         <Tooltip title={t('fta.submissions.viewDetails')}>
                           <IconButton
@@ -373,6 +543,49 @@ Keep this for your records.
               {t('fta.submissions.downloadReceipt')}
             </Button>
           )}
+        </DialogActions>
+      </Dialog>
+
+      {/* Document Upload Dialog */}
+      <Dialog open={showUploadDialog} onClose={() => setShowUploadDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {uploadingDoc?.type === 'certificate' 
+            ? t('submissionHistory.uploadCertificate')
+            : t('submissionHistory.uploadBankSlip')
+          }
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ textAlign: 'center', py: 3 }}>
+            <input
+              accept="application/pdf"
+              style={{ display: 'none' }}
+              id="document-upload"
+              type="file"
+              onChange={handleFileUpload}
+            />
+            <label htmlFor="document-upload">
+              <Button
+                variant="outlined"
+                component="span"
+                startIcon={<UploadIcon />}
+                size="large"
+                sx={{ mb: 2 }}
+              >
+                {t('submissionHistory.selectFile')}
+              </Button>
+            </label>
+            <Typography variant="body2" color="text.secondary">
+              {t('submissionHistory.pdfOnly')}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {t('submissionHistory.maxSize')}
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowUploadDialog(false)}>
+            {t('common.cancel')}
+          </Button>
         </DialogActions>
       </Dialog>
     </Card>

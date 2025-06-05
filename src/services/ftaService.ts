@@ -14,6 +14,16 @@ export interface FTASubmissionResponse {
   timestamp: string;
   referenceNumber: string;
   trackingUrl?: string;
+  taxAgentCertificate?: {
+    uploaded: boolean;
+    fileName?: string;
+    uploadDate?: string;
+  };
+  bankSlip?: {
+    uploaded: boolean;
+    fileName?: string;
+    uploadDate?: string;
+  };
 }
 
 export interface TRNLookupResult {
