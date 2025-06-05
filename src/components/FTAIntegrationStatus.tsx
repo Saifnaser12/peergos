@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { ftaService } from '../services/ftaService';
 
 interface FTAIntegrationStatusProps {
@@ -13,7 +12,6 @@ const FTAIntegrationStatus: React.FC<FTAIntegrationStatusProps> = ({
   showDetails = false,
   variant = 'badge'
 }) => {
-  const { t } = useTranslation();
   const [status, setStatus] = useState<'connected' | 'disconnected' | 'error'>('disconnected');
   const [lastSync, setLastSync] = useState<string | null>(null);
 
@@ -41,9 +39,9 @@ const FTAIntegrationStatus: React.FC<FTAIntegrationStatusProps> = ({
 
   const getStatusText = () => {
     switch (status) {
-      case 'connected': return t('fta.status.connected');
-      case 'error': return t('fta.status.error');
-      default: return t('fta.status.disconnected');
+      case 'connected': return 'Connected';
+      case 'error': return 'Error';
+      default: return 'Disconnected';
     }
   };
 
@@ -61,7 +59,7 @@ const FTAIntegrationStatus: React.FC<FTAIntegrationStatusProps> = ({
       <div className="bg-white p-4 rounded-lg shadow border">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium text-gray-900">
-            {t('fta.integration.title')}
+            FTA Integration
           </h3>
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor()}`}>
             <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${status === 'connected' ? 'bg-green-600' : status === 'error' ? 'bg-red-600' : 'bg-yellow-600'}`} />
@@ -70,7 +68,7 @@ const FTAIntegrationStatus: React.FC<FTAIntegrationStatusProps> = ({
         </div>
         {showDetails && lastSync && (
           <p className="text-sm text-gray-500 mt-2">
-            {t('fta.lastSync')}: {new Date(lastSync).toLocaleString()}
+            Last sync: {new Date(lastSync).toLocaleString()}
           </p>
         )}
       </div>

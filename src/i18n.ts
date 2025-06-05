@@ -1,19 +1,32 @@
-
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Simple fallback resources
+// Simple inline translations to avoid import issues
 const resources = {
   en: {
     translation: {
-      welcome: "Welcome",
-      loading: "Loading..."
+      'fta.status.connected': 'Connected',
+      'fta.status.disconnected': 'Disconnected', 
+      'fta.status.error': 'Error',
+      'fta.integration.title': 'FTA Integration',
+      'fta.lastSync': 'Last sync',
+      'common.loading': 'Loading...',
+      'common.error': 'Error',
+      'common.save': 'Save',
+      'common.cancel': 'Cancel'
     }
   },
   ar: {
     translation: {
-      welcome: "مرحبا",
-      loading: "جاري التحميل..."
+      'fta.status.connected': 'متصل',
+      'fta.status.disconnected': 'غير متصل',
+      'fta.status.error': 'خطأ', 
+      'fta.integration.title': 'تكامل الهيئة الاتحادية للضرائب',
+      'fta.lastSync': 'آخر مزامنة',
+      'common.loading': 'جاري التحميل...',
+      'common.error': 'خطأ',
+      'common.save': 'حفظ',
+      'common.cancel': 'إلغاء'
     }
   }
 };
@@ -24,8 +37,14 @@ i18n
     resources,
     lng: 'en',
     fallbackLng: 'en',
+    debug: false,
+
     interpolation: {
       escapeValue: false,
+    },
+
+    react: {
+      useSuspense: false,
     },
   });
 
