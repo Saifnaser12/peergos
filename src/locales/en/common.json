@@ -316,7 +316,24 @@
       "revenueTrend": "Revenue Trend",
       "profitTrend": "Profit Trend",
       "balanceSheet": "Balance Sheet"
-    }
+    },
+    "title": "Financial Reports",
+    "subtitle": "FTA-compliant financial statements and reports",
+    "incomeStatement": "Income Statement",
+    "balanceSheet": "Balance Sheet",
+    "cashFlowStatement": "Cash Flow Statement",
+    "notesToFinancials": "Notes to Financial Statements",
+    "exportControls": "Export Financial Statements",
+    "exportComprehensivePDF": "Complete PDF",
+    "exportExcel": "Export Excel",
+    "bookkeeping": "Bookkeeping & Document Management",
+    "recentInvoices": "Recent Scanned Invoices",
+    "invoicesProcessed": "Invoices processed through OCR scanning",
+    "dataEntries": "Data Entries",
+    "addNote": "Add Note",
+    "editNote": "Edit Note",
+    "notesDescription": "Add explanatory notes and disclosures to accompany your financial statements as required by FTA guidelines.",
+    "exportNote": "Exports include Income Statement, Balance Sheet, Cash Flow Statement, and detailed notes. Formatted for FTA compliance with RTL support for Arabic."
   },
   "transferPricing": {
     "title": "Transfer Pricing",

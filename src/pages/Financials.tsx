@@ -242,6 +242,7 @@ const Financials: React.FC = () => {
   };
 
   const handleExportPDF = (type: 'income' | 'balance' | 'cashflow' | 'comprehensive') => {
+    const isRTL = i18n.language === 'ar';
     const exportData = {
       data: financialData,
       summary,
@@ -254,25 +255,44 @@ const Financials: React.FC = () => {
       }
     };
 
+    // Store export state in localStorage
+    const exportState = {
+      timestamp: new Date().toISOString(),
+      type,
+      language: i18n.language,
+      recordCount: financialData.length,
+      notesCount: notes.length
+    };
+    localStorage.setItem('lastFinancialExport', JSON.stringify(exportState));
+
     let doc;
     let filename;
+    const dateStr = new Date().toISOString().split('T')[0];
 
     switch (type) {
       case 'income':
-        doc = exportIncomeStatementToPDF(exportData, t);
-        filename = `Income_Statement_${new Date().toISOString().split('T')[0]}.pdf`;
+        doc = exportIncomeStatementToPDF(exportData, t, isRTL);
+        filename = isRTL 
+          ? `بيان_الدخل_${dateStr}.pdf`
+          : `Income_Statement_${dateStr}.pdf`;
         break;
       case 'balance':
-        doc = exportBalanceSheetToPDF(exportData, t);
-        filename = `Balance_Sheet_${new Date().toISOString().split('T')[0]}.pdf`;
+        doc = exportBalanceSheetToPDF(exportData, t, isRTL);
+        filename = isRTL 
+          ? `الميزانية_العمومية_${dateStr}.pdf`
+          : `Balance_Sheet_${dateStr}.pdf`;
         break;
       case 'cashflow':
-        doc = exportCashFlowToPDF(exportData, t);
-        filename = `Cash_Flow_Statement_${new Date().toISOString().split('T')[0]}.pdf`;
+        doc = exportCashFlowToPDF(exportData, t, isRTL);
+        filename = isRTL 
+          ? `بيان_التدفق_النقدي_${dateStr}.pdf`
+          : `Cash_Flow_Statement_${dateStr}.pdf`;
         break;
       case 'comprehensive':
-        doc = exportComprehensivePDF(exportData, t);
-        filename = `Financial_Statements_${new Date().toISOString().split('T')[0]}.pdf`;
+        doc = exportComprehensivePDF(exportData, t, isRTL);
+        filename = isRTL 
+          ? `البيانات_المالية_الشاملة_${dateStr}.pdf`
+          : `Financial_Statements_${dateStr}.pdf`;
         break;
     }
 
@@ -280,6 +300,7 @@ const Financials: React.FC = () => {
   };
 
   const handleExportExcel = () => {
+    const isRTL = i18n.language === 'ar';
     const exportData = {
       data: financialData,
       summary,
@@ -292,7 +313,17 @@ const Financials: React.FC = () => {
       }
     };
 
-    exportToExcel(exportData, t);
+    // Store export state
+    const exportState = {
+      timestamp: new Date().toISOString(),
+      type: 'excel',
+      language: i18n.language,
+      recordCount: financialData.length,
+      notesCount: notes.length
+    };
+    localStorage.setItem('lastFinancialExport', JSON.stringify(exportState));
+
+    exportToExcel(exportData, t, isRTL);
   };
 
   const formatCurrency = (amount: number) => {

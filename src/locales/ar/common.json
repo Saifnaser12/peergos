@@ -154,51 +154,23 @@
     }
   },
   "financials": {
-    "title": "البيانات المالية",
-    "subtitle": "عرض وإدارة البيانات المالية",
-    "period": "الفترة",
-    "compare": "مقارنة مع",
-    "export": {
-      "button": "تصدير البيانات المالية",
-      "success": "تم تصدير البيانات المالية بنجاح",
-      "error": "خطأ في تصدير البيانات المالية"
-    },
-    "metrics": {
-      "revenue": "الإيرادات",
-      "revenueTooltip": "إجمالي الإيرادات للفترة المحددة",
-      "expenses": "المصروفات",
-      "expensesTooltip": "إجمالي المصروفات للفترة المحددة",
-      "profit": "الأرباح",
-      "profitTooltip": "صافي الأرباح للفترة المحددة",
-      "assets": "إجمالي الأصول",
-      "assetsTooltip": "إجمالي الأصول في نهاية الفترة",
-      "liabilities": "إجمالي الخصوم",
-      "liabilitiesTooltip": "إجمالي الخصوم في نهاية الفترة",
-      "equity": "إجمالي حقوق الملكية",
-      "equityTooltip": "إجمالي حقوق المساهمين في نهاية الفترة",
-      "operatingMargin": "هامش التشغيل",
-      "operatingMarginTooltip": "أرباح التشغيل كنسبة مئوية من الإيرادات",
-      "returnOnEquity": "العائد على حقوق الملكية",
-      "returnOnEquityTooltip": "صافي الدخل كنسبة مئوية من حقوق المساهمين"
-    },
-    "ratios": {
-      "currentRatio": "نسبة السيولة",
-      "currentRatioDesc": "تقيس القدرة على سداد الالتزامات قصيرة الأجل",
-      "debtToEquity": "نسبة الدين إلى حقوق الملكية",
-      "debtToEquityDesc": "تقيس الرافعة المالية",
-      "operatingMargin": "هامش التشغيل",
-      "operatingMarginDesc": "تقيس كفاءة العمليات"
-    },
-    "charts": {
-      "revenue": "الإيرادات",
-      "profit": "الأرباح",
-      "assets": "الأصول",
-      "liabilities": "الخصوم",
-      "equity": "حقوق الملكية",
-      "revenueTrend": "اتجاه الإيرادات",
-      "profitTrend": "اتجاه الأرباح",
-      "balanceSheet": "الميزانية العمومية"
-    }
+    "title": "التقارير المالية",
+    "subtitle": "البيانات المالية المتوافقة مع هيئة الضرائب",
+    "incomeStatement": "بيان الدخل",
+    "balanceSheet": "الميزانية العمومية",
+    "cashFlowStatement": "بيان التدفق النقدي",
+    "notesToFinancials": "ملاحظات على البيانات المالية",
+    "exportControls": "تصدير البيانات المالية",
+    "exportComprehensivePDF": "ملف PDF شامل",
+    "exportExcel": "تصدير إكسل",
+    "bookkeeping": "مسك الدفاتر وإدارة المستندات",
+    "recentInvoices": "الفواتير الممسوحة ضوئياً حديثاً",
+    "invoicesProcessed": "الفواتير المعالجة عبر المسح الضوئي",
+    "dataEntries": "إدخالات البيانات",
+    "addNote": "إضافة ملاحظة",
+    "editNote": "تعديل الملاحظة",
+    "notesDescription": "أضف ملاحظات توضيحية وإفصاحات لمرافقة بياناتك المالية كما هو مطلوب من قبل هيئة الضرائب.",
+    "exportNote": "تشمل الصادرات بيان الدخل والميزانية العمومية وبيان التدفق النقدي والملاحظات التفصيلية. منسقة للامتثال لهيئة الضرائب مع دعم اللغة العربية."
   },
   "transferPricing": {
     "title": "تسعير التحويل",
