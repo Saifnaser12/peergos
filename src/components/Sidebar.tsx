@@ -1,18 +1,17 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '../i18n';
 import { useUserRole } from '../context/UserRoleContext';
 import {
   HomeIcon,
   DocumentTextIcon,
-  ReceiptPercentIcon,
   ChartBarIcon,
   ChatBubbleLeftRightIcon,
   Cog6ToothIcon,
   XMarkIcon,
-  CalendarDaysIcon,
-  CurrencyDollarIcon
+  CalendarDaysIcon
 } from '@heroicons/react/24/outline';
+import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
 
 interface SidebarProps {
   isOpen: boolean;

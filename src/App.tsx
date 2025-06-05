@@ -12,7 +12,7 @@ import { SettingsProvider } from './context/SettingsContext';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import { NotificationProvider } from './context/NotificationContext';
-import { TaxAgentProvider } from './context/TaxAgentContext';
+import { TaxAgentProvider } from './context/TaxAgentProvider';
 import { POSIntegrationProvider } from './context/POSIntegrationContext';
 
 // Import your existing pages
