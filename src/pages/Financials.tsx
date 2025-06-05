@@ -24,7 +24,9 @@ import {
   Chip,
   Divider,
   useTheme,
-  alpha
+  alpha,
+  Tabs,
+  Tab
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -37,11 +39,26 @@ import {
   LightMode as LightModeIcon,
   Language as LanguageIcon,
   Delete as DeleteIcon,
-  Edit as EditIcon
+  Edit as EditIcon,
+  PictureAsPdf as PdfIcon,
+  TableChart as ExcelIcon,
+  Receipt as CashFlowIcon,
+  Assignment as NotesIcon
 } from '@mui/icons-material';
-// import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useTheme as useAppTheme } from '../context/ThemeContext';
 import InvoiceScanner from '../components/InvoiceScanner';
+import { IncomeStatement } from '../components/financials/IncomeStatement';
+import { BalanceSheet } from '../components/financials/BalanceSheet';
+import { CashFlowStatement } from '../components/financials/CashFlowStatement';
+import { NotesToFinancials } from '../components/financials/NotesToFinancials';
+import { 
+  exportIncomeStatementToPDF, 
+  exportBalanceSheetToPDF, 
+  exportCashFlowToPDF,
+  exportComprehensivePDF,
+  exportToExcel 
+} from '../utils/ftaReportsExport';
 
 // Types
 interface FinancialEntry {
@@ -74,9 +91,11 @@ const CATEGORIES = {
 };
 
 const Financials: React.FC = () => {
-  // const { t, i18n } = useTranslation(); // Temporarily disabled
+  const { t, i18n } = useTranslation();
   const { isDarkMode, toggleTheme } = useAppTheme();
   const theme = useTheme();
+  const [activeTab, setActiveTab] = useState(0);
+  const [notes, setNotes] = useState<any[]>([]);
 
   const [financialData, setFinancialData] = useState<FinancialEntry[]>([
     {
@@ -222,18 +241,62 @@ const Financials: React.FC = () => {
     setFinancialData(financialData.filter(item => item.id !== id));
   };
 
-  const exportToPDF = () => {
-    // PDF export logic would go here
-    console.log('Exporting to PDF...');
+  const handleExportPDF = (type: 'income' | 'balance' | 'cashflow' | 'comprehensive') => {
+    const exportData = {
+      data: financialData,
+      summary,
+      notes,
+      companyInfo: {
+        name: 'Sample Company LLC',
+        trn: '100123456700003',
+        address: 'Dubai, UAE',
+        period: `${new Date().getFullYear()} Financial Year`
+      }
+    };
+
+    let doc;
+    let filename;
+
+    switch (type) {
+      case 'income':
+        doc = exportIncomeStatementToPDF(exportData, t);
+        filename = `Income_Statement_${new Date().toISOString().split('T')[0]}.pdf`;
+        break;
+      case 'balance':
+        doc = exportBalanceSheetToPDF(exportData, t);
+        filename = `Balance_Sheet_${new Date().toISOString().split('T')[0]}.pdf`;
+        break;
+      case 'cashflow':
+        doc = exportCashFlowToPDF(exportData, t);
+        filename = `Cash_Flow_Statement_${new Date().toISOString().split('T')[0]}.pdf`;
+        break;
+      case 'comprehensive':
+        doc = exportComprehensivePDF(exportData, t);
+        filename = `Financial_Statements_${new Date().toISOString().split('T')[0]}.pdf`;
+        break;
+    }
+
+    doc.save(filename);
   };
 
-  const exportToExcel = () => {
-    // Excel export logic would go here
-    console.log('Exporting to Excel...');
+  const handleExportExcel = () => {
+    const exportData = {
+      data: financialData,
+      summary,
+      notes,
+      companyInfo: {
+        name: 'Sample Company LLC',
+        trn: '100123456700003',
+        address: 'Dubai, UAE',
+        period: `${new Date().getFullYear()} Financial Year`
+      }
+    };
+
+    exportToExcel(exportData, t);
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-AE', { // Hardcoded to en-AE as i18n is removed.
+    return new Intl.NumberFormat(i18n.language === 'ar' ? 'ar-AE' : 'en-AE', {
       style: 'currency',
       currency: 'AED'
     }).format(amount);
@@ -251,14 +314,19 @@ const Financials: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 3, direction: 'ltr' }}> {/* Hardcoded direction to ltr as i18n is removed. */}
+    <Box sx={{ p: 3, direction: i18n.language === 'ar' ? 'rtl' : 'ltr' }}>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 600 }}>
-          Financial Reports
-        </Typography>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 600 }}>
+            {t('financials.title', 'Financial Reports')}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            {t('financials.subtitle', 'FTA-compliant financial statements and reports')}
+          </Typography>
+        </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton onClick={() => {}}> {/* Empty function as i18n is removed. */}
+          <IconButton onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'ar' : 'en')}>
             <LanguageIcon />
           </IconButton>
           <IconButton onClick={toggleTheme}>
@@ -372,7 +440,60 @@ const Financials: React.FC = () => {
         </Grid>
       </Grid>
 
-      {/* Action Buttons */}
+      {/* Export Controls */}
+      <Paper sx={{ p: 3, mb: 4, borderRadius: 3, boxShadow: theme.shadows[2] }}>
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+          {t('financials.exportControls', 'Export Financial Statements')}
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<PdfIcon />}
+              onClick={() => handleExportPDF('comprehensive')}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
+            >
+              {t('financials.exportComprehensivePDF', 'Complete PDF')}
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<ExcelIcon />}
+              onClick={handleExportExcel}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
+            >
+              {t('financials.exportExcel', 'Export Excel')}
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<TrendingUpIcon />}
+              onClick={() => handleExportPDF('income')}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
+            >
+              {t('financials.incomeStatement', 'Income Statement')}
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<AccountBalanceIcon />}
+              onClick={() => handleExportPDF('balance')}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
+            >
+              {t('financials.balanceSheet', 'Balance Sheet')}
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Management Controls */}
       <Box sx={{ display: 'flex', gap: 2, mb: 4, flexWrap: 'wrap' }}>
         <Button
           variant="contained"
@@ -380,110 +501,144 @@ const Financials: React.FC = () => {
           onClick={() => setOpenDialog(true)}
           sx={{ borderRadius: 2, textTransform: 'none' }}
         >
-          Add Entry
+          {t('financials.addEntry', 'Add Entry')}
         </Button>
         <Button
           variant="outlined"
-          startIcon={<DownloadIcon />}
-          onClick={exportToPDF}
+          startIcon={<CashFlowIcon />}
+          onClick={() => handleExportPDF('cashflow')}
           sx={{ borderRadius: 2, textTransform: 'none' }}
         >
-          Export PDF
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<AssessmentIcon />}
-          onClick={exportToExcel}
-          sx={{ borderRadius: 2, textTransform: 'none' }}
-        >
-          Export Excel
+          {t('financials.cashFlowStatement', 'Cash Flow PDF')}
         </Button>
         <Button
           variant="outlined"
           startIcon={<UploadIcon />}
           sx={{ borderRadius: 2, textTransform: 'none' }}
         >
-          Upload Documents
+          {t('financials.uploadDocuments', 'Upload Documents')}
         </Button>
       </Box>
 
-      {/* Financial Data Table */}
+      {/* Financial Reports Tabs */}
       <Paper sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: theme.shadows[4] }}>
-        <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}` }}>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Financial Entries
-          </Typography>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs 
+            value={activeTab} 
+            onChange={(_, newValue) => setActiveTab(newValue)}
+            sx={{ px: 2 }}
+          >
+            <Tab 
+              label={t('financials.incomeStatement', 'Income Statement')} 
+              icon={<TrendingUpIcon />}
+              iconPosition="start"
+              sx={{ textTransform: 'none' }}
+            />
+            <Tab 
+              label={t('financials.balanceSheet', 'Balance Sheet')} 
+              icon={<AccountBalanceIcon />}
+              iconPosition="start"
+              sx={{ textTransform: 'none' }}
+            />
+            <Tab 
+              label={t('financials.cashFlowStatement', 'Cash Flow Statement')} 
+              icon={<CashFlowIcon />}
+              iconPosition="start"
+              sx={{ textTransform: 'none' }}
+            />
+            <Tab 
+              label={t('financials.notesToFinancials', 'Notes')} 
+              icon={<NotesIcon />}
+              iconPosition="start"
+              sx={{ textTransform: 'none' }}
+            />
+            <Tab 
+              label={t('financials.dataEntries', 'Data Entries')} 
+              icon={<AssessmentIcon />}
+              iconPosition="start"
+              sx={{ textTransform: 'none' }}
+            />
+          </Tabs>
         </Box>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ backgroundColor: alpha(theme.palette.primary.main, 0.1) }}>
-                <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 600 }}>Amount</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 600 }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {financialData.map((row) => (
-                <TableRow key={row.id} hover>
-                  <TableCell>{new Date(row.date).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={row.type}
-                      size="small"
-                      sx={{ 
-                        backgroundColor: alpha(getTypeColor(row.type), 0.1),
-                        color: getTypeColor(row.type),
-                        textTransform: 'capitalize'
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        {row.category}
-                      </Typography>
-                      {row.subcategory && (
-                        <Typography variant="caption" color="text.secondary">
-                          {row.subcategory}
-                        </Typography>
-                      )}
-                    </Box>
-                  </TableCell>
-                  <TableCell>{row.description}</TableCell>
-                  <TableCell 
-                    align="right" 
-                    sx={{ 
-                      color: getTypeColor(row.type),
-                      fontWeight: 600
-                    }}
-                  >
-                    {formatCurrency(row.amount)}
-                  </TableCell>
-                  <TableCell align="center">
-                    <IconButton 
-                      size="small" 
-                      onClick={() => handleEditEntry(row)}
-                      sx={{ mr: 1 }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton 
-                      size="small" 
-                      onClick={() => handleDeleteEntry(row.id)}
-                      color="error"
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+
+        <Box sx={{ p: 3 }}>
+          {activeTab === 0 && <IncomeStatement data={financialData} />}
+          {activeTab === 1 && <BalanceSheet data={financialData} netIncome={summary.netIncome} />}
+          {activeTab === 2 && <CashFlowStatement data={financialData} netIncome={summary.netIncome} />}
+          {activeTab === 3 && <NotesToFinancials onNotesChange={setNotes} />}
+          {activeTab === 4 && (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: alpha(theme.palette.primary.main, 0.1) }}>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('common.date', 'Date')}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('common.type', 'Type')}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('common.category', 'Category')}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('common.description', 'Description')}</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600 }}>{t('common.amount', 'Amount')}</TableCell>
+                    <TableCell align="center" sx={{ fontWeight: 600 }}>{t('common.actions', 'Actions')}</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {financialData.map((row) => (
+                    <TableRow key={row.id} hover>
+                      <TableCell>{new Date(row.date).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={row.type}
+                          size="small"
+                          sx={{ 
+                            backgroundColor: alpha(getTypeColor(row.type), 0.1),
+                            color: getTypeColor(row.type),
+                            textTransform: 'capitalize'
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            {row.category}
+                          </Typography>
+                          {row.subcategory && (
+                            <Typography variant="caption" color="text.secondary">
+                              {row.subcategory}
+                            </Typography>
+                          )}
+                        </Box>
+                      </TableCell>
+                      <TableCell>{row.description}</TableCell>
+                      <TableCell 
+                        align="right" 
+                        sx={{ 
+                          color: getTypeColor(row.type),
+                          fontWeight: 600
+                        }}
+                      >
+                        {formatCurrency(row.amount)}
+                      </TableCell>
+                      <TableCell align="center">
+                        <IconButton 
+                          size="small" 
+                          onClick={() => handleEditEntry(row)}
+                          sx={{ mr: 1 }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton 
+                          size="small" 
+                          onClick={() => handleDeleteEntry(row.id)}
+                          color="error"
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Box>
       </Paper>
 
       {/* Add/Edit Entry Dialog */}
@@ -501,7 +656,7 @@ const Financials: React.FC = () => {
         }}
       >
         <DialogTitle sx={{ fontWeight: 600 }}>
-          {editingEntry ? 'Edit Entry' : 'Add New Entry'}
+          {editingEntry ? t('financials.editEntry', 'Edit Entry') : t('financials.addEntry', 'Add New Entry')}
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -509,7 +664,7 @@ const Financials: React.FC = () => {
               <TextField
                 fullWidth
                 select
-                label='Type'
+                label={t('common.type', 'Type')}
                 value={newEntry.type}
                 onChange={(e) => {
                   setNewEntry({ ...newEntry, type: e.target.value as any, category: '' });
@@ -526,7 +681,7 @@ const Financials: React.FC = () => {
               <TextField
                 fullWidth
                 select
-                label='Category'
+                label={t('common.category', 'Category')}
                 value={newEntry.category}
                 onChange={(e) => setNewEntry({ ...newEntry, category: e.target.value })}
                 disabled={!newEntry.type}
@@ -541,7 +696,7 @@ const Financials: React.FC = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label='Subcategory (Optional)'
+                label={t('common.subcategory', 'Subcategory (Optional)')}
                 value={newEntry.subcategory}
                 onChange={(e) => setNewEntry({ ...newEntry, subcategory: e.target.value })}
               />
@@ -550,7 +705,7 @@ const Financials: React.FC = () => {
               <TextField
                 fullWidth
                 type="number"
-                label='Amount (AED)'
+                label={t('common.amount', 'Amount (AED)')}
                 value={newEntry.amount}
                 onChange={(e) => setNewEntry({ ...newEntry, amount: parseFloat(e.target.value) || 0 })}
                 inputProps={{ step: '0.01', min: '0' }}
@@ -559,7 +714,7 @@ const Financials: React.FC = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label='Description'
+                label={t('common.description', 'Description')}
                 value={newEntry.description}
                 onChange={(e) => setNewEntry({ ...newEntry, description: e.target.value })}
                 multiline
@@ -577,14 +732,14 @@ const Financials: React.FC = () => {
             }}
             sx={{ textTransform: 'none' }}
           >
-            Cancel
+            {t('common.cancel', 'Cancel')}
           </Button>
           <Button 
             onClick={editingEntry ? handleUpdateEntry : handleAddEntry} 
             variant="contained"
             sx={{ textTransform: 'none', borderRadius: 2 }}
           >
-            {editingEntry ? 'Update' : 'Add'}
+            {editingEntry ? t('common.update', 'Update') : t('common.add', 'Add')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -592,7 +747,7 @@ const Financials: React.FC = () => {
         {/* Bookkeeping Section */}
         <Box sx={{ mt: 4 }}>
           <Typography variant="h5" gutterBottom sx={{ color: theme.palette.text.primary, fontWeight: 600 }}>
-            Bookkeeping & Document Management
+            {t('financials.bookkeeping', 'Bookkeeping & Document Management')}
           </Typography>
 
           <Grid container spacing={3} sx={{ mt: 1 }}>
@@ -611,10 +766,10 @@ const Financials: React.FC = () => {
                 }}
               >
                 <Typography variant="h6" gutterBottom sx={{ color: theme.palette.text.primary }}>
-                  Recent Scanned Invoices
+                  {t('financials.recentInvoices', 'Recent Scanned Invoices')}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Invoices processed through OCR scanning
+                  {t('financials.invoicesProcessed', 'Invoices processed through OCR scanning')}
                 </Typography>
 
                 <div className="space-y-2">
