@@ -25,7 +25,7 @@ import {
   CheckCircle as CheckCircleIcon,
   Info as InfoIcon,
   Person as PersonIcon,
-  Certificate as CertificateIcon,
+  Security as CertificateIcon,
   Star as StarIcon,
   Clear as ClearIcon,
   Visibility as VisibilityIcon
