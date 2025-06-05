@@ -28,6 +28,8 @@ import Financials from './pages/Financials';
 import TransferPricing from './pages/TransferPricing';
 import Filing from './pages/Filing';
 import Assistant from './pages/Assistant';
+import Calendar from './pages/Calendar';
+import Unauthorized from './pages/Unauthorized';
 
 
 function App() {
@@ -87,17 +89,9 @@ function App() {
                               <Route path="transfer-pricing" element={<TransferPricing />} />
                               <Route path="filing" element={<Filing />} />
                               <Route path="assistant" element={<Assistant />} />
-                            </Route>
-
-                            {/* Catch all route */}
-                            <Route path="*" element={
-                              isSetupComplete ? (
-                                <Navigate to="/dashboard" replace />
-                              ) : (
-                                <Navigate to="/setup" replace />
-                              )
-                            } />
-                          </Routes>
+                              <Route path="calendar" element={<Calendar />} />
+                              <Route path="unauthorized" element={<Unauthorized />} />
+                            </Routes>
                         </Router>
                       </ErrorBoundary>
                     </ThemeProvider>

@@ -7,10 +7,10 @@ import {
   DocumentTextIcon,
   ReceiptPercentIcon,
   ChartBarIcon,
-  CurrencyDollarIcon,
   ChatBubbleLeftRightIcon,
   Cog6ToothIcon,
-  XMarkIcon
+  XMarkIcon,
+  CalendarDaysIcon
 } from '@heroicons/react/24/outline';
 
 interface SidebarProps {
@@ -60,6 +60,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       name: t('nav.setup'),
       path: '/setup',
       icon: Cog6ToothIcon,
+    },
+    {
+      name: t('nav.calendar', 'Calendar'),
+      path: '/calendar',
+      icon: CalendarDaysIcon,
     }
   ];
 

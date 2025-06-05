@@ -12,7 +12,8 @@
     "financials": "Financials", 
     "transferPricing": "Transfer Pricing",
     "setup": "Setup",
-    "assistant": "Assistant"
+    "assistant": "Assistant",
+    "calendar": "Calendar"
   },
   "common": {
     "appTitle": "UAE Tax Compliance",
@@ -593,6 +594,31 @@
   "settings": "Settings",
   "language": "Language",
   "theme": "Theme",
+  "calendar": {
+    "title": "Tax Calendar & Deadlines",
+    "subtitle": "Track your tax filing deadlines and compliance dates",
+    "upcomingDeadlines": "Upcoming Deadlines",
+    "noDeadlines": "No deadlines this month",
+    "noDeadlinesDesc": "All your tax obligations are up to date.",
+    "activeNotifications": "Active Notifications",
+    "vatReturn": "VAT Return Due",
+    "citReturn": "CIT Return Due",
+    "days": {
+      "sun": "Sun",
+      "mon": "Mon", 
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "priority": {
+      "urgent": "Urgent",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    }
+  },
   "unauthorized": {
     "title": "Access Denied",
     "message": "You don't have permission to access this page.",
