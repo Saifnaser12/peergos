@@ -37,7 +37,7 @@ import {
   TransferPricingDocument,
   DocumentType
 } from '../types/transferPricing';
-import { useTranslation } from 'react-i18next';
+// Temporarily removed useTranslation for debugging
 
 interface AddRelatedPartyDialogProps {
   open: boolean;

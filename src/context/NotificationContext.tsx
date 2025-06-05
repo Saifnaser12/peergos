@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+// Temporarily removed useTranslation for debugging
 import { Notification, NotificationContextType } from '../types/notifications';
 import { useTax } from './TaxContext';
 

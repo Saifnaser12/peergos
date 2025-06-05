@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -40,7 +39,7 @@ import {
   Delete as DeleteIcon,
   Edit as EditIcon
 } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import { useTheme as useAppTheme } from '../context/ThemeContext';
 
 // Types
@@ -74,10 +73,10 @@ const CATEGORIES = {
 };
 
 const Financials: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  // const { t, i18n } = useTranslation(); // Temporarily disabled
   const { isDarkMode, toggleTheme } = useAppTheme();
   const theme = useTheme();
-  
+
   const [financialData, setFinancialData] = useState<FinancialEntry[]>([
     {
       id: '1',
@@ -233,7 +232,7 @@ const Financials: React.FC = () => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat(i18n.language === 'ar' ? 'ar-AE' : 'en-AE', {
+    return new Intl.NumberFormat('en-AE', { // Hardcoded to en-AE as i18n is removed.
       style: 'currency',
       currency: 'AED'
     }).format(amount);
@@ -251,14 +250,14 @@ const Financials: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 3, direction: i18n.language === 'ar' ? 'rtl' : 'ltr' }}>
+    <Box sx={{ p: 3, direction: 'ltr' }}> {/* Hardcoded direction to ltr as i18n is removed. */}
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 600 }}>
-          {t('financials.title', 'Financial Reports')}
+          Financial Reports
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'ar' : 'en')}>
+          <IconButton onClick={() => {}}> {/* Empty function as i18n is removed. */}
             <LanguageIcon />
           </IconButton>
           <IconButton onClick={toggleTheme}>
@@ -270,7 +269,7 @@ const Financials: React.FC = () => {
       {/* Balance Alert */}
       {!summary.isBalanced && (
         <Alert severity="warning" sx={{ mb: 3 }}>
-          {t('financials.imbalanceWarning', 'Warning: Balance Sheet is not balanced. Assets must equal Liabilities + Equity.')}
+          Warning: Balance Sheet is not balanced. Assets must equal Liabilities + Equity.
         </Alert>
       )}
 
@@ -287,13 +286,13 @@ const Financials: React.FC = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <TrendingUpIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  {t('financials.incomeStatement', 'Income Statement')}
+                  Income Statement
                 </Typography>
               </Box>
               <Grid container spacing={2}>
                 <Grid item xs={4}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('financials.revenue', 'Revenue')}
+                    Revenue
                   </Typography>
                   <Typography variant="h6" color="success.main" sx={{ fontWeight: 600 }}>
                     {formatCurrency(summary.totalRevenue)}
@@ -301,7 +300,7 @@ const Financials: React.FC = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('financials.expenses', 'Expenses')}
+                    Expenses
                   </Typography>
                   <Typography variant="h6" color="error.main" sx={{ fontWeight: 600 }}>
                     {formatCurrency(summary.totalExpenses)}
@@ -309,7 +308,7 @@ const Financials: React.FC = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('financials.netIncome', 'Net Income')}
+                    Net Income
                   </Typography>
                   <Typography 
                     variant="h6" 
@@ -335,16 +334,16 @@ const Financials: React.FC = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <AccountBalanceIcon sx={{ mr: 1, color: theme.palette.secondary.main }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  {t('financials.balanceSheet', 'Balance Sheet')}
+                  Balance Sheet
                 </Typography>
                 {summary.isBalanced && (
-                  <Chip label={t('financials.balanced', 'Balanced')} color="success" size="small" sx={{ ml: 1 }} />
+                  <Chip label="Balanced" color="success" size="small" sx={{ ml: 1 }} />
                 )}
               </Box>
               <Grid container spacing={2}>
                 <Grid item xs={4}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('financials.assets', 'Assets')}
+                    Assets
                   </Typography>
                   <Typography variant="h6" color="info.main" sx={{ fontWeight: 600 }}>
                     {formatCurrency(summary.totalAssets)}
@@ -352,7 +351,7 @@ const Financials: React.FC = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('financials.liabilities', 'Liabilities')}
+                    Liabilities
                   </Typography>
                   <Typography variant="h6" color="warning.main" sx={{ fontWeight: 600 }}>
                     {formatCurrency(summary.totalLiabilities)}
@@ -360,7 +359,7 @@ const Financials: React.FC = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('financials.equity', 'Equity')}
+                    Equity
                   </Typography>
                   <Typography variant="h6" color="secondary.main" sx={{ fontWeight: 600 }}>
                     {formatCurrency(summary.totalEquity)}
@@ -380,7 +379,7 @@ const Financials: React.FC = () => {
           onClick={() => setOpenDialog(true)}
           sx={{ borderRadius: 2, textTransform: 'none' }}
         >
-          {t('financials.addEntry', 'Add Entry')}
+          Add Entry
         </Button>
         <Button
           variant="outlined"
@@ -388,7 +387,7 @@ const Financials: React.FC = () => {
           onClick={exportToPDF}
           sx={{ borderRadius: 2, textTransform: 'none' }}
         >
-          {t('financials.exportPDF', 'Export PDF')}
+          Export PDF
         </Button>
         <Button
           variant="outlined"
@@ -396,14 +395,14 @@ const Financials: React.FC = () => {
           onClick={exportToExcel}
           sx={{ borderRadius: 2, textTransform: 'none' }}
         >
-          {t('financials.exportExcel', 'Export Excel')}
+          Export Excel
         </Button>
         <Button
           variant="outlined"
           startIcon={<UploadIcon />}
           sx={{ borderRadius: 2, textTransform: 'none' }}
         >
-          {t('financials.uploadDocs', 'Upload Documents')}
+          Upload Documents
         </Button>
       </Box>
 
@@ -411,19 +410,19 @@ const Financials: React.FC = () => {
       <Paper sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: theme.shadows[4] }}>
         <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}` }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            {t('financials.financialEntries', 'Financial Entries')}
+            Financial Entries
           </Typography>
         </Box>
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: alpha(theme.palette.primary.main, 0.1) }}>
-                <TableCell sx={{ fontWeight: 600 }}>{t('financials.date', 'Date')}</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>{t('financials.type', 'Type')}</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>{t('financials.category', 'Category')}</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>{t('financials.description', 'Description')}</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 600 }}>{t('financials.amount', 'Amount')}</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 600 }}>{t('financials.actions', 'Actions')}</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600 }}>Amount</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 600 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -432,7 +431,7 @@ const Financials: React.FC = () => {
                   <TableCell>{new Date(row.date).toLocaleDateString()}</TableCell>
                   <TableCell>
                     <Chip 
-                      label={t(`financials.types.${row.type}`, row.type)}
+                      label={row.type}
                       size="small"
                       sx={{ 
                         backgroundColor: alpha(getTypeColor(row.type), 0.1),
@@ -501,7 +500,7 @@ const Financials: React.FC = () => {
         }}
       >
         <DialogTitle sx={{ fontWeight: 600 }}>
-          {editingEntry ? t('financials.editEntry', 'Edit Entry') : t('financials.addNewEntry', 'Add New Entry')}
+          {editingEntry ? 'Edit Entry' : 'Add New Entry'}
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -509,7 +508,7 @@ const Financials: React.FC = () => {
               <TextField
                 fullWidth
                 select
-                label={t('financials.type', 'Type')}
+                label='Type'
                 value={newEntry.type}
                 onChange={(e) => {
                   setNewEntry({ ...newEntry, type: e.target.value as any, category: '' });
@@ -517,7 +516,7 @@ const Financials: React.FC = () => {
               >
                 {Object.keys(CATEGORIES).map((type) => (
                   <MenuItem key={type} value={type}>
-                    {t(`financials.types.${type}`, type)}
+                    {type}
                   </MenuItem>
                 ))}
               </TextField>
@@ -526,7 +525,7 @@ const Financials: React.FC = () => {
               <TextField
                 fullWidth
                 select
-                label={t('financials.category', 'Category')}
+                label='Category'
                 value={newEntry.category}
                 onChange={(e) => setNewEntry({ ...newEntry, category: e.target.value })}
                 disabled={!newEntry.type}
@@ -541,7 +540,7 @@ const Financials: React.FC = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label={t('financials.subcategory', 'Subcategory (Optional)')}
+                label='Subcategory (Optional)'
                 value={newEntry.subcategory}
                 onChange={(e) => setNewEntry({ ...newEntry, subcategory: e.target.value })}
               />
@@ -550,7 +549,7 @@ const Financials: React.FC = () => {
               <TextField
                 fullWidth
                 type="number"
-                label={t('financials.amount', 'Amount (AED)')}
+                label='Amount (AED)'
                 value={newEntry.amount}
                 onChange={(e) => setNewEntry({ ...newEntry, amount: parseFloat(e.target.value) || 0 })}
                 inputProps={{ step: '0.01', min: '0' }}
@@ -559,7 +558,7 @@ const Financials: React.FC = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label={t('financials.description', 'Description')}
+                label='Description'
                 value={newEntry.description}
                 onChange={(e) => setNewEntry({ ...newEntry, description: e.target.value })}
                 multiline
@@ -577,14 +576,14 @@ const Financials: React.FC = () => {
             }}
             sx={{ textTransform: 'none' }}
           >
-            {t('common.cancel', 'Cancel')}
+            Cancel
           </Button>
           <Button 
             onClick={editingEntry ? handleUpdateEntry : handleAddEntry} 
             variant="contained"
             sx={{ textTransform: 'none', borderRadius: 2 }}
           >
-            {editingEntry ? t('common.update', 'Update') : t('common.add', 'Add')}
+            {editingEntry ? 'Update' : 'Add'}
           </Button>
         </DialogActions>
       </Dialog>
