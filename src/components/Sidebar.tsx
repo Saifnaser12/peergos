@@ -10,7 +10,8 @@ import {
   ChatBubbleLeftRightIcon,
   Cog6ToothIcon,
   XMarkIcon,
-  CalendarDaysIcon
+  CalendarDaysIcon,
+  CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
 
 interface SidebarProps {
@@ -159,7 +160,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                       isActive(item.path)
                         ? 'text-indigo-500 dark:text-indigo-400'
                         : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400'
-                    }`}
+                      }`}
                   />
                   {item.name}
                 </NavLink>
