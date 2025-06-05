@@ -379,80 +379,81 @@ Keep this for your records.
                         )}
                       </TableCell>
                       <TableCell align="center">
-                      <Box sx={{ display: 'flex', gap: 0.5 }}>
-                        <Tooltip title={t('fta.submissions.viewDetails')}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleViewDetails(submission)}
-                          >
-                            <VisibilityIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        
-                        <Tooltip title={t('fta.submissions.downloadReceipt')}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDownloadReceipt(submission)}
-                          >
-                            <FileDownloadIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        
-                        {submission.trackingUrl && (
-                          <Tooltip title={t('fta.submissions.trackOnline')}>
+                        <Box sx={{ display: 'flex', gap: 0.5 }}>
+                          <Tooltip title={t('fta.submissions.viewDetails')}>
                             <IconButton
                               size="small"
-                              onClick={() => window.open(submission.trackingUrl, '_blank')}
+                              onClick={() => handleViewDetails(submission)}
                             >
-                              <LaunchIcon fontSize="small" />
+                              <VisibilityIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                        )}
-                        
-                        <Tooltip title={expandedRows.has(submission.submissionId) ? t('fta.submissions.collapse') : t('fta.submissions.expand')}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleToggleExpand(submission.submissionId)}
-                          >
-                            {expandedRows.has(submission.submissionId) ? 
-                              <ExpandLessIcon fontSize="small" /> : 
-                              <ExpandMoreIcon fontSize="small" />
-                            }
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                  
-                  <TableRow>
-                    <TableCell colSpan={5} sx={{ py: 0 }}>
-                      <Collapse in={expandedRows.has(submission.submissionId)}>
-                        <Box sx={{ py: 2, pl: 2, bgcolor: 'action.hover' }}>
-                          <Typography variant="subtitle2" gutterBottom>
-                            {t('fta.submissions.submissionDetails')}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            <strong>{t('fta.submissions.submissionId')}:</strong> {submission.submissionId}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            <strong>{t('fta.submissions.taxPeriod')}:</strong> {submission.data.taxPeriod}
-                          </Typography>
-                          {submission.data.submissionType === 'VAT' && submission.data.data.vatDue && (
-                            <Typography variant="body2" color="text.secondary">
-                              <strong>{t('fta.submissions.vatDue')}:</strong> {formatCurrency(submission.data.data.vatDue)}
-                            </Typography>
+                          
+                          <Tooltip title={t('fta.submissions.downloadReceipt')}>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleDownloadReceipt(submission)}
+                            >
+                              <FileDownloadIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          
+                          {submission.trackingUrl && (
+                            <Tooltip title={t('fta.submissions.trackOnline')}>
+                              <IconButton
+                                size="small"
+                                onClick={() => window.open(submission.trackingUrl, '_blank')}
+                              >
+                                <LaunchIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
                           )}
-                          {submission.data.submissionType === 'CIT' && submission.data.data.citDue && (
-                            <Typography variant="body2" color="text.secondary">
-                              <strong>{t('fta.submissions.citDue')}:</strong> {formatCurrency(submission.data.data.citDue)}
-                            </Typography>
-                          )}
+                          
+                          <Tooltip title={expandedRows.has(submission.submissionId) ? t('fta.submissions.collapse') : t('fta.submissions.expand')}>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleToggleExpand(submission.submissionId)}
+                            >
+                              {expandedRows.has(submission.submissionId) ? 
+                                <ExpandLessIcon fontSize="small" /> : 
+                                <ExpandMoreIcon fontSize="small" />
+                              }
+                            </IconButton>
+                          </Tooltip>
                         </Box>
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
-                </React.Fragment>
-              ))}
+                      </TableCell>
+                    </TableRow>
+                    
+                    <TableRow>
+                      <TableCell colSpan={6} sx={{ py: 0 }}>
+                        <Collapse in={expandedRows.has(submission.submissionId)}>
+                          <Box sx={{ py: 2, pl: 2, bgcolor: 'action.hover' }}>
+                            <Typography variant="subtitle2" gutterBottom>
+                              {t('fta.submissions.submissionDetails')}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              <strong>{t('fta.submissions.submissionId')}:</strong> {submission.submissionId}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              <strong>{t('fta.submissions.taxPeriod')}:</strong> {submission.data.taxPeriod}
+                            </Typography>
+                            {submission.data.submissionType === 'VAT' && submission.data.data.vatDue && (
+                              <Typography variant="body2" color="text.secondary">
+                                <strong>{t('fta.submissions.vatDue')}:</strong> {formatCurrency(submission.data.data.vatDue)}
+                              </Typography>
+                            )}
+                            {submission.data.submissionType === 'CIT' && submission.data.data.citDue && (
+                              <Typography variant="body2" color="text.secondary">
+                                <strong>{t('fta.submissions.citDue')}:</strong> {formatCurrency(submission.data.data.citDue)}
+                              </Typography>
+                            )}
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
