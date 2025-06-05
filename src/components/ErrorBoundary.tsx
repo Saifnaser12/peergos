@@ -22,6 +22,10 @@ export class ErrorBoundary extends Component<Props, State> {
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({ errorInfo });
+    
+    // Log additional context for debugging
+    console.error('Component stack:', errorInfo.componentStack);
+    console.error('Error boundary state:', this.state);
   }
 
   private handleReload = () => {

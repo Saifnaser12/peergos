@@ -36,9 +36,14 @@ function App() {
   const [isSetupComplete, setIsSetupComplete] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Check if setup is complete
-    const setupComplete = localStorage.getItem('peergos_setup_complete') === 'true';
-    setIsSetupComplete(setupComplete);
+    try {
+      // Check if setup is complete
+      const setupComplete = localStorage.getItem('peergos_setup_complete') === 'true';
+      setIsSetupComplete(setupComplete);
+    } catch (error) {
+      console.error('Error checking setup status:', error);
+      setIsSetupComplete(false);
+    }
   }, []);
 
   // Show loading while checking setup status
