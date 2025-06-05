@@ -1,5 +1,5 @@
-import React from 'react';
-// import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ftaService } from '../services/ftaService';
 
 interface FTAIntegrationStatusProps {

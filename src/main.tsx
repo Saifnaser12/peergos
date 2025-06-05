@@ -1,6 +1,11 @@
 // Import polyfills first before anything else
 import './polyfills';
 
+// Ensure process is available globally before React imports
+if (typeof globalThis.process === 'undefined') {
+  globalThis.process = (window as any).process;
+}
+
 import React, { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'

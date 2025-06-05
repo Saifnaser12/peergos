@@ -197,6 +197,11 @@ if (typeof globalThis.process === 'undefined') {
   globalThis.process = processPolyfill;
 }
 
+// Ensure process is available as a global variable
+if (typeof process === 'undefined') {
+  (globalThis as any).process = processPolyfill;
+}
+
 if (typeof globalThis.global === 'undefined') {
   globalThis.global = globalThis;
 }
