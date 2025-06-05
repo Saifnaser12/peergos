@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
@@ -105,16 +104,16 @@ const CIT: React.FC = () => {
   const citCalculation = useMemo((): CITCalculation => {
     const netProfit = formData.revenue - formData.expenses;
     const adjustedProfit = netProfit + formData.taxAdjustments - formData.exemptIncome;
-    
+
     // Cap carried forward losses at 75% of adjusted profit
     const maxAllowedLosses = Math.max(0, adjustedProfit * 0.75);
     const allowedLosses = Math.min(formData.carriedForwardLosses, maxAllowedLosses);
-    
+
     const taxableIncome = Math.max(0, adjustedProfit - allowedLosses);
-    
+
     // Small Business Relief: 0% if revenue ≤ AED 3M and relief claimed
     const smallBusinessReliefApplied = formData.smallBusinessRelief && formData.revenue <= 3000000;
-    
+
     let citPayable = 0;
     if (!smallBusinessReliefApplied) {
       if (taxableIncome > 375000) {
@@ -137,30 +136,30 @@ const CIT: React.FC = () => {
   // Validation
   useEffect(() => {
     const errors: Record<string, string> = {};
-    
+
     if (formData.companyName && formData.companyName.length < 2) {
       errors.companyName = t('validation.companyNameTooShort');
     }
-    
+
     if (formData.trn) {
       const trnValidation = Validator.validateTRN(formData.trn);
       if (!trnValidation.isValid) {
         errors.trn = trnValidation.errors[0];
       }
     }
-    
+
     if (formData.revenue < 0) {
       errors.revenue = t('validation.amountNegative');
     }
-    
+
     if (formData.expenses < 0) {
       errors.expenses = t('validation.amountNegative');
     }
-    
+
     if (formData.carriedForwardLosses < 0) {
       errors.carriedForwardLosses = t('validation.amountNegative');
     }
-    
+
     if (formData.smallBusinessRelief && formData.revenue > 3000000) {
       errors.smallBusinessRelief = t('validation.smallBusinessReliefNotEligible');
     }
@@ -176,7 +175,7 @@ const CIT: React.FC = () => {
       : event.target.type === 'number'
       ? parseFloat(event.target.value) || 0
       : event.target.value;
-      
+
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -185,7 +184,7 @@ const CIT: React.FC = () => {
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
-    
+
     try {
       for (const file of Array.from(files)) {
         // Validate file type
@@ -195,20 +194,20 @@ const CIT: React.FC = () => {
           'application/vnd.ms-excel',
           'text/csv'
         ];
-        
+
         if (!allowedTypes.includes(file.type)) {
           setAlertMessage(t('cit.upload.invalidFileType'));
           setShowWarningAlert(true);
           continue;
         }
-        
+
         // Validate file size (max 10MB)
         if (file.size > 10 * 1024 * 1024) {
           setAlertMessage(t('cit.upload.fileTooLarge'));
           setShowWarningAlert(true);
           continue;
         }
-        
+
         const uploadedFile: UploadedFile = {
           id: Date.now().toString() + Math.random().toString(36),
           name: file.name,
@@ -216,10 +215,10 @@ const CIT: React.FC = () => {
           type: file.type,
           uploadDate: new Date().toISOString()
         };
-        
+
         setUploadedFiles(prev => [...prev, uploadedFile]);
       }
-      
+
       setAlertMessage(t('cit.upload.success'));
       setShowSuccessAlert(true);
     } catch (error) {
@@ -252,7 +251,7 @@ const CIT: React.FC = () => {
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
-    
+
     setAlertMessage(t('cit.export.pdfSuccess'));
     setShowSuccessAlert(true);
   };
@@ -267,7 +266,7 @@ const CIT: React.FC = () => {
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
-    
+
     setAlertMessage(t('cit.export.excelSuccess'));
     setShowSuccessAlert(true);
   };
@@ -280,7 +279,7 @@ const CIT: React.FC = () => {
     }
 
     setIsCalculating(true);
-    
+
     try {
       const submissionData = {
         trn: formData.trn,
@@ -295,12 +294,12 @@ const CIT: React.FC = () => {
       };
 
       const response = await ftaService.submitCIT(submissionData);
-      
+
       setAlertMessage(t('cit.fta.submitSuccess', { 
         referenceNumber: response.referenceNumber 
       }));
       setShowSuccessAlert(true);
-      
+
     } catch (error: any) {
       setAlertMessage(error.message || t('cit.fta.submitError'));
       setShowWarningAlert(true);
@@ -353,7 +352,7 @@ const CIT: React.FC = () => {
                     {t('cit.form.companyInfo')}
                   </Typography>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -365,7 +364,7 @@ const CIT: React.FC = () => {
                     dir={isRTL ? 'rtl' : 'ltr'}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -377,7 +376,7 @@ const CIT: React.FC = () => {
                     inputProps={{ maxLength: 15 }}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -396,7 +395,7 @@ const CIT: React.FC = () => {
                     {t('cit.form.financialData')}
                   </Typography>
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -411,7 +410,7 @@ const CIT: React.FC = () => {
                     }}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -426,7 +425,7 @@ const CIT: React.FC = () => {
                     }}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -440,7 +439,7 @@ const CIT: React.FC = () => {
                     helperText={t('cit.form.taxAdjustmentsHelp')}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -453,7 +452,7 @@ const CIT: React.FC = () => {
                     }}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -476,7 +475,7 @@ const CIT: React.FC = () => {
                     {t('cit.form.elections')}
                   </Typography>
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <FormControlLabel
                     control={
@@ -503,7 +502,7 @@ const CIT: React.FC = () => {
                     </FormHelperText>
                   )}
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <FormControlLabel
                     control={
@@ -601,7 +600,7 @@ const CIT: React.FC = () => {
             />
             <CardContent>
               {isCalculating && <LinearProgress sx={{ mb: 2 }} />}
-              
+
               <Box sx={{ mb: 3 }}>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   {t('cit.calculation.netProfit')}
@@ -679,7 +678,7 @@ const CIT: React.FC = () => {
                 >
                   {t('cit.export.button')}
                 </Button>
-                
+
                 <Button
                   fullWidth
                   variant="outlined"

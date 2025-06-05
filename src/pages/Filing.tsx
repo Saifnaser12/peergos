@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Box, Typography, Paper } from '@mui/material';
 
 const Filing: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
-        Tax Filing
+        {t('taxFiling.title')}
       </Typography>
       <Paper sx={{ p: 3 }}>
         <Typography variant="body1">
-          Tax filing forms and submission features will be implemented here.
+          {t('taxFiling.description')}
         </Typography>
       </Paper>
     </Box>

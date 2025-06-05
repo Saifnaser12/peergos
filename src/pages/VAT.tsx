@@ -156,7 +156,7 @@ const VAT: React.FC = () => {
 
       const response = await ftaService.submitVAT(submissionData);
       console.log('VAT submitted to FTA:', response);
-      
+
     } catch (error) {
       console.error('FTA submission failed:', error);
     }
@@ -508,7 +508,7 @@ const VAT: React.FC = () => {
                 >
                   {t('Submit VAT Return')}
                 </Button>
-                
+
                 <Button
                   variant="outlined"
                   fullWidth

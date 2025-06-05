@@ -1,44 +1,40 @@
-
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import { useUserRole } from '../context/UserRoleContext';
 
-const AppLayout: React.FC = () => {
+export default function AppLayout() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { hasPermission } = useUserRole();
+  const location = useLocation();
   const { isDarkMode } = useTheme();
   const { i18n } = useTranslation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isRTL = i18n.language === 'ar';
 
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${isRTL ? 'rtl' : 'ltr'}`}>
       {/* Mobile sidebar overlay */}
-      {isSidebarOpen && (
+      {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
+          onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main content area */}
-      <div className="lg:pl-64">
-        {/* Top bar */}
-        <Topbar onMenuClick={() => setIsSidebarOpen(true)} />
-
-        {/* Page content */}
-        <main className="py-6 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
+      {/* Main content */}
+      <div className="flex-1 lg:pl-64">
+        <main className="py-8">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <Outlet />
           </div>
         </main>
       </div>
     </div>
   );
-};
-
-export default AppLayout;
+}
