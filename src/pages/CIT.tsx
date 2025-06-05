@@ -45,6 +45,7 @@ import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import TaxAgentSelector from '../components/TaxAgentSelector';
 import SubmissionPanel from '../components/fta/SubmissionPanel';
 import { ftaService } from '../services/ftaService';
+import { useTaxAgent } from '../context/TaxAgentContext';
 
 interface CITFormData {
   revenue: number;
@@ -79,6 +80,7 @@ interface UploadedFile {
 const CIT: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
+  const { selectedAgent, uploadedCertificate } = useTaxAgent();
 
   const [formData, setFormData] = useState<CITFormData>({
     revenue: 0,
@@ -276,6 +278,12 @@ const CIT: React.FC = () => {
   const handleSubmitToFTA = async () => {
     if (!formData.companyName || !formData.trn) {
       setAlertMessage(t('cit.fta.missingInfo'));
+      setShowWarningAlert(true);
+      return;
+    }
+
+    if (!selectedAgent || !uploadedCertificate) {
+      setAlertMessage(t('cit.fta.missingTaxAgent', 'Please select a tax agent and upload their certificate before submitting'));
       setShowWarningAlert(true);
       return;
     }

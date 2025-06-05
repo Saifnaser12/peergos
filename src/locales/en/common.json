@@ -481,8 +481,8 @@
     "specializations": "Specializations",
     "viewProfile": "View FTA Profile",
     "uploadCertificate": "Upload Tax Agent Certificate",
-    "replaceCertificate": "Replace Certificate",
     "uploadDescription": "Upload the official certificate or authorization document",
+    "replaceCertificate": "Replace Certificate",
     "viewCertificate": "View Certificate",
     "selected": "FTA Approved Agent Selected",
     "selectionComplete": "Tax agent selection completed successfully!",
@@ -493,107 +493,6 @@
       "fileTooLarge": "File size must be less than 5MB"
     }
   },
-  "assistant": {
-    "title": "Tax Assistant",
-    "subtitle": "AI-powered guidance for UAE tax compliance",
-    "welcome": "Welcome to your Tax Assistant",
-    "welcomeDesc": "Ask questions about UAE tax compliance, or try a suggested question below",
-    "input": {
-      "placeholder": "Ask about VAT, CIT, Transfer Pricing, or general tax questions...",
-      "send": "Send"
-    },
-    "error": "Error getting response from assistant",
-    "exportSuccess": "Chat exported successfully",
-    "responses": {
-      "taxOwed": "Based on your current filings, you owe AED {{citAmount}} in Corporate Income Tax and AED {{vatAmount}} in VAT, totaling AED {{totalAmount}}. Please review your CIT and VAT pages for detailed calculations.",
-      "noTaxOwed": "Great news! Based on your current data, you have no outstanding tax liabilities. Make sure to file your returns on time to maintain compliance.",
-      "smallBusinessEligible": "You appear eligible for Small Business Relief! Companies with revenue ≤ AED 3 million can elect for 0% CIT rate. You can make this election in your CIT filing page.",
-      "smallBusinessNotEligible": "With revenue of AED {{amount}}, you exceed the AED 3 million threshold for Small Business Relief. Your standard CIT rate is 9%.",
-      "vatExport": "To export your VAT summary, go to the VAT page and click the 'Export Returns' button. You can download as PDF or Excel format. The export includes all your VAT periods, input/output tax, and net VAT position.",
-      "exemptIncome": "Under UAE CIT, exempt income includes dividends from UAE resident companies, income from free zone qualifying activities (if elected), and capital gains from disposal of qualifying shareholdings. This must be properly documented in your CIT return.",
-      "transferPricing": "UAE transfer pricing rules apply to related party transactions. You need documentation if your group revenue exceeds AED 200 million. Check our Transfer Pricing module to assess your compliance requirements and upload necessary documentation.",
-      "deadlines": "UAE tax deadlines: VAT returns are due by 28th of the month following the tax period. CIT returns are due 9 months after financial year-end. Transfer pricing documentation is due with CIT return filing.",
-      "registration": "VAT registration is mandatory if your taxable turnover exceeds AED 375,000. CIT registration is automatic for UAE mainland companies. You can verify TRN details using our TRN Search feature.",
-      "default": "I'm here to help with UAE tax compliance including VAT, CIT, and Transfer Pricing. I can provide guidance based on UAE FTA regulations and your system data. For specific legal advice, please consult a qualified tax advisor."
-    },
-    "suggestions": {
-      "title": "Suggested Questions",
-      "taxOwed": "How much tax do I owe?",
-      "smallBusiness": "Am I eligible for Small Business Relief?",
-      "vatExport": "How to export VAT summary?",
-      "exemptIncome": "What is exempt income in UAE?",
-      "transferPricingReq": "Do I need transfer pricing documentation?",
-      "taxDeadlines": "What are the tax filing deadlines?"
-    },
-    "categories": {
-      "cit": "CIT",
-      "vat": "VAT",
-      "transferPricing": "Transfer Pricing",
-      "general": "General"
-    },
-    "export": {
-      "chat": "Export Chat"
-    }
-  },
-  "login": {
-    "title": "Sign in to your account",
-    "welcome": "Welcome to the Future of Tax Management",
-    "subtitle": "Streamline your tax compliance with our intelligent platform",
-    "companyName": "Company Name",
-    "email": "Email Address",
-    "password": "Password",
-    "rememberMe": "Remember me",
-    "forgotPassword": "Forgot your password?",
-    "signIn": "Sign in",
-    "or": "Or",
-    "createAccount": "Create a new account",
-    "error": "Invalid credentials. Please try again.",
-    "noAccount": "Don't have an account?"
-  },
-  "register": {
-    "title": "Create your account",
-    "welcome": "Join the Future of Tax Management",
-    "subtitle": "Create your account and start managing your tax compliance efficiently",
-    "companyName": "Company Name",
-    "email": "Email Address",
-    "taxNumber": "Tax Registration Number",
-    "address": "Company Address",
-    "phone": "Phone Number",
-    "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "createAccount": "Create Account",
-    "or": "Or",
-    "alreadyHaveAccount": "Already have an account?",
-    "signIn": "Sign in",
-    "passwordMismatch": "Passwords do not match",
-    "error": "Registration failed. Please try again.",
-    "back": "Back",
-    "next": "Next",
-    "steps": {
-      "company": "Company Information",
-      "contact": "Contact Details",
-      "security": "Security"
-    }
-  },
-  "notifications": {
-    "title": "Notifications",
-    "vatDue": "VAT Return Due",
-    "vatDueDesc": "Your VAT return for Q1 2024 is due in 5 days",
-    "citUpdate": "CIT Update",
-    "citUpdateDesc": "New CIT regulations have been published",
-    "transferPricing": "Transfer Pricing",
-    "transferPricingDesc": "Your transfer pricing documentation needs review"
-  },
-  "profile": {
-    "title": "Profile",
-    "settings": "Profile Settings"
-  },
-  "auth": {
-    "logout": "Logout"
-  },
-  "settings": "Settings",
-  "language": "Language",
-  "theme": "Theme",
   "calendar": {
     "title": "Tax Calendar & Deadlines",
     "subtitle": "Track your tax filing deadlines and compliance dates",
