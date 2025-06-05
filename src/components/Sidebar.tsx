@@ -9,9 +9,9 @@ import {
   ChatBubbleLeftRightIcon,
   Cog6ToothIcon,
   XMarkIcon,
-  CalendarDaysIcon
+  CalendarDaysIcon,
+  CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
-import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
 
 interface SidebarProps {
   isOpen: boolean;
