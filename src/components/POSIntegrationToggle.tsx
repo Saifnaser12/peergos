@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePOSIntegration } from '../context/POSIntegrationContext';
@@ -26,13 +25,13 @@ const POSIntegrationToggle: React.FC<POSIntegrationToggleProps> = ({ variant = '
             <CreditCardIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
           </div>
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">
               {t('setup.posIntegration.title', 'POS & Accounting Integration')}
             </h3>
-            
+
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -43,7 +42,7 @@ const POSIntegrationToggle: React.FC<POSIntegrationToggleProps> = ({ variant = '
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
             </label>
           </div>
-          
+
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             {t('setup.posIntegration.description', 'Connect your POS system and accounting software for automatic transaction sync and invoice processing.')}
           </p>
@@ -61,42 +60,118 @@ const POSIntegrationToggle: React.FC<POSIntegrationToggleProps> = ({ variant = '
             </p>
           </div>
 
+          {/* Available Integrations */}
           {isEnabled && (
-            <div className="mt-4 space-y-3">
-              <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+            <div className="mt-6">
+              <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-4">
                 {t('setup.posIntegration.availableIntegrations', 'Available Integrations')}
               </h4>
-              
-              <div className="grid grid-cols-1 gap-2">
-                {integrations.map((integration) => (
-                  <div 
-                    key={integration.id}
-                    className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700"
-                  >
+
+              {/* POS Systems */}
+              <div className="mb-6">
+                <h5 className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-3 uppercase tracking-wide">
+                  POS Systems
+                </h5>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <span className="text-2xl">{integration.logo}</span>
+                      <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
+                        <span className="text-orange-600 dark:text-orange-400 text-xs font-bold">O</span>
+                      </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          {integration.name}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                          {integration.type} • {integration.status}
-                        </p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">Omnivore POS</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Restaurant & retail POS</p>
                       </div>
                     </div>
-                    
-                    {integration.status === 'connected' && (
-                      <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                    )}
+                    <div className="text-xs bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
+                      MOCK
+                    </div>
                   </div>
-                ))}
-              </div>
-              
-              {connectedIntegrations.length > 0 && (
-                <div className="mt-3 text-sm text-green-700 dark:text-green-400">
-                  ✓ {connectedIntegrations.length} integration(s) configured
+
+                  <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-red-100 dark:bg-red-900/20 rounded-lg flex items-center justify-center">
+                        <span className="text-red-600 dark:text-red-400 text-xs font-bold">T</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">Toast POS</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Cloud-based restaurant POS</p>
+                      </div>
+                    </div>
+                    <div className="text-xs bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
+                      MOCK
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                        <span className="text-green-600 dark:text-green-400 text-xs font-bold">C</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">Clover POS</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">All-in-one business platform</p>
+                      </div>
+                    </div>
+                    <div className="text-xs bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
+                      MOCK
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
+
+              {/* Accounting Systems */}
+              <div>
+                <h5 className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-3 uppercase tracking-wide">
+                  Accounting Systems
+                </h5>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                        <span className="text-blue-600 dark:text-blue-400 text-xs font-bold">X</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">Xero</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Cloud accounting software</p>
+                      </div>
+                    </div>
+                    <div className="text-xs bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
+                      MOCK
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                        <span className="text-blue-600 dark:text-blue-400 text-xs font-bold">QB</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">QuickBooks</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Business accounting software</p>
+                      </div>
+                    </div>
+                    <div className="text-xs bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
+                      MOCK
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
+                        <span className="text-orange-600 dark:text-orange-400 text-xs font-bold">Z</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">Zoho Books</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Online accounting software</p>
+                      </div>
+                    </div>
+                    <div className="text-xs bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded">
+                      MOCK
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

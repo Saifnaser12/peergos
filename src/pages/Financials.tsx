@@ -798,7 +798,7 @@ const Financials: React.FC = () => {
           </Grid>
         </Box>
       </Box>
-    
+
   );
 };
 

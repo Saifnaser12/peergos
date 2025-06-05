@@ -115,8 +115,21 @@
       "description": "You can select an FTA-approved tax agent to assist with your tax compliance and submissions. This is optional and can be configured later."
     },
     "step5": {
-      "title": "POS & Accounting Integration (Optional)",
+      "title": "System Integrations (Optional)",
       "description": "Connect your POS system and accounting software to automatically sync transactions and streamline your bookkeeping. This is optional and can be configured later."
+    },
+    "integrations": {
+      "supported": "Supported Systems",
+      "mockWarning": "Simulation Only - Demo Mode",
+      "mockDescription": "These integrations are simulated for demonstration purposes. No actual connections are made.",
+      "pos": {
+        "title": "POS System Integration",
+        "description": "Connect your point-of-sale system for automated transaction sync"
+      },
+      "accounting": {
+        "title": "Accounting System Sync", 
+        "description": "Sync with accounting software for seamless bookkeeping"
+      }
     },
     "posIntegration": {
       "title": "POS & Accounting Integration",
@@ -470,7 +483,9 @@
     "scanButton": "Scan Invoice",
     "scanning": "Scanning Invoice...",
     "processing": "Processing document with OCR technology",
-    "scanned": "Invoice Scanned Successfully"
+    "scanned": "Invoice Scanned Successfully",
+    "invalidFileType": "Please upload an image or PDF file",
+    "fileTooLarge": "File size must be less than 5MB"
   },
   "taxAgent": {
     "title": "Tax Agent Selection",

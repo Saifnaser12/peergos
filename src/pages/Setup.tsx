@@ -9,7 +9,8 @@ import {
   BuildingOfficeIcon, 
   IdentificationIcon, 
   CalendarIcon,
-  CheckCircleIcon 
+  CheckCircleIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 
 interface SetupData {
@@ -260,15 +261,15 @@ const Setup: React.FC = () => {
             </div>
           )}
 
-          {/* Step 5: POS Integration */}
+          {/* Step 5: System Integrations */}
           {currentStep === 5 && (
             <div className="space-y-6">
               <div className="flex items-center space-x-2 mb-4">
                 <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                 </svg>
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                  {t('setup.step5.title', 'POS & Accounting Integration (Optional)')}
+                  {t('setup.step5.title', 'System Integrations (Optional)')}
                 </h3>
               </div>
               
@@ -278,7 +279,81 @@ const Setup: React.FC = () => {
                 </p>
               </div>
 
-              <POSIntegrationToggle variant="setup" />
+              {/* Integrations Section */}
+              <div className="space-y-6">
+                {/* POS Integration */}
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                          {t('setup.integrations.pos.title', 'POS System Integration')}
+                        </h4>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          {t('setup.integrations.pos.description', 'Connect your point-of-sale system for automated transaction sync')}
+                        </p>
+                      </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" />
+                      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+                  
+                  <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                    <p><strong>{t('setup.integrations.supported', 'Supported Systems')}:</strong></p>
+                    <p>• Omnivore POS • Toast POS • Clover POS</p>
+                  </div>
+                </div>
+
+                {/* Accounting Integration */}
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                          {t('setup.integrations.accounting.title', 'Accounting System Sync')}
+                        </h4>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          {t('setup.integrations.accounting.description', 'Sync with accounting software for seamless bookkeeping')}
+                        </p>
+                      </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" />
+                      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+                  
+                  <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                    <p><strong>{t('setup.integrations.supported', 'Supported Systems')}:</strong></p>
+                    <p>• Xero • QuickBooks • Zoho Books</p>
+                  </div>
+                </div>
+
+                {/* Mock Integration Warning */}
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                  <div className="flex items-center">
+                    <ExclamationTriangleIcon className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2" />
+                    <span className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                      {t('setup.integrations.mockWarning', 'Simulation Only - Demo Mode')}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
+                    {t('setup.integrations.mockDescription', 'These integrations are simulated for demonstration purposes. No actual connections are made.')}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 
