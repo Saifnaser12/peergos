@@ -10,7 +10,8 @@ import {
   Cog6ToothIcon,
   XMarkIcon,
   CalendarDaysIcon,
-  CurrencyDollarIcon
+  CurrencyDollarIcon,
+  ReceiptPercentIcon
 } from '@heroicons/react/24/outline';
 
 interface SidebarProps {

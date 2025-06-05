@@ -176,7 +176,7 @@ const Dashboard: React.FC = () => {
             variant="card" 
             showDetails={true}
           />
-          
+
           {/* Quick Action Links */}
           <div className="mt-4 flex flex-col gap-2">
             <button
