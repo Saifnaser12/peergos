@@ -41,6 +41,7 @@ import {
 } from '@mui/icons-material';
 // import { useTranslation } from 'react-i18next';
 import { useTheme as useAppTheme } from '../context/ThemeContext';
+import InvoiceScanner from '../components/InvoiceScanner';
 
 // Types
 interface FinancialEntry {
@@ -587,7 +588,62 @@ const Financials: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+
+        {/* Bookkeeping Section */}
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h5" gutterBottom sx={{ color: theme.palette.text.primary, fontWeight: 600 }}>
+            Bookkeeping & Document Management
+          </Typography>
+
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid item xs={12} md={6}>
+              <InvoiceScanner variant="card" />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Paper 
+                elevation={1} 
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 2,
+                  backgroundColor: theme.palette.background.paper,
+                  border: `1px solid ${theme.palette.divider}`
+                }}
+              >
+                <Typography variant="h6" gutterBottom sx={{ color: theme.palette.text.primary }}>
+                  Recent Scanned Invoices
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Invoices processed through OCR scanning
+                </Typography>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                    <div>
+                      <p className="text-sm font-medium">DEWA - AED 525.00</p>
+                      <p className="text-xs text-gray-500">2024-01-15 • 95% confidence</p>
+                    </div>
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Processed</span>
+                  </div>
+
+                  <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                    <div>
+                      <p className="text-sm font-medium">Etisalat - AED 1,250.75</p>
+                      <p className="text-xs text-gray-500">2024-01-10 • 89% confidence</p>
+                    </div>
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Processed</span>
+                  </div>
+
+                  <div className="text-center pt-2">
+                    <InvoiceScanner variant="button" />
+                  </div>
+                </div>
+              </Paper>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+    
   );
 };
 

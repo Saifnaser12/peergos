@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useTax } from '../context/TaxContext';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import TRNLookup from '../components/TRNLookup';
+import POSIntegrationStatus from '../components/POSIntegrationStatus';
 import {
   DocumentTextIcon,
   ReceiptPercentIcon,
@@ -164,8 +165,8 @@ const Dashboard: React.FC = () => {
         })}
       </div>
 
-      {/* FTA Integration Status */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Integration Status */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
             {t('dashboard.ftaIntegration', 'FTA Integration')}
@@ -181,6 +182,10 @@ const Dashboard: React.FC = () => {
             {t('dashboard.trnLookup', 'TRN Lookup')}
           </h3>
           <TRNLookup variant="embedded" />
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+          <POSIntegrationStatus />
         </div>
       </div>
 

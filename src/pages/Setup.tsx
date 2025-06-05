@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import TaxAgentSelector from '../components/TaxAgentSelector';
+import POSIntegrationToggle from '../components/POSIntegrationToggle';
 import { 
   BuildingOfficeIcon, 
   IdentificationIcon, 
@@ -35,7 +36,7 @@ const Setup: React.FC = () => {
   });
 
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 4;
+  const totalSteps = 5;
 
   const handleInputChange = (field: keyof SetupData, value: string) => {
     setFormData(prev => ({
@@ -63,6 +64,8 @@ const Setup: React.FC = () => {
         return formData.businessType && formData.address;
       case 4:
         return true; // Tax agent selection is optional
+      case 5:
+        return true; // POS integration is optional
       default:
         return false;
     }
@@ -89,7 +92,7 @@ const Setup: React.FC = () => {
           {/* Progress indicator */}
           <div className="mb-8">
             <div className="flex items-center justify-between">
-              {[1, 2, 3, 4].map((step) => (
+              {[1, 2, 3, 4, 5].map((step) => (
                 <div key={step} className="flex items-center">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
@@ -254,6 +257,28 @@ const Setup: React.FC = () => {
               <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                 <TaxAgentSelector showTitle={false} variant="full" />
               </div>
+            </div>
+          )}
+
+          {/* Step 5: POS Integration */}
+          {currentStep === 5 && (
+            <div className="space-y-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                  {t('setup.step5.title', 'POS & Accounting Integration (Optional)')}
+                </h3>
+              </div>
+              
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  {t('setup.step5.description', 'Connect your POS system and accounting software to automatically sync transactions and streamline your bookkeeping. This is optional and can be configured later.')}
+                </p>
+              </div>
+
+              <POSIntegrationToggle variant="setup" />
             </div>
           )}
 

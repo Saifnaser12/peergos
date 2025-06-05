@@ -94,7 +94,6 @@
   "setup": {
     "title": "Setup Your Tax System",
     "subtitle": "Configure your organization details to get started",
-    "complete": "Complete Setup",
     "step1": {
       "title": "Organization Information",
       "orgName": "Organization Name",
@@ -109,32 +108,36 @@
       "title": "Business Details",
       "businessType": "Business Type",
       "address": "Business Address"
-    }
+    },
+    "step4": {
+      "title": "Tax Agent Selection (Optional)",
+      "description": "You can select an FTA-approved tax agent to assist with your tax compliance and submissions. This is optional and can be configured later."
+    },
+    "step5": {
+      "title": "POS & Accounting Integration (Optional)",
+      "description": "Connect your POS system and accounting software to automatically sync transactions and streamline your bookkeeping. This is optional and can be configured later."
+    },
+    "posIntegration": {
+      "title": "POS & Accounting Integration",
+      "description": "Connect your POS system and accounting software for automatic transaction sync and invoice processing.",
+      "mockWarning": "Mock Integration - Demo Only",
+      "mockDescription": "This is a demonstration of POS integration features. No actual connections are made.",
+      "availableIntegrations": "Available Integrations"
+    },
+    "complete": "Complete Setup"
   },
   "dashboard": {
     "title": "Tax Compliance Dashboard",
     "subtitle": "Overview of your tax obligations and compliance status",
     "askAssistant": "Ask Tax Assistant",
-    "quickActions": "Quick Actions",
     "ftaIntegration": "FTA Integration",
     "trnLookup": "TRN Lookup",
-    "cit": {
-      "title": "Corporate Income Tax"
+    "posIntegration": {
+      "title": "POS & Accounting Integrations",
+      "disabled": "POS Integration Disabled",
+      "enableHint": "Enable in Setup to connect POS systems"
     },
-    "vat": {
-      "title": "VAT Returns"
-    },
-    "financials": {
-      "title": "Net Income"
-    },
-    "transferPricing": {
-      "title": "Transfer Pricing"
-    },
-    "actions": {
-      "fileVAT": "File VAT Return",
-      "calculateCIT": "Calculate CIT",
-      "viewFinancials": "View Financials"
-    }
+    "quickActions": "Quick Actions",
   },
   "language": {
     "select": "Select Language",
@@ -444,9 +447,30 @@
     "smallBusinessReliefNotEligible": "Small Business Relief is only available for companies with revenue ≤ AED 3 million"
   },
   "common": {
-    "cancel": "Cancel",
     "save": "Save",
-    "close": "Close"
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "close": "Close",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information",
+    "accept": "Accept",
+    "reject": "Reject"
+  },
+  "invoiceScanner": {
+    "title": "Scan Invoice",
+    "description": "Upload or scan an invoice to automatically extract key information using OCR technology.",
+    "scanButton": "Scan Invoice",
+    "scanning": "Scanning Invoice...",
+    "processing": "Processing document with OCR technology",
+    "scanned": "Invoice Scanned Successfully"
   },
   "taxAgent": {
     "title": "Tax Agent Selection",
