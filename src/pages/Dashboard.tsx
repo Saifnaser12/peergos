@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../i18n';
+import { useTranslation } from 'react-i18next';
 import { useTax } from '../context/TaxContext';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import TRNLookup from '../components/TRNLookup';
