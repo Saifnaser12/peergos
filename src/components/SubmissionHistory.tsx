@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -81,15 +80,15 @@ const SubmissionHistory: React.FC<SubmissionHistoryProps> = ({
   useEffect(() => {
     const loadSubmissions = () => {
       let allSubmissions = ftaService.getSubmissionHistory(trn);
-      
+
       // Filter by submission type if specified
       if (submissionType !== 'all') {
         allSubmissions = allSubmissions.filter(sub => sub.data.submissionType === submissionType);
       }
-      
+
       // Sort by timestamp (newest first)
       allSubmissions.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-      
+
       // Enhance submissions with document tracking
       const enhancedSubmissions = allSubmissions.map(sub => ({
         ...sub,
@@ -104,7 +103,7 @@ const SubmissionHistory: React.FC<SubmissionHistoryProps> = ({
           uploadDate: Math.random() > 0.4 ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString() : undefined
         }
       }));
-      
+
       // Limit items if specified
       if (maxItems) {
         setSubmissions(enhancedSubmissions.slice(0, maxItems));
@@ -271,7 +270,7 @@ Keep this for your records.
             {t('fta.submissions.title')} ({submissions.length})
           </Typography>
         )}
-        
+
         <TableContainer component={Paper} variant="outlined">
           <Table size="small">
             <TableHead>
@@ -290,7 +289,7 @@ Keep this for your records.
                 const amount = submission.data.submissionType === 'VAT' 
                   ? submission.data.data.vatDue || 0
                   : submission.data.data.citDue || 0;
-                
+
                 return (
                   <React.Fragment key={submission.submissionId}>
                     <TableRow hover sx={{ 
@@ -388,7 +387,7 @@ Keep this for your records.
                               <VisibilityIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                          
+
                           <Tooltip title={t('fta.submissions.downloadReceipt')}>
                             <IconButton
                               size="small"
@@ -397,7 +396,7 @@ Keep this for your records.
                               <FileDownloadIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                          
+
                           {submission.trackingUrl && (
                             <Tooltip title={t('fta.submissions.trackOnline')}>
                               <IconButton
@@ -408,7 +407,7 @@ Keep this for your records.
                               </IconButton>
                             </Tooltip>
                           )}
-                          
+
                           <Tooltip title={expandedRows.has(submission.submissionId) ? t('fta.submissions.collapse') : t('fta.submissions.expand')}>
                             <IconButton
                               size="small"
@@ -423,7 +422,7 @@ Keep this for your records.
                         </Box>
                       </TableCell>
                     </TableRow>
-                    
+
                     <TableRow>
                       <TableCell colSpan={6} sx={{ py: 0 }}>
                         <Collapse in={expandedRows.has(submission.submissionId)}>
@@ -475,7 +474,7 @@ Keep this for your records.
               <Typography variant="h6" gutterBottom>
                 {t('fta.submissions.generalInfo')}
               </Typography>
-              
+
               <Box sx={{ mb: 3 }}>
                 <Typography variant="body2">
                   <strong>{t('fta.submissions.company')}:</strong> {selectedSubmission.data.companyName}
@@ -522,7 +521,7 @@ Keep this for your records.
               <Typography variant="h6" gutterBottom>
                 {t('fta.submissions.submittedData')}
               </Typography>
-              
+
               <Paper sx={{ p: 2, bgcolor: 'grey.50' }}>
                 <pre style={{ fontSize: '0.875rem', margin: 0, whiteSpace: 'pre-wrap' }}>
                   {JSON.stringify(selectedSubmission.data.data, null, 2)}

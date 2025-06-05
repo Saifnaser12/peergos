@@ -174,7 +174,30 @@ const Dashboard: React.FC = () => {
           <FTAIntegrationStatus 
             trn="100123456700003" 
             variant="card" 
+            showDetails={true}
           />
+          
+          {/* Quick Action Links */}
+          <div className="mt-4 flex flex-col gap-2">
+            <button
+              onClick={() => navigate('/cit')}
+              className="w-full text-left px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition-colors duration-200"
+            >
+              Submit CIT Return
+            </button>
+            <button
+              onClick={() => navigate('/vat')}
+              className="w-full text-left px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition-colors duration-200"
+            >
+              Submit VAT Return
+            </button>
+            <button
+              onClick={() => navigate('/submission-history')}
+              className="w-full text-left px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition-colors duration-200"
+            >
+              View Submission History
+            </button>
+          </div>
         </div>
 
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">

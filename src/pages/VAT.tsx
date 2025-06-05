@@ -32,6 +32,7 @@ import {
 } from '@mui/icons-material';
 import SubmissionHistory from '../components/SubmissionHistory';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
+import SubmissionPanel from '../components/fta/SubmissionPanel';
 import { ftaService } from '../services/ftaService';
 
 interface VATFormData {
@@ -529,6 +530,18 @@ const VAT: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
+
+      {/* FTA Submission Panel */}
+      {formData.trn && formData.companyName && (
+        <SubmissionPanel
+          trn={formData.trn}
+          companyName={formData.companyName}
+          submissionType="VAT"
+          formData={formData}
+          calculations={calculations}
+          onSubmit={handleSubmitToFTA}
+        />
+      )}
 
       {/* Submission History */}
       {formData.trn && (

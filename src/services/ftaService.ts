@@ -98,6 +98,12 @@ class FTAService {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  // Check FTA connection status
+  async checkConnection(): Promise<boolean> {
+    await this.delay(500);
+    return true; // Mock always connected
+  }
+
   // Mock TRN lookup with real-time simulation
   async lookupTRN(trn: string): Promise<TRNLookupResult | null> {
     await this.delay(800); // Simulate network delay

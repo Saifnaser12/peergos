@@ -166,7 +166,7 @@
       "submitSuccess": "Successfully submitted to FTA! Reference: {{referenceNumber}}",
       "submitError": "Failed to submit to FTA. Please try again.",
       "missingInfo": "Please fill in company name and TRN before submitting to FTA."
-    }
+    },
     "returns": {
       "title": "VAT Returns",
       "period": "Period",
@@ -240,8 +240,7 @@
       "excel": "Export as Excel/CSV Data",
       "pdfSuccess": "PDF exported successfully",
       "excelSuccess": "Excel file exported successfully"
-    }
-  },
+    },
     "returns": {
       "title": "CIT Returns",
       "period": "Period",
@@ -591,9 +590,9 @@
   "auth": {
     "logout": "Logout"
   },
-    "settings": "Settings",
-    "language": "Language",
-    "theme": "Theme",
+  "settings": "Settings",
+  "language": "Language",
+  "theme": "Theme",
   "unauthorized": {
     "title": "Access Denied",
     "message": "You don't have permission to access this page.",
@@ -643,5 +642,50 @@
     "fileTooLarge": "File size must be less than 5MB",
     "documentUploaded": "Document uploaded successfully",
     "documentDeleted": "Document deleted successfully"
+  },
+  "scanning": {
+    "title": "Invoice Scanner",
+    "button": "Scan Invoice",
+    "scanning": "Scanning invoice...",
+    "uploadFirst": "Please upload an invoice first",
+    "results": "Scanned Results",
+    "noText": "No text detected in the image"
+  },
+  "fta": {
+    "submission": {
+      "title": "Submit to FTA",
+      "prerequisites": "Prerequisites",
+      "taxAgentCert": "Tax Agent Certificate",
+      "paymentSlip": "Payment Slip / Bank Receipt",
+      "missingDocuments": "Please upload both Tax Agent Certificate and Payment Slip before submitting",
+      "missingInfo": "Please complete all required information",
+      "summary": "Submission Summary",
+      "type": "Type",
+      "vatDue": "VAT Due",
+      "citDue": "CIT Due",
+      "submitting": "Submitting to FTA...",
+      "submit": "Submit to FTA",
+      "referenceNumber": "Reference Number",
+      "filingPeriod": "Filing Period",
+      "amount": "Amount",
+      "submissionDate": "Submission Date",
+      "success": {
+        "title": "Submission Successful",
+        "message": "Your tax return has been successfully submitted to the Federal Tax Authority"
+      }
+    },
+    "integration": {
+      "title": "FTA Connection",
+      "connected": "Successfully connected to FTA systems",
+      "pending": "Setup required to connect to FTA"
+    },
+    "status": {
+      "integrated": "Integrated",
+      "pending_setup": "Pending Setup"
+    },
+    "simulation": {
+      "tooltip": "Simulation only – not connected to FTA",
+      "note": "Simulation Mode"
+    }
   }
 }

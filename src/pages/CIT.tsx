@@ -43,6 +43,7 @@ import { Validator } from '../utils/validation';
 import SubmissionHistory from '../components/SubmissionHistory';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import TaxAgentSelector from '../components/TaxAgentSelector';
+import SubmissionPanel from '../components/fta/SubmissionPanel';
 import { ftaService } from '../services/ftaService';
 
 interface CITFormData {
@@ -712,6 +713,19 @@ const CIT: React.FC = () => {
           <TaxAgentSelector variant="full" />
         </Grid>
       </Grid>
+
+      {/* FTA Submission Panel */}
+      {formData.trn && formData.companyName && (
+        <SubmissionPanel
+          trn={formData.trn}
+          companyName={formData.companyName}
+          submissionType="CIT"
+          formData={formData}
+          calculations={citCalculation}
+          onSubmit={handleSubmitToFTA}
+          disabled={isCalculating}
+        />
+      )}
 
       {/* Submission History */}
       {formData.trn && (
