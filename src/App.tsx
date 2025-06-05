@@ -90,7 +90,8 @@ function App() {
                               <Route path="assistant" element={<Assistant />} />
                               <Route path="calendar" element={<Calendar />} />
                               <Route path="unauthorized" element={<Unauthorized />} />
-                            </Routes>
+                            </Route>
+                          </Routes>
                         </Router>
                       </ErrorBoundary>
                     </ThemeProvider>
