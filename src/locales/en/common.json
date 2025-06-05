@@ -448,6 +448,27 @@
     "save": "Save",
     "close": "Close"
   },
+  "taxAgent": {
+    "title": "Tax Agent Selection",
+    "subtitle": "Select an FTA-approved tax agent to assist with your submissions",
+    "selectAgent": "Select Tax Agent",
+    "noAgent": "No agent selected",
+    "ftaApproved": "FTA Approved",
+    "specializations": "Specializations",
+    "viewProfile": "View FTA Profile",
+    "uploadCertificate": "Upload Tax Agent Certificate",
+    "replaceCertificate": "Replace Certificate",
+    "uploadDescription": "Upload the official certificate or authorization document",
+    "viewCertificate": "View Certificate",
+    "selected": "FTA Approved Agent Selected",
+    "selectionComplete": "Tax agent selection completed successfully!",
+    "selectionCompleteDesc": "Your selected agent can now assist with tax submissions and compliance.",
+    "info": "All listed agents are pre-approved by the FTA and authorized to represent taxpayers in the UAE.",
+    "upload": {
+      "invalidFileType": "Please upload a PDF or image file",
+      "fileTooLarge": "File size must be less than 5MB"
+    }
+  },
   "assistant": {
     "title": "Tax Assistant",
     "subtitle": "AI-powered guidance for UAE tax compliance",

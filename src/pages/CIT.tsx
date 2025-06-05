@@ -42,6 +42,7 @@ import { TaxCalculator } from '../utils/calculations/tax';
 import { Validator } from '../utils/validation';
 import SubmissionHistory from '../components/SubmissionHistory';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
+import TaxAgentSelector from '../components/TaxAgentSelector';
 import { ftaService } from '../services/ftaService';
 
 interface CITFormData {
@@ -706,6 +707,9 @@ const CIT: React.FC = () => {
               </Alert>
             </CardContent>
           </Card>
+
+          {/* Tax Agent Selection */}
+          <TaxAgentSelector variant="full" />
         </Grid>
       </Grid>
 

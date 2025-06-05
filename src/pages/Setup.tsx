@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
+import TaxAgentSelector from '../components/TaxAgentSelector';
 import { 
   BuildingOfficeIcon, 
   IdentificationIcon, 
@@ -34,7 +35,7 @@ const Setup: React.FC = () => {
   });
 
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 3;
+  const totalSteps = 4;
 
   const handleInputChange = (field: keyof SetupData, value: string) => {
     setFormData(prev => ({
@@ -60,6 +61,8 @@ const Setup: React.FC = () => {
         return formData.fiscalYearStart && formData.fiscalYearEnd;
       case 3:
         return formData.businessType && formData.address;
+      case 4:
+        return true; // Tax agent selection is optional
       default:
         return false;
     }
@@ -86,7 +89,7 @@ const Setup: React.FC = () => {
           {/* Progress indicator */}
           <div className="mb-8">
             <div className="flex items-center justify-between">
-              {[1, 2, 3].map((step) => (
+              {[1, 2, 3, 4].map((step) => (
                 <div key={step} className="flex items-center">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
@@ -226,6 +229,30 @@ const Setup: React.FC = () => {
                   className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   placeholder="Enter your business address"
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Tax Agent Selection */}
+          {currentStep === 4 && (
+            <div className="space-y-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                  {t('setup.step4.title', 'Tax Agent Selection (Optional)')}
+                </h3>
+              </div>
+              
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  {t('setup.step4.description', 'You can select an FTA-approved tax agent to assist with your tax compliance and submissions. This is optional and can be configured later.')}
+                </p>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <TaxAgentSelector showTitle={false} variant="full" />
               </div>
             </div>
           )}
