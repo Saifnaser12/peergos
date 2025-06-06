@@ -39,19 +39,30 @@ i18n
       useSuspense: false,
     },
 
-    // Handle missing translations gracefully
+    // Better handling of missing translations
     parseMissingKeyHandler: (key: string) => {
       console.warn(`Missing translation key: ${key}`);
-      return key; // Return the key itself instead of error message
+      // Return a more readable version of the key
+      const keyParts = key.split('.');
+      const lastPart = keyParts[keyParts.length - 1];
+      return lastPart
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .trim();
     },
 
-    // Return key itself if no translation found
+    // Always return something readable
     returnEmptyString: false,
     returnNull: false,
+    returnObjects: false,
     
     // Additional options for better handling
     saveMissing: false,
     updateMissing: false,
+    
+    // Enable key separator
+    keySeparator: '.',
+    nsSeparator: false,
   });
 
 export default i18n;

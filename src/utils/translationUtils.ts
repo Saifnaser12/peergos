@@ -55,29 +55,58 @@ export const verifyComponentTranslations = (keys: string[]): { missing: string[]
   return { missing, existing };
 };
 
-// Common translation patterns
-export const TRANSLATION_PATTERNS = {
-  nav: (page: string) => `nav.${page}`,
-  common: (action: string) => `common.${action}`,
-  error: (type: string) => `errors.${type}`,
-  form: (module: string, field: string) => `${module}.form.${field}`,
-  title: (module: string) => `${module}.title`,
-  subtitle: (module: string) => `${module}.subtitle`,
+// Safe translation function that never throws
+export const safeTranslate = (key: string, options?: any): string => {
+  try {
+    const translation = i18n.t(key, options);
+    
+    // If translation equals the key, it means it wasn't found
+    if (translation === key) {
+      console.warn(`Missing translation for key: ${key}`);
+      // Return a readable version of the key
+      const keyParts = key.split('.');
+      const lastPart = keyParts[keyParts.length - 1];
+      return lastPart
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .trim();
+    }
+    
+    return translation;
+  } catch (error) {
+    console.error(`Translation error for key: ${key}`, error);
+    // Return a readable version of the key as fallback
+    const keyParts = key.split('.');
+    const lastPart = keyParts[keyParts.length - 1];
+    return lastPart
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+      .trim();
+  }
 };
 
-// Helper function to convert camelCase to readable text
-export const camelCaseToReadable = (str: string): string => {
-  return str
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, char => char.toUpperCase())
-    .trim();
-};
-
-export default {
-  getAllTranslationKeys,
-  hasTranslation,
-  getTranslationWithFallback,
-  verifyComponentTranslations,
-  camelCaseToReadable,
-  TRANSLATION_PATTERNS,
+// Validate translation structure
+export const validateTranslationStructure = (translations: any): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = [];
+  
+  const validateObject = (obj: any, path = '') => {
+    for (const key in obj) {
+      const currentPath = path ? `${path}.${key}` : key;
+      
+      if (obj[key] === null || obj[key] === undefined) {
+        errors.push(`Missing value for key: ${currentPath}`);
+      } else if (typeof obj[key] === 'object') {
+        validateObject(obj[key], currentPath);
+      } else if (typeof obj[key] === 'string' && obj[key].trim() === '') {
+        errors.push(`Empty string for key: ${currentPath}`);
+      }
+    }
+  };
+  
+  validateObject(translations);
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
 };

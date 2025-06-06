@@ -1,51 +1,69 @@
 
 import { useTranslation } from 'react-i18next';
-import { useEffect } from 'react';
+import { useMemo } from 'react';
 
 export const useI18nHelpers = () => {
   const { t, i18n } = useTranslation();
-  
-  const isRTL = i18n.language === 'ar';
-  const direction = isRTL ? 'rtl' : 'ltr';
-  
-  // Safe translation function that handles missing keys
-  const safeT = (key: string, defaultValue?: string) => {
-    try {
-      const translation = t(key);
-      
-      // If translation is the same as key or starts with our missing indicator
-      if (translation === key || translation.startsWith('🔍 Label missing')) {
-        // Try to get a more meaningful fallback from the key structure
-        const keyParts = key.split('.');
-        const lastPart = keyParts[keyParts.length - 1];
+
+  const safeT = useMemo(() => {
+    return (key: string, options?: any) => {
+      try {
+        const translation = t(key, options);
         
-        // Convert camelCase to readable text
-        const readableText = lastPart
-          .replace(/([A-Z])/g, ' $1')
-          .replace(/^./, str => str.toUpperCase())
-          .trim();
+        // If translation equals the key, it means it wasn't found
+        if (translation === key) {
+          console.warn(`Missing translation for key: ${key}`);
+          // Return a readable version of the key
+          const keyParts = key.split('.');
+          const lastPart = keyParts[keyParts.length - 1];
+          return lastPart
+            .replace(/([A-Z])/g, ' $1')
+            .replace(/^./, str => str.toUpperCase())
+            .trim();
+        }
         
-        return defaultValue || readableText;
+        return translation;
+      } catch (error) {
+        console.error(`Translation error for key: ${key}`, error);
+        return key;
       }
-      
-      return translation;
-    } catch (error) {
-      console.warn(`Translation error for key: ${key}`, error);
-      return defaultValue || key;
-    }
+    };
+  }, [t]);
+
+  const isRTL = i18n.language === 'ar';
+  
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat(i18n.language === 'ar' ? 'ar-AE' : 'en-AE', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(num);
   };
 
-  // Set document direction
-  useEffect(() => {
-    document.documentElement.dir = direction;
-    document.documentElement.lang = i18n.language;
-  }, [direction, i18n.language]);
+  const formatCurrency = (amount: number, currency = 'AED') => {
+    return new Intl.NumberFormat(i18n.language === 'ar' ? 'ar-AE' : 'en-AE', {
+      style: 'currency',
+      currency,
+    }).format(amount);
+  };
+
+  const formatDate = (date: Date | string) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-AE' : 'en-AE', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(dateObj);
+  };
 
   return {
     t: safeT,
     i18n,
     isRTL,
-    direction,
+    formatNumber,
+    formatCurrency,
+    formatDate,
+    currentLanguage: i18n.language,
     changeLanguage: i18n.changeLanguage,
   };
 };
