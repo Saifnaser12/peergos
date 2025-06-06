@@ -102,7 +102,7 @@ const CIT: React.FC = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
-  const [isUploading, setIsUploading] = useState(isUploading);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Calculate CIT based on form data
   const citCalculation = useMemo((): CITCalculation => {

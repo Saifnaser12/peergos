@@ -3,23 +3,15 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 // Import translation files
-import enCommon from './locales/en/common.json';
-import enTranslation from './locales/en/translation.json';
-import arCommon from './locales/ar/common.json';
-import arTranslation from './locales/ar/translation.json';
+import enTranslations from './locales/en.json';
+import arTranslations from './locales/ar/common.json';
 
 const resources = {
   en: {
-    translation: {
-      ...enCommon,
-      ...enTranslation
-    }
+    translation: enTranslations
   },
   ar: {
-    translation: {
-      ...arCommon,
-      ...arTranslation
-    }
+    translation: arTranslations
   }
 };
 

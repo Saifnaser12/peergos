@@ -1,4 +1,3 @@
-
 {
   "common": {
     "loading": "Loading...",
@@ -161,51 +160,44 @@
     "title": "Corporate Tax Filing",
     "subtitle": "Manage your Corporate Income Tax obligations",
     "form": {
-      "title": "Corporate Tax Return",
+      "title": "CIT Return Information",
+      "companyInfo": "Company Information",
       "companyName": "Company Name",
-      "trn": "TRN (Tax Registration Number)",
-      "trnHelp": "Your 15-digit Tax Registration Number",
-      "companyNameHelp": "Legal name of your company",
-      "taxYear": "Tax Year",
-      "taxYearHelp": "Select the tax year for this return",
-      "financialYearEnd": "Financial Year End",
-      "revenue": "Total Revenue (AED)",
-      "revenueHelp": "Total revenue for the tax period",
-      "expenses": "Total Expenses (AED)",
-      "expensesHelp": "Total allowable business expenses",
-      "taxAdjustments": "Tax Adjustments (AED)",
-      "exemptIncome": "Exempt Income (AED)",
-      "netProfit": "Net Profit (AED)",
-      "netProfitHelp": "Revenue minus allowable expenses",
+      "trn": "Tax Registration Number (TRN)",
+      "financialYearEnd": "Financial Year End Date",
+      "financialData": "Financial Data",
+      "revenue": "Total Revenue",
+      "expenses": "Total Expenses",
+      "taxAdjustments": "Tax Adjustments",
+      "taxAdjustmentsHelp": "Enter positive for additions, negative for deductions",
+      "exemptIncome": "Exempt Income",
       "carriedForwardLosses": "Carried Forward Losses",
-      "carryForwardLosses": "Carry Forward Losses (AED)",
-      "carryForwardLossesHelp": "Losses from previous years (capped at 75%)",
-      "taxableIncome": "Taxable Income (AED)",
-      "taxableIncomeHelp": "Net profit after applying losses",
-      "smallBusinessRelief": "Apply Small Business Relief",
+      "lossesCapHelp": "Maximum 75% of adjusted profit can be offset",
+      "elections": "Tax Elections",
+      "smallBusinessRelief": "Small Business Relief Election",
       "smallBusinessReliefHelp": "Available for companies with revenue ≤ AED 3 million",
-      "taxGroupElection": "Elect Tax Group Filing",
+      "taxGroupElection": "Tax Group Election",
       "taxGroupElectionHelp": "Elect to be treated as part of a tax group"
     },
     "calculation": {
-      "title": "Tax Summary",
-      "calculate": "Calculate CIT",
+      "title": "CIT Calculation",
+      "calculate": "Calculate",
       "calculating": "Calculating...",
       "complete": "Calculation completed successfully",
       "netProfit": "Net Profit",
-      "allowedLosses": "Allowed Losses",
+      "allowedLosses": "Allowed Losses (Capped at 75%)",
       "lossesCapped": "Losses capped at 75% of adjusted profit",
       "taxableIncome": "Taxable Income",
-      "citPayable": "Corporate Tax Payable",
+      "citPayable": "CIT Payable",
       "effectiveRate": "Effective Tax Rate",
       "smallBusinessReliefApplied": "Small Business Relief Applied"
     },
     "compliance": {
-      "noCitDue": "No Corporate Tax Due",
+      "noCitDue": "No CIT is due for this period",
       "citDue": "CIT payment is required"
     },
     "upload": {
-      "title": "Upload Supporting Documents",
+      "title": "Supporting Documents",
       "button": "Upload Documents",
       "uploading": "Uploading...",
       "uploadedFiles": "Uploaded Files",
@@ -219,7 +211,17 @@
       "description": "Choose your preferred export format",
       "button": "Export CIT Return",
       "pdf": "Export as PDF Report",
-      "excel": "Export as Excel/CSV Data"
+      "excel": "Export as Excel/CSV Data",
+      "pdfSuccess": "PDF exported successfully",
+      "excelSuccess": "Excel file exported successfully"
+    },
+    "fta": {
+      "submitToFTA": "Submit to FTA",
+      "submitting": "Submitting to FTA...",
+      "submitSuccess": "Successfully submitted to FTA! Reference: {{referenceNumber}}",
+      "submitError": "Failed to submit to FTA. Please try again.",
+      "missingInfo": "Please fill in company name and TRN before submitting to FTA.",
+      "missingTaxAgent": "Please select a tax agent and upload their certificate before submitting"
     }
   },
   "transferPricing": {
@@ -432,7 +434,8 @@
       "syncing": "🔄 Syncing with FTA"
     },
     "simulation": {
-      "note": "⚠️ Demo Mode – FTA Simulation Active"
+      "note": "⚠️ Demo Mode – FTA Simulation Active",
+      "tooltip": "Simulation only - not connected to real FTA"
     }
   },
   "trn": {
@@ -457,156 +460,10 @@
       "suspendedWarning": "This TRN is currently suspended by FTA."
     }
   },
-  "nav": {
-    "dashboard": "Dashboard",
-    "cit": "CIT",
-    "vat": "VAT", 
-    "financials": "Financials",
-    "transferPricing": "Transfer Pricing",
-    "assistant": "Assistant",
-    "setup": "Setup",
-    "calendar": "Calendar"
-  },
-  "notifications": {
-    "title": "Notifications",
-    "markAllRead": "Mark all as read",
-    "markAsRead": "Mark as read",
-    "dismiss": "Dismiss",
-    "noNotifications": "No notifications",
-    "allCaughtUp": "You're all caught up!",
-    "justNow": "Just now",
-    "hoursAgo": "{{hours}}h ago",
-    "daysAgo": "{{days}}d ago",
-    "dueToday": "Due today",
-    "daysRemaining": "{{days}} days remaining",
-    "setupIncomplete": "Setup Incomplete",
-    "setupIncompleteDesc": "Complete your system setup to access all features",
-    "completeSetup": "Complete Setup",
-    "missingAgentCert": "Tax Agent Certificate Required",
-    "missingAgentCertDesc": "Upload your tax agent certificate to proceed",
-    "uploadDocument": "Upload Document",
-    "missingBankSlip": "Bank Slip Missing",
-    "missingBankSlipDesc": "Please upload your bank slip for verification"
-  },
-  "trn": {
-    "lookup": {
-      "label": "TRN Lookup",
-      "helperText": "Search UAE company by 15-digit TRN",
-      "search": "Search TRN",
-      "placeholder": "Enter TRN (e.g., 100123456700003)"
-    }
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Overview of your tax obligations and key metrics",
-    "askAssistant": "Ask Tax Assistant",
-    "quickActions": "Quick Actions",
-    "ftaIntegration": "FTA Integration Status",
-    "trnLookup": "TRN Company Lookup",
-    "cit": {
-      "title": "Corporate Tax Payable",
-      "subtitle": "Due: 2024-03-31"
-    },
-    "vat": {
-      "title": "VAT Liability",
-      "subtitle": "Next: 2024-02-28"
-    },
-    "financials": {
-      "title": "Net Income (This Year)",
-      "subtitle": "Based on submitted financials"
-    },
-    "transferPricing": {
-      "title": "Transfer Pricing",
-      "subtitle": "75% Complete • 3 Documents Needed"
-    },
-    "actions": {
-      "fileVAT": "File VAT Return",
-      "calculateCIT": "Calculate CIT",
-      "viewFinancials": "View Financials"
-    },
-    "posIntegration": {
-      "disabled": "POS Integration Disabled",
-      "enableHint": "Enable in Settings to connect POS systems"
-    }
-  },
-  "fta": {
-    "integration": {
-      "title": "FTA Integration",
-      "pending": "Pending Setup",
-      "connected": "✅ Connected to FTA",
-      "disconnected": "❌ Disconnected from FTA",
-      "syncing": "🔄 Syncing with FTA"
-    },
-    "simulation": {
-      "note": "⚠️ Demo Mode - FTA simulation active",
-      "tooltip": "Simulation only - not connected to real FTA"
-    }
-  },
-  "cit": {
-    "form": {
-      "title": "CIT Return Information",
-      "companyInfo": "Company Information",
-      "companyName": "Company Name",
-      "trn": "Tax Registration Number (TRN)",
-      "financialYearEnd": "Financial Year End Date",
-      "financialData": "Financial Data",
-      "revenue": "Total Revenue",
-      "expenses": "Total Expenses",
-      "taxAdjustments": "Tax Adjustments",
-      "taxAdjustmentsHelp": "Enter positive for additions, negative for deductions",
-      "exemptIncome": "Exempt Income",
-      "carriedForwardLosses": "Carried Forward Losses",
-      "lossesCapHelp": "Maximum 75% of adjusted profit can be offset",
-      "elections": "Tax Elections",
-      "smallBusinessRelief": "Small Business Relief Election",
-      "smallBusinessReliefHelp": "Available for companies with revenue ≤ AED 3 million",
-      "taxGroupElection": "Tax Group Election",
-      "taxGroupElectionHelp": "Elect to be treated as part of a tax group"
-    },
-    "calculation": {
-      "title": "CIT Calculation",
-      "calculate": "Calculate",
-      "calculating": "Calculating...",
-      "complete": "Calculation completed successfully",
-      "netProfit": "Net Profit",
-      "allowedLosses": "Allowed Losses (Capped at 75%)",
-      "lossesCapped": "Losses capped at 75% of adjusted profit",
-      "taxableIncome": "Taxable Income",
-      "citPayable": "CIT Payable",
-      "effectiveRate": "Effective Tax Rate",
-      "smallBusinessReliefApplied": "Small Business Relief Applied"
-    },
-    "compliance": {
-      "noCitDue": "No CIT is due for this period",
-      "citDue": "CIT payment is required"
-    },
-    "upload": {
-      "title": "Supporting Documents",
-      "button": "Upload Documents",
-      "uploading": "Uploading...",
-      "uploadedFiles": "Uploaded Files",
-      "success": "Files uploaded successfully",
-      "error": "Error uploading files",
-      "invalidFileType": "Invalid file type. Please upload PDF, Excel, or CSV files only",
-      "fileTooLarge": "File size exceeds 10MB limit"
-    },
-    "export": {
-      "title": "Export Options",
-      "description": "Choose your preferred export format",
-      "button": "Export CIT Return",
-      "pdf": "Export as PDF Report",
-      "excel": "Export as Excel/CSV Data",
-      "pdfSuccess": "PDF exported successfully",
-      "excelSuccess": "Excel file exported successfully"
-    },
-    "fta": {
-      "submitToFTA": "Submit to FTA",
-      "submitting": "Submitting to FTA...",
-      "submitSuccess": "Successfully submitted to FTA! Reference: {{referenceNumber}}",
-      "submitError": "Failed to submit to FTA. Please try again.",
-      "missingInfo": "Please fill in company name and TRN before submitting to FTA.",
-      "missingTaxAgent": "Please select a tax agent and upload their certificate before submitting"
-    }
+  "validation": {
+    "companyNameTooShort": "Company name must be at least 2 characters",
+    "amountNegative": "Amount cannot be negative",
+    "smallBusinessReliefNotEligible": "Small Business Relief is only available for companies with revenue ≤ AED 3 million"
   },
   "errors": {
     "general": "An error occurred. Please try again.",
