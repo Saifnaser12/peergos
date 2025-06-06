@@ -1,4 +1,3 @@
-
 {
   "app": {
     "title": "UAE Tax Compliance System",
@@ -40,9 +39,13 @@
     "title": "Tax Compliance Dashboard",
     "subtitle": "Overview of your tax obligations and compliance status",
     "askAssistant": "Ask Tax Assistant",
-    "ftaIntegration": "FTA Integration",
-    "trnLookup": "TRN Lookup",
     "quickActions": "Quick Actions",
+    "ftaIntegration": "FTA Integration Status",
+    "trnLookup": "TRN Lookup",
+    "posIntegration": {
+      "disabled": "POS Integration (Premium Feature)",
+      "enableHint": "Upgrade to sync transactions automatically"
+    },
     "cit": {
       "title": "Corporate Income Tax"
     },
@@ -642,5 +645,27 @@
     "select": "Select Currency",
     "aed": "UAE Dirham",
     "usd": "US Dollar"
+  },
+  "fta": {
+    "integration": {
+      "pending": "✅ Connected to FTA",
+      "connected": "✅ FTA Connected",
+      "disconnected": "❌ FTA Disconnected",
+      "syncing": "🔄 Syncing with FTA"
+    },
+    "simulation": {
+      "note": "⚠️ Demo Mode - FTA Simulation Active"
+    }
+  },
+  "trn": {
+    "lookup": {
+      "label": "Search Company by TRN",
+      "helperText": "Enter 15-digit Tax Registration Number",
+      "search": "Search Company",
+      "placeholder": "Enter TRN (e.g., 100123456700003)"
+    }
+  },
+  "auth": {
+    "logout": "Logout"
   }
 }
