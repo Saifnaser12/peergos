@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -83,7 +82,7 @@ const FTAIntegrationStatus: React.FC<FTAIntegrationStatusProps> = ({
               size="small"
             />
           </Box>
-          
+
           {showDetails && (
             <Box>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
@@ -92,13 +91,13 @@ const FTAIntegrationStatus: React.FC<FTAIntegrationStatusProps> = ({
                   : t('fta.integration.pending', 'Setup required to connect to FTA')
                 }
               </Typography>
-              
+
               {status.reason && (
                 <Typography variant="caption" color="warning.main">
                   {status.reason}
                 </Typography>
               )}
-              
+
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                 <InfoIcon sx={{ fontSize: 14, mr: 0.5, color: 'text.secondary' }} />
                 <Typography variant="caption" color="text.secondary">

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePOSIntegration } from '../context/POSIntegrationContext';
@@ -66,7 +65,7 @@ const POSIntegrationStatus: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <CheckCircleIcon className="w-5 h-5 text-green-500" />
                 <button
@@ -78,7 +77,7 @@ const POSIntegrationStatus: React.FC = () => {
               </div>
             </div>
           ))}
-          
+
           <div className="text-center">
             <button
               onClick={() => {
@@ -112,7 +111,7 @@ const POSIntegrationStatus: React.FC = () => {
                   </p>
                 </div>
               </div>
-              
+
               <button
                 onClick={() => connectIntegration(integration.id)}
                 className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"

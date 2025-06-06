@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -67,7 +66,7 @@ const TRNLookup: React.FC<TRNLookupProps> = ({
 
     try {
       const lookupResult = await ftaService.lookupTRN(trn);
-      
+
       if (lookupResult) {
         setResult(lookupResult);
         if (onTRNFound) {
@@ -274,7 +273,7 @@ const TRNLookup: React.FC<TRNLookupProps> = ({
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           {t('trn.lookup.description')}
         </Typography>
-        
+
         {LookupForm}
         {ResultDisplay}
       </CardContent>

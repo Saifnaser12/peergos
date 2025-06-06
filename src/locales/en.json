@@ -68,15 +68,32 @@
     "yearToDate": "Year to date",
     "vatAndCit": "VAT + CIT",
     "askAssistant": "Ask Tax Assistant",
-    "ftaIntegration": "FTA Integration",
-    "trnLookup": "TRN Lookup",
+    "ftaIntegration": "FTA Connectivity Status",
+    "trnLookup": "Company Lookup by TRN",
     "quickActions": "Quick Actions",
     "recentActivity": "Recent Activity",
     "upcomingDeadlines": "Upcoming Deadlines",
     "complianceStatus": "Compliance Status",
+    "cit": {
+      "title": "Corporate Tax Payable"
+    },
+    "vat": {
+      "title": "VAT Liability"
+    },
+    "financials": {
+      "title": "Financial Overview"
+    },
+    "transferPricing": {
+      "title": "Transfer Pricing Compliance"
+    },
+    "actions": {
+      "fileVAT": "Submit VAT Return",
+      "calculateCIT": "Calculate Corporate Tax",
+      "viewFinancials": "Review Financial Reports"
+    },
     "posIntegration": {
       "title": "POS & Accounting Integrations",
-      "disabled": "POS Integration Disabled",
+      "disabled": "🔄 POS Integration Disabled",
       "enableHint": "Enable in Setup to connect POS systems"
     }
   },
@@ -393,6 +410,25 @@
     "createAccount": "Create Account",
     "forgotPassword": "Forgot Password?",
     "rememberMe": "Remember Me"
+  },
+  "fta": {
+    "integration": {
+      "pending": "✅ Connected to FTA",
+      "connected": "✅ FTA Connected",
+      "disconnected": "❌ FTA Disconnected",
+      "syncing": "🔄 Syncing with FTA"
+    },
+    "simulation": {
+      "note": "⚠️ Demo Mode - FTA Simulation Active"
+    }
+  },
+  "trn": {
+    "lookup": {
+      "label": "Search Company by TRN",
+      "helperText": "Enter 15-digit Tax Registration Number",
+      "search": "Search Company",
+      "placeholder": "Enter TRN (e.g., 100123456700003)"
+    }
   },
   "errors": {
     "general": "An error occurred. Please try again.",
