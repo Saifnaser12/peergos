@@ -97,11 +97,13 @@
     "complianceStatus": "Compliance Status"
   },
   "vat": {
-    "title": "VAT Management",
+    "title": "VAT Filing",
     "subtitle": "Manage your VAT returns and compliance",
     "return": "VAT Return",
     "filing": "VAT Return Filing",
     "description": "UAE FTA-compliant VAT return submission",
+    "nextDue": "Next Due Date",
+    "amountDue": "VAT Amount Due",
     "sales": "Sales",
     "purchases": "Purchases",
     "adjustments": "Adjustments",
@@ -152,50 +154,54 @@
     }
   },
   "cit": {
-    "title": "Corporate Tax Management",
+    "title": "Corporate Tax Filing",
     "subtitle": "Manage your Corporate Income Tax obligations",
     "form": {
       "title": "Corporate Tax Return",
+      "companyName": "Company Name",
       "trn": "TRN (Tax Registration Number)",
       "trnHelp": "Your 15-digit Tax Registration Number",
-      "companyName": "Company Name",
       "companyNameHelp": "Legal name of your company",
       "taxYear": "Tax Year",
       "taxYearHelp": "Select the tax year for this return",
+      "financialYearEnd": "Financial Year End",
       "revenue": "Total Revenue (AED)",
       "revenueHelp": "Total revenue for the tax period",
       "expenses": "Total Expenses (AED)",
       "expensesHelp": "Total allowable business expenses",
+      "taxAdjustments": "Tax Adjustments (AED)",
+      "exemptIncome": "Exempt Income (AED)",
       "netProfit": "Net Profit (AED)",
       "netProfitHelp": "Revenue minus allowable expenses",
+      "carriedForwardLosses": "Carried Forward Losses",
       "carryForwardLosses": "Carry Forward Losses (AED)",
       "carryForwardLossesHelp": "Losses from previous years (capped at 75%)",
       "taxableIncome": "Taxable Income (AED)",
       "taxableIncomeHelp": "Net profit after applying losses",
-      "smallBusinessRelief": "Small Business Relief",
+      "smallBusinessRelief": "Apply Small Business Relief",
       "smallBusinessReliefHelp": "Available for companies with revenue ≤ AED 3 million",
-      "taxGroupElection": "Tax Group Election",
+      "taxGroupElection": "Elect Tax Group Filing",
       "taxGroupElectionHelp": "Elect to be treated as part of a tax group"
     },
     "calculation": {
-      "title": "CIT Calculation",
+      "title": "Tax Summary",
       "calculate": "Calculate CIT",
       "calculating": "Calculating...",
       "complete": "Calculation completed successfully",
       "netProfit": "Net Profit",
-      "allowedLosses": "Allowed Losses (Capped at 75%)",
+      "allowedLosses": "Allowed Losses",
       "lossesCapped": "Losses capped at 75% of adjusted profit",
       "taxableIncome": "Taxable Income",
-      "citPayable": "Corporate Tax Payable (AED)",
+      "citPayable": "Corporate Tax Payable",
       "effectiveRate": "Effective Tax Rate",
       "smallBusinessReliefApplied": "Small Business Relief Applied"
     },
     "compliance": {
-      "noCitDue": "No CIT is due for this period",
+      "noCitDue": "No Corporate Tax Due",
       "citDue": "CIT payment is required"
     },
     "upload": {
-      "title": "Supporting Documents",
+      "title": "Upload Supporting Documents",
       "button": "Upload Documents",
       "uploading": "Uploading...",
       "uploadedFiles": "Uploaded Files",
@@ -213,8 +219,10 @@
     }
   },
   "transferPricing": {
-    "title": "Transfer Pricing Documentation",
+    "title": "Transfer Pricing",
     "subtitle": "Manage related party transactions and transfer pricing compliance",
+    "status": "Documentation Status",
+    "requiredDocs": "Documents Needed",
     "navigation": {
       "companyInfo": "Company Information",
       "relatedParties": "Related Parties",
@@ -412,19 +420,20 @@
   },
   "fta": {
     "integration": {
-      "pending": "✅ Connected to FTA",
+      "pending": "Pending FTA Integration Setup",
       "connected": "✅ FTA Connected",
       "disconnected": "❌ FTA Disconnected",
-      "syncing": "🔄 Syncing with FTA"
+      "syncing": "🔄 Syncing with FTA",
+      "title": "FTA Integration Status"
     },
     "simulation": {
-      "note": "⚠️ Demo Mode - FTA Simulation Active"
+      "note": "Simulation Mode - FTA Submission Disabled"
     }
   },
   "trn": {
     "lookup": {
-      "label": "Search Company by TRN",
-      "helperText": "Enter 15-digit Tax Registration Number",
+      "label": "Enter TRN Number",
+      "helperText": "Look up UAE-registered company using TRN",
       "search": "Search Company",
       "placeholder": "Enter TRN (e.g., 100123456700003)"
     }
