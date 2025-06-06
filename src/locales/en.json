@@ -70,7 +70,7 @@
     },
     "financials": {
       "title": "Net Income (This Year)",
-      "subtitle": "Latest estimated income"
+      "subtitle": "Based on submitted financials"
     },
     "transferPricing": {
       "title": "Transfer Pricing",
@@ -442,7 +442,19 @@
       "label": "Enter TRN Number",
       "helperText": "Enter full TRN to retrieve FTA-registered company details",
       "search": "Search Company",
-      "placeholder": "Enter TRN (e.g., 100123456700003)"
+      "placeholder": "Enter TRN (e.g., 100123456700003)",
+      "searching": "Searching...",
+      "description": "Search for UAE-registered companies using their Tax Registration Number",
+      "invalidFormat": "Please enter a valid 15-digit TRN",
+      "notFound": "No company found with this TRN",
+      "error": "Error searching for TRN",
+      "businessType": "Business Type",
+      "emirate": "Emirate",
+      "registrationDate": "Registration Date",
+      "lastFiling": "Last Filing",
+      "complianceStatus": "Compliance Status",
+      "nonCompliantWarning": "This company has compliance issues. Please verify before proceeding.",
+      "suspendedWarning": "This TRN is currently suspended by FTA."
     }
   },
   "errors": {
