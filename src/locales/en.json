@@ -1,3 +1,4 @@
+
 {
   "common": {
     "loading": "Loading...",
@@ -12,42 +13,263 @@
     "filter": "Filter",
     "noData": "No data available",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "accept": "Accept",
+    "reject": "Reject",
+    "complete": "Complete",
+    "view": "View",
+    "upload": "Upload",
+    "select": "Select",
+    "remove": "Remove",
+    "add": "Add",
+    "continue": "Continue",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "open": "Open",
+    "confirm": "Confirm",
+    "calculate": "Calculate",
+    "recalculate": "Recalculate",
+    "processing": "Processing...",
+    "completed": "Completed",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "draft": "Draft",
+    "submitted": "Submitted"
   },
   "nav": {
     "dashboard": "Dashboard",
     "filing": "Filing",
     "setup": "Setup",
-    "assistant": "Assistant",
+    "assistant": "Tax Assistant",
     "trnSearch": "TRN Search",
-    "financials": "Financials",
-    "systemOnline": "System Online"
+    "financials": "Financial Reports",
+    "systemOnline": "System Online",
+    "vat": "VAT Management",
+    "cit": "Corporate Tax",
+    "transferPricing": "Transfer Pricing",
+    "calendar": "Tax Calendar",
+    "admin": "Administration",
+    "logout": "Logout",
+    "profile": "Profile",
+    "settings": "Settings"
   },
   "dashboard": {
-    "title": "Tax Dashboard",
+    "title": "Tax Compliance Dashboard",
     "description": "Monitor your tax compliance and financial metrics",
+    "subtitle": "Overview of your tax obligations and compliance status",
     "totalRevenue": "Total Revenue",
     "totalExpenses": "Total Expenses",
     "netIncome": "Net Income",
     "taxDue": "Tax Due",
     "transactions": "transactions",
     "yearToDate": "Year to date",
-    "vatAndCit": "VAT + CIT"
+    "vatAndCit": "VAT + CIT",
+    "askAssistant": "Ask Tax Assistant",
+    "ftaIntegration": "FTA Integration",
+    "trnLookup": "TRN Lookup",
+    "quickActions": "Quick Actions",
+    "recentActivity": "Recent Activity",
+    "upcomingDeadlines": "Upcoming Deadlines",
+    "complianceStatus": "Compliance Status",
+    "posIntegration": {
+      "title": "POS & Accounting Integrations",
+      "disabled": "POS Integration Disabled",
+      "enableHint": "Enable in Setup to connect POS systems"
+    }
   },
-  "relatedParty": {
-    "title": "Related Party Transactions",
-    "description": "Manage and view your related party transactions",
-    "toggle": "Show Related Party Transactions",
-    "noTransactions": "No related party transactions found",
-    "partyName": "Party Name",
-    "relationship": "Relationship",
-    "country": "Country",
-    "transactionType": "Transaction Type",
-    "value": "Value (AED)"
+  "vat": {
+    "title": "VAT Management",
+    "subtitle": "Manage your VAT returns and compliance",
+    "return": "VAT Return",
+    "filing": "VAT Return Filing",
+    "description": "UAE FTA-compliant VAT return submission",
+    "sales": "Sales",
+    "purchases": "Purchases",
+    "adjustments": "Adjustments",
+    "calculation": "VAT Calculation",
+    "summary": "VAT Calculation Summary",
+    "standardRatedSales": "Standard-rated Sales (5%)",
+    "standardRatedSalesHelp": "Sales subject to 5% VAT rate",
+    "zeroRatedSales": "Zero-rated Sales (0%)",
+    "zeroRatedSalesHelp": "Sales with 0% VAT rate (exports, etc.)",
+    "exemptSales": "Exempt Sales",
+    "exemptSalesHelp": "Sales exempt from VAT",
+    "purchasesRecoverable": "Purchases with Recoverable VAT",
+    "purchasesRecoverableHelp": "Business purchases where VAT can be recovered",
+    "purchasesNonRecoverable": "Purchases without Recoverable VAT",
+    "purchasesNonRecoverableHelp": "Purchases where VAT cannot be recovered",
+    "reverseCharge": "Reverse Charge Mechanism",
+    "importsGoods": "Imports of Goods/Services",
+    "importsGoodsHelp": "Imported goods and services subject to reverse charge",
+    "localServices": "Local Services",
+    "localServicesHelp": "Local services subject to reverse charge",
+    "lateInvoices": "Late Invoices",
+    "lateInvoicesHelp": "VAT adjustments for late invoices",
+    "badDebtRelief": "Bad Debt Relief",
+    "badDebtReliefHelp": "VAT relief for bad debts",
+    "vatCorrections": "VAT Corrections",
+    "vatCorrectionsHelp": "Other VAT corrections and adjustments",
+    "outputVat": "Output VAT",
+    "inputVat": "Input VAT",
+    "vatRefundable": "VAT Refundable",
+    "vatPayable": "VAT Payable",
+    "supportingDocuments": "Supporting Documents",
+    "uploadDocuments": "Upload invoices, receipts, and reports",
+    "fileFormat": "PDF, JPEG, PNG, XLSX - Max 10MB per file",
+    "submitReturn": "Submit VAT Return",
+    "export": {
+      "button": "Export Returns",
+      "pdf": "Export as PDF",
+      "excel": "Export as Excel"
+    },
+    "fta": {
+      "submitToFTA": "Submit to FTA",
+      "compliance": "This VAT return complies with UAE Federal Tax Authority requirements. Ensure all amounts are accurate before submission."
+    },
+    "validation": {
+      "invalidNumber": "Invalid number format",
+      "negativeAmount": "Amount cannot be negative",
+      "required": "This field is required"
+    }
+  },
+  "cit": {
+    "title": "Corporate Tax Management",
+    "subtitle": "Manage your Corporate Income Tax obligations",
+    "form": {
+      "title": "Corporate Tax Return",
+      "trn": "TRN (Tax Registration Number)",
+      "trnHelp": "Your 15-digit Tax Registration Number",
+      "companyName": "Company Name",
+      "companyNameHelp": "Legal name of your company",
+      "taxYear": "Tax Year",
+      "taxYearHelp": "Select the tax year for this return",
+      "revenue": "Total Revenue (AED)",
+      "revenueHelp": "Total revenue for the tax period",
+      "expenses": "Total Expenses (AED)",
+      "expensesHelp": "Total allowable business expenses",
+      "netProfit": "Net Profit (AED)",
+      "netProfitHelp": "Revenue minus allowable expenses",
+      "carryForwardLosses": "Carry Forward Losses (AED)",
+      "carryForwardLossesHelp": "Losses from previous years (capped at 75%)",
+      "taxableIncome": "Taxable Income (AED)",
+      "taxableIncomeHelp": "Net profit after applying losses",
+      "smallBusinessRelief": "Small Business Relief",
+      "smallBusinessReliefHelp": "Available for companies with revenue ≤ AED 3 million",
+      "taxGroupElection": "Tax Group Election",
+      "taxGroupElectionHelp": "Elect to be treated as part of a tax group"
+    },
+    "calculation": {
+      "title": "CIT Calculation",
+      "calculate": "Calculate CIT",
+      "calculating": "Calculating...",
+      "complete": "Calculation completed successfully",
+      "netProfit": "Net Profit",
+      "allowedLosses": "Allowed Losses (Capped at 75%)",
+      "lossesCapped": "Losses capped at 75% of adjusted profit",
+      "taxableIncome": "Taxable Income",
+      "citPayable": "Corporate Tax Payable (AED)",
+      "effectiveRate": "Effective Tax Rate",
+      "smallBusinessReliefApplied": "Small Business Relief Applied"
+    },
+    "compliance": {
+      "noCitDue": "No CIT is due for this period",
+      "citDue": "CIT payment is required"
+    },
+    "upload": {
+      "title": "Supporting Documents",
+      "button": "Upload Documents",
+      "uploading": "Uploading...",
+      "uploadedFiles": "Uploaded Files",
+      "success": "Files uploaded successfully",
+      "error": "Error uploading files",
+      "invalidFileType": "Invalid file type. Please upload PDF, Excel, or CSV files only",
+      "fileTooLarge": "File size exceeds 10MB limit"
+    },
+    "export": {
+      "title": "Export Options",
+      "description": "Choose your preferred export format",
+      "button": "Export CIT Return",
+      "pdf": "Export as PDF Report",
+      "excel": "Export as Excel/CSV Data"
+    }
+  },
+  "transferPricing": {
+    "title": "Transfer Pricing Documentation",
+    "subtitle": "Manage related party transactions and transfer pricing compliance",
+    "navigation": {
+      "companyInfo": "Company Information",
+      "relatedParties": "Related Parties",
+      "transactions": "Transactions",
+      "documentation": "Documentation",
+      "summary": "Summary"
+    },
+    "companyInfo": {
+      "title": "Company Information",
+      "companyName": "Company Name",
+      "trn": "Tax Registration Number (TRN)",
+      "industry": "Industry Sector",
+      "revenue": "Annual Revenue (AED)",
+      "employees": "Number of Employees",
+      "financialYear": "Financial Year End"
+    },
+    "relatedParty": {
+      "title": "Related Party Information",
+      "add": "Add Related Party",
+      "edit": "Edit Related Party",
+      "name": "Party Name",
+      "relationship": "Relationship Type",
+      "country": "Country of Residence",
+      "ownership": "Ownership Percentage",
+      "description": "Business Description"
+    },
+    "transactions": {
+      "title": "Related Party Transactions",
+      "add": "Add Transaction",
+      "edit": "Edit Transaction",
+      "type": "Transaction Type",
+      "description": "Transaction Description",
+      "value": "Transaction Value (AED)",
+      "date": "Transaction Date",
+      "currency": "Currency",
+      "method": "Transfer Pricing Method"
+    },
+    "documentation": {
+      "title": "Supporting Documentation",
+      "upload": "Upload Document",
+      "type": "Document Type",
+      "description": "Document Description",
+      "masterFile": "Master File",
+      "localFile": "Local File",
+      "economicAnalysis": "Economic Analysis",
+      "benchmarkingStudy": "Benchmarking Study",
+      "other": "Other Documentation"
+    },
+    "summary": {
+      "title": "Transfer Pricing Summary",
+      "totalTransactions": "Total Transactions",
+      "totalValue": "Total Value (AED)",
+      "complianceScore": "Compliance Score",
+      "riskLevel": "Risk Level",
+      "riskLevels": {
+        "low": "Low Risk",
+        "medium": "Medium Risk",
+        "high": "High Risk"
+      },
+      "documentationStatus": "Documentation Status",
+      "documentedTransactions": "Documented Transactions",
+      "uploadedDocuments": "Uploaded Documents"
+    }
   },
   "financials": {
+    "title": "Financial Reports",
+    "subtitle": "Comprehensive financial reporting for UAE tax compliance",
     "incomeStatement": "Income Statement",
     "balanceSheet": "Balance Sheet",
+    "cashFlowStatement": "Cash Flow Statement",
+    "notesToFinancials": "Notes to Financial Statements",
     "revenue": "Revenue",
     "expenses": "Expenses",
     "netIncome": "Net Income",
@@ -61,16 +283,115 @@
     "retainedEarnings": "Retained Earnings",
     "totalAssets": "Total Assets",
     "totalLiabilities": "Total Liabilities",
-    "totalEquity": "Total Equity"
+    "totalEquity": "Total Equity",
+    "exportControls": "Export Financial Reports",
+    "exportComprehensivePDF": "Comprehensive PDF",
+    "exportExcel": "Export Excel"
+  },
+  "assistant": {
+    "title": "Tax Assistant",
+    "subtitle": "Get instant help with UAE tax regulations and compliance",
+    "placeholder": "Ask me about VAT, Corporate Tax, Transfer Pricing, or any UAE tax question...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "typing": "Tax Assistant is typing...",
+    "clearChat": "Clear Chat",
+    "exportChat": "Export Chat",
+    "shareWithAccountant": "Share with Accountant",
+    "suggestions": "Suggested Questions",
+    "responses": {
+      "greeting": "Hello! I'm your UAE Tax Assistant. How can I help you today?",
+      "defaultError": "I apologize, but I encountered an error. Please try rephrasing your question."
+    }
+  },
+  "calendar": {
+    "title": "Tax Calendar & Deadlines",
+    "subtitle": "Track your tax filing deadlines and compliance dates",
+    "upcomingDeadlines": "Upcoming Deadlines",
+    "noDeadlines": "No deadlines this month",
+    "noDeadlinesDesc": "All your tax obligations are up to date.",
+    "activeNotifications": "Active Notifications",
+    "vatReturn": "VAT Return Due",
+    "citReturn": "CIT Return Due",
+    "days": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "priority": {
+      "urgent": "Urgent",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    }
+  },
+  "setup": {
+    "title": "System Setup",
+    "subtitle": "Configure your tax compliance system",
+    "welcome": "Welcome to UAE Tax Compliance System",
+    "description": "Let's set up your system for optimal tax compliance",
+    "steps": {
+      "company": "Company Information",
+      "tax": "Tax Configuration",
+      "integrations": "Integrations",
+      "complete": "Complete Setup"
+    },
+    "company": {
+      "title": "Company Information",
+      "companyName": "Company Name",
+      "trn": "Tax Registration Number (TRN)",
+      "industry": "Industry",
+      "address": "Business Address",
+      "phone": "Phone Number",
+      "email": "Email Address"
+    },
+    "complete": "Complete Setup"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "dismiss": "Dismiss",
+    "noNotifications": "No notifications",
+    "allCaughtUp": "You're all caught up!",
+    "justNow": "Just now",
+    "hoursAgo": "{{hours}}h ago",
+    "daysAgo": "{{days}}d ago",
+    "dueToday": "Due today",
+    "daysRemaining": "{{days}} days remaining"
+  },
+  "language": {
+    "select": "Select Language",
+    "english": "English",
+    "arabic": "العربية"
   },
   "currency": {
     "select": "Select Currency",
     "aed": "AED - UAE Dirham",
     "usd": "USD - US Dollar"
   },
-  "language": {
-    "select": "Select Language",
-    "english": "English",
-    "arabic": "العربية"
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email Address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember Me"
+  },
+  "errors": {
+    "general": "An error occurred. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "validation": "Please check your input and try again.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "notFound": "The requested resource was not found.",
+    "serverError": "Server error. Please try again later."
   }
-} 
+}

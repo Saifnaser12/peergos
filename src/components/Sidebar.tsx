@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { useTranslation } from '../i18n';
+import useI18nHelpers from '../hooks/useI18nHelpers';
 import { useUserRole } from '../context/UserRoleContext';
 import {
   HomeIcon,
@@ -20,7 +20,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const { t } = useTranslation();
+  const { t } = useI18nHelpers();
   const location = useLocation();
   const { role } = useUserRole();
 

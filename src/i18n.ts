@@ -46,6 +46,20 @@ i18n
     react: {
       useSuspense: false,
     },
+
+    // Handle missing translations
+    parseMissingKeyHandler: (key: string) => {
+      console.warn(`Missing translation key: ${key}`);
+      return `🔍 Label missing: ${key}`;
+    },
+
+    // Return key itself if no translation found
+    returnEmptyString: false,
+    returnNull: false,
+    
+    // Additional options for better handling
+    saveMissing: false,
+    updateMissing: false,
   });
 
 export default i18n;

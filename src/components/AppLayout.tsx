@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import { useTranslation } from 'react-i18next';
+import useI18nHelpers from '../hooks/useI18nHelpers';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import { useUserRole } from '../context/UserRoleContext';

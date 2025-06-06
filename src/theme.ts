@@ -1,7 +1,7 @@
 import { createTheme as createMuiTheme, ThemeOptions } from '@mui/material/styles';
 
 export const createTheme = (direction: 'ltr' | 'rtl' = 'ltr') => {
-  const themeOptions: ThemeOptions = {
+  const theme: ThemeOptions = {
     direction,
     palette: {
       mode: 'light',
@@ -17,5 +17,5 @@ export const createTheme = (direction: 'ltr' | 'rtl' = 'ltr') => {
     },
   };
 
-  return createMuiTheme(themeOptions);
+  return createMuiTheme(theme);
 };

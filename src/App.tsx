@@ -30,9 +30,11 @@ import Filing from './pages/Filing';
 import Assistant from './pages/Assistant';
 import Calendar from './pages/Calendar';
 
+// Internal component to handle theme with i18n
+function AppContent() {
+  const direction = i18n.language === 'ar' ? 'rtl' : 'ltr';
+  const theme = createTheme(direction);
 
-function App() {
-  const theme = createTheme('ltr');
   const [isSetupComplete, setIsSetupComplete] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -56,6 +58,48 @@ function App() {
   }
 
   return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <ErrorBoundary>
+        <Router>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* Setup route - accessible without layout */}
+            <Route path="/setup" element={<Setup />} />
+
+            {/* Protected routes with layout */}
+            <Route path="/" element={
+              isSetupComplete ? (
+                <AppLayout />
+              ) : (
+                <Navigate to="/setup" replace />
+              )
+            }>
+              {/* Nested routes that will render in the Outlet */}
+              <Route index element={<Navigate to="/dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="vat" element={<VAT />} />
+              <Route path="cit" element={<CIT />} />
+              <Route path="financials" element={<Financials />} />
+              <Route path="transfer-pricing" element={<TransferPricing />} />
+              <Route path="filing" element={<Filing />} />
+              <Route path="assistant" element={<Assistant />} />
+              <Route path="calendar" element={<Calendar />} />
+              <Route path="unauthorized" element={<Unauthorized />} />
+            </Route>
+          </Routes>
+        </Router>
+      </ErrorBoundary>
+    </ThemeProvider>
+  );
+}
+
+
+function App() {
+  return (
     <I18nextProvider i18n={i18n}>
       <SettingsProvider>
         <CustomThemeProvider>
@@ -64,42 +108,7 @@ function App() {
               <NotificationProvider>
                 <TaxAgentProvider>
                   <POSIntegrationProvider>
-                    <ThemeProvider theme={theme}>
-                      <CssBaseline />
-                      <ErrorBoundary>
-                        <Router>
-                          <Routes>
-                            {/* Public routes */}
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/register" element={<Register />} />
-
-                            {/* Setup route - accessible without layout */}
-                            <Route path="/setup" element={<Setup />} />
-
-                            {/* Protected routes with layout */}
-                            <Route path="/" element={
-                              isSetupComplete ? (
-                                <AppLayout />
-                              ) : (
-                                <Navigate to="/setup" replace />
-                              )
-                            }>
-                              {/* Nested routes that will render in the Outlet */}
-                              <Route index element={<Navigate to="/dashboard" replace />} />
-                              <Route path="dashboard" element={<Dashboard />} />
-                              <Route path="vat" element={<VAT />} />
-                              <Route path="cit" element={<CIT />} />
-                              <Route path="financials" element={<Financials />} />
-                              <Route path="transfer-pricing" element={<TransferPricing />} />
-                              <Route path="filing" element={<Filing />} />
-                              <Route path="assistant" element={<Assistant />} />
-                              <Route path="calendar" element={<Calendar />} />
-                              <Route path="unauthorized" element={<Unauthorized />} />
-                            </Route>
-                          </Routes>
-                        </Router>
-                      </ErrorBoundary>
-                    </ThemeProvider>
+                    <AppContent />
                   </POSIntegrationProvider>
                 </TaxAgentProvider>
               </NotificationProvider>
