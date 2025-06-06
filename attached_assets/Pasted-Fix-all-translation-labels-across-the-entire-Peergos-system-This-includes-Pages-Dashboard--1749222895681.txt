@@ -1,0 +1,109 @@
+Fix all translation labels across the entire Peergos system. This includes:
+
+📍 Pages:
+- Dashboard
+- Corporate Tax (CIT)
+- VAT
+- Financials
+- Transfer Pricing
+- Assistant
+- Setup
+
+🧠 Tasks:
+1. Replace visible i18n keys like `nav.dashboard`, `cit.form.trn`, `trn.lookup.label` with clean, user-friendly text using `t("...")` with properly defined keys.
+2. Create or update `src/locales/en.json` with correct labels for:
+   - Navigation
+   - All page titles and sections
+   - Form fields (e.g. TRN, revenue, expenses)
+   - Calculations (e.g. CIT payable, taxable income)
+   - Upload sections
+   - Quick actions and helper texts
+
+📘 Example Keys to Add to `en.json`:
+
+```json
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "cit": "Corporate Tax",
+    "vat": "VAT",
+    "financials": "Financials",
+    "transferPricing": "Transfer Pricing",
+    "assistant": "Tax Assistant",
+    "setup": "Setup"
+  },
+  "cit": {
+    "title": "Corporate Tax Filing",
+    "form": {
+      "companyName": "Company Name",
+      "trn": "TRN (Tax Registration Number)",
+      "financialYearEnd": "Financial Year End",
+      "revenue": "Total Revenue (AED)",
+      "expenses": "Total Expenses (AED)",
+      "taxAdjustments": "Tax Adjustments (AED)",
+      "exemptIncome": "Exempt Income (AED)",
+      "carriedForwardLosses": "Carried Forward Losses",
+      "smallBusinessRelief": "Apply Small Business Relief",
+      "taxGroupElection": "Elect Tax Group Filing"
+    },
+    "calculation": {
+      "title": "Tax Summary",
+      "netProfit": "Net Profit",
+      "allowedLosses": "Allowed Losses",
+      "taxableIncome": "Taxable Income",
+      "citPayable": "Corporate Tax Payable",
+      "effectiveRate": "Effective Tax Rate"
+    },
+    "upload": {
+      "title": "Upload Supporting Documents"
+    },
+    "compliance": {
+      "noCitDue": "No Corporate Tax Due"
+    }
+  },
+  "vat": {
+    "title": "VAT Filing",
+    "nextDue": "Next Due Date",
+    "amountDue": "VAT Amount Due"
+  },
+  "transferPricing": {
+    "title": "Transfer Pricing",
+    "status": "Documentation Status",
+    "requiredDocs": "Documents Needed"
+  },
+  "fta": {
+    "integration": {
+      "pending": "Pending FTA Integration Setup"
+    },
+    "simulation": {
+      "note": "Simulation Mode - FTA Submission Disabled"
+    }
+  },
+  "trn": {
+    "lookup": {
+      "label": "Enter TRN Number",
+      "helperText": "Look up UAE-registered company using TRN"
+    }
+  },
+  "dashboard": {
+    "title": "Your Compliance Overview",
+    "subtitle": "Track your tax obligations and submissions",
+    "askAssistant": "Ask Tax Assistant",
+    "cit": { "title": "Corporate Tax Payable" },
+    "vat": { "title": "VAT Liability" },
+    "financials": { "title": "Net Income (Current Year)" },
+    "transferPricing": { "title": "Transfer Pricing Documentation" },
+    "ftaIntegration": "FTA Connectivity Status",
+    "trnLookup": "Company Lookup by TRN",
+    "quickActions": "Quick Actions",
+    "posIntegration": {
+      "disabled": "POS Integration Disabled",
+      "enableHint": "Enable in Setup to connect POS systems"
+    },
+    "actions": {
+      "fileVAT": "File VAT Return",
+      "calculateCIT": "Calculate Corporate Tax",
+      "viewFinancials": "View Financials"
+    }
+  }
+}
