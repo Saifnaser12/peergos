@@ -137,7 +137,7 @@ const Dashboard: React.FC = () => {
 
           {/* Demo Mode Badge */}
           <div className="mt-4">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-700">
               {t('fta.simulation.note')}
             </span>
           </div>
@@ -190,7 +190,7 @@ const Dashboard: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {t('trn.lookup.title')}
+                {t('dashboard.trnLookup')}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 {t('trn.lookup.subtitle')}
