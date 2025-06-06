@@ -496,6 +496,52 @@
       "placeholder": "Enter TRN (e.g., 100123456700003)"
     }
   },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your tax obligations and key metrics",
+    "askAssistant": "Ask Tax Assistant",
+    "quickActions": "Quick Actions",
+    "ftaIntegration": "FTA Integration Status",
+    "trnLookup": "TRN Company Lookup",
+    "cit": {
+      "title": "Corporate Tax Payable",
+      "subtitle": "Due: 2024-03-31"
+    },
+    "vat": {
+      "title": "VAT Liability",
+      "subtitle": "Next: 2024-02-28"
+    },
+    "financials": {
+      "title": "Net Income (This Year)",
+      "subtitle": "Based on submitted financials"
+    },
+    "transferPricing": {
+      "title": "Transfer Pricing",
+      "subtitle": "75% Complete • 3 Documents Needed"
+    },
+    "actions": {
+      "fileVAT": "File VAT Return",
+      "calculateCIT": "Calculate CIT",
+      "viewFinancials": "View Financials"
+    },
+    "posIntegration": {
+      "disabled": "POS Integration Disabled",
+      "enableHint": "Enable in Settings to connect POS systems"
+    }
+  },
+  "fta": {
+    "integration": {
+      "title": "FTA Integration",
+      "pending": "Pending Setup",
+      "connected": "✅ Connected to FTA",
+      "disconnected": "❌ Disconnected from FTA",
+      "syncing": "🔄 Syncing with FTA"
+    },
+    "simulation": {
+      "note": "⚠️ Demo Mode - FTA simulation active",
+      "tooltip": "Simulation only - not connected to real FTA"
+    }
+  },
   "errors": {
     "general": "An error occurred. Please try again.",
     "network": "Network error. Please check your connection.",

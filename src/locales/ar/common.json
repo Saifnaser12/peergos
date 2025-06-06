@@ -614,7 +614,7 @@
   },
   "notifications": {
     "title": "الإشعارات",
-The code changes add missing Arabic translations to the JSON file, specifically for the "nav", "notifications", and "trn" sections.    "markAllRead": "تحديد الكل كمقروء",
+    "markAllRead": "تحديد الكل كمروء",
     "markAsRead": "تحديد كمقروء",
     "dismiss": "إخفاء",
     "noNotifications": "لا توجد إشعارات",
