@@ -61,16 +61,20 @@
     "subtitle": "Overview of your tax obligations and key metrics",
     "askAssistant": "Ask Tax Assistant",
     "cit": {
-      "title": "Corporate Tax Payable"
+      "title": "Corporate Tax Payable",
+      "subtitle": "Due: 2024-03-31"
     },
     "vat": {
-      "title": "VAT Liability"
+      "title": "VAT Liability",
+      "subtitle": "Next: 2024-02-28"
     },
     "financials": {
-      "title": "Net Income (This Year)"
+      "title": "Net Income (This Year)",
+      "subtitle": "Latest estimated income"
     },
     "transferPricing": {
-      "title": "Transfer Pricing"
+      "title": "Transfer Pricing",
+      "subtitle": "75% Complete • 3 Documents Needed"
     },
     "ftaIntegration": "FTA Integration",
     "trnLookup": "TRN Lookup",
@@ -420,11 +424,12 @@
   },
   "fta": {
     "integration": {
-      "pending": "Tax agent certificate required",
-      "connected": "✅ FTA Connected",
+      "pending": "Pending Setup",
+      "connected": "Connected to FTA",
       "disconnected": "❌ FTA Disconnected",
       "syncing": "🔄 Syncing with FTA",
-      "title": "FTA Integration"
+      "title": "FTA Integration",
+      "subtitle": "Tax agent certificate required"
     },
     "simulation": {
       "note": "⚠️ Demo Mode – FTA Simulation Active"
@@ -435,31 +440,10 @@
       "title": "TRN Lookup",
       "subtitle": "Search UAE company by 15-digit TRN",
       "label": "Enter TRN Number",
-      "helperText": "Enter full TRN to get registered name and details",
+      "helperText": "Enter full TRN to retrieve FTA-registered company details",
       "search": "Search Company",
       "placeholder": "Enter TRN (e.g., 100123456700003)"
     }
-  },
-  "notifications": {
-    "title": "Notifications",
-    "markAllRead": "Mark all as read",
-    "markAsRead": "Mark as read",
-    "dismiss": "Dismiss",
-    "noNotifications": "No notifications",
-    "allCaughtUp": "You're all caught up!",
-    "justNow": "Just now",
-    "hoursAgo": "{{hours}}h ago",
-    "daysAgo": "{{days}}d ago",
-    "dueToday": "Due today",
-    "daysRemaining": "{{days}} days remaining",
-    "setupIncomplete": "Setup Incomplete",
-    "setupIncompleteDesc": "Complete your system setup to access all features",
-    "completeSetup": "Complete Setup",
-    "missingAgentCert": "Tax Agent Certificate Required",
-    "missingAgentCertDesc": "Upload your tax agent certificate to proceed",
-    "uploadDocument": "Upload Document",
-    "missingBankSlip": "Bank Slip Missing",
-    "missingBankSlipDesc": "Please upload your bank slip for verification"
   },
   "errors": {
     "general": "An error occurred. Please try again.",

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -48,7 +49,7 @@ const Dashboard: React.FC = () => {
       title: t('dashboard.cit.title'),
       value: `AED ${dashboardData.cit.liability.toLocaleString()}`,
       status: dashboardData.cit.status,
-      subtitle: `Due: ${dashboardData.cit.dueDate}`,
+      subtitle: t('dashboard.cit.subtitle'),
       icon: DocumentTextIcon,
       color: 'blue',
       path: '/cit'
@@ -57,7 +58,7 @@ const Dashboard: React.FC = () => {
       title: t('dashboard.vat.title'),
       value: `AED ${dashboardData.vat.due.toLocaleString()}`,
       status: dashboardData.vat.status,
-      subtitle: `Next: ${dashboardData.vat.nextDue}`,
+      subtitle: t('dashboard.vat.subtitle'),
       icon: ReceiptPercentIcon,
       color: 'green',
       path: '/vat'
@@ -66,7 +67,7 @@ const Dashboard: React.FC = () => {
       title: t('dashboard.financials.title'),
       value: `AED ${dashboardData.financials.netIncome.toLocaleString()}`,
       status: dashboardData.financials.status,
-      subtitle: 'Current Year',
+      subtitle: t('dashboard.financials.subtitle'),
       icon: ChartBarIcon,
       color: 'purple',
       path: '/financials'
@@ -75,7 +76,7 @@ const Dashboard: React.FC = () => {
       title: t('dashboard.transferPricing.title'),
       value: `${dashboardData.transferPricing.compliance}% Complete`,
       status: dashboardData.transferPricing.riskLevel,
-      subtitle: `${dashboardData.transferPricing.documentsRequired} docs needed`,
+      subtitle: t('dashboard.transferPricing.subtitle'),
       icon: CurrencyDollarIcon,
       color: 'orange',
       path: '/transfer-pricing'
@@ -127,19 +128,18 @@ const Dashboard: React.FC = () => {
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => navigate('/assistant')}
-              className="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-200"
-            >
-              {t('dashboard.askAssistant')}
-            </button>
-          </div>
-
-          {/* Demo Mode Badge */}
-          <div className="mt-4">
-            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-700">
-              {t('fta.simulation.note')}
-            </span>
+            <div className="flex items-center space-x-4">
+              {/* Demo Mode Badge */}
+              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-700">
+                {t('fta.simulation.note')}
+              </span>
+              <button
+                onClick={() => navigate('/assistant')}
+                className="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-200"
+              >
+                {t('dashboard.askAssistant')}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -176,9 +176,14 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
           {/* FTA Integration Card */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              {t('dashboard.ftaIntegration')}
-            </h3>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {t('fta.integration.title')}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {t('fta.integration.subtitle')}
+              </p>
+            </div>
             <FTAIntegrationStatus 
               trn="100123456700003" 
               variant="card" 
