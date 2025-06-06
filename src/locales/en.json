@@ -41,15 +41,15 @@
   },
   "nav": {
     "dashboard": "Dashboard",
-    "filing": "Filing",
-    "setup": "Setup",
-    "assistant": "Tax Assistant",
-    "trnSearch": "TRN Search",
-    "financials": "Financial Reports",
-    "systemOnline": "System Online",
-    "vat": "VAT Management",
     "cit": "Corporate Tax",
+    "vat": "VAT",
+    "financials": "Financials",
     "transferPricing": "Transfer Pricing",
+    "assistant": "Tax Assistant",
+    "setup": "Setup",
+    "filing": "Filing",
+    "trnSearch": "TRN Search",
+    "systemOnline": "System Online",
     "calendar": "Tax Calendar",
     "admin": "Administration",
     "logout": "Logout",
@@ -57,23 +57,9 @@
     "settings": "Settings"
   },
   "dashboard": {
-    "title": "Tax Compliance Dashboard",
-    "description": "Monitor your tax compliance and financial metrics",
-    "subtitle": "Overview of your tax obligations and compliance status",
-    "totalRevenue": "Total Revenue",
-    "totalExpenses": "Total Expenses",
-    "netIncome": "Net Income",
-    "taxDue": "Tax Due",
-    "transactions": "transactions",
-    "yearToDate": "Year to date",
-    "vatAndCit": "VAT + CIT",
+    "title": "Your Compliance Overview",
+    "subtitle": "Track your tax obligations and submissions",
     "askAssistant": "Ask Tax Assistant",
-    "ftaIntegration": "FTA Connectivity Status",
-    "trnLookup": "Company Lookup by TRN",
-    "quickActions": "Quick Actions",
-    "recentActivity": "Recent Activity",
-    "upcomingDeadlines": "Upcoming Deadlines",
-    "complianceStatus": "Compliance Status",
     "cit": {
       "title": "Corporate Tax Payable"
     },
@@ -81,21 +67,34 @@
       "title": "VAT Liability"
     },
     "financials": {
-      "title": "Financial Overview"
+      "title": "Net Income (Current Year)"
     },
     "transferPricing": {
-      "title": "Transfer Pricing Compliance"
+      "title": "Transfer Pricing Documentation"
+    },
+    "ftaIntegration": "FTA Connectivity Status",
+    "trnLookup": "Company Lookup by TRN",
+    "quickActions": "Quick Actions",
+    "posIntegration": {
+      "disabled": "POS Integration Disabled",
+      "enableHint": "Enable in Setup to connect POS systems"
     },
     "actions": {
-      "fileVAT": "Submit VAT Return",
+      "fileVAT": "File VAT Return",
       "calculateCIT": "Calculate Corporate Tax",
-      "viewFinancials": "Review Financial Reports"
+      "viewFinancials": "View Financials"
     },
-    "posIntegration": {
-      "title": "POS & Accounting Integrations",
-      "disabled": "🔄 POS Integration Disabled",
-      "enableHint": "Enable in Setup to connect POS systems"
-    }
+    "description": "Monitor your tax compliance and financial metrics",
+    "totalRevenue": "Total Revenue",
+    "totalExpenses": "Total Expenses",
+    "netIncome": "Net Income",
+    "taxDue": "Tax Due",
+    "transactions": "transactions",
+    "yearToDate": "Year to date",
+    "vatAndCit": "VAT + CIT",
+    "recentActivity": "Recent Activity",
+    "upcomingDeadlines": "Upcoming Deadlines",
+    "complianceStatus": "Compliance Status"
   },
   "vat": {
     "title": "VAT Management",
