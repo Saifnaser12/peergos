@@ -362,7 +362,15 @@
     "hoursAgo": "{{hours}}h ago",
     "daysAgo": "{{days}}d ago",
     "dueToday": "Due today",
-    "daysRemaining": "{{days}} days remaining"
+    "daysRemaining": "{{days}} days remaining",
+    "setupIncomplete": "Setup Incomplete",
+    "setupIncompleteDesc": "Complete your system setup to access all features",
+    "completeSetup": "Complete Setup",
+    "missingAgentCert": "Tax Agent Certificate Required",
+    "missingAgentCertDesc": "Upload your tax agent certificate to proceed",
+    "uploadDocument": "Upload Document",
+    "missingBankSlip": "Bank Slip Missing",
+    "missingBankSlipDesc": "Please upload your bank slip for verification"
   },
   "language": {
     "select": "Select Language",

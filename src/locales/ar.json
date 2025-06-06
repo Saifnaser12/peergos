@@ -362,7 +362,15 @@
     "hoursAgo": "منذ {{hours}} ساعة",
     "daysAgo": "منذ {{days}} يوم",
     "dueToday": "مستحق اليوم",
-    "daysRemaining": "{{days}} يوم متبقي"
+    "daysRemaining": "{{days}} يوم متبقي",
+    "setupIncomplete": "الإعداد غير مكتمل",
+    "setupIncompleteDesc": "أكمل إعداد النظام للوصول إلى جميع الميزات",
+    "completeSetup": "إكمال الإعداد",
+    "missingAgentCert": "شهادة الوكيل الضريبي مطلوبة",
+    "missingAgentCertDesc": "ارفع شهادة الوكيل الضريبي للمتابعة",
+    "uploadDocument": "رفع وثيقة",
+    "missingBankSlip": "قسيمة البنك مفقودة",
+    "missingBankSlipDesc": "يرجى رفع قسيمة البنك للتحقق"
   },
   "language": {
     "select": "اختر اللغة",
