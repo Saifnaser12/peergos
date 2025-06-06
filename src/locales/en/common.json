@@ -1,3 +1,4 @@
+
 {
   "app": {
     "title": "UAE Tax Compliance System",
@@ -25,12 +26,53 @@
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
-    "close": "Close"
+    "close": "Close",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "submit": "Submit",
+    "warning": "Warning",
+    "info": "Information",
+    "accept": "Accept",
+    "reject": "Reject"
+  },
+  "dashboard": {
+    "title": "Tax Compliance Dashboard",
+    "subtitle": "Overview of your tax obligations and compliance status",
+    "askAssistant": "Ask Tax Assistant",
+    "ftaIntegration": "FTA Integration",
+    "trnLookup": "TRN Lookup",
+    "quickActions": "Quick Actions",
+    "cit": {
+      "title": "Corporate Income Tax"
+    },
+    "vat": {
+      "title": "VAT Management"
+    },
+    "financials": {
+      "title": "Financial Reports"
+    },
+    "transferPricing": {
+      "title": "Transfer Pricing"
+    },
+    "actions": {
+      "fileVAT": "File VAT Return",
+      "calculateCIT": "Calculate CIT",
+      "viewFinancials": "View Financials"
+    },
+    "posIntegration": {
+      "title": "POS & Accounting Integrations",
+      "disabled": "POS Integration Disabled",
+      "enableHint": "Enable in Setup to connect POS systems"
+    }
   },
   "fta": {
     "integration": {
       "title": "FTA Integration",
-      "description": "Real-time connection to UAE Federal Tax Authority systems"
+      "description": "Real-time connection to UAE Federal Tax Authority systems",
+      "pending": "Setup required to connect to FTA",
+      "connected": "Connected to FTA",
+      "disconnected": "Disconnected from FTA"
     },
     "status": {
       "connected": "Connected",
@@ -44,6 +86,10 @@
       "submissionsCount": "submissions",
       "lastSync": "Last Sync",
       "alerts": "Alerts"
+    },
+    "simulation": {
+      "note": "Simulation Mode - Demo Only",
+      "tooltip": "Simulation only – not connected to FTA"
     },
     "submissions": {
       "title": "Submission History",
@@ -70,6 +116,28 @@
       "submittedOn": "Submitted On",
       "tracking": "Tracking",
       "submittedData": "Submitted Data"
+    },
+    "submission": {
+      "title": "Submit to FTA",
+      "prerequisites": "Prerequisites",
+      "taxAgentCert": "Tax Agent Certificate",
+      "paymentSlip": "Payment Slip / Bank Receipt",
+      "missingDocuments": "Please upload both Tax Agent Certificate and Payment Slip before submitting",
+      "missingInfo": "Please complete all required information",
+      "summary": "Submission Summary",
+      "type": "Type",
+      "vatDue": "VAT Due",
+      "citDue": "CIT Due",
+      "submitting": "Submitting to FTA...",
+      "submit": "Submit to FTA",
+      "referenceNumber": "Reference Number",
+      "filingPeriod": "Filing Period",
+      "amount": "Amount",
+      "submissionDate": "Submission Date",
+      "success": {
+        "title": "Submission Successful",
+        "message": "Your tax return has been successfully submitted to the Federal Tax Authority"
+      }
     }
   },
   "trn": {
@@ -91,6 +159,32 @@
       "nonCompliantWarning": "This entity has compliance issues. Please contact FTA for details.",
       "suspendedWarning": "This TRN is suspended. Business operations may be restricted."
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "dismiss": "Dismiss",
+    "noNotifications": "No notifications",
+    "allCaughtUp": "You're all caught up!",
+    "justNow": "Just now",
+    "hoursAgo": "{{hours}}h ago",
+    "daysAgo": "{{days}}d ago",
+    "dueToday": "Due today",
+    "daysRemaining": "{{days}} days remaining",
+    "vatDeadline": "VAT Return Due Soon",
+    "vatDeadlineDesc": "Your VAT return is due in {{days}} days. File now to avoid penalties.",
+    "citDeadline": "CIT Return Due Soon",
+    "citDeadlineDesc": "Your Corporate Income Tax return is due in {{days}} days. Complete your filing to stay compliant.",
+    "setupIncomplete": "Setup Incomplete",
+    "setupIncompleteDesc": "Complete your company setup to access all features and ensure compliance.",
+    "missingAgentCert": "Missing Tax Agent Certificate",
+    "missingAgentCertDesc": "Upload your tax agent certificate to enable submission to FTA.",
+    "missingBankSlip": "Missing Bank Payment Slip",
+    "missingBankSlipDesc": "Upload your bank payment slip to complete your tax payment record.",
+    "fileNow": "File Now",
+    "completeSetup": "Complete Setup",
+    "uploadDocument": "Upload Document"
   },
   "setup": {
     "title": "Setup Your Tax System",
@@ -139,29 +233,6 @@
       "availableIntegrations": "Available Integrations"
     },
     "complete": "Complete Setup"
-  },
-  "dashboard": {
-    "title": "Tax Compliance Dashboard",
-    "subtitle": "Overview of your tax obligations and compliance status",
-    "askAssistant": "Ask Tax Assistant",
-    "ftaIntegration": "FTA Integration",
-    "trnLookup": "TRN Lookup",
-    "posIntegration": {
-      "title": "POS & Accounting Integrations",
-      "disabled": "POS Integration Disabled",
-      "enableHint": "Enable in Setup to connect POS systems"
-    },
-    "quickActions": "Quick Actions",
-  },
-  "language": {
-    "select": "Select Language",
-    "en": "English",
-    "ar": "Arabic"
-  },
-  "currency": {
-    "select": "Select Currency",
-    "aed": "UAE Dirham",
-    "usd": "US Dollar"
   },
   "vat": {
     "title": "VAT Management",
@@ -317,8 +388,6 @@
       "profitTrend": "Profit Trend",
       "balanceSheet": "Balance Sheet"
     },
-    "title": "Financial Reports",
-    "subtitle": "FTA-compliant financial statements and reports",
     "incomeStatement": "Income Statement",
     "balanceSheet": "Balance Sheet",
     "cashFlowStatement": "Cash Flow Statement",
@@ -476,24 +545,6 @@
     "amountNegative": "Amount cannot be negative",
     "smallBusinessReliefNotEligible": "Small Business Relief is only available for companies with revenue ≤ AED 3 million"
   },
-  "common": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "edit": "Edit",
-    "delete": "Delete",
-    "add": "Add",
-    "close": "Close",
-    "next": "Next",
-    "previous": "Previous",
-    "submit": "Submit",
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "warning": "Warning",
-    "info": "Information",
-    "accept": "Accept",
-    "reject": "Reject"
-  },
   "invoiceScanner": {
     "title": "Scan Invoice",
     "description": "Upload or scan an invoice to automatically extract key information using OCR technology.",
@@ -556,32 +607,6 @@
     "goBack": "Go Back",
     "goHome": "Go to Dashboard"
   },
-  "notifications": {
-    "title": "Notifications",
-    "markAllRead": "Mark all as read",
-    "markAsRead": "Mark as read",
-    "dismiss": "Dismiss",
-    "noNotifications": "No notifications",
-    "allCaughtUp": "You're all caught up!",
-    "justNow": "Just now",
-    "hoursAgo": "{{hours}}h ago",
-    "daysAgo": "{{days}}d ago",
-    "dueToday": "Due today",
-    "daysRemaining": "{{days}} days remaining",
-    "vatDeadline": "VAT Return Due Soon",
-    "vatDeadlineDesc": "Your VAT return is due in {{days}} days. File now to avoid penalties.",
-    "citDeadline": "CIT Return Due Soon",
-    "citDeadlineDesc": "Your Corporate Income Tax return is due in {{days}} days. Complete your filing to stay compliant.",
-    "setupIncomplete": "Setup Incomplete",
-    "setupIncompleteDesc": "Complete your company setup to access all features and ensure compliance.",
-    "missingAgentCert": "Missing Tax Agent Certificate",
-    "missingAgentCertDesc": "Upload your tax agent certificate to enable submission to FTA.",
-    "missingBankSlip": "Missing Bank Payment Slip",
-    "missingBankSlipDesc": "Upload your bank payment slip to complete your tax payment record.",
-    "fileNow": "File Now",
-    "completeSetup": "Complete Setup",
-    "uploadDocument": "Upload Document"
-  },
   "submissionHistory": {
     "filingPeriod": "Filing Period",
     "amountPayable": "Amount Payable",
@@ -608,41 +633,14 @@
     "results": "Scanned Results",
     "noText": "No text detected in the image"
   },
-  "fta": {
-    "submission": {
-      "title": "Submit to FTA",
-      "prerequisites": "Prerequisites",
-      "taxAgentCert": "Tax Agent Certificate",
-      "paymentSlip": "Payment Slip / Bank Receipt",
-      "missingDocuments": "Please upload both Tax Agent Certificate and Payment Slip before submitting",
-      "missingInfo": "Please complete all required information",
-      "summary": "Submission Summary",
-      "type": "Type",
-      "vatDue": "VAT Due",
-      "citDue": "CIT Due",
-      "submitting": "Submitting to FTA...",
-      "submit": "Submit to FTA",
-      "referenceNumber": "Reference Number",
-      "filingPeriod": "Filing Period",
-      "amount": "Amount",
-      "submissionDate": "Submission Date",
-      "success": {
-        "title": "Submission Successful",
-        "message": "Your tax return has been successfully submitted to the Federal Tax Authority"
-      }
-    },
-    "integration": {
-      "title": "FTA Connection",
-      "connected": "Successfully connected to FTA systems",
-      "pending": "Setup required to connect to FTA"
-    },
-    "status": {
-      "integrated": "Integrated",
-      "pending_setup": "Pending Setup"
-    },
-    "simulation": {
-      "tooltip": "Simulation only – not connected to FTA",
-      "note": "Simulation Mode"
-    }
+  "language": {
+    "select": "Select Language",
+    "en": "English",
+    "ar": "Arabic"
+  },
+  "currency": {
+    "select": "Select Currency",
+    "aed": "UAE Dirham",
+    "usd": "US Dollar"
   }
 }

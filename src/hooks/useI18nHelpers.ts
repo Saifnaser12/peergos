@@ -10,14 +10,29 @@ export const useI18nHelpers = () => {
   
   // Safe translation function that handles missing keys
   const safeT = (key: string, defaultValue?: string) => {
-    const translation = t(key);
-    
-    // If translation is the same as key or starts with our missing indicator
-    if (translation === key || translation.startsWith('🔍 Label missing')) {
-      return defaultValue || `🔍 Label missing: ${key}`;
+    try {
+      const translation = t(key);
+      
+      // If translation is the same as key or starts with our missing indicator
+      if (translation === key || translation.startsWith('🔍 Label missing')) {
+        // Try to get a more meaningful fallback from the key structure
+        const keyParts = key.split('.');
+        const lastPart = keyParts[keyParts.length - 1];
+        
+        // Convert camelCase to readable text
+        const readableText = lastPart
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^./, str => str.toUpperCase())
+          .trim();
+        
+        return defaultValue || readableText;
+      }
+      
+      return translation;
+    } catch (error) {
+      console.warn(`Translation error for key: ${key}`, error);
+      return defaultValue || key;
     }
-    
-    return translation;
   };
 
   // Set document direction

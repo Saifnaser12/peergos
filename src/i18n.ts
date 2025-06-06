@@ -1,32 +1,24 @@
+
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Simple inline translations to avoid import issues
+// Import translation files
+import enCommon from './locales/en/common.json';
+import enTranslation from './locales/en/translation.json';
+import arCommon from './locales/ar/common.json';
+import arTranslation from './locales/ar/translation.json';
+
 const resources = {
   en: {
     translation: {
-      'fta.status.connected': 'Connected',
-      'fta.status.disconnected': 'Disconnected', 
-      'fta.status.error': 'Error',
-      'fta.integration.title': 'FTA Integration',
-      'fta.lastSync': 'Last sync',
-      'common.loading': 'Loading...',
-      'common.error': 'Error',
-      'common.save': 'Save',
-      'common.cancel': 'Cancel'
+      ...enCommon,
+      ...enTranslation
     }
   },
   ar: {
     translation: {
-      'fta.status.connected': 'متصل',
-      'fta.status.disconnected': 'غير متصل',
-      'fta.status.error': 'خطأ', 
-      'fta.integration.title': 'تكامل الهيئة الاتحادية للضرائب',
-      'fta.lastSync': 'آخر مزامنة',
-      'common.loading': 'جاري التحميل...',
-      'common.error': 'خطأ',
-      'common.save': 'حفظ',
-      'common.cancel': 'إلغاء'
+      ...arCommon,
+      ...arTranslation
     }
   }
 };
@@ -47,10 +39,10 @@ i18n
       useSuspense: false,
     },
 
-    // Handle missing translations
+    // Handle missing translations gracefully
     parseMissingKeyHandler: (key: string) => {
       console.warn(`Missing translation key: ${key}`);
-      return `🔍 Label missing: ${key}`;
+      return key; // Return the key itself instead of error message
     },
 
     // Return key itself if no translation found

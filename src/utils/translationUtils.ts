@@ -28,7 +28,15 @@ export const getTranslationWithFallback = (key: string, fallback?: string): stri
     return i18n.t(key);
   }
   
-  return fallback || `🔍 Label missing: ${key}`;
+  // Create a readable fallback from the key
+  const keyParts = key.split('.');
+  const lastPart = keyParts[keyParts.length - 1];
+  const readableText = lastPart
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, str => str.toUpperCase())
+    .trim();
+  
+  return fallback || readableText;
 };
 
 // Verify if all keys in a component are translated
@@ -57,10 +65,19 @@ export const TRANSLATION_PATTERNS = {
   subtitle: (module: string) => `${module}.subtitle`,
 };
 
+// Helper function to convert camelCase to readable text
+export const camelCaseToReadable = (str: string): string => {
+  return str
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, char => char.toUpperCase())
+    .trim();
+};
+
 export default {
   getAllTranslationKeys,
   hasTranslation,
   getTranslationWithFallback,
   verifyComponentTranslations,
+  camelCaseToReadable,
   TRANSLATION_PATTERNS,
 };
