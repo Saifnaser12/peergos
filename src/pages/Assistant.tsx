@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Typography, Paper, TextField, Button, IconButton, Card, CardContent, Alert, Snackbar, CircularProgress, Fab, Menu, MenuItem } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -43,13 +42,13 @@ const Assistant: React.FC = () => {
   // Smart responses based on user data and UAE context
   const getSmartResponse = (question: string): string => {
     const lowerQuestion = question.toLowerCase();
-    
+
     // Context-aware responses using actual system data
     if (lowerQuestion.includes('tax') && lowerQuestion.includes('owe')) {
       const citLiability = state.citDue || 0;
       const vatDue = state.vatDue || 0;
       const total = citLiability + vatDue;
-      
+
       if (total > 0) {
         return t('assistant.responses.taxOwed', {
           citAmount: citLiability.toLocaleString(),
@@ -201,7 +200,7 @@ const Assistant: React.FC = () => {
     const chatContent = messages
       .map(msg => `${msg.type === 'user' ? 'You' : 'Assistant'}: ${msg.content}`)
       .join('\n\n');
-    
+
     const blob = new Blob([chatContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -211,7 +210,7 @@ const Assistant: React.FC = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     setSuccess(t('assistant.exportSuccess', 'Chat exported successfully'));
     setExportMenuAnchor(null);
   };
@@ -244,7 +243,7 @@ const Assistant: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-            
+
             <Box className="flex items-center gap-2">
               {messages.length > 0 && (
                 <>

@@ -457,6 +457,27 @@
       "suspendedWarning": "This TRN is currently suspended by FTA."
     }
   },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "dismiss": "Dismiss",
+    "noNotifications": "No notifications",
+    "allCaughtUp": "You're all caught up!",
+    "justNow": "Just now",
+    "hoursAgo": "{{hours}}h ago",
+    "daysAgo": "{{days}}d ago",
+    "dueToday": "Due today",
+    "daysRemaining": "{{days}} days remaining",
+    "setupIncomplete": "Setup Incomplete",
+    "setupIncompleteDesc": "Complete your system setup to access all features",
+    "completeSetup": "Complete Setup",
+    "missingAgentCert": "Tax Agent Certificate Required",
+    "missingAgentCertDesc": "Upload your tax agent certificate to proceed",
+    "uploadDocument": "Upload Document",
+    "missingBankSlip": "Bank Slip Missing",
+    "missingBankSlipDesc": "Please upload your bank slip for verification"
+  },
   "errors": {
     "general": "An error occurred. Please try again.",
     "network": "Network error. Please check your connection.",

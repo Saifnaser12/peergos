@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +25,7 @@ const Setup: React.FC = () => {
   const { t } = useTranslation();
   const { isDarkMode } = useTheme();
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState<SetupData>({
     organizationName: '',
     trn: '',
@@ -50,7 +49,7 @@ const Setup: React.FC = () => {
     // Save to localStorage or context
     localStorage.setItem('peergos_setup_complete', 'true');
     localStorage.setItem('peergos_organization_data', JSON.stringify(formData));
-    
+
     // Navigate to dashboard
     navigate('/dashboard');
   };
@@ -248,7 +247,7 @@ const Setup: React.FC = () => {
                   {t('setup.step4.title', 'Tax Agent Selection (Optional)')}
                 </h3>
               </div>
-              
+
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
                 <p className="text-sm text-blue-800 dark:text-blue-200">
                   {t('setup.step4.description', 'You can select an FTA-approved tax agent to assist with your tax compliance and submissions. This is optional and can be configured later.')}
@@ -272,7 +271,7 @@ const Setup: React.FC = () => {
                   {t('setup.step5.title', 'System Integrations (Optional)')}
                 </h3>
               </div>
-              
+
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
                 <p className="text-sm text-blue-800 dark:text-blue-200">
                   {t('setup.step5.description', 'Connect your POS system and accounting software to automatically sync transactions and streamline your bookkeeping. This is optional and can be configured later.')}
@@ -304,7 +303,7 @@ const Setup: React.FC = () => {
                       <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                     </label>
                   </div>
-                  
+
                   <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
                     <p><strong>{t('setup.integrations.supported', 'Supported Systems')}:</strong></p>
                     <p>• Omnivore POS • Toast POS • Clover POS</p>
@@ -334,7 +333,7 @@ const Setup: React.FC = () => {
                       <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                     </label>
                   </div>
-                  
+
                   <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
                     <p><strong>{t('setup.integrations.supported', 'Supported Systems')}:</strong></p>
                     <p>• Xero • QuickBooks • Zoho Books</p>

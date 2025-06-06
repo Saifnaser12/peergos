@@ -271,7 +271,7 @@ const TRNLookup: React.FC<TRNLookupProps> = ({
           {t('trn.lookup.title')}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          {t('trn.lookup.description')}
+          {variant === 'page' ? t('trn.lookup.description') : t('trn.lookup.subtitle')}
         </Typography>
 
         {LookupForm}

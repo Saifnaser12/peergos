@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../context/NotificationContext';
@@ -132,14 +131,14 @@ const Calendar: React.FC = () => {
               {t(`calendar.days.${day.toLowerCase()}`, day)}
             </div>
           ))}
-          
+
           {/* Calendar days */}
           {Array.from({ length: 42 }, (_, i) => {
             const date = new Date(selectedYear, selectedMonth, 1 - currentMonth.getDay() + i);
             const isCurrentMonth = date.getMonth() === selectedMonth;
             const isToday = date.toDateString() === new Date().toDateString();
             const hasDeadline = deadlines.some(d => d.date.toDateString() === date.toDateString());
-            
+
             return (
               <div
                 key={i}

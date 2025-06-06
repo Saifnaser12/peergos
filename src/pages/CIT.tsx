@@ -102,7 +102,7 @@ const CIT: React.FC = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState(isUploading);
 
   // Calculate CIT based on form data
   const citCalculation = useMemo((): CITCalculation => {
@@ -334,10 +334,10 @@ const CIT: React.FC = () => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Box>
             <Typography variant="h3" component="h1" sx={{ mb: 1, fontWeight: 300 }}>
-              {t('cit.title')}
+              {t('dashboard.cit.title')}
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
-              {t('cit.subtitle')}
+              {t('dashboard.cit.subtitle')}
             </Typography>
           </Box>
           {formData.trn && (
