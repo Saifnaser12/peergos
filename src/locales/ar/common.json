@@ -601,44 +601,5 @@
   },
   "auth": {
     "logout": "تسجيل الخروج"
-  },
-  "nav": {
-    "dashboard": "لوحة التحكم",
-    "cit": "ضريبة الشركات",
-    "vat": "ضريبة القيمة المضافة",
-    "financials": "البيانات المالية",
-    "transferPricing": "تسعير التحويل",
-    "assistant": "المساعد",
-    "setup": "الإعداد",
-    "calendar": "التقويم"
-  },
-  "notifications": {
-    "title": "الإشعارات",
-    "markAllRead": "تحديد الكل كمروء",
-    "markAsRead": "تحديد كمقروء",
-    "dismiss": "إخفاء",
-    "noNotifications": "لا توجد إشعارات",
-    "allCaughtUp": "أنت محدث تماماً!",
-    "justNow": "الآن",
-    "hoursAgo": "{{hours}} ساعة مضت",
-    "daysAgo": "{{days}} يوم مضى",
-    "dueToday": "مستحق اليوم",
-    "daysRemaining": "{{days}} يوم متبقي",
-    "setupIncomplete": "الإعداد غير مكتمل",
-    "setupIncompleteDesc": "أكمل إعداد النظام للوصول إلى جميع الميزات",
-    "completeSetup": "إكمال الإعداد",
-    "missingAgentCert": "شهادة وكيل الضرائب مطلوبة",
-    "missingAgentCertDesc": "ارفع شهادة وكيل الضرائب للمتابعة",
-    "uploadDocument": "رفع المستند",
-    "missingBankSlip": "قسيمة البنك مفقودة",
-    "missingBankSlipDesc": "يرجى رفع قسيمة البنك للتحقق"
-  },
-  "trn": {
-    "lookup": {
-      "label": "البحث عن الرقم الضريبي",
-      "helperText": "البحث عن الشركة الإماراتية برقم ضريبي مكون من 15 رقم",
-      "search": "البحث بالرقم الضريبي",
-      "placeholder": "أدخل الرقم الضريبي (مثال: 100123456700003)"
-    }
   }
 }
