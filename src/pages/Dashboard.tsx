@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -11,9 +10,6 @@ import {
   ReceiptPercentIcon,
   ChartBarIcon,
   CurrencyDollarIcon,
-  ExclamationTriangleIcon,
-  CheckCircleIcon,
-  ClockIcon,
   ArrowRightIcon,
   BuildingOfficeIcon
 } from '@heroicons/react/24/outline';
@@ -55,8 +51,7 @@ const Dashboard: React.FC = () => {
       subtitle: `Due: ${dashboardData.cit.dueDate}`,
       icon: DocumentTextIcon,
       color: 'blue',
-      path: '/cit',
-      emoji: '💼'
+      path: '/cit'
     },
     {
       title: t('dashboard.vat.title'),
@@ -65,8 +60,7 @@ const Dashboard: React.FC = () => {
       subtitle: `Next: ${dashboardData.vat.nextDue}`,
       icon: ReceiptPercentIcon,
       color: 'green',
-      path: '/vat',
-      emoji: '📊'
+      path: '/vat'
     },
     {
       title: t('dashboard.financials.title'),
@@ -75,8 +69,7 @@ const Dashboard: React.FC = () => {
       subtitle: 'Current Year',
       icon: ChartBarIcon,
       color: 'purple',
-      path: '/financials',
-      emoji: '💰'
+      path: '/financials'
     },
     {
       title: t('dashboard.transferPricing.title'),
@@ -85,8 +78,7 @@ const Dashboard: React.FC = () => {
       subtitle: `${dashboardData.transferPricing.documentsRequired} docs needed`,
       icon: CurrencyDollarIcon,
       color: 'orange',
-      path: '/transfer-pricing',
-      emoji: '🔄'
+      path: '/transfer-pricing'
     }
   ];
 
@@ -94,219 +86,153 @@ const Dashboard: React.FC = () => {
     switch (status) {
       case 'filed':
       case 'current':
-        return <span className="text-green-500">✅</span>;
+        return <span className="text-green-500 text-sm">✅</span>;
       case 'pending':
-        return <span className="text-yellow-500">🔄</span>;
+        return <span className="text-yellow-500 text-sm">🔄</span>;
       case 'medium':
-        return <span className="text-orange-500">⚠️</span>;
+        return <span className="text-orange-500 text-sm">⚠️</span>;
       case 'overdue':
-        return <span className="text-red-500">❌</span>;
+        return <span className="text-red-500 text-sm">❌</span>;
       default:
-        return <span className="text-gray-500">⏳</span>;
+        return <span className="text-gray-500 text-sm">⏳</span>;
     }
   };
 
   const getColorClasses = (color: string) => {
     const colors = {
-      blue: 'border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 dark:border-blue-800 hover:shadow-blue-200/50',
-      green: 'border-green-100 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 dark:border-green-800 hover:shadow-green-200/50',
-      purple: 'border-purple-100 bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 dark:border-purple-800 hover:shadow-purple-200/50',
-      orange: 'border-orange-100 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 dark:border-orange-800 hover:shadow-orange-200/50'
+      blue: 'border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30',
+      green: 'border-green-200 bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 dark:from-green-900/30 dark:to-green-800/30',
+      purple: 'border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 dark:from-purple-900/30 dark:to-purple-800/30',
+      orange: 'border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30'
     };
     return colors[color as keyof typeof colors] || colors.blue;
   };
 
   return (
-    <div className="space-y-8 p-1">
-      {/* Header with Company Info */}
-      <div className="md:flex md:items-center md:justify-between">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-4 mb-2">
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
-              <BuildingOfficeIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:text-3xl">
-                {t('dashboard.title')}
-              </h2>
-              <div className="flex items-center gap-4 mt-1">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
+                <BuildingOfficeIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  {t('dashboard.title')}
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-1">
                   {t('dashboard.subtitle')}
                 </p>
-                <div className="hidden sm:flex items-center gap-2 text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">
-                  <span className="text-gray-600 dark:text-gray-400">TRN:</span>
-                  <span className="font-mono text-gray-900 dark:text-white">100123456700003</span>
-                </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div className="mt-4 flex gap-3 md:mt-0 md:ml-4">
-          <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-            ✅ {t('fta.simulation.note')}
-          </div>
-          <button
-            onClick={() => navigate('/assistant')}
-            className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform transition-all duration-200 hover:scale-105 shadow-lg"
-          >
-            {t('dashboard.askAssistant')}
-          </button>
-        </div>
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {summaryCards.map((card, index) => {
-          const Icon = card.icon;
-          return (
-            <div
-              key={index}
-              className={`relative group cursor-pointer rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 active:scale-95 md:hover:scale-105 ${getColorClasses(card.color)}`}
-              onClick={() => navigate(card.path)}
+            <button
+              onClick={() => navigate('/assistant')}
+              className="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-200"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{card.emoji}</span>
+              {t('dashboard.askAssistant')}
+            </button>
+          </div>
+
+          {/* Demo Mode Badge */}
+          <div className="mt-4">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+              {t('fta.simulation.note')}
+            </span>
+          </div>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {summaryCards.map((card, index) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={index}
+                className={`relative cursor-pointer rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${getColorClasses(card.color)}`}
+                onClick={() => navigate(card.path)}
+              >
+                <div className="flex items-center justify-between mb-4">
                   <Icon className="h-6 w-6 text-gray-600 dark:text-gray-400" />
-                </div>
-                <div className="flex items-center gap-2">
                   {getStatusIcon(card.status)}
                 </div>
-              </div>
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                   {card.title}
                 </h3>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                   {card.value}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {card.subtitle}
                 </p>
+                <ArrowRightIcon className="absolute bottom-4 right-4 h-5 w-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
-              <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1">
-                <ArrowRightIcon className="h-5 w-5 text-gray-400" />
-              </div>
+            );
+          })}
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+          {/* FTA Integration Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              {t('dashboard.ftaIntegration')}
+            </h3>
+            <FTAIntegrationStatus 
+              trn="100123456700003" 
+              variant="card" 
+              showDetails={true}
+            />
+          </div>
+
+          {/* TRN Lookup Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {t('trn.lookup.title')}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {t('trn.lookup.subtitle')}
+              </p>
             </div>
-          );
-        })}
-      </div>
+            <TRNLookup variant="embedded" />
+          </div>
 
-      {/* Integration Status */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <span>🔗</span>
-            {t('dashboard.ftaIntegration')}
-          </h3>
-          <FTAIntegrationStatus 
-            trn="100123456700003" 
-            variant="card" 
-            showDetails={true}
-          />
-
-          {/* Quick Action Links */}
-          <div className="mt-6 space-y-3">
-            <button
-              onClick={() => navigate('/cit')}
-              className="w-full text-left px-4 py-3 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 flex items-center justify-between group"
-            >
-              <span>Submit CIT Return</span>
-              <ArrowRightIcon className="w-4 h-4 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all" />
-            </button>
-            <button
-              onClick={() => navigate('/vat')}
-              className="w-full text-left px-4 py-3 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 flex items-center justify-between group"
-            >
-              <span>Submit VAT Return</span>
-              <ArrowRightIcon className="w-4 h-4 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all" />
-            </button>
-            <button
-              onClick={() => navigate('/submission-history')}
-              className="w-full text-left px-4 py-3 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 flex items-center justify-between group"
-            >
-              <span>View Submission History</span>
-              <ArrowRightIcon className="w-4 h-4 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all" />
-            </button>
+          {/* POS Integration Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <POSIntegrationStatus />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <span>🔍</span>
-            {t('dashboard.trnLookup')}
-          </h3>
-          <TRNLookup variant="embedded" />
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300">
-          <POSIntegrationStatus />
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-100 dark:border-gray-700">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <span>⚡</span>
-            {t('dashboard.quickActions')}
-          </h3>
-        </div>
-        <div className="p-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <button
-              onClick={() => navigate('/vat')}
-              className="text-left p-6 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300 hover:shadow-md group"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">📊</span>
-                <h4 className="font-semibold text-gray-900 dark:text-white">
-                  {t('dashboard.actions.fileVAT')}
-                </h4>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Submit your quarterly VAT return
-              </p>
-              <div className="flex justify-end mt-3">
-                <ArrowRightIcon className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all" />
-              </div>
-            </button>
-
-            <button
-              onClick={() => navigate('/cit')}
-              className="text-left p-6 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300 hover:shadow-md group"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">💼</span>
-                <h4 className="font-semibold text-gray-900 dark:text-white">
-                  {t('dashboard.actions.calculateCIT')}
-                </h4>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Estimate your corporate tax liability
-              </p>
-              <div className="flex justify-end mt-3">
-                <ArrowRightIcon className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all" />
-              </div>
-            </button>
-
-            <button
-              onClick={() => navigate('/financials')}
-              className="text-left p-6 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300 hover:shadow-md group"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">💰</span>
-                <h4 className="font-semibold text-gray-900 dark:text-white">
-                  {t('dashboard.actions.viewFinancials')}
-                </h4>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Review your financial statements
-              </p>
-              <div className="flex justify-end mt-3">
-                <ArrowRightIcon className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all" />
-              </div>
-            </button>
+        {/* Quick Actions */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              {t('dashboard.quickActions')}
+            </h3>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <button
+                onClick={() => navigate('/vat')}
+                className="flex items-center justify-center px-6 py-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-900 dark:text-white font-medium transition-colors duration-200"
+              >
+                {t('dashboard.actions.fileVAT')}
+              </button>
+              <button
+                onClick={() => navigate('/cit')}
+                className="flex items-center justify-center px-6 py-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-900 dark:text-white font-medium transition-colors duration-200"
+              >
+                {t('dashboard.actions.calculateCIT')}
+              </button>
+              <button
+                onClick={() => navigate('/financials')}
+                className="flex items-center justify-center px-6 py-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-900 dark:text-white font-medium transition-colors duration-200"
+              >
+                {t('dashboard.actions.viewFinancials')}
+              </button>
+            </div>
           </div>
         </div>
       </div>

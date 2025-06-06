@@ -57,22 +57,22 @@
     "settings": "Settings"
   },
   "dashboard": {
-    "title": "Your Compliance Overview",
+    "title": "Dashboard",
     "subtitle": "Track your tax obligations and submissions",
     "askAssistant": "Ask Tax Assistant",
     "cit": {
-      "title": "Corporate Tax Payable"
+      "title": "Corporate Tax Due"
     },
     "vat": {
-      "title": "VAT Liability"
+      "title": "VAT Amount Due"
     },
     "financials": {
-      "title": "Net Income (Current Year)"
+      "title": "Net Income"
     },
     "transferPricing": {
-      "title": "Transfer Pricing Documentation"
+      "title": "Transfer Pricing Status"
     },
-    "ftaIntegration": "FTA Connectivity Status",
+    "ftaIntegration": "FTA Integration",
     "trnLookup": "Company Lookup by TRN",
     "quickActions": "Quick Actions",
     "posIntegration": {
@@ -81,7 +81,7 @@
     },
     "actions": {
       "fileVAT": "File VAT Return",
-      "calculateCIT": "Calculate Corporate Tax",
+      "calculateCIT": "Calculate CIT",
       "viewFinancials": "View Financials"
     },
     "description": "Monitor your tax compliance and financial metrics",
@@ -424,16 +424,18 @@
       "connected": "✅ FTA Connected",
       "disconnected": "❌ FTA Disconnected",
       "syncing": "🔄 Syncing with FTA",
-      "title": "FTA Integration Status"
+      "title": "FTA Integration"
     },
     "simulation": {
-      "note": "Simulation Mode - FTA Submission Disabled"
+      "note": "Demo Mode – FTA Simulation Active"
     }
   },
   "trn": {
     "lookup": {
+      "title": "Company Lookup by TRN",
+      "subtitle": "Search UAE-registered company using 15-digit TRN",
       "label": "Enter TRN Number",
-      "helperText": "Look up UAE-registered company using TRN",
+      "helperText": "Enter full TRN to get registered name and details",
       "search": "Search Company",
       "placeholder": "Enter TRN (e.g., 100123456700003)"
     }
