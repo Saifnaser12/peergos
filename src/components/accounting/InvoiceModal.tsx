@@ -10,8 +10,10 @@ import {
   BanknotesIcon,
   DocumentArrowDownIcon,
   CheckCircleIcon,
-  ExclamationTriangleIcon,
-  ArrowDownTrayIcon
+  BuildingOfficeIcon,
+  ArrowDownTrayIcon,
+  EyeIcon,
+  ClipboardDocumentListIcon
 } from '@heroicons/react/24/outline';
 import { InvoiceService } from '../../services/invoice.service';
 import { Invoice, InvoiceItem, FTAEInvoice } from '../../types/invoice';
@@ -36,14 +38,17 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
   const isRTL = i18n.language === 'ar';
   
   const [formData, setFormData] = useState({
+    invoiceNumber: '',
     customerName: '',
+    customerTRN: '',
+    issueDate: '',
     dueDate: '',
     serviceDescription: '',
+    amount: 0,
     vatEnabled: true,
-    customerTRN: '',
     customerAddress: {
       street: '',
-      city: '',
+      city: 'Dubai',
       emirate: 'Dubai',
       country: 'UAE',
       postalCode: ''
@@ -60,17 +65,34 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     ftaJson: FTAEInvoice;
     xmlString: string;
   } | null>(null);
+  const [showXmlPreview, setShowXmlPreview] = useState(false);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const invoiceService = InvoiceService.getInstance();
 
+  // Generate invoice number
+  const generateInvoiceNumber = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const random = Math.floor(Math.random() * 9999).toString().padStart(4, '0');
+    return `INV-${year}${month}${day}-${random}`;
+  };
+
   useEffect(() => {
     if (isOpen && revenueData) {
+      const today = new Date();
+      const dueDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
+      
       setFormData(prev => ({
         ...prev,
-        customerName: revenueData.customer || '',
+        invoiceNumber: generateInvoiceNumber(),
+        customerName: revenueData.customer || 'Client',
         serviceDescription: revenueData.description || '',
-        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 30 days from now
+        amount: revenueData.amount || 0,
+        issueDate: today.toISOString().split('T')[0],
+        dueDate: dueDate.toISOString().split('T')[0]
       }));
     }
   }, [isOpen, revenueData]);
@@ -82,12 +104,20 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
       newErrors.customerName = t('invoice.validation.customerNameRequired');
     }
 
+    if (!formData.issueDate) {
+      newErrors.issueDate = t('invoice.validation.dueDateRequired');
+    }
+
     if (!formData.dueDate) {
       newErrors.dueDate = t('invoice.validation.dueDateRequired');
     }
 
     if (!formData.serviceDescription.trim()) {
       newErrors.serviceDescription = t('invoice.validation.descriptionRequired');
+    }
+
+    if (!formData.amount || formData.amount <= 0) {
+      newErrors.amount = t('invoice.validation.amountPositive');
     }
 
     if (formData.customerTRN && !/^\d{15}$/.test(formData.customerTRN)) {
@@ -106,13 +136,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const generateInvoiceNumber = () => {
-    const year = new Date().getFullYear();
-    const month = String(new Date().getMonth() + 1).padStart(2, '0');
-    const timestamp = Date.now().toString().slice(-6);
-    return `INV-${year}-${month}-${timestamp}`;
-  };
-
   const handleGenerateInvoice = async () => {
     if (!validateForm()) {
       return;
@@ -123,7 +146,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
       // Get company info from localStorage or default
       const companyInfo = JSON.parse(localStorage.getItem('companyInfo') || '{}');
       
-      const baseAmount = revenueData.amount;
+      const baseAmount = formData.amount;
       const vatRate = formData.vatEnabled ? 5 : 0;
       const vatAmount = (baseAmount * vatRate) / 100;
       const totalAmount = baseAmount + vatAmount;
@@ -146,8 +169,8 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
       const invoice: Invoice = {
         id: uuidv4(),
-        invoiceNumber: generateInvoiceNumber(),
-        issueDate: revenueData.date,
+        invoiceNumber: formData.invoiceNumber,
+        issueDate: formData.issueDate,
         dueDate: formData.dueDate,
         currency: 'AED',
         amount: totalAmount,
@@ -218,7 +241,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     const url = URL.createObjectURL(generatedOutputs.pdf);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `invoice-${Date.now()}.pdf`;
+    a.download = `invoice-${formData.invoiceNumber}.pdf`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -234,14 +257,14 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `fta-einvoice-${Date.now()}.json`;
+    a.download = `fta-einvoice-${formData.invoiceNumber}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
-  const handleInputChange = (field: string, value: string, nested?: string) => {
+  const handleInputChange = (field: string, value: string | number | boolean, nested?: string) => {
     if (nested) {
       setFormData(prev => ({
         ...prev,
@@ -259,11 +282,15 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     }
   };
 
+  const subtotal = formData.amount;
+  const vatAmount = formData.vatEnabled ? (subtotal * 0.05) : 0;
+  const totalAmount = subtotal + vatAmount;
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
@@ -281,171 +308,264 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
         {!generatedOutputs ? (
           /* Invoice Form */
           <div className="p-6 space-y-6">
-            {/* Customer Information */}
-            <div className="space-y-4">
-              <h4 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
-                <UserIcon className="h-5 w-5 mr-2" />
-                {t('invoice.modal.customerInfo')}
-              </h4>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column */}
+              <div className="space-y-6">
+                {/* Invoice Information */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                    <ClipboardDocumentListIcon className="h-5 w-5 mr-2" />
+                    {t('invoice.modal.invoiceInfo')}
+                  </h4>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('invoice.modal.customerName')} *
-                </label>
-                <input
-                  type="text"
-                  value={formData.customerName}
-                  onChange={(e) => handleInputChange('customerName', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
-                    errors.customerName ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                  placeholder={t('invoice.modal.customerNamePlaceholder')}
-                />
-                {errors.customerName && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.customerName}</p>}
-              </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {t('invoice.modal.invoiceNumber')}
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.invoiceNumber}
+                        onChange={(e) => handleInputChange('invoiceNumber', e.target.value)}
+                        className="w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white bg-gray-50 font-mono text-sm"
+                        readOnly
+                      />
+                    </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('invoice.modal.customerTRN')}
-                </label>
-                <input
-                  type="text"
-                  value={formData.customerTRN}
-                  onChange={(e) => handleInputChange('customerTRN', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
-                    errors.customerTRN ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                  placeholder="100000000000003"
-                />
-                {errors.customerTRN && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.customerTRN}</p>}
-              </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <CalendarIcon className="h-4 w-4 inline mr-2" />
+                        {t('invoice.modal.issueDate')}
+                      </label>
+                      <input
+                        type="date"
+                        value={formData.issueDate}
+                        onChange={(e) => handleInputChange('issueDate', e.target.value)}
+                        className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
+                          errors.issueDate ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                        }`}
+                      />
+                      {errors.issueDate && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.issueDate}</p>}
+                    </div>
+                  </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('invoice.modal.street')} *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.customerAddress.street}
-                    onChange={(e) => handleInputChange('street', e.target.value, 'customerAddress')}
-                    className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
-                      errors.customerStreet ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-                    }`}
-                  />
-                  {errors.customerStreet && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.customerStreet}</p>}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('invoice.modal.city')} *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.customerAddress.city}
-                    onChange={(e) => handleInputChange('city', e.target.value, 'customerAddress')}
-                    className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
-                      errors.customerCity ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-                    }`}
-                  />
-                  {errors.customerCity && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.customerCity}</p>}
-                </div>
-              </div>
-            </div>
-
-            {/* Invoice Details */}
-            <div className="space-y-4">
-              <h4 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
-                <DocumentTextIcon className="h-5 w-5 mr-2" />
-                {t('invoice.modal.invoiceDetails')}
-              </h4>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  <CalendarIcon className="h-4 w-4 inline mr-2" />
-                  {t('invoice.modal.dueDate')} *
-                </label>
-                <input
-                  type="date"
-                  value={formData.dueDate}
-                  onChange={(e) => handleInputChange('dueDate', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
-                    errors.dueDate ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                />
-                {errors.dueDate && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.dueDate}</p>}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('invoice.modal.serviceDescription')} *
-                </label>
-                <textarea
-                  value={formData.serviceDescription}
-                  onChange={(e) => handleInputChange('serviceDescription', e.target.value)}
-                  rows={3}
-                  className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
-                    errors.serviceDescription ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                  placeholder={t('invoice.modal.serviceDescriptionPlaceholder')}
-                />
-                {errors.serviceDescription && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.serviceDescription}</p>}
-              </div>
-
-              {/* VAT Toggle */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                <div className="flex items-center">
-                  <BanknotesIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-3" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      {t('invoice.modal.vatToggle')}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {t('invoice.modal.vatToggleHelp')}
-                    </p>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <CalendarIcon className="h-4 w-4 inline mr-2" />
+                      {t('invoice.modal.dueDate')}
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.dueDate}
+                      onChange={(e) => handleInputChange('dueDate', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
+                        errors.dueDate ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                    />
+                    {errors.dueDate && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.dueDate}</p>}
                   </div>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.vatEnabled}
-                    onChange={(e) => handleInputChange('vatEnabled', e.target.checked.toString())}
-                    className="sr-only"
-                  />
-                  <div className={`w-11 h-6 rounded-full transition-colors duration-200 ${
-                    formData.vatEnabled ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
-                  }`}>
-                    <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200 ${
-                      formData.vatEnabled ? 'translate-x-5' : 'translate-x-0.5'
-                    } mt-0.5`} />
-                  </div>
-                </label>
-              </div>
 
-              {/* Amount Summary */}
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                <h5 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  {t('invoice.modal.amountSummary')}
-                </h5>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">{t('invoice.modal.subtotal')}</span>
-                    <span className="font-medium">{revenueData.amount.toFixed(2)} AED</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">{t('invoice.modal.vat')} ({formData.vatEnabled ? '5%' : '0%'})</span>
-                    <span className="font-medium">{(formData.vatEnabled ? revenueData.amount * 0.05 : 0).toFixed(2)} AED</span>
-                  </div>
-                  <div className="border-t border-gray-200 dark:border-gray-600 pt-2">
-                    <div className="flex justify-between">
-                      <span className="font-medium text-gray-900 dark:text-white">{t('invoice.modal.total')}</span>
-                      <span className="font-bold text-lg text-blue-600">
-                        {(revenueData.amount + (formData.vatEnabled ? revenueData.amount * 0.05 : 0)).toFixed(2)} AED
-                      </span>
+                {/* Supplier Information */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                    <BuildingOfficeIcon className="h-5 w-5 mr-2" />
+                    {t('invoice.modal.supplierInfo')}
+                  </h4>
+
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">{t('invoice.modal.supplierName')}:</span>
+                        <span className="font-medium">Your Company Name</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">{t('invoice.modal.supplierTRN')}:</span>
+                        <span className="font-medium font-mono">100000000000003</span>
+                      </div>
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                        Configure in System Setup to personalize
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* Right Column */}
+              <div className="space-y-6">
+                {/* Customer Information */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                    <UserIcon className="h-5 w-5 mr-2" />
+                    {t('invoice.modal.customerInfo')}
+                  </h4>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t('invoice.modal.customerName')} *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.customerName}
+                      onChange={(e) => handleInputChange('customerName', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
+                        errors.customerName ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                      placeholder={t('invoice.modal.customerNamePlaceholder')}
+                    />
+                    {errors.customerName && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.customerName}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t('invoice.modal.customerTRN')}
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.customerTRN}
+                      onChange={(e) => handleInputChange('customerTRN', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
+                        errors.customerTRN ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                      placeholder={t('invoice.modal.customerTRNPlaceholder')}
+                    />
+                    {errors.customerTRN && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.customerTRN}</p>}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {t('invoice.modal.street')} *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.customerAddress.street}
+                        onChange={(e) => handleInputChange('street', e.target.value, 'customerAddress')}
+                        className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
+                          errors.customerStreet ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                        }`}
+                        placeholder="Business Bay"
+                      />
+                      {errors.customerStreet && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.customerStreet}</p>}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {t('invoice.modal.city')} *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.customerAddress.city}
+                        onChange={(e) => handleInputChange('city', e.target.value, 'customerAddress')}
+                        className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
+                          errors.customerCity ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                        }`}
+                      />
+                      {errors.customerCity && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.customerCity}</p>}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Invoice Details */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                    <DocumentTextIcon className="h-5 w-5 mr-2" />
+                    {t('invoice.modal.invoiceDetails')}
+                  </h4>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t('invoice.modal.serviceDescription')} *
+                    </label>
+                    <textarea
+                      value={formData.serviceDescription}
+                      onChange={(e) => handleInputChange('serviceDescription', e.target.value)}
+                      rows={3}
+                      className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
+                        errors.serviceDescription ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                      placeholder={t('invoice.modal.serviceDescriptionPlaceholder')}
+                    />
+                    {errors.serviceDescription && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.serviceDescription}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t('invoice.modal.amount')} *
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.amount}
+                      onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
+                      className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
+                        errors.amount ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                      placeholder="0.00"
+                    />
+                    {errors.amount && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount}</p>}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* VAT Toggle */}
+            <div className="flex items-center justify-between p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
+              <div className="flex items-center">
+                <BanknotesIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-3" />
+                <div>
+                  <p className="text-sm font-medium text-emerald-900 dark:text-emerald-100">
+                    {t('invoice.modal.vatToggle')}
+                  </p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                    {t('invoice.modal.vatToggleHelp')}
+                  </p>
+                </div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.vatEnabled}
+                  onChange={(e) => handleInputChange('vatEnabled', e.target.checked)}
+                  className="sr-only"
+                />
+                <div className={`w-11 h-6 rounded-full transition-colors duration-200 ${
+                  formData.vatEnabled ? 'bg-emerald-600' : 'bg-gray-300 dark:bg-gray-600'
+                }`}>
+                  <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200 ${
+                    formData.vatEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                  } mt-0.5`} />
+                </div>
+              </label>
+            </div>
+
+            {/* Amount Summary */}
+            <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
+              <h5 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                {t('invoice.modal.amountSummary')}
+              </h5>
+              <div className="space-y-3 text-base">
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">{t('invoice.modal.subtotal')}</span>
+                  <span className="font-medium">{subtotal.toFixed(2)} AED</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">{t('invoice.modal.vat')} ({formData.vatEnabled ? '5%' : '0%'})</span>
+                  <span className="font-medium">{vatAmount.toFixed(2)} AED</span>
+                </div>
+                <div className="border-t border-gray-200 dark:border-gray-600 pt-3">
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-900 dark:text-white">{t('invoice.modal.totalAmount')}</span>
+                    <span className="font-bold text-xl text-blue-600 dark:text-blue-400">
+                      {totalAmount.toFixed(2)} AED
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+                {t('invoice.modal.vatNote')}
+              </p>
             </div>
 
             {/* Actions */}
@@ -453,7 +573,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl font-medium transition-colors duration-150"
+                className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl font-medium transition-colors duration-150"
               >
                 {t('invoice.modal.cancel')}
               </button>
@@ -461,7 +581,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 type="button"
                 onClick={handleGenerateInvoice}
                 disabled={isGenerating}
-                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors duration-150 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl font-medium transition-colors duration-150 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {isGenerating ? (
                   <>
@@ -506,10 +626,10 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
             </div>
 
             {/* Download Options */}
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <button
                 onClick={handleDownloadPDF}
-                className="w-full flex items-center justify-center px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors duration-150 shadow-sm hover:shadow-md"
+                className="flex items-center justify-center px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors duration-150 shadow-sm hover:shadow-md"
               >
                 <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
                 {t('invoice.modal.downloadPDF')}
@@ -517,12 +637,34 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
               <button
                 onClick={handleDownloadJSON}
-                className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors duration-150 shadow-sm hover:shadow-md"
+                className="flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors duration-150 shadow-sm hover:shadow-md"
               >
                 <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
                 {t('invoice.modal.downloadJSON')}
               </button>
+
+              <button
+                onClick={() => setShowXmlPreview(!showXmlPreview)}
+                className="flex items-center justify-center px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-colors duration-150 shadow-sm hover:shadow-md"
+              >
+                <EyeIcon className="h-5 w-5 mr-2" />
+                {t('invoice.modal.previewXML')}
+              </button>
             </div>
+
+            {/* XML Preview */}
+            {showXmlPreview && (
+              <div className="mt-6">
+                <h5 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  {t('invoice.modal.xmlPreview')}
+                </h5>
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 max-h-48 overflow-y-auto">
+                  <pre className="text-xs text-gray-700 dark:text-gray-300 font-mono">
+                    {generatedOutputs.xmlString.substring(0, 1000)}...
+                  </pre>
+                </div>
+              </div>
+            )}
 
             {/* JSON Preview */}
             <div className="mt-6">
@@ -541,14 +683,17 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 onClick={() => {
                   setGeneratedOutputs(null);
                   setFormData({
+                    invoiceNumber: generateInvoiceNumber(),
                     customerName: '',
-                    dueDate: '',
-                    serviceDescription: '',
-                    vatEnabled: true,
                     customerTRN: '',
+                    issueDate: new Date().toISOString().split('T')[0],
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    serviceDescription: '',
+                    amount: 0,
+                    vatEnabled: true,
                     customerAddress: {
                       street: '',
-                      city: '',
+                      city: 'Dubai',
                       emirate: 'Dubai',
                       country: 'UAE',
                       postalCode: ''
