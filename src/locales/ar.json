@@ -276,5 +276,32 @@
     "balanceSheet": "الميزانية العمومية",
     "profitLoss": "بيان الأرباح والخسائر",
     "cashFlow": "بيان التدفقات النقدية"
+  },
+  "categories": {
+    "revenue": {
+      "productSales": "مبيعات المنتجات",
+      "serviceIncome": "دخل الخدمات",
+      "rentalIncome": "دخل الإيجار",
+      "consultingFees": "رسوم الاستشارات",
+      "commissionIncome": "دخل العمولة",
+      "interestIncome": "دخل الفوائد",
+      "otherRevenue": "دخل آخر"
+    },
+    "expenses": {
+      "costOfGoodsSold": "تكلفة البضائع المباعة",
+      "salariesAndWages": "الرواتب والأجور",
+      "rent": "الإيجار",
+      "utilities": "الخدمات العامة",
+      "marketingAndAdvertising": "التسويق والإعلانات",
+      "softwareSubscriptions": "اشتراكات البرمجيات",
+      "professionalServices": "الخدمات المهنية",
+      "officeSupplies": "لوازم المكتب",
+      "bankCharges": "رسوم البنك",
+      "insurance": "التأمين",
+      "travelAndMeals": "السفر والوجبات",
+      "depreciation": "الاستهلاك",
+      "vatPaid": "الضريبة المدفوعة",
+      "otherExpenses": "مصروفات أخرى"
+    }
   }
 }
