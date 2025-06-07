@@ -565,75 +565,7 @@
       "deleteSuccess": "Entry deleted successfully",
       "error": "An error occurred. Please try again."
     }
-    },
-    "expenses": {
-      "title": "Expenses",
-      "addButton": "Add Expense",
-      "table": {
-        "date": "Date",
-        "description": "Description",
-        "vendor": "Vendor",
-        "category": "Category",
-        "amount": "Amount (AED)",
-        "receipt": "Receipt",
-        "actions": "Actions"
-      },
-      "form": {
-        "title": "Add Expense Entry",
-        "editTitle": "Edit Expense Entry",
-        "date": "Date",
-        "datePlaceholder": "Select date",
-        "description": "Description",
-        "descriptionPlaceholder": "Enter expense description",
-        "vendor": "Vendor",
-        "vendorPlaceholder": "Vendor or supplier name",
-        "category": "Category",
-        "categoryPlaceholder": "Select category",
-        "amount": "Amount (AED)",
-        "amountPlaceholder": "0.00",
-        "receipt": "Receipt",
-        "receiptHelp": "Upload receipt (PDF or JPG, max 10MB)",
-        "save": "Save Expense",
-        "cancel": "Cancel",
-        "update": "Update Expense"
-      },
-      "categories": {
-        "rent": "Rent",
-        "salaries": "Salaries",
-        "supplies": "Supplies",
-        "utilities": "Utilities",
-        "marketing": "Marketing",
-        "other": "Other"
-      },
-      "actions": {
-        "edit": "Edit",
-        "delete": "Delete",
-        "viewReceipt": "View Receipt",
-        "uploadReceipt": "Upload Receipt"
-      },
-      "noData": "No expense entries found",
-      "noDataDescription": "Start tracking your business expenses by adding your first expense entry."
-    },
-    "totals": {
-      "totalRevenue": "Total Revenue",
-      "totalExpenses": "Total Expenses",
-      "netIncome": "Net Income"
-    },
-    "messages": {
-      "revenueAdded": "Revenue entry added successfully",
-      "revenueUpdated": "Revenue entry updated successfully",
-      "revenueDeleted": "Revenue entry deleted successfully",
-      "expenseAdded": "Expense entry added successfully",
-      "expenseUpdated": "Expense entry updated successfully",
-      "expenseDeleted": "Expense entry deleted successfully",
-      "invoiceGenerated": "Invoice generated successfully",
-      "receiptUploaded": "Receipt uploaded successfully",
-      "invalidFileType": "Invalid file type. Please upload PDF or JPG files only",
-      "fileTooLarge": "File size exceeds 10MB limit",
-      "deleteConfirm": "Are you sure you want to delete this entry?",
-      "deleteConfirmDescription": "This action cannot be undone."
     }
-  },
   "errors": {
     "general": "An error occurred. Please try again.",
     "network": "Network error. Please check your connection.",
