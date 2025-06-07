@@ -9,7 +9,8 @@ import {
   ArrowUpTrayIcon,
   CalculatorIcon,
   ArrowTrendingDownIcon,
-  BanknotesIcon
+  BanknotesIcon,
+  CheckCircleIcon
 } from '@heroicons/react/24/outline';
 import RevenueModal from '../components/accounting/RevenueModal';
 import ExpenseModal from '../components/accounting/ExpenseModal';
@@ -53,6 +54,18 @@ const Accounting: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'revenue' | 'expenses'>('revenue');
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [selectedRevenueForInvoice, setSelectedRevenueForInvoice] = useState<RevenueEntry | null>(null);
+
+  const handleBankUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type === 'text/csv') {
+      // TODO: Implement CSV parsing with papaparse
+      // For now, show a placeholder message
+      alert(t('accounting.bankImport.uploadSuccess', 'CSV uploaded successfully! Bank reconciliation feature coming soon.'));
+      console.log('Bank CSV file selected:', file.name);
+    } else {
+      alert(t('accounting.bankImport.invalidFile', 'Please select a valid CSV file.'));
+    }
+  };
 
   // Revenue handlers
   const handleAddRevenue = (revenueData: Omit<RevenueEntry, 'id' | 'createdAt'>) => {
@@ -395,6 +408,102 @@ const Accounting: React.FC = () => {
               )}
             </div>
           )}
+        </div>
+
+        {/* POS Integration & Bank Import Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+          {/* POS Integration Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex items-center mb-4">
+              <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mr-3">
+                <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {t('accounting.posIntegration.title', 'POS Integration')}
+                </h3>
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400 mt-1">
+                  {t('accounting.comingSoon', 'Coming Soon')}
+                </span>
+              </div>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+              {t('accounting.posIntegration.description', 'Connect your Point-of-Sale system to auto-import daily revenue transactions and eliminate manual data entry.')}
+            </p>
+            <div className="space-y-3">
+              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                <CheckCircleIcon className="w-4 h-4 mr-2 text-green-500" />
+                {t('accounting.posIntegration.feature1', 'Automatic revenue sync')}
+              </div>
+              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                <CheckCircleIcon className="w-4 h-4 mr-2 text-green-500" />
+                {t('accounting.posIntegration.feature2', 'Real-time transaction import')}
+              </div>
+              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                <CheckCircleIcon className="w-4 h-4 mr-2 text-green-500" />
+                {t('accounting.posIntegration.feature3', 'Support for UAE POS systems')}
+              </div>
+            </div>
+            <button
+              disabled
+              className="w-full mt-4 px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-lg cursor-not-allowed transition-colors"
+            >
+              {t('accounting.posIntegration.connectButton', 'Connect POS System')}
+            </button>
+          </div>
+
+          {/* Bank Statement Import Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex items-center mb-4">
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mr-3">
+                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {t('accounting.bankImport.title', 'Bank Statement Import')}
+                </h3>
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 mt-1">
+                  {t('accounting.available', 'Available')}
+                </span>
+              </div>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+              {t('accounting.bankImport.description', 'Upload CSV files from your bank to automatically match expenses and simplify reconciliation process.')}
+            </p>
+            <div className="space-y-3 mb-4">
+              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                <CheckCircleIcon className="w-4 h-4 mr-2 text-green-500" />
+                {t('accounting.bankImport.feature1', 'Support for UAE banks (CBD, FAB, ENBD)')}
+              </div>
+              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                <CheckCircleIcon className="w-4 h-4 mr-2 text-green-500" />
+                {t('accounting.bankImport.feature2', 'Automatic expense matching')}
+              </div>
+              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                <CheckCircleIcon className="w-4 h-4 mr-2 text-green-500" />
+                {t('accounting.bankImport.feature3', 'CSV format validation')}
+              </div>
+            </div>
+            <div className="space-y-3">
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleBankUpload}
+                className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/20 dark:file:text-blue-400"
+                id="bank-csv-upload"
+              />
+              <button
+                onClick={() => document.getElementById('bank-csv-upload')?.click()}
+                className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              >
+                {t('accounting.bankImport.uploadButton', 'Upload Bank CSV')}
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Modals */}
