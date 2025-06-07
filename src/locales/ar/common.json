@@ -205,5 +205,107 @@
     "unauthorized": "غير مخول للقيام بهذا الإجراء.",
     "notFound": "المورد المطلوب غير موجود.",
     "serverError": "خطأ في الخادم. يرجى المحاولة لاحقاً."
+  },
+  "accounting": {
+    "revenues": {
+      "title": "الإيرادات",
+      "addButton": "إضافة إيراد",
+      "table": {
+        "date": "التاريخ",
+        "description": "الوصف",
+        "customer": "العميل",
+        "category": "الفئة",
+        "amount": "المبلغ (درهم)",
+        "actions": "الإجراءات"
+      },
+      "form": {
+        "title": "إضافة إدخال إيراد",
+        "editTitle": "تحرير إدخال الإيراد",
+        "date": "التاريخ",
+        "datePlaceholder": "اختر التاريخ",
+        "description": "الوصف",
+        "descriptionPlaceholder": "أدخل وصف الإيراد",
+        "customer": "العميل",
+        "customerPlaceholder": "اسم العميل",
+        "category": "الفئة",
+        "categoryPlaceholder": "اختر الفئة",
+        "amount": "المبلغ (درهم)",
+        "amountPlaceholder": "0.00",
+        "save": "حفظ الإيراد",
+        "cancel": "إلغاء",
+        "update": "تحديث الإيراد"
+      },
+      "categories": {
+        "sales": "المبيعات",
+        "services": "الخدمات",
+        "rent": "الإيجار",
+        "other": "أخرى"
+      },
+      "actions": {
+        "edit": "تحرير",
+        "delete": "حذف"
+      },
+      "noData": "لم يتم العثور على إدخالات الإيرادات",
+      "noDataDescription": "ابدأ في تتبع دخل عملك عن طريق إضافة أول إدخال إيرادات."
+    },
+    "expenses": {
+      "title": "المصاريف",
+      "addButton": "إضافة مصروف",
+      "table": {
+        "date": "التاريخ",
+        "description": "الوصف",
+        "vendor": "المورد",
+        "category": "الفئة",
+        "amount": "المبلغ (درهم)",
+        "receipt": "الإيصال",
+        "actions": "الإجراءات"
+      },
+      "form": {
+        "title": "إضافة إدخال مصروف",
+        "editTitle": "تحرير إدخال المصروف",
+        "date": "التاريخ",
+        "datePlaceholder": "اختر التاريخ",
+        "description": "الوصف",
+        "descriptionPlaceholder": "أدخل وصف المصروف",
+        "vendor": "المورد",
+        "vendorPlaceholder": "اسم المورد",
+        "category": "الفئة",
+        "categoryPlaceholder": "اختر الفئة",
+        "amount": "المبلغ (درهم)",
+        "amountPlaceholder": "0.00",
+        "receipt": "الإيصال",
+        "receiptHelp": "رفع الإيصال (PDF أو JPG)",
+        "save": "حفظ المصروف",
+        "cancel": "إلغاء",
+        "update": "تحديث المصروف"
+      },
+      "categories": {
+        "rent": "الإيجار",
+        "salaries": "الرواتب",
+        "supplies": "اللوازم",
+        "utilities": "المرافق",
+        "marketing": "التسويق",
+        "other": "أخرى"
+      },
+      "actions": {
+        "edit": "تحرير",
+        "delete": "حذف",
+        "viewReceipt": "عرض الإيصال"
+      },
+      "noData": "لم يتم العثور على إدخالات المصاريف",
+      "noDataDescription": "ابدأ في تتبع مصاريف عملك عن طريق إضافة أول إدخال مصروف."
+    },
+    "summary": {
+      "totalRevenue": "إجمالي الإيرادات",
+      "totalExpenses": "إجمالي المصاريف",
+      "netIncome": "صافي الدخل",
+      "thisMonth": "هذا الشهر"
+    },
+    "messages": {
+      "deleteConfirm": "هل أنت متأكد من أنك تريد حذف هذا الإدخال؟",
+      "saveSuccess": "تم حفظ الإدخال بنجاح",
+      "deleteSuccess": "تم حذف الإدخال بنجاح",
+      "error": "حدث خطأ. يرجى المحاولة مرة أخرى."
+    }
   }
 }
