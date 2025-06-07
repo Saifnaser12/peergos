@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -77,6 +76,7 @@ import {
   Pie,
   Cell
 } from 'recharts';
+import { useFinance } from '../context/FinanceContext';
 
 // Types
 interface FinancialEntry {
@@ -127,6 +127,7 @@ const Financials: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [openExpenseModal, setOpenExpenseModal] = useState(false);
   const [editingEntry, setEditingEntry] = useState<FinancialEntry | null>(null);
+  const { revenue, expenses, addRevenue, addExpense } = useFinance();
 
   const [financialData, setFinancialData] = useState<FinancialEntry[]>([
     {
@@ -186,44 +187,28 @@ const Financials: React.FC = () => {
     date: new Date().toISOString().split('T')[0]
   });
 
-  // Calculate financial summary
-  const calculateSummary = (): FinancialSummary => {
-    const revenue = financialData
-      .filter(item => item.type === 'revenue')
-      .reduce((sum, item) => sum + item.amount, 0);
-
-    const expenses = financialData
-      .filter(item => item.type === 'expense')
-      .reduce((sum, item) => sum + item.amount, 0);
-
-    const assets = financialData
-      .filter(item => item.type === 'asset')
-      .reduce((sum, item) => sum + item.amount, 0);
-
-    const liabilities = financialData
-      .filter(item => item.type === 'liability')
-      .reduce((sum, item) => sum + item.amount, 0);
-
-    const equity = financialData
-      .filter(item => item.type === 'equity')
-      .reduce((sum, item) => sum + item.amount, 0);
-
-    const netIncome = revenue - expenses;
-    const totalEquityWithRetained = equity + netIncome;
-    const isBalanced = Math.abs(assets - (liabilities + totalEquityWithRetained)) < 0.01;
-
-    return {
-      totalRevenue: revenue,
-      totalExpenses: expenses,
-      netIncome,
-      totalAssets: assets,
-      totalLiabilities: liabilities,
-      totalEquity: totalEquityWithRetained,
-      isBalanced
-    };
+  const getTotalRevenue = () => {
+    return revenue.reduce((sum, item) => sum + item.amount, 0);
   };
 
-  const summary = calculateSummary();
+  const getTotalExpenses = () => {
+    return expenses.reduce((sum, item) => sum + item.amount, 0);
+  };
+
+  const getNetIncome = () => {
+    return getTotalRevenue() - getTotalExpenses();
+  };
+
+  // Calculate summary using global context
+  const summary = {
+    totalRevenue: getTotalRevenue(),
+    totalExpenses: getTotalExpenses(),
+    totalAssets: financialData.filter(item => item.type === 'asset').reduce((sum, item) => sum + item.amount, 0),
+    totalLiabilities: financialData.filter(item => item.type === 'liability').reduce((sum, item) => sum + item.amount, 0),
+    totalEquity: financialData.filter(item => item.type === 'equity').reduce((sum, item) => sum + item.amount, 0),
+    get netIncome() { return getNetIncome(); },
+    get isBalanced() { return Math.abs((this.totalAssets) - (this.totalLiabilities + this.totalEquity)) < 0.01; }
+  };
 
   // Calculate yearly summary
   const calculateYearlySummary = (): YearlySummary => {
@@ -231,17 +216,17 @@ const Financials: React.FC = () => {
     const currentYearData = financialData.filter(item => 
       new Date(item.date).getFullYear() === currentYear
     );
-    
+
     const revenue = currentYearData
       .filter(item => item.type === 'revenue')
       .reduce((sum, item) => sum + item.amount, 0);
-    
+
     const expenses = currentYearData
       .filter(item => item.type === 'expense')
       .reduce((sum, item) => sum + item.amount, 0);
-    
+
     const netIncome = revenue - expenses;
-    
+
     return {
       year: currentYear,
       revenue,
@@ -269,29 +254,15 @@ const Financials: React.FC = () => {
     { month: 'Jun', profit: 25000 }
   ];
 
-  const handleAddExpense = () => {
-    if (newExpense.vendor && newExpense.category && newExpense.amount && newExpense.description) {
-      const expense: FinancialEntry = {
-        id: Date.now().toString(),
-        category: newExpense.category,
-        subcategory: newExpense.subcategory,
-        amount: newExpense.amount,
-        date: newExpense.date,
-        description: newExpense.description,
-        type: 'expense',
-        vendor: newExpense.vendor
-      };
-      setFinancialData([...financialData, expense]);
-      setNewExpense({ 
-        vendor: '', 
-        category: '', 
-        subcategory: '', 
-        amount: 0, 
-        description: '', 
-        date: new Date().toISOString().split('T')[0] 
-      });
-      setOpenExpenseModal(false);
-    }
+  const handleAddExpense = (expenseData: any) => {
+    addExpense({
+      category: expenseData.category,
+      amount: parseFloat(expenseData.amount),
+      date: expenseData.date,
+      description: expenseData.description,
+      vendor: expenseData.vendor
+    });
+    setOpenExpenseModal(false);
   };
 
   const handleEditEntry = (entry: FinancialEntry) => {
@@ -444,7 +415,7 @@ const Financials: React.FC = () => {
               sx={{ fontWeight: 600 }}
             />
           </Box>
-          
+
           <Grid container spacing={4}>
             <Grid item xs={12} md={3}>
               <Box sx={{ textAlign: 'center' }}>
@@ -457,7 +428,7 @@ const Financials: React.FC = () => {
                 </Typography>
               </Box>
             </Grid>
-            
+
             <Grid item xs={12} md={3}>
               <Box sx={{ textAlign: 'center' }}>
                 <ExpenseIcon sx={{ fontSize: 40, color: theme.palette.error.main, mb: 1 }} />
@@ -469,7 +440,7 @@ const Financials: React.FC = () => {
                 </Typography>
               </Box>
             </Grid>
-            
+
             <Grid item xs={12} md={3}>
               <Box sx={{ textAlign: 'center' }}>
                 <TrendingUp sx={{ fontSize: 40, color: theme.palette.primary.main, mb: 1 }} />
@@ -487,7 +458,7 @@ const Financials: React.FC = () => {
                 </Typography>
               </Box>
             </Grid>
-            
+
             <Grid item xs={12} md={3}>
               <Box sx={{ textAlign: 'center' }}>
                 <AccountBalanceIcon sx={{ fontSize: 40, color: theme.palette.info.main, mb: 1 }} />
@@ -519,7 +490,7 @@ const Financials: React.FC = () => {
                 </span>
               )}
             </div>
-            
+
             <div className="space-y-4 flex-grow">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -529,7 +500,7 @@ const Financials: React.FC = () => {
                   {formatCurrency(summary.totalAssets)}
                 </p>
               </div>
-              
+
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {t('financials.liabilities', 'Liabilities')}
@@ -538,7 +509,7 @@ const Financials: React.FC = () => {
                   {formatCurrency(summary.totalLiabilities)}
                 </p>
               </div>
-              
+
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {t('financials.equity', 'Equity')}
@@ -548,7 +519,7 @@ const Financials: React.FC = () => {
                 </p>
               </div>
             </div>
-            
+
             <button
               onClick={() => setActiveTab(1)}
               className="w-full bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-xl transition-colors duration-200 mt-4"
@@ -646,7 +617,7 @@ const Financials: React.FC = () => {
             {t('financials.quickActions', 'Quick Actions')}
           </Typography>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Add Revenue Card */}
           <div 
@@ -814,14 +785,14 @@ const Financials: React.FC = () => {
                       <TableCell align="center">
                         <IconButton 
                           size="small" 
-                          onClick={() => handleEditEntry(row)}
+                          onClick={() =>Financials.handleEditEntry(row)}
                           sx={{ mr: 1 }}
                         >
                           <EditIcon fontSize="small" />
                         </IconButton>
                         <IconButton 
                           size="small" 
-                          onClick={() => handleDeleteEntry(row.id)}
+                          onClick={() => Financials.handleDeleteEntry(row.id)}
                           color="error"
                         >
                           <DeleteIcon fontSize="small" />
@@ -942,7 +913,7 @@ const Financials: React.FC = () => {
             {t('common.cancel', 'Cancel')}
           </Button>
           <Button 
-            onClick={handleAddExpense} 
+            onClick={() => handleAddExpense(newExpense)} 
             variant="contained"
             sx={{ textTransform: 'none', borderRadius: 2 }}
           >

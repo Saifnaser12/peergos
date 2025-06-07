@@ -14,6 +14,7 @@ import i18n from './i18n';
 import { NotificationProvider } from './context/NotificationContext';
 import { TaxAgentProvider } from './context/TaxAgentContext';
 import { POSIntegrationProvider } from './context/POSIntegrationContext';
+import { FinanceProvider } from './context/FinanceContext';
 
 // Import your existing pages
 import Setup from './pages/Setup';
@@ -104,19 +105,21 @@ function App() {
   return (
     <I18nextProvider i18n={i18n}>
       <SettingsProvider>
-        <CustomThemeProvider>
-          <TaxProvider>
-            <UserRoleProvider>
-              <NotificationProvider>
-                <TaxAgentProvider>
-                  <POSIntegrationProvider>
-                    <AppContent />
-                  </POSIntegrationProvider>
-                </TaxAgentProvider>
-              </NotificationProvider>
-            </UserRoleProvider>
-          </TaxProvider>
-        </CustomThemeProvider>
+        <FinanceProvider>
+          <CustomThemeProvider>
+            <TaxProvider>
+              <UserRoleProvider>
+                <NotificationProvider>
+                  <TaxAgentProvider>
+                    <POSIntegrationProvider>
+                      <AppContent />
+                    </POSIntegrationProvider>
+                  </TaxAgentProvider>
+                </NotificationProvider>
+              </UserRoleProvider>
+            </TaxProvider>
+          </CustomThemeProvider>
+        </FinanceProvider>
       </SettingsProvider>
     </I18nextProvider>
   );

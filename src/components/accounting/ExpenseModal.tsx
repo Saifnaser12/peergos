@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -11,6 +10,7 @@ import {
   ArrowUpTrayIcon,
   DocumentIcon
 } from '@heroicons/react/24/outline';
+import { useFinance } from '../../context/FinanceContext';
 
 interface ExpenseEntry {
   id: string;
@@ -38,7 +38,8 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
   editingExpense
 }) => {
   const { t } = useTranslation();
-  
+  const { addExpense } = useFinance();
+
   const [formData, setFormData] = useState({
     date: '',
     description: '',
@@ -111,7 +112,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -136,6 +137,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
       receiptFileName
     };
 
+    addExpense(expenseData);
     onSave(expenseData);
   };
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -10,6 +9,7 @@ import {
   DocumentIcon
 } from '@heroicons/react/24/outline';
 import InvoiceModal from './InvoiceModal';
+import { useFinance } from '../../context/FinanceContext'; // Import the finance context
 
 interface RevenueEntry {
   id: string;
@@ -36,7 +36,8 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
   editingRevenue
 }) => {
   const { t } = useTranslation();
-  
+  const { addRevenue } = useFinance(); // Use the finance context
+
   const [formData, setFormData] = useState({
     date: '',
     description: '',
@@ -91,13 +92,12 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     const revenueData = {
-      ...(editingRevenue || {}),
       date: formData.date,
       description: formData.description.trim(),
       customer: formData.customer.trim() || undefined,
@@ -105,6 +105,13 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
       invoiceGenerated: formData.invoiceGenerated,
       invoiceId: formData.invoiceGenerated ? Date.now().toString() : undefined
     };
+    
+    // Use addRevenue from the finance context
+    addRevenue({
+      amount: parseFloat(formData.amount),
+      description: formData.description.trim(),
+      date: formData.date
+    });
 
     onSave(revenueData);
 
