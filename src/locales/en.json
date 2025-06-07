@@ -629,55 +629,26 @@
     }
   },
   "categories": {
-        "rent": "Rent",
-        "salaries": "Salaries",
-        "supplies": "Supplies",
-        "utilities": "Utilities",
-        "marketing": "Marketing",
-        "other": "Other"
-      },
-      "actions": {
-        "edit": "Edit",
-        "delete": "Delete",
-        "viewReceipt": "View Receipt"
-      },
-      "noData": "No expense entries found",
-      "noDataDescription": "Start tracking your business expenses by adding your first expense entry."
+    "revenue": {
+      "productSales": "Product Sales",
+      "serviceIncome": "Service Income",
+      "rentalIncome": "Rental Income",
+      "interestIncome": "Interest Income",
+      "consulting": "Consulting Income",
+      "other": "Other Revenue"
     },
-    "summary": {
-      "title": "Financial Overview",
-      "totalRevenue": "Total Revenue (This Month)",
-      "totalExpenses": "Total Expenses (This Month)",
-      "netIncome": "Net Income",
-      "thisMonth": "This Month",
-      "monthToDate": "Month to date",
-      "downloadPDF": "Download Summary PDF",
-      "downloadExcel": "Download Excel",
-      "viewFinancials": "View in Financial Reports"
-    },
-    "invoice": {
-      "title": "Invoice Generator",
-      "customerName": "Customer Name",
-      "customerNamePlaceholder": "Enter customer name",
-      "dueDate": "Due Date",
-      "serviceDescription": "Service Description",
-      "serviceDescriptionPlaceholder": "Describe the service or product",
-      "includeVAT": "Include VAT (5%)",
-      "includeVATHelp": "Add 5% VAT to the invoice total",
-      "summary": "Invoice Summary",
-      "subtotal": "Subtotal",
-      "vat": "VAT",
-      "total": "Total",
-      "generatePDF": "Generate PDF Invoice"
+    "expenses": {
+      "rent": "Rent",
+      "utilities": "Utilities",
+      "salaries": "Salaries",
+      "marketing": "Marketing",
+      "travel": "Travel",
+      "supplies": "Supplies",
+      "software": "Software & Subscriptions",
+      "professional": "Professional Fees",
+      "taxes": "Government Taxes",
+      "other": "Other Expenses"
     }
-  },
-  "categories": {
-    "rent": "Rent",
-    "salaries": "Salaries",
-    "supplies": "Supplies",
-    "utilities": "Utilities",
-    "marketing": "Marketing",
-    "other": "Other"
   },
   "errors": {
     "general": "An error occurred. Please try again.",
