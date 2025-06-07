@@ -553,10 +553,30 @@
       "noDataDescription": "Start tracking your business expenses by adding your first expense entry."
     },
     "summary": {
-      "totalRevenue": "Total Revenue",
-      "totalExpenses": "Total Expenses",
+      "title": "Financial Overview",
+      "totalRevenue": "Total Revenue (This Month)",
+      "totalExpenses": "Total Expenses (This Month)",
       "netIncome": "Net Income",
-      "thisMonth": "This Month"
+      "thisMonth": "This Month",
+      "monthToDate": "Month to date",
+      "downloadPDF": "Download Summary PDF",
+      "downloadExcel": "Download Excel",
+      "viewFinancials": "View in Financial Reports"
+    },
+    "invoice": {
+      "title": "Invoice Generator",
+      "customerName": "Customer Name",
+      "customerNamePlaceholder": "Enter customer name",
+      "dueDate": "Due Date",
+      "serviceDescription": "Service Description",
+      "serviceDescriptionPlaceholder": "Describe the service or product",
+      "includeVAT": "Include VAT (5%)",
+      "includeVATHelp": "Add 5% VAT to the invoice total",
+      "summary": "Invoice Summary",
+      "subtotal": "Subtotal",
+      "vat": "VAT",
+      "total": "Total",
+      "generatePDF": "Generate PDF Invoice"
     },
     "messages": {
       "deleteConfirm": "Are you sure you want to delete this entry?",

@@ -95,10 +95,30 @@
     "title": "المحاسبة",
     "subtitle": "تتبع إيرادات ومصروفات عملك",
     "summary": {
-      "totalRevenue": "إجمالي الإيرادات",
-      "totalExpenses": "إجمالي المصروفات",
+      "title": "النظرة المالية العامة",
+      "totalRevenue": "إجمالي الإيرادات (هذا الشهر)",
+      "totalExpenses": "إجمالي المصروفات (هذا الشهر)",
       "netIncome": "صافي الدخل",
-      "thisMonth": "هذا الشهر"
+      "thisMonth": "هذا الشهر",
+      "monthToDate": "من بداية الشهر حتى الآن",
+      "downloadPDF": "تحميل ملخص PDF",
+      "downloadExcel": "تحميل Excel",
+      "viewFinancials": "عرض في التقارير المالية"
+    },
+    "invoice": {
+      "title": "مولد الفواتير",
+      "customerName": "اسم العميل",
+      "customerNamePlaceholder": "أدخل اسم العميل",
+      "dueDate": "تاريخ الاستحقاق",
+      "serviceDescription": "وصف الخدمة",
+      "serviceDescriptionPlaceholder": "اوصف الخدمة أو المنتج",
+      "includeVAT": "تضمين ضريبة القيمة المضافة (5%)",
+      "includeVATHelp": "أضف 5% ضريبة القيمة المضافة لإجمالي الفاتورة",
+      "summary": "ملخص الفاتورة",
+      "subtotal": "المجموع الفرعي",
+      "vat": "ضريبة القيمة المضافة",
+      "total": "الإجمالي",
+      "generatePDF": "إنشاء فاتورة PDF"
     }
   }
 }

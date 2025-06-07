@@ -15,6 +15,7 @@ import {
 import RevenueModal from '../components/accounting/RevenueModal';
 import ExpenseModal from '../components/accounting/ExpenseModal';
 import AccountingSummary from '../components/accounting/AccountingSummary';
+import InvoiceModal from '../components/accounting/InvoiceModal';
 
 interface RevenueEntry {
   id: string;
@@ -50,6 +51,8 @@ const Accounting: React.FC = () => {
   const [editingRevenue, setEditingRevenue] = useState<RevenueEntry | null>(null);
   const [editingExpense, setEditingExpense] = useState<ExpenseEntry | null>(null);
   const [activeTab, setActiveTab] = useState<'revenue' | 'expenses'>('revenue');
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [selectedRevenueForInvoice, setSelectedRevenueForInvoice] = useState<RevenueEntry | null>(null);
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -128,6 +131,11 @@ const Accounting: React.FC = () => {
   const handleEditExpense = (expense: ExpenseEntry) => {
     setEditingExpense(expense);
     setIsExpenseModalOpen(true);
+  };
+
+  const handleGenerateInvoice = (revenue: RevenueEntry) => {
+    setSelectedRevenueForInvoice(revenue);
+    setIsInvoiceModalOpen(true);
   };
 
   const formatCurrency = (amount: number) => {
@@ -286,6 +294,15 @@ const Accounting: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div className="flex items-center space-x-2">
+                              {!revenue.invoiceGenerated && (
+                                <button
+                                  onClick={() => handleGenerateInvoice(revenue)}
+                                  className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors duration-150"
+                                  title={t('accounting.revenue.actions.generateInvoice')}
+                                >
+                                  <DocumentIcon className="h-4 w-4" />
+                                </button>
+                              )}
                               <button
                                 onClick={() => handleEditRevenue(revenue)}
                                 className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors duration-150"
@@ -463,6 +480,20 @@ const Accounting: React.FC = () => {
           }}
           onSave={editingExpense ? handleUpdateExpense : handleAddExpense}
           editingExpense={editingExpense}
+        />
+
+        <InvoiceModal
+          isOpen={isInvoiceModalOpen}
+          onClose={() => {
+            setIsInvoiceModalOpen(false);
+            setSelectedRevenueForInvoice(null);
+          }}
+          revenueData={selectedRevenueForInvoice ? {
+            description: selectedRevenueForInvoice.description,
+            amount: selectedRevenueForInvoice.amount,
+            customer: selectedRevenueForInvoice.customer,
+            date: selectedRevenueForInvoice.date
+          } : null}
         />
       </div>
     </div>
