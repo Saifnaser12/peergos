@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
@@ -29,6 +28,19 @@ interface InvoiceModalProps {
   };
 }
 
+interface InvoiceData {
+  invoiceNumber: string;
+  issueDate: string;
+  supplierTRN: string;
+  businessName: string;
+  customerName: string;
+  customerTRN?: string;
+  serviceDescription: string;
+  subtotal: number;
+  vat: number;
+  total: number;
+}
+
 const InvoiceModal: React.FC<InvoiceModalProps> = ({
   isOpen,
   onClose,
@@ -36,7 +48,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
-  
+
   const [formData, setFormData] = useState({
     invoiceNumber: '',
     customerName: '',
@@ -84,7 +96,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     if (isOpen && revenueData) {
       const today = new Date();
       const dueDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
-      
+
       setFormData(prev => ({
         ...prev,
         invoiceNumber: generateInvoiceNumber(),
@@ -145,7 +157,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     try {
       // Get company info from localStorage or default
       const companyInfo = JSON.parse(localStorage.getItem('companyInfo') || '{}');
-      
+
       const baseAmount = formData.amount;
       const vatRate = formData.vatEnabled ? 5 : 0;
       const vatAmount = (baseAmount * vatRate) / 100;
@@ -176,7 +188,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
         amount: totalAmount,
         vatAmount,
         subtotal: baseAmount,
-        
+
         seller: {
           name: companyInfo.name || 'Your Company Name',
           taxRegistrationNumber: companyInfo.trn || '100000000000003',
@@ -192,7 +204,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
             email: companyInfo.email || 'info@company.ae'
           }
         },
-        
+
         buyer: {
           name: formData.customerName,
           taxRegistrationNumber: formData.customerTRN || undefined,
@@ -208,17 +220,17 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
             email: formData.customerContact.email || undefined
           }
         },
-        
+
         items: [invoiceItem],
-        
+
         // UAE FTA specific fields
         uuid: uuidv4(),
-        
+
         // PINT AE compliance
         customizationID: "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
         profileID: "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
         businessProcessTypeID: "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
-        
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -237,7 +249,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
   const handleDownloadPDF = () => {
     if (!generatedOutputs) return;
-    
+
     const url = URL.createObjectURL(generatedOutputs.pdf);
     const a = document.createElement('a');
     a.href = url;
@@ -250,18 +262,35 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
 
   const handleDownloadJSON = () => {
     if (!generatedOutputs) return;
-    
-    const blob = new Blob([JSON.stringify(generatedOutputs.ftaJson, null, 2)], { 
-      type: 'application/json' 
+
+    const blob = new Blob([JSON.stringify(generatedOutputs.ftaJson, null, 2)], {
+      type: 'application/json',
     });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `fta-einvoice-${formData.invoiceNumber}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `fta-einvoice-${formData.invoiceNumber}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadXML = () => {
+    const invoiceData: InvoiceData = {
+      invoiceNumber: formData.invoiceNumber,
+      issueDate: formData.issueDate,
+      supplierTRN: '123456789012345', // This should come from user profile
+      businessName: 'Your Business Name', // This should come from user profile
+      customerName: formData.customerName,
+      customerTRN: formData.customerTRN,
+      serviceDescription: formData.serviceDescription,
+      subtotal: formData.amount,
+      vat: formData.vatEnabled ? formData.amount * 0.05 : 0,
+      total: formData.vatEnabled ? formData.amount * 1.05 : formData.amount
+    };
+
+    downloadInvoiceXML(invoiceData);
   };
 
   const handleInputChange = (field: string, value: string | number | boolean, nested?: string) => {
@@ -276,7 +305,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     } else {
       setFormData(prev => ({ ...prev, [field]: value }));
     }
-    
+
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -721,5 +750,35 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     </div>
   );
 };
+
+// Function to generate XML
+export function generateInvoiceXML(invoice: InvoiceData): string {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<Invoice>
+  <InvoiceNumber>${invoice.invoiceNumber}</InvoiceNumber>
+  <IssueDate>${invoice.issueDate}</IssueDate>
+  <SupplierTRN>${invoice.supplierTRN}</SupplierTRN>
+  <SupplierName>${invoice.businessName}</SupplierName>
+  <CustomerName>${invoice.customerName}</CustomerName>
+  <CustomerTRN>${invoice.customerTRN || ''}</CustomerTRN>
+  <Description>${invoice.serviceDescription}</Description>
+  <Subtotal>${invoice.subtotal.toFixed(2)}</Subtotal>
+  <VAT>${invoice.vat.toFixed(2)}</VAT>
+  <Total>${invoice.total.toFixed(2)}</Total>
+</Invoice>`;
+}
+
+function downloadInvoiceXML(invoiceData: InvoiceData) {
+  const xmlString = generateInvoiceXML(invoiceData);
+  const blob = new Blob([xmlString], { type: 'application/xml' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `invoice-${invoiceData.invoiceNumber}.xml`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 
 export default InvoiceModal;
