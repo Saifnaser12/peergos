@@ -6,9 +6,11 @@ import {
   DocumentTextIcon,
   UserIcon,
   BanknotesIcon,
-  DocumentIcon
+  DocumentIcon,
+  TagIcon
 } from '@heroicons/react/24/outline';
 import InvoiceModal from './InvoiceModal';
+import { revenueCategories, revenueCategoryTranslations } from '../../utils/constants';
 
 interface RevenueEntry {
   id: string;
@@ -40,6 +42,7 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
     date: '',
     description: '',
     customer: '',
+    category: '',
     amount: '',
     invoiceGenerated: false
   });
@@ -54,6 +57,7 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
         date: editingRevenue.date,
         description: editingRevenue.description,
         customer: editingRevenue.customer || '',
+        category: editingRevenue.category || '',
         amount: editingRevenue.amount.toString(),
         invoiceGenerated: editingRevenue.invoiceGenerated
       });
@@ -62,6 +66,7 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
         date: new Date().toISOString().split('T')[0],
         description: '',
         customer: '',
+        category: '',
         amount: '',
         invoiceGenerated: false
       });
@@ -78,6 +83,10 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
 
     if (!formData.description.trim()) {
       newErrors.description = 'Description is required';
+    }
+
+    if (!formData.category) {
+      newErrors.category = 'Category is required';
     }
 
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
@@ -99,6 +108,7 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
       date: formData.date,
       description: formData.description.trim(),
       customer: formData.customer.trim() || undefined,
+      category: formData.category,
       amount: parseFloat(formData.amount),
       invoiceGenerated: formData.invoiceGenerated,
       invoiceId: formData.invoiceGenerated ? Date.now().toString() : undefined
@@ -187,6 +197,29 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
               placeholder={t('accounting.revenue.form.customerPlaceholder')}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-150"
             />
+          </div>
+
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <TagIcon className="h-4 w-4 inline mr-2" />
+              {t('accounting.revenue.form.category')}
+            </label>
+            <select
+              value={formData.category}
+              onChange={(e) => handleInputChange('category', e.target.value)}
+              className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
+                errors.category ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+              }`}
+            >
+              <option value="">{t('accounting.revenue.form.categoryPlaceholder')}</option>
+              {revenueCategories.map(category => (
+                <option key={category} value={category}>
+                  {t(revenueCategoryTranslations[category] || category)}
+                </option>
+              ))}
+            </select>
+            {errors.category && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.category}</p>}
           </div>
 
           {/* Amount */}

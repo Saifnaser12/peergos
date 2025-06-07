@@ -227,6 +227,41 @@
     "previewXml": "عرض XML (تجريبي)",
     "vatNote": "تشمل ضريبة القيمة المضافة وفقًا لمتطلبات الهيئة الاتحادية للضرائب"
   },
+  "accounting": {
+    "revenue": {
+      "form": {
+        "category": "الفئة",
+        "categoryPlaceholder": "اختر فئة الإيراد"
+      },
+      "categories": {
+        "productSales": "مبيعات المنتجات",
+        "serviceIncome": "دخل الخدمات",
+        "rentalIncome": "دخل الإيجار",
+        "consultingFees": "رسوم الاستشارات",
+        "commissionIncome": "دخل العمولات",
+        "interestIncome": "دخل الفوائد",
+        "otherRevenue": "إيرادات أخرى"
+      }
+    },
+    "expenses": {
+      "categories": {
+        "costOfGoodsSold": "تكلفة البضائع المبيعة",
+        "salariesAndWages": "الرواتب والأجور",
+        "rent": "الإيجار",
+        "utilities": "المرافق",
+        "marketingAndAdvertising": "التسويق والإعلان",
+        "softwareSubscriptions": "اشتراكات البرمجيات",
+        "professionalServices": "الخدمات المهنية",
+        "officeSupplies": "مستلزمات المكتب",
+        "bankCharges": "رسوم البنك",
+        "insurance": "التأمين",
+        "travelAndMeals": "السفر والوجبات",
+        "depreciation": "الاستهلاك",
+        "vatPaid": "ضريبة القيمة المضافة المدفوعة",
+        "otherExpenses": "مصروفات أخرى"
+      }
+    }
+  },
   "financials": {
     "title": "البيانات المالية",
     "revenue": "الإيرادات",

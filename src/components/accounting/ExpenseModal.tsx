@@ -10,6 +10,7 @@ import {
   ArrowUpTrayIcon,
   DocumentIcon
 } from '@heroicons/react/24/outline';
+import { expenseCategories, expenseCategoryTranslations } from '../../utils/constants';
 
 
 interface ExpenseEntry {
@@ -50,14 +51,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const categories = [
-    'rent',
-    'salaries',
-    'supplies',
-    'utilities',
-    'marketing',
-    'other'
-  ];
+  // Using imported expense categories
 
   useEffect(() => {
     if (editingExpense) {
@@ -254,9 +248,9 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
               }`}
             >
               <option value="">{t('accounting.expenses.form.categoryPlaceholder')}</option>
-              {categories.map(category => (
+              {expenseCategories.map(category => (
                 <option key={category} value={category}>
-                  {t(`accounting.expenses.categories.${category}`)}
+                  {t(expenseCategoryTranslations[category] || category)}
                 </option>
               ))}
             </select>
