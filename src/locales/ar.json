@@ -143,5 +143,27 @@
       "generatePDF": "إنشاء فاتورة PDF",
       "generate": "إنشاء فاتورة PDF"
     }
+  },
+  "categories": {
+    "revenue": {
+      "productSales": "مبيعات المنتجات",
+      "serviceIncome": "دخل الخدمات",
+      "rentalIncome": "دخل الإيجار",
+      "interestIncome": "دخل الفوائد",
+      "consulting": "دخل الاستشارات",
+      "other": "إيرادات أخرى"
+    },
+    "expenses": {
+      "rent": "الإيجار",
+      "utilities": "المرافق",
+      "salaries": "الرواتب",
+      "marketing": "التسويق",
+      "travel": "السفر",
+      "supplies": "اللوازم",
+      "software": "البرمجيات والاشتراكات",
+      "professional": "الرسوم المهنية",
+      "taxes": "الضرائب الحكومية",
+      "other": "مصروفات أخرى"
+    }
   }
 }
