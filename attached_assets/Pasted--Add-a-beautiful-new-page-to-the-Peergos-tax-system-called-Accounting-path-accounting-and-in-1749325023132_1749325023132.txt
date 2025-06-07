@@ -1,0 +1,64 @@
+✨ Add a beautiful new page to the Peergos tax system called "Accounting" (path: /accounting), and include it in the sidebar between "VAT" and "Financials".
+
+This page must follow Apple-style aesthetics: clean layout, extra padding, large readable fonts, xl-rounded cards, smart iconography, and perfect mobile responsiveness.
+
+🎯 Page Goal: Let UAE SMEs record revenues, expenses, and auto-generate VAT-compliant invoices — with zero accounting knowledge.
+
+📁 Page Sections:
+
+1. 🟢 Revenue Tracker
+   - Title: "Revenue"
+   - Button: "+ Add Revenue"
+   - Table Columns: Date | Description | Customer | Amount (AED) | Invoice | Actions
+   - Modal Form Fields:
+     - Date (calendar picker)
+     - Description
+     - Customer name/email (optional)
+     - Amount (AED)
+     - Toggle: "Generate Invoice"
+   - If checked, trigger invoice modal (see section 4)
+
+2. 🔴 Expense Tracker
+   - Title: "Expenses"
+   - Button: "+ Add Expense"
+   - Table Columns: Date | Description | Vendor | Category | Amount (AED) | Receipt | Actions
+   - Modal Form Fields:
+     - Date
+     - Description
+     - Vendor
+     - Dropdown: Category (Rent, Salaries, Supplies, Utilities, Marketing, Other)
+     - File Upload: Optional receipt (PDF/JPG)
+
+3. 📊 Accounting Summary
+   - 3 Beautiful Cards:
+     - 💰 "Total Revenue (This Month)"
+     - 📉 "Total Expenses (This Month)"
+     - 📈 "Net Income"
+   - Buttons below cards:
+     - Download Summary PDF
+     - Download Excel
+     - “Open in Financial Reports” (link to /financials)
+
+4. 🧾 Invoice Generator Modal
+   - Auto-filled with revenue line data
+   - User can review/edit:
+     - Customer name
+     - Due date
+     - Service description
+     - VAT toggle (5% if TRN entered)
+   - Button: "Generate PDF Invoice"
+   - Use company logo, TRN, and invoice number format like "INV-2025-00001"
+
+🔧 Additional Requirements:
+- Fully support i18n using keys like `t("accounting.revenue.title")`, not hardcoded strings
+- Use Apple-level spacing and Tailwind `2xl` card rounding
+- Light/Dark mode switcher
+- Responsive layout (desktop, mobile)
+- Store entries in local state for now (later: integrate backend)
+- Use icons from Lucide or Heroicons (Finance/Bank style)
+
+Access Control:
+- Admin and Accountant roles can add/edit
+- Viewer can only see
+
+💡 This page should look like Xero/FreshBooks, feel like Apple, and behave like Zoho Books — extremely intuitive and clean for UAE SMEs.
