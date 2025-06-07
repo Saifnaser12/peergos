@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -42,7 +41,7 @@ interface ExpenseEntry {
 
 const Accounting: React.FC = () => {
   const { t } = useTranslation();
-  
+
   // State management
   const [revenues, setRevenues] = useState<RevenueEntry[]>([]);
   const [expenses, setExpenses] = useState<ExpenseEntry[]>([]);
@@ -56,11 +55,11 @@ const Accounting: React.FC = () => {
   useEffect(() => {
     const savedRevenues = localStorage.getItem('peergos_accounting_revenues');
     const savedExpenses = localStorage.getItem('peergos_accounting_expenses');
-    
+
     if (savedRevenues) {
       setRevenues(JSON.parse(savedRevenues));
     }
-    
+
     if (savedExpenses) {
       setExpenses(JSON.parse(savedExpenses));
     }

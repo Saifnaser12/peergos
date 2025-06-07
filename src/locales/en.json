@@ -565,7 +565,7 @@
       "deleteSuccess": "Entry deleted successfully",
       "error": "An error occurred. Please try again."
     }
-    }
+  },
   "errors": {
     "general": "An error occurred. Please try again.",
     "network": "Network error. Please check your connection.",
