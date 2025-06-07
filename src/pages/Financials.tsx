@@ -34,7 +34,7 @@ import {
   Upload as UploadIcon,
   Assessment as AssessmentIcon,
   AccountBalance as AccountBalanceIcon,
-  TrendingUp as TrendingUpIcon,
+  TrendingUp,
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
   Language as LanguageIcon,
@@ -384,7 +384,7 @@ const Financials: React.FC = () => {
           }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <TrendingUpIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
+                <TrendingUp sx={{ mr: 1, color: theme.palette.primary.main }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   Income Statement
                 </Typography>
@@ -503,7 +503,7 @@ const Financials: React.FC = () => {
             <Button
               fullWidth
               variant="outlined"
-              startIcon={<TrendingUpIcon />}
+              startIcon={<TrendingUp />}
               onClick={() => handleExportPDF('income')}
               sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
             >
@@ -561,7 +561,7 @@ const Financials: React.FC = () => {
           >
             <Tab 
               label={t('financials.incomeStatement', 'Income Statement')} 
-              icon={<TrendingUpIcon />}
+              icon={<TrendingUp />}
               iconPosition="start"
               sx={{ textTransform: 'none' }}
             />

@@ -1,4 +1,3 @@
-
 {
   "common": {
     "loading": "Loading...",
@@ -386,7 +385,6 @@
   "notifications": {
     "title": "Notifications",
     "markAllRead": "Mark all as read",
-    "markAsRead": "Mark as read",
     "dismiss": "Dismiss",
     "noNotifications": "No notifications",
     "allCaughtUp": "You're all caught up!",

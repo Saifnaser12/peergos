@@ -8,7 +8,7 @@ import {
   EyeIcon,
   ArrowUpTrayIcon,
   CalculatorIcon,
-  ArrowTrendingUpIcon,
+  ArrowTrendingUpIcon as TrendingUpIcon,
   ArrowTrendingDownIcon,
   BanknotesIcon
 } from '@heroicons/react/24/outline';
@@ -194,7 +194,7 @@ const Accounting: React.FC = () => {
                 }`}
               >
                 <div className="flex items-center justify-center space-x-2">
-                  <ArrowTrendingUpIcon className="h-5 w-5" />
+                  <TrendingUpIcon className="h-5 w-5" />
                   <span>{t('accounting.revenue.title')}</span>
                 </div>
               </button>

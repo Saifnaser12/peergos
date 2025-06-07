@@ -78,14 +78,18 @@
     }
   },
   "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "noNotifications": "لا توجد إشعارات",
+    "viewAll": "عرض الكل",
+    "uploadDocument": "تحميل مستند",
     "setupIncomplete": "الإعداد غير مكتمل",
-    "setupIncompleteDesc": "أكمل إعداد النظام للوصول إلى جميع الميزات",
+    "setupIncompleteDesc": "أكمل إعداد عملك لفتح جميع الميزات",
     "completeSetup": "إكمال الإعداد",
-    "missingAgentCert": "شهادة وكيل الضرائب مطلوبة",
-    "missingAgentCertDesc": "ارفع شهادة وكيل الضرائب للمتابعة",
-    "uploadDocument": "رفع المستند",
+    "missingAgentCert": "شهادة وكيل الضرائب مفقودة",
+    "missingAgentCertDesc": "شهادة وكيل الضرائب مطلوبة للتقديم",
     "missingBankSlip": "قسيمة البنك مفقودة",
-    "missingBankSlipDesc": "يرجى رفع قسيمة البنك للتحقق"
+    "missingBankSlipDesc": "قسيمة البنك مطلوبة للتحقق من الدفع"
   },
   "accounting": {
     "title": "المحاسبة",

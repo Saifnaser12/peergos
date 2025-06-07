@@ -1,7 +1,9 @@
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { TrendingUpIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+} from '@heroicons/react/24/outline';
 
 interface AccountingSummaryProps {
   totalRevenue: number;
@@ -30,19 +32,19 @@ const AccountingSummary: React.FC<AccountingSummaryProps> = ({
       title: t('accounting.summary.totalRevenue'),
       amount: totalRevenue,
       color: 'green',
-      icon: TrendingUpIcon
+      icon: ArrowTrendingUpIcon
     },
     {
       title: t('accounting.summary.totalExpenses'),
       amount: totalExpenses,
       color: 'red',
-      icon: TrendingUpIcon
+      icon: ArrowTrendingDownIcon
     },
     {
       title: t('accounting.summary.netIncome'),
       amount: netIncome,
       color: netIncome >= 0 ? 'blue' : 'red',
-      icon: TrendingUpIcon
+      icon: ArrowTrendingUpIcon
     }
   ];
 
@@ -75,7 +77,11 @@ const AccountingSummary: React.FC<AccountingSummaryProps> = ({
               className={`p-6 rounded-xl border-2 ${getColorClasses(card.color)}`}
             >
               <div className="flex items-center justify-between mb-4">
-                <Icon className="h-6 w-6 text-green-600 dark:text-green-400" />
+                {card.color === 'red' ? (
+                  <ArrowTrendingDownIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
+                ) : (
+                  <ArrowTrendingUpIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
+                )}
                 <span className="text-sm font-medium opacity-75">
                   {period}
                 </span>
