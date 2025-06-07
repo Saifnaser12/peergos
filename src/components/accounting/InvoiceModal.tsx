@@ -29,19 +29,6 @@ interface InvoiceModalProps {
   };
 }
 
-interface InvoiceData {
-  invoiceNumber: string;
-  issueDate: string;
-  supplierTRN: string;
-  businessName: string;
-  customerName: string;
-  customerTRN?: string;
-  serviceDescription: string;
-  subtotal: number;
-  vat: number;
-  total: number;
-}
-
 const InvoiceModal: React.FC<InvoiceModalProps> = ({
   isOpen,
   onClose,
