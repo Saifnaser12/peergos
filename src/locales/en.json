@@ -602,7 +602,7 @@
       "amountSummary": "Amount Summary",
       "subtotal": "Subtotal",
       "vat": "VAT",
-      "total": "Total Amount",
+      "totalAmount": "Total Amount",
       "cancel": "Cancel",
       "generate": "Generate Invoice",
       "generating": "Generating...",
@@ -668,20 +668,7 @@
       "subtotal": "Subtotal",
       "vat": "VAT",
       "total": "Total",
-      "generatePDF": "Generate PDF Invoice",
-      "customerName": "اسم الزبون",
-      "customerNamePlaceholder": "أدخل اسم الزبون",
-      "dueDate": "تاريخ الاستحقاق",
-      "serviceDescription": "وصف الخدمة",
-      "serviceDescriptionPlaceholder": "صف الخدمة أو المنتج",
-      "includeVAT": "تشمل ضريبة القيمة المضافة (5٪)",
-      "includeVATHelp": "إضافة 5٪ ضريبة القيمة المضافة على إجمالي الفاتورة",
-      "summary": "ملخص الفاتورة",
-      "subtotal": "المجموع الفرعي",
-      "vat": "ضريبة القيمة المضافة",
-      "total": "المجموع",
-      "generatePDF": "إنشاء فاتورة PDF",
-      "generate": "إنشاء فاتورة PDF"
+      "generatePDF": "Generate PDF Invoice"
     }
   },
   "categories": {
