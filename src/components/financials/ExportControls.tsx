@@ -43,15 +43,39 @@ export const ExportControls: React.FC<ExportControlsProps> = ({ data, summary })
   const { t } = useTranslation();
 
   const exportToPDF = () => {
-    // PDF export logic would integrate with jsPDF
-    console.log('Exporting financial reports to PDF...');
-    // This would generate a comprehensive PDF with both Income Statement and Balance Sheet
+    const exportData = {
+      profile: {
+        legalName: 'Sample Company',
+        taxRegistrationNumber: '100123456789003'
+      },
+      revenues: data.filter(entry => entry.type === 'revenue'),
+      expenses: data.filter(entry => entry.type === 'expense'),
+      vatDue: summary.totalRevenue * 0.05, // 5% VAT example
+      citDue: summary.netIncome * 0.09, // 9% CIT example
+      complianceScore: 85
+    };
+    
+    import('../utils/exports').then(({ exportToPDF: exportPDF }) => {
+      exportPDF(exportData, 'financial-report.pdf');
+    });
   };
 
   const exportToExcel = () => {
-    // Excel export logic would integrate with xlsx library
-    console.log('Exporting financial data to Excel...');
-    // This would create an Excel file with multiple sheets for different reports
+    const exportData = {
+      profile: {
+        legalName: 'Sample Company',
+        taxRegistrationNumber: '100123456789003'
+      },
+      revenues: data.filter(entry => entry.type === 'revenue'),
+      expenses: data.filter(entry => entry.type === 'expense'),
+      vatDue: summary.totalRevenue * 0.05,
+      citDue: summary.netIncome * 0.09,
+      complianceScore: 85
+    };
+    
+    import('../utils/exports').then(({ exportToExcel: exportExcel }) => {
+      exportExcel(exportData, 'financial-report.xlsx');
+    });
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
