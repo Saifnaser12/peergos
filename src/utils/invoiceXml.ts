@@ -11,52 +11,6 @@ export interface InvoiceData {
   total: number;
 }
 
-export function generateInvoiceXML(invoice: InvoiceData): string {
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<Invoice>
-  <InvoiceNumber>${invoice.invoiceNumber}</InvoiceNumber>
-  <IssueDate>${invoice.issueDate}</IssueDate>
-  <SupplierTRN>${invoice.supplierTRN}</SupplierTRN>
-  <SupplierName>${invoice.businessName}</SupplierName>
-  <CustomerName>${invoice.customerName}</CustomerName>
-  <CustomerTRN>${invoice.customerTRN || ''}</CustomerTRN>
-  <Description>${invoice.serviceDescription}</Description>
-  <Subtotal>${invoice.subtotal.toFixed(2)}</Subtotal>
-  <VAT>${invoice.vat.toFixed(2)}</VAT>
-  <Total>${invoice.total.toFixed(2)}</Total>
-</Invoice>`;
-}
-
-export function downloadInvoiceXML(invoiceData: InvoiceData) {
-  const xmlString = generateInvoiceXML(invoiceData);
-  const blob = new Blob([xmlString], { type: 'application/xml' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `invoice-${invoiceData.invoiceNumber}.xml`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-```
-
-The original code also had phase2 invoice functionalities, I will need to merge those back in.
-
-```typescript
-export interface InvoiceData {
-  invoiceNumber: string;
-  issueDate: string;
-  supplierTRN: string;
-  businessName: string;
-  customerName: string;
-  customerTRN?: string;
-  serviceDescription: string;
-  subtotal: number;
-  vat: number;
-  total: number;
-}
-
 export interface Phase2InvoiceItem {
   description: string;
   amount: number;
