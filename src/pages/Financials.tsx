@@ -187,61 +187,52 @@ const Financials: React.FC = () => {
     date: new Date().toISOString().split('T')[0]
   });
 
-  const getTotalRevenue = () => {
-    return revenue.reduce((sum, item) => sum + item.amount, 0);
-  };
+  // Calculate totals from live FinanceContext data
+  const totalRevenue = revenue.reduce((sum, item) => sum + item.amount, 0);
+  const totalExpenses = expenses.reduce((sum, item) => sum + item.amount, 0);
+  const netProfit = totalRevenue - totalExpenses;
 
-  const getTotalExpenses = () => {
-    return expenses.reduce((sum, item) => sum + item.amount, 0);
-  };
-
-  const getNetIncome = () => {
-    return getTotalRevenue() - getTotalExpenses();
-  };
-
-  // Calculate summary using global context
+  // Calculate summary using live context data + static financial data
   const summary = {
-    totalRevenue: getTotalRevenue(),
-    totalExpenses: getTotalExpenses(),
+    totalRevenue,
+    totalExpenses,
+    netIncome: netProfit,
     totalAssets: financialData.filter(item => item.type === 'asset').reduce((sum, item) => sum + item.amount, 0),
     totalLiabilities: financialData.filter(item => item.type === 'liability').reduce((sum, item) => sum + item.amount, 0),
     totalEquity: financialData.filter(item => item.type === 'equity').reduce((sum, item) => sum + item.amount, 0),
-    get netIncome() { return getNetIncome(); },
     get isBalanced() { return Math.abs((this.totalAssets) - (this.totalLiabilities + this.totalEquity)) < 0.01; }
   };
 
-  // Calculate yearly summary
+  // Calculate yearly summary using live FinanceContext data
   const calculateYearlySummary = (): YearlySummary => {
     const currentYear = new Date().getFullYear();
-    const currentYearData = financialData.filter(item => 
-      new Date(item.date).getFullYear() === currentYear
-    );
-
-    const revenue = currentYearData
-      .filter(item => item.type === 'revenue')
+    
+    // Filter current year data from FinanceContext
+    const currentYearRevenue = revenue
+      .filter(item => new Date(item.date).getFullYear() === currentYear)
       .reduce((sum, item) => sum + item.amount, 0);
 
-    const expenses = currentYearData
-      .filter(item => item.type === 'expense')
+    const currentYearExpenses = expenses
+      .filter(item => new Date(item.date).getFullYear() === currentYear)
       .reduce((sum, item) => sum + item.amount, 0);
 
-    const netIncome = revenue - expenses;
+    const netIncome = currentYearRevenue - currentYearExpenses;
 
     return {
       year: currentYear,
-      revenue,
-      expenses,
+      revenue: currentYearRevenue,
+      expenses: currentYearExpenses,
       netIncome,
-      growthRate: 15.2 // Mock growth rate
+      growthRate: 15.2 // Mock growth rate - could be calculated from historical data
     };
   };
 
   const yearlySummary = calculateYearlySummary();
 
-  // Chart data for revenue vs expenses
+  // Chart data for revenue vs expenses using live data
   const pieChartData = [
-    { name: t('financials.revenue'), value: summary.totalRevenue, color: '#10b981' },
-    { name: t('financials.expenses'), value: summary.totalExpenses, color: '#ef4444' }
+    { name: t('financials.revenue'), value: totalRevenue, color: '#10b981' },
+    { name: t('financials.expenses'), value: totalExpenses, color: '#ef4444' }
   ];
 
   // Mock data for profit/loss over time
@@ -286,8 +277,35 @@ const Financials: React.FC = () => {
 
   const handleExportPDF = (type: 'income' | 'balance' | 'cashflow' | 'comprehensive') => {
     const isRTL = i18n.language === 'ar';
+    
+    // Combine live data with financial entries
+    const combinedData = [
+      ...financialData,
+      // Convert revenue to financial entries
+      ...revenue.map(item => ({
+        id: item.id,
+        category: item.category || 'Revenue',
+        subcategory: '',
+        amount: item.amount,
+        date: item.date,
+        description: item.description,
+        type: 'revenue' as const
+      })),
+      // Convert expenses to financial entries
+      ...expenses.map(item => ({
+        id: item.id,
+        category: item.category,
+        subcategory: '',
+        amount: item.amount,
+        date: item.date,
+        description: item.description || '',
+        type: 'expense' as const,
+        vendor: item.vendor
+      }))
+    ];
+
     const exportData = {
-      data: financialData,
+      data: combinedData,
       summary,
       notes,
       companyInfo: {
@@ -334,8 +352,35 @@ const Financials: React.FC = () => {
 
   const handleExportExcel = () => {
     const isRTL = i18n.language === 'ar';
+    
+    // Combine live data with financial entries
+    const combinedData = [
+      ...financialData,
+      // Convert revenue to financial entries
+      ...revenue.map(item => ({
+        id: item.id,
+        category: item.category || 'Revenue',
+        subcategory: '',
+        amount: item.amount,
+        date: item.date,
+        description: item.description,
+        type: 'revenue' as const
+      })),
+      // Convert expenses to financial entries
+      ...expenses.map(item => ({
+        id: item.id,
+        category: item.category,
+        subcategory: '',
+        amount: item.amount,
+        date: item.date,
+        description: item.description || '',
+        type: 'expense' as const,
+        vendor: item.vendor
+      }))
+    ];
+
     const exportData = {
-      data: financialData,
+      data: combinedData,
       summary,
       notes,
       companyInfo: {
@@ -396,6 +441,101 @@ const Financials: React.FC = () => {
           </IconButton>
         </Box>
       </Box>
+
+      {/* Live P&L Summary Card */}
+      <Card sx={{ 
+        mb: 4, 
+        borderRadius: 3, 
+        boxShadow: theme.shadows[4],
+        background: `linear-gradient(135deg, ${alpha(theme.palette.success.main, 0.1)}, ${alpha(theme.palette.success.main, 0.05)})`
+      }}>
+        <CardContent sx={{ p: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
+              {t('financials.livePL', 'Live Profit & Loss Summary')}
+            </Typography>
+            <Chip 
+              label={t('financials.realTime', 'Real-time')} 
+              color="success" 
+              sx={{ fontWeight: 600 }}
+            />
+          </Box>
+
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
+              <Box sx={{ textAlign: 'center' }}>
+                <RevenueIcon sx={{ fontSize: 40, color: theme.palette.success.main, mb: 1 }} />
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t('financials.totalRevenue', 'Total Revenue')}
+                </Typography>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.success.main }}>
+                  {formatCurrency(totalRevenue)}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {revenue.length} {t('financials.transactions', 'transactions')}
+                </Typography>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Box sx={{ textAlign: 'center' }}>
+                <ExpenseIcon sx={{ fontSize: 40, color: theme.palette.error.main, mb: 1 }} />
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t('financials.totalExpenses', 'Total Expenses')}
+                </Typography>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.error.main }}>
+                  {formatCurrency(totalExpenses)}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {expenses.length} {t('financials.transactions', 'transactions')}
+                </Typography>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Box sx={{ textAlign: 'center' }}>
+                <TrendingUp sx={{ fontSize: 40, color: netProfit >= 0 ? theme.palette.success.main : theme.palette.error.main, mb: 1 }} />
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t('financials.netProfit', 'Net Profit')}
+                </Typography>
+                <Typography 
+                  variant="h4" 
+                  sx={{ 
+                    fontWeight: 700, 
+                    color: netProfit >= 0 ? theme.palette.success.main : theme.palette.error.main 
+                  }}
+                >
+                  {formatCurrency(netProfit)}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : 0}% {t('financials.margin', 'margin')}
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 3 }} />
+
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Button
+              variant="contained"
+              startIcon={<PdfIcon />}
+              onClick={() => handleExportPDF('comprehensive')}
+              sx={{ borderRadius: 2, textTransform: 'none' }}
+            >
+              {t('financials.exportPDF', 'Export PDF Report')}
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<ExcelIcon />}
+              onClick={handleExportExcel}
+              sx={{ borderRadius: 2, textTransform: 'none' }}
+            >
+              {t('financials.exportExcel', 'Export Excel')}
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
 
       {/* Yearly Summary Card */}
       <Card sx={{ 
