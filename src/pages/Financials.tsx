@@ -127,7 +127,7 @@ const Financials: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [openExpenseModal, setOpenExpenseModal] = useState(false);
   const [editingEntry, setEditingEntry] = useState<FinancialEntry | null>(null);
-  const { revenue, expenses, addRevenue, addExpense } = useFinance();
+  const { revenues, expenses, addRevenue, addExpense } = useFinance();
 
   const [financialData, setFinancialData] = useState<FinancialEntry[]>([
     {
@@ -188,7 +188,7 @@ const Financials: React.FC = () => {
   });
 
   // Calculate totals from live FinanceContext data
-  const totalRevenue = revenue.reduce((sum, item) => sum + item.amount, 0);
+  const totalRevenue = revenues.reduce((sum, item) => sum + item.amount, 0);
   const totalExpenses = expenses.reduce((sum, item) => sum + item.amount, 0);
   const netProfit = totalRevenue - totalExpenses;
 
@@ -206,9 +206,9 @@ const Financials: React.FC = () => {
   // Calculate yearly summary using live FinanceContext data
   const calculateYearlySummary = (): YearlySummary => {
     const currentYear = new Date().getFullYear();
-    
+
     // Filter current year data from FinanceContext
-    const currentYearRevenue = revenue
+    const currentYearRevenue = revenues
       .filter(item => new Date(item.date).getFullYear() === currentYear)
       .reduce((sum, item) => sum + item.amount, 0);
 
@@ -277,12 +277,12 @@ const Financials: React.FC = () => {
 
   const handleExportPDF = (type: 'income' | 'balance' | 'cashflow' | 'comprehensive') => {
     const isRTL = i18n.language === 'ar';
-    
+
     // Combine live data with financial entries
     const combinedData = [
       ...financialData,
       // Convert revenue to financial entries
-      ...revenue.map(item => ({
+      ...revenues.map(item => ({
         id: item.id,
         category: item.category || 'Revenue',
         subcategory: '',
@@ -352,12 +352,12 @@ const Financials: React.FC = () => {
 
   const handleExportExcel = () => {
     const isRTL = i18n.language === 'ar';
-    
+
     // Combine live data with financial entries
     const combinedData = [
       ...financialData,
       // Convert revenue to financial entries
-      ...revenue.map(item => ({
+      ...revenues.map(item => ({
         id: item.id,
         category: item.category || 'Revenue',
         subcategory: '',
@@ -472,7 +472,7 @@ const Financials: React.FC = () => {
                   {formatCurrency(totalRevenue)}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  {revenue.length} {t('financials.transactions', 'transactions')}
+                  {revenues.length} {t('financials.transactions', 'transactions')}
                 </Typography>
               </Box>
             </Grid>
