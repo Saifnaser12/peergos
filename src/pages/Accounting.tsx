@@ -9,8 +9,8 @@ import {
   EyeIcon,
   ArrowUpTrayIcon,
   CalculatorIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   BanknotesIcon
 } from '@heroicons/react/24/outline';
 import RevenueModal from '../components/accounting/RevenueModal';
@@ -195,7 +195,7 @@ const Accounting: React.FC = () => {
                 }`}
               >
                 <div className="flex items-center justify-center space-x-2">
-                  <TrendingUpIcon className="h-5 w-5" />
+                  <ArrowTrendingUpIcon className="h-5 w-5" />
                   <span>{t('accounting.revenue.title')}</span>
                 </div>
               </button>
@@ -208,7 +208,7 @@ const Accounting: React.FC = () => {
                 }`}
               >
                 <div className="flex items-center justify-center space-x-2">
-                  <TrendingDownIcon className="h-5 w-5" />
+                  <ArrowTrendingDownIcon className="h-5 w-5" />
                   <span>{t('accounting.expenses.title')}</span>
                 </div>
               </button>
@@ -425,7 +425,7 @@ const Accounting: React.FC = () => {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <TrendingDownIcon className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                  <ArrowTrendingDownIcon className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                     {t('accounting.expenses.noData')}
                   </h3>
