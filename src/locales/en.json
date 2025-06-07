@@ -1,3 +1,4 @@
+
 {
   "common": {
     "loading": "Loading...",
@@ -576,56 +577,55 @@
       "subtotal": "Subtotal",
       "vat": "VAT",
       "total": "Total",
-      "generatePDF": "Generate PDF Invoice"
+      "generatePDF": "Generate PDF Invoice",
+      "modal": {
+        "title": "Invoice Details",
+        "customerInfo": "Customer Information",
+        "customerName": "Customer Name",
+        "customerNamePlaceholder": "Enter customer name",
+        "customerTRN": "Customer TRN (Optional)",
+        "street": "Street Address",
+        "city": "City",
+        "invoiceDetails": "Invoice Details",
+        "dueDate": "Due Date",
+        "serviceDescription": "Service Description",
+        "serviceDescriptionPlaceholder": "Describe the services provided",
+        "vatToggle": "Apply VAT (5%)",
+        "vatToggleHelp": "UAE VAT will be applied to the invoice",
+        "amountSummary": "Amount Summary",
+        "subtotal": "Subtotal",
+        "vat": "VAT",
+        "totalAmount": "Total Amount",
+        "cancel": "Cancel",
+        "generate": "Generate Invoice",
+        "generating": "Generating...",
+        "generationSuccess": "Invoice Generated Successfully!",
+        "generationSuccessDesc": "Your FTA-compliant invoice has been generated and is ready for download.",
+        "ftaCompliant": "✅ UAE FTA Compliant",
+        "ftaCompliantDesc": "Meets Peppol PINT AE standard for e-invoicing",
+        "downloadPDF": "📄 Download PDF Invoice",
+        "downloadJSON": "📊 Download FTA JSON",
+        "ftaJsonPreview": "FTA E-Invoice JSON Preview",
+        "generateAnother": "Generate Another",
+        "done": "Done"
+      },
+      "validation": {
+        "customerNameRequired": "Customer name is required",
+        "dueDateRequired": "Due date is required",
+        "descriptionRequired": "Service description is required",
+        "invalidTRN": "TRN must be exactly 15 digits",
+        "addressRequired": "Address is required",
+        "cityRequired": "City is required"
+      },
+      "error": {
+        "generationFailed": "Failed to generate invoice. Please try again."
+      }
     },
     "messages": {
       "deleteConfirm": "Are you sure you want to delete this entry?",
       "saveSuccess": "Entry saved successfully",
       "deleteSuccess": "Entry deleted successfully",
       "error": "An error occurred. Please try again."
-    },
-   "invoice": {
-    "modal": {
-      "title": "Invoice Details",
-      "customerInfo": "Customer Information",
-      "customerName": "Customer Name",
-      "customerNamePlaceholder": "Enter customer name",
-      "customerTRN": "Customer TRN (Optional)",
-      "street": "Street Address",
-      "city": "City",
-      "invoiceDetails": "Invoice Details",
-      "dueDate": "Due Date",
-      "serviceDescription": "Service Description",
-      "serviceDescriptionPlaceholder": "Describe the services provided",
-      "vatToggle": "Apply VAT (5%)",
-      "vatToggleHelp": "UAE VAT will be applied to the invoice",
-      "amountSummary": "Amount Summary",
-      "subtotal": "Subtotal",
-      "vat": "VAT",
-      "totalAmount": "Total Amount",
-      "cancel": "Cancel",
-      "generate": "Generate Invoice",
-      "generating": "Generating...",
-      "generationSuccess": "Invoice Generated Successfully!",
-      "generationSuccessDesc": "Your FTA-compliant invoice has been generated and is ready for download.",
-      "ftaCompliant": "✅ UAE FTA Compliant",
-      "ftaCompliantDesc": "Meets Peppol PINT AE standard for e-invoicing",
-      "downloadPDF": "📄 Download PDF Invoice",
-      "downloadJSON": "📊 Download FTA JSON",
-      "ftaJsonPreview": "FTA E-Invoice JSON Preview",
-      "generateAnother": "Generate Another",
-      "done": "Done"
-    },
-    "validation": {
-      "customerNameRequired": "Customer name is required",
-      "dueDateRequired": "Due date is required",
-      "descriptionRequired": "Service description is required",
-      "invalidTRN": "TRN must be exactly 15 digits",
-      "addressRequired": "Address is required",
-      "cityRequired": "City is required"
-    },
-    "error": {
-      "generationFailed": "Failed to generate invoice. Please try again."
     }
   },
   "categories": {
