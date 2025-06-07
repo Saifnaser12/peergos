@@ -118,7 +118,7 @@ const AccountingSummary: React.FC<AccountingSummaryProps> = ({
           <DocumentArrowDownIcon className="h-5 w-5 mr-2" />
           {t('accounting.summary.downloadPDF')}
         </button>
-        
+
         <button
           onClick={handleDownloadExcel}
           className="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 min-w-[200px] justify-center"
@@ -126,7 +126,7 @@ const AccountingSummary: React.FC<AccountingSummaryProps> = ({
           <TableCellsIcon className="h-5 w-5 mr-2" />
           {t('accounting.summary.downloadExcel')}
         </button>
-        
+
         <button
           onClick={handleViewFinancials}
           className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 min-w-[200px] justify-center"

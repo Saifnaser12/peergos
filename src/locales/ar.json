@@ -1,3 +1,4 @@
+
 {
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -51,7 +52,7 @@
     "save": "حفظ",
     "cancel": "إلغاء",
     "edit": "تعديل",
-    "delete": "تعديل",
+    "delete": "حذف",
     "submit": "إرسال",
     "export": "تصدير",
     "search": "بحث",
@@ -94,31 +95,53 @@
   "accounting": {
     "title": "المحاسبة",
     "subtitle": "تتبع إيرادات ومصروفات عملك",
+    "revenue": {
+      "title": "الإيرادات",
+      "add": "إضافة إيراد",
+      "date": "التاريخ",
+      "description": "الوصف",
+      "customer": "اسم العميل",
+      "amount": "المبلغ (بالدرهم)",
+      "generateInvoice": "إنشاء فاتورة"
+    },
+    "expenses": {
+      "title": "المصروفات",
+      "add": "إضافة مصروف",
+      "vendor": "المورّد",
+      "category": "الفئة",
+      "receipt": "الإيصال",
+      "uploadReceipt": "رفع الإيصال"
+    },
     "summary": {
-      "title": "النظرة المالية العامة",
+      "title": "ملخص المحاسبة",
       "totalRevenue": "إجمالي الإيرادات (هذا الشهر)",
       "totalExpenses": "إجمالي المصروفات (هذا الشهر)",
       "netIncome": "صافي الدخل",
       "thisMonth": "هذا الشهر",
       "monthToDate": "من بداية الشهر حتى الآن",
+      "downloadPdf": "تحميل الملخص PDF",
       "downloadPDF": "تحميل ملخص PDF",
       "downloadExcel": "تحميل Excel",
+      "openInFinancials": "عرض في التقارير المالية",
       "viewFinancials": "عرض في التقارير المالية"
     },
     "invoice": {
       "title": "مولد الفواتير",
+      "modalTitle": "تفاصيل الفاتورة",
       "customerName": "اسم العميل",
       "customerNamePlaceholder": "أدخل اسم العميل",
       "dueDate": "تاريخ الاستحقاق",
       "serviceDescription": "وصف الخدمة",
       "serviceDescriptionPlaceholder": "اوصف الخدمة أو المنتج",
       "includeVAT": "تضمين ضريبة القيمة المضافة (5%)",
+      "vatToggle": "تطبيق ضريبة القيمة المضافة (5%)",
       "includeVATHelp": "أضف 5% ضريبة القيمة المضافة لإجمالي الفاتورة",
       "summary": "ملخص الفاتورة",
       "subtotal": "المجموع الفرعي",
       "vat": "ضريبة القيمة المضافة",
       "total": "الإجمالي",
-      "generatePDF": "إنشاء فاتورة PDF"
+      "generatePDF": "إنشاء فاتورة PDF",
+      "generate": "إنشاء فاتورة PDF"
     }
   }
 }

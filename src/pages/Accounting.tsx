@@ -8,7 +8,6 @@ import {
   EyeIcon,
   ArrowUpTrayIcon,
   CalculatorIcon,
-  ArrowTrendingUpIcon as TrendingUpIcon,
   ArrowTrendingDownIcon,
   BanknotesIcon
 } from '@heroicons/react/24/outline';
@@ -16,6 +15,7 @@ import RevenueModal from '../components/accounting/RevenueModal';
 import ExpenseModal from '../components/accounting/ExpenseModal';
 import AccountingSummary from '../components/accounting/AccountingSummary';
 import InvoiceModal from '../components/accounting/InvoiceModal';
+import { ArrowTrendingUpIcon as TrendingUpIcon } from '@heroicons/react/24/outline';
 
 interface RevenueEntry {
   id: string;
