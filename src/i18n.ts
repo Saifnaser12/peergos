@@ -1,7 +1,12 @@
+
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Import consolidated translation files
+// Import main translation files
+import enTranslations from './locales/en.json';
+import arTranslations from './locales/ar.json';
+
+// Import additional namespace files
 import enCommon from './locales/en/common.json';
 import enTranslation from './locales/en/translation.json';
 import enTransferPricing from './locales/en/transferPricing.json';
@@ -12,13 +17,15 @@ import arTransferPricing from './locales/ar/transferPricing.json';
 
 const resources = {
   en: {
+    translation: enTranslations,
     common: enCommon,
-    translation: enTranslation,
+    specific: enTranslation,
     transferPricing: enTransferPricing
   },
   ar: {
+    translation: arTranslations,
     common: arCommon,
-    translation: arTranslation,
+    specific: arTranslation,
     transferPricing: arTransferPricing
   }
 };
@@ -30,6 +37,10 @@ i18n
     lng: 'en',
     fallbackLng: 'en',
     debug: false,
+    
+    // Use 'translation' as default namespace
+    defaultNS: 'translation',
+    ns: ['translation', 'common', 'specific', 'transferPricing'],
 
     interpolation: {
       escapeValue: false,
