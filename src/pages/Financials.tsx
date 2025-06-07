@@ -397,7 +397,7 @@ const Financials: React.FC = () => {
   };
 
   const navigateToAccounting = () => {
-    window.location.href = '/accounting';
+    window.location.href = '/accounting?tab=revenue';
   };
 
   return (
@@ -502,7 +502,7 @@ const Financials: React.FC = () => {
       {/* Statement Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {/* Balance Sheet Preview */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={6} lg={4}>
           <Card sx={{ borderRadius: 3, height: '300px', position: 'relative' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -556,7 +556,7 @@ const Financials: React.FC = () => {
         </Grid>
 
         {/* Profit & Loss Chart */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={6} lg={4}>
           <Card sx={{ borderRadius: 3, height: '300px' }}>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
@@ -581,7 +581,7 @@ const Financials: React.FC = () => {
         </Grid>
 
         {/* Revenue vs Expenses Pie */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} sm={12} lg={4}>
           <Card sx={{ borderRadius: 3, height: '300px' }}>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
@@ -625,54 +625,107 @@ const Financials: React.FC = () => {
       </Grid>
 
       {/* Quick Actions */}
-      <Paper sx={{ p: 3, mb: 4, borderRadius: 3, boxShadow: theme.shadows[2] }}>
-        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-          {t('financials.quickActions', 'Quick Actions')}
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Button
-              fullWidth
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={navigateToAccounting}
-              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
-            >
-              {t('financials.addRevenue', 'Add Revenue')}
-            </Button>
+      <Paper sx={{ 
+        p: 4, 
+        mb: 4, 
+        borderRadius: 3, 
+        boxShadow: theme.shadows[2],
+        background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.primary.main, 0.02)})`
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          <AssessmentIcon sx={{ mr: 2, color: theme.palette.primary.main, fontSize: 28 }} />
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            {t('financials.quickActions', 'Quick Actions')}
+          </Typography>
+        </Box>
+        
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} lg={3}>
+            <Card sx={{ 
+              height: '100%', 
+              cursor: 'pointer', 
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': { 
+                transform: 'translateY(-2px)',
+                boxShadow: theme.shadows[8]
+              }
+            }} onClick={navigateToAccounting}>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <RevenueIcon sx={{ fontSize: 40, color: theme.palette.success.main, mb: 2 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                  {t('financials.addRevenue', 'Add Revenue')}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('financials.recordSales', 'Record sales and income')}
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<ExpenseIcon />}
-              onClick={() => setOpenExpenseModal(true)}
-              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
-            >
-              {t('financials.addExpense', 'Add Expense')}
-            </Button>
+          
+          <Grid item xs={12} sm={6} lg={3}>
+            <Card sx={{ 
+              height: '100%', 
+              cursor: 'pointer', 
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': { 
+                transform: 'translateY(-2px)',
+                boxShadow: theme.shadows[8]
+              }
+            }} onClick={() => setOpenExpenseModal(true)}>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <ExpenseIcon sx={{ fontSize: 40, color: theme.palette.error.main, mb: 2 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                  {t('financials.addExpense', 'Add Expense')}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('financials.trackCosts', 'Track business costs')}
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<PdfIcon />}
-              onClick={() => handleExportPDF('comprehensive')}
-              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
-            >
-              {t('financials.exportPDF', 'Export PDF')}
-            </Button>
+          
+          <Grid item xs={12} sm={6} lg={3}>
+            <Card sx={{ 
+              height: '100%', 
+              cursor: 'pointer', 
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': { 
+                transform: 'translateY(-2px)',
+                boxShadow: theme.shadows[8]
+              }
+            }} onClick={() => handleExportPDF('comprehensive')}>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <PdfIcon sx={{ fontSize: 40, color: theme.palette.warning.main, mb: 2 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                  {t('financials.exportReports', 'Export Reports')}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('financials.downloadPdf', 'Download PDF reports')}
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<ExcelIcon />}
-              onClick={handleExportExcel}
-              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
-            >
-              {t('financials.exportExcel', 'Export Excel')}
-            </Button>
+          
+          <Grid item xs={12} sm={6} lg={3}>
+            <Card sx={{ 
+              height: '100%', 
+              cursor: 'pointer', 
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': { 
+                transform: 'translateY(-2px)',
+                boxShadow: theme.shadows[8]
+              }
+            }} onClick={handleExportExcel}>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <ExcelIcon sx={{ fontSize: 40, color: theme.palette.info.main, mb: 2 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                  {t('financials.exportData', 'Export Data')}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('financials.downloadExcel', 'Download Excel file')}
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
       </Paper>
@@ -808,8 +861,12 @@ const Financials: React.FC = () => {
         }}
         maxWidth="sm"
         fullWidth
+        fullScreen={window.innerWidth < 600} // Mobile fullscreen
         PaperProps={{
-          sx: { borderRadius: 3 }
+          sx: { 
+            borderRadius: window.innerWidth < 600 ? 0 : 3,
+            margin: window.innerWidth < 600 ? 0 : 2
+          }
         }}
       >
         <DialogTitle sx={{ fontWeight: 600 }}>
