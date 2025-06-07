@@ -752,34 +752,6 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
   );
 };
 
-// Function to generate XML
-export function generateInvoiceXML(invoice: InvoiceData): string {
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<Invoice>
-  <InvoiceNumber>${invoice.invoiceNumber}</InvoiceNumber>
-  <IssueDate>${invoice.issueDate}</IssueDate>
-  <SupplierTRN>${invoice.supplierTRN}</SupplierTRN>
-  <SupplierName>${invoice.businessName}</SupplierName>
-  <CustomerName>${invoice.customerName}</CustomerName>
-  <CustomerTRN>${invoice.customerTRN || ''}</CustomerTRN>
-  <Description>${invoice.serviceDescription}</Description>
-  <Subtotal>${invoice.subtotal.toFixed(2)}</Subtotal>
-  <VAT>${invoice.vat.toFixed(2)}</VAT>
-  <Total>${invoice.total.toFixed(2)}</Total>
-</Invoice>`;
-}
 
-function downloadInvoiceXML(invoiceData: InvoiceData) {
-  const xmlString = generateInvoiceXML(invoiceData);
-  const blob = new Blob([xmlString], { type: 'application/xml' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `invoice-${invoiceData.invoiceNumber}.xml`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
 
 export default InvoiceModal;
