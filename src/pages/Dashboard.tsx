@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +13,7 @@ import {
   ArrowRightIcon,
   BuildingOfficeIcon
 } from '@heroicons/react/24/outline';
+import { ArrowTrendingUpIcon as TrendingUpIcon } from '@heroicons/react/24/outline';
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();

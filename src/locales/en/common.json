@@ -9,11 +9,16 @@
     "dashboard": "Dashboard",
     "vat": "VAT",
     "cit": "CIT",
+    "accounting": "Accounting",
     "financials": "Financials", 
     "transferPricing": "Transfer Pricing",
     "setup": "Setup",
     "assistant": "Assistant",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "admin": "Administration",
+    "logout": "Logout",
+    "profile": "Profile",
+    "settings": "Settings"
   },
   "common": {
     "appTitle": "UAE Tax Compliance",
@@ -33,7 +38,24 @@
     "warning": "Warning",
     "info": "Information",
     "accept": "Accept",
-    "reject": "Reject"
+    "reject": "Reject",
+    "complete": "Complete",
+    "view": "View",
+    "upload": "Upload",
+    "select": "Select",
+    "remove": "Remove",
+    "continue": "Continue",
+    "back": "Back",
+    "confirm": "Confirm",
+    "calculate": "Calculate",
+    "recalculate": "Recalculate",
+    "processing": "Processing...",
+    "completed": "Completed",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "draft": "Draft",
+    "submitted": "Submitted"
   },
   "dashboard": {
     "title": "Tax Compliance Dashboard",
@@ -42,31 +64,40 @@
     "quickActions": "Quick Actions",
     "ftaIntegration": "FTA Integration Status",
     "trnLookup": "TRN Lookup",
+    "totalRevenue": "Total Revenue",
+    "totalExpenses": "Total Expenses",
+    "netIncome": "Net Income",
+    "taxDue": "Tax Due",
+    "transactions": "transactions",
+    "yearToDate": "Year to date",
+    "vatAndCit": "VAT + CIT",
+    "recentActivity": "Recent Activity",
+    "upcomingDeadlines": "Upcoming Deadlines",
+    "complianceStatus": "Compliance Status",
     "posIntegration": {
       "disabled": "POS Integration (Premium Feature)",
       "enableHint": "Upgrade to sync transactions automatically"
     },
     "cit": {
-      "title": "Corporate Income Tax"
+      "title": "Corporate Income Tax",
+      "subtitle": "Due: 2024-03-31"
     },
     "vat": {
-      "title": "VAT Management"
+      "title": "VAT Management",
+      "subtitle": "Next: 2024-02-28"
     },
     "financials": {
-      "title": "Financial Reports"
+      "title": "Financial Reports",
+      "subtitle": "Based on submitted financials"
     },
     "transferPricing": {
-      "title": "Transfer Pricing"
+      "title": "Transfer Pricing",
+      "subtitle": "75% Complete • 3 Documents Needed"
     },
     "actions": {
       "fileVAT": "File VAT Return",
       "calculateCIT": "Calculate CIT",
       "viewFinancials": "View Financials"
-    },
-    "posIntegration": {
-      "title": "POS & Accounting Integrations",
-      "disabled": "POS Integration Disabled",
-      "enableHint": "Enable in Setup to connect POS systems"
     }
   },
   "fta": {
@@ -103,64 +134,7 @@
       "status": "Status",
       "actions": "Actions",
       "viewDetails": "View Details",
-      "downloadReceipt": "Download Receipt",
-      "trackOnline": "Track Online",
-      "expand": "Expand",
-      "collapse": "Collapse",
-      "submissionDetails": "Submission Details",
-      "submissionId": "Submission ID",
-      "taxPeriod": "Tax Period",
-      "vatDue": "VAT Due",
-      "citDue": "CIT Due",
-      "detailsTitle": "Submission Details",
-      "generalInfo": "General Information",
-      "company": "Company",
-      "trn": "TRN",
-      "submittedOn": "Submitted On",
-      "tracking": "Tracking",
-      "submittedData": "Submitted Data"
-    },
-    "submission": {
-      "title": "Submit to FTA",
-      "prerequisites": "Prerequisites",
-      "taxAgentCert": "Tax Agent Certificate",
-      "paymentSlip": "Payment Slip / Bank Receipt",
-      "missingDocuments": "Please upload both Tax Agent Certificate and Payment Slip before submitting",
-      "missingInfo": "Please complete all required information",
-      "summary": "Submission Summary",
-      "type": "Type",
-      "vatDue": "VAT Due",
-      "citDue": "CIT Due",
-      "submitting": "Submitting to FTA...",
-      "submit": "Submit to FTA",
-      "referenceNumber": "Reference Number",
-      "filingPeriod": "Filing Period",
-      "amount": "Amount",
-      "submissionDate": "Submission Date",
-      "success": {
-        "title": "Submission Successful",
-        "message": "Your tax return has been successfully submitted to the Federal Tax Authority"
-      }
-    }
-  },
-  "trn": {
-    "lookup": {
-      "title": "TRN Lookup Service",
-      "description": "Verify TRN details and compliance status in real-time",
-      "label": "Tax Registration Number (TRN)",
-      "helperText": "Enter 15-digit TRN (e.g., 100123456700003)",
-      "search": "Search TRN",
-      "searching": "Searching...",
-      "invalidFormat": "Please enter a valid 15-digit TRN",
-      "notFound": "TRN not found in FTA database",
-      "error": "Error occurred during TRN lookup",
-      "businessType": "Business Type",
-      "emirate": "Emirate",
-      "registrationDate": "Registration Date",
-      "lastFiling": "Last Filing",
-      "complianceStatus": "Compliance Status",
-      "nonCompliantWarning": "This entity has compliance issues. Please contact FTA for details.",
-      "suspendedWarning": "This TRN is suspended. Business operations may be restricted."
+      "downloadReceipt": "Download Receipt"
     }
   },
   "notifications": {
@@ -175,10 +149,6 @@
     "daysAgo": "{{days}}d ago",
     "dueToday": "Due today",
     "daysRemaining": "{{days}} days remaining",
-    "vatDeadline": "VAT Return Due Soon",
-    "vatDeadlineDesc": "Your VAT return is due in {{days}} days. File now to avoid penalties.",
-    "citDeadline": "CIT Return Due Soon",
-    "citDeadlineDesc": "Your Corporate Income Tax return is due in {{days}} days. Complete your filing to stay compliant.",
     "setupIncomplete": "Setup Incomplete",
     "setupIncompleteDesc": "Complete your company setup to access all features and ensure compliance.",
     "missingAgentCert": "Missing Tax Agent Certificate",
@@ -212,371 +182,7 @@
       "description": "You can select an FTA-approved tax agent to assist with your tax compliance and submissions. This is optional and can be configured later."
     },
     "step5": {
-      "title": "System Integrations (Optional)",
-      "description": "Connect your POS system and accounting software to automatically sync transactions and streamline your bookkeeping. This is optional and can be configured later."
-    },
-    "integrations": {
-      "supported": "Supported Systems",
-      "mockWarning": "Simulation Only - Demo Mode",
-      "mockDescription": "These integrations are simulated for demonstration purposes. No actual connections are made.",
-      "pos": {
-        "title": "POS System Integration",
-        "description": "Connect your point-of-sale system for automated transaction sync"
-      },
-      "accounting": {
-        "title": "Accounting System Sync", 
-        "description": "Sync with accounting software for seamless bookkeeping"
-      }
-    },
-    "posIntegration": {
-      "title": "POS & Accounting Integration",
-      "description": "Connect your POS system and accounting software for automatic transaction sync and invoice processing.",
-      "mockWarning": "Mock Integration - Demo Only",
-      "mockDescription": "This is a demonstration of POS integration features. No actual connections are made.",
-      "availableIntegrations": "Available Integrations"
-    },
-    "complete": "Complete Setup"
-  },
-  "vat": {
-    "title": "VAT Management",
-    "subtitle": "Manage your VAT returns and compliance",
-    "upload": {
-      "title": "Upload VAT Return",
-      "subtitle": "Upload your VAT return in Excel or PDF format",
-      "button": "Choose File"
-    },
-    "export": {
-      "button": "Export Returns"
-    },
-    "fta": {
-      "submitToFTA": "Submit to FTA",
-      "submitting": "Submitting to FTA...",
-      "submitSuccess": "Successfully submitted to FTA! Reference: {{referenceNumber}}",
-      "submitError": "Failed to submit to FTA. Please try again.",
-      "missingInfo": "Please fill in company name and TRN before submitting to FTA."
-    },
-    "returns": {
-      "title": "VAT Returns",
-      "period": "Period",
-      "status": "Status",
-      "sales": "Taxable Sales",
-      "purchases": "Taxable Purchases",
-      "payable": "VAT Payable",
-      "status": {
-        "draft": "Draft",
-        "submitted": "Submitted",
-        "approved": "Approved",
-        "rejected": "Rejected"
-      }
-    }
-  },
-  "cit": {
-    "title": "Corporate Income Tax",
-    "subtitle": "Manage your CIT returns and compliance with UAE FTA regulations",
-    "form": {
-      "title": "CIT Return Information",
-      "companyInfo": "Company Information",
-      "companyName": "Company Name",
-      "trn": "Tax Registration Number (TRN)",
-      "financialYearEnd": "Financial Year End Date",
-      "financialData": "Financial Data",
-      "revenue": "Total Revenue",
-      "expenses": "Total Expenses", 
-      "taxAdjustments": "Tax Adjustments",
-      "taxAdjustmentsHelp": "Enter positive for additions, negative for deductions",
-      "exemptIncome": "Exempt Income",
-      "carriedForwardLosses": "Carried Forward Losses",
-      "lossesCapHelp": "Maximum 75% of adjusted profit can be offset",
-      "elections": "Tax Elections",
-      "smallBusinessRelief": "Small Business Relief Election",
-      "smallBusinessReliefHelp": "Available for companies with revenue ≤ AED 3 million",
-      "taxGroupElection": "Tax Group Election",
-      "taxGroupElectionHelp": "Elect to be treated as part of a tax group"
-    },
-    "calculation": {
-      "title": "CIT Calculation",
-      "calculate": "Calculate",
-      "calculating": "Calculating...",
-      "complete": "Calculation completed successfully",
-      "netProfit": "Net Profit",
-      "allowedLosses": "Allowed Losses (Capped at 75%)",
-      "lossesCapped": "Losses capped at 75% of adjusted profit",
-      "taxableIncome": "Taxable Income",
-      "citPayable": "CIT Payable",
-      "effectiveRate": "Effective Tax Rate",
-      "smallBusinessReliefApplied": "Small Business Relief Applied"
-    },
-    "compliance": {
-      "noCitDue": "No CIT is due for this period",
-      "citDue": "CIT payment is required"
-    },
-    "upload": {
-      "title": "Supporting Documents",
-      "button": "Upload Documents",
-      "uploading": "Uploading...",
-      "uploadedFiles": "Uploaded Files",
-      "success": "Files uploaded successfully",
-      "error": "Error uploading files",
-      "invalidFileType": "Invalid file type. Please upload PDF, Excel, or CSV files only",
-      "fileTooLarge": "File size exceeds 10MB limit"
-    },
-    "export": {
-      "title": "Export Options",
-      "description": "Choose your preferred export format",
-      "button": "Export CIT Return",
-      "pdf": "Export as PDF Report",
-      "excel": "Export as Excel/CSV Data",
-      "pdfSuccess": "PDF exported successfully",
-      "excelSuccess": "Excel file exported successfully"
-    },
-    "returns": {
-      "title": "CIT Returns",
-      "period": "Period",
-      "status": "Status",
-      "income": "Taxable Income",
-      "payable": "Tax Payable",
-      "paid": "Tax Paid",
-      "balance": "Balance Due",
-      "status": {
-        "draft": "Draft",
-        "submitted": "Submitted",
-        "approved": "Approved",
-        "rejected": "Rejected"
-      }
-    }
-  },
-  "financials": {
-    "title": "Financial Statements",
-    "subtitle": "View and manage your financial data",
-    "period": "Period",
-    "compare": "Compare with",
-    "export": {
-      "button": "Export Statements",
-      "success": "Financial statements exported successfully",
-      "error": "Error exporting financial statements"
-    },
-    "metrics": {
-      "revenue": "Revenue",
-      "revenueTooltip": "Total revenue for the selected period",
-      "expenses": "Expenses",
-      "expensesTooltip": "Total expenses for the selected period",
-      "profit": "Profit",
-      "profitTooltip": "Net profit for the selected period",
-      "assets": "Total Assets",
-      "assetsTooltip": "Total assets at the end of the period",
-      "liabilities": "Total Liabilities",
-      "liabilitiesTooltip": "Total liabilities at the end of the period",
-      "equity": "Total Equity",
-      "equityTooltip": "Total shareholders' equity at the end of the period",
-      "operatingMargin": "Operating Margin",
-      "operatingMarginTooltip": "Operating profit as a percentage of revenue",
-      "returnOnEquity": "ROE",
-      "returnOnEquityTooltip": "Return on Equity - Net income as a percentage of shareholders' equity"
-    },
-    "ratios": {
-      "currentRatio": "Current Ratio",
-      "currentRatioDesc": "Measures ability to pay short-term obligations",
-      "debtToEquity": "Debt to Equity",
-      "debtToEquityDesc": "Measures financial leverage",
-      "operatingMargin": "Operating Margin",
-      "operatingMarginDesc": "Measures operational efficiency"
-    },
-    "charts": {
-      "revenue": "Revenue",
-      "profit": "Profit",
-      "assets": "Assets",
-      "liabilities": "Liabilities",
-      "equity": "Equity",
-      "revenueTrend": "Revenue Trend",
-      "profitTrend": "Profit Trend",
-      "balanceSheet": "Balance Sheet"
-    },
-    "incomeStatement": "Income Statement",
-    "balanceSheet": "Balance Sheet",
-    "cashFlowStatement": "Cash Flow Statement",
-    "notesToFinancials": "Notes to Financial Statements",
-    "exportControls": "Export Financial Statements",
-    "exportComprehensivePDF": "Complete PDF",
-    "exportExcel": "Export Excel",
-    "bookkeeping": "Bookkeeping & Document Management",
-    "recentInvoices": "Recent Scanned Invoices",
-    "invoicesProcessed": "Invoices processed through OCR scanning",
-    "dataEntries": "Data Entries",
-    "addNote": "Add Note",
-    "editNote": "Edit Note",
-    "notesDescription": "Add explanatory notes and disclosures to accompany your financial statements as required by FTA guidelines.",
-    "exportNote": "Exports include Income Statement, Balance Sheet, Cash Flow Statement, and detailed notes. Formatted for FTA compliance with RTL support for Arabic."
-  },
-  "transferPricing": {
-    "title": "Transfer Pricing",
-    "subtitle": "UAE-compliant transfer pricing module for SMEs",
-    "description": "Manage your transfer pricing documentation and compliance requirements.",
-    "relatedParties": "Related Parties",
-    "addParty": "Add Related Party",
-    "transactions": {
-      "title": "Related Party Transactions",
-      "addTransaction": "Add Transaction",
-      "editTransaction": "Edit Transaction",
-      "noTransactions": "No transactions added yet",
-      "relatedParty": "Related Party",
-      "type": "Transaction Type",
-      "description": "Description",
-      "amount": "Amount",
-      "currency": "Currency",
-      "method": "Transfer Pricing Method",
-      "pricingMethod": "Pricing Method",
-      "date": "Transaction Date",
-      "documentation": "Documentation",
-      "status": "Status"
-    },
-    "transactionTypes": {
-      "GOODS": "Sale of Goods",
-      "SERVICES": "Provision of Services",
-      "FINANCING": "Financing/Loans",
-      "IP_LICENSING": "IP Licensing",
-      "COST_SHARING": "Cost Sharing"
-    },
-    "compliance": {
-      "title": "Compliance Checklist",
-      "score": "Compliance Score",
-      "scoreDesc": "Based on UAE FTA Transfer Pricing Guidelines",
-      "compliant": "Compliant",
-      "needsAttention": "Needs Attention",
-      "required": "Required",
-      "uaeGuidance": "Based on 2023 UAE FTA Transfer Pricing Guidelines and OECD standards",
-      "masterFile": "Master File Required",
-      "masterFileDesc": "Required for groups with consolidated revenue over AED 3.15 billion",
-      "localFile": "Local File Prepared",
-      "localFileDesc": "Required for entities with controlled transactions over AED 200 million",
-      "threshold": "Meets Consolidated Threshold",
-      "thresholdDesc": "Group consolidated revenue exceeds AED 200 million",
-      "cbcr": "Country-by-Country Report Filed",
-      "cbcrDesc": "Required for multinational groups with revenue over AED 3.15 billion",
-      "policy": "Transfer Pricing Policy Documented",
-      "policyDesc": "Written transfer pricing policy covering all controlled transactions",
-      "armLength": "Arm's Length Principle Documented",
-      "armLengthDesc": "Documentation showing compliance with arm's length principle",
-      "economicAnalysis": "Economic Analysis Conducted",
-      "economicAnalysisDesc": "Benchmarking study or economic analysis supporting pricing",
-      "lowScoreWarning": "Low Compliance Score Detected",
-      "lowScoreAdvice": "Consider consulting with transfer pricing specialists to improve compliance."
-    },
-    "documents": {
-      "title": "Document Upload",
-      "uploadProgress": "Upload Progress",
-      "completed": "Completed",
-      "complete": "Complete",
-      "guidelines": "Upload Guidelines",
-      "acceptedFormats": "Accepted formats",
-      "maxSize": "Maximum file size",
-      "naming": "File naming",
-      "namingAdvice": "Use descriptive names including document type and date",
-      "upload": "Upload File",
-      "required": "Required",
-      "missingRequired": "This document is required for compliance"
-    },
-    "documentTypes": {
-      "MASTER_FILE": "Master File",
-      "LOCAL_FILE": "Local File",
-      "CBCR": "Country-by-Country Report",
-      "BENCHMARKING_STUDY": "Benchmarking Study",
-      "ECONOMIC_ANALYSIS": "Economic Analysis",
-      "AGREEMENT": "Intercompany Agreement",
-      "OTHER": "Other Documentation"
-    },
-    "documentDescriptions": {
-      "MASTER_FILE": "Standardized information on the MNE group's organizational structure, business activities, intangibles, intercompany financial activities, and financial and tax position",
-      "LOCAL_FILE": "Detailed information about the specific controlled transactions of the local entity",
-      "CBCR": "Country-by-Country Report providing tax administration with information on global allocation of income and taxes paid",
-      "BENCHMARKING_STUDY": "Economic analysis comparing controlled transaction terms with arm's length terms",
-      "ECONOMIC_ANALYSIS": "Supporting economic analysis demonstrating arm's length nature of transactions",
-      "AGREEMENT": "Legal agreements governing intercompany transactions",
-      "OTHER": "Additional supporting documentation"
-    },
-    "summary": {
-      "title": "Transfer Pricing Summary",
-      "totalTransactions": "Total Transactions",
-      "totalValue": "Total Value",
-      "complianceScore": "Compliance Score",
-      "riskLevel": "Risk Level",
-      "riskLevels": {
-        "low": "Low Risk",
-        "medium": "Medium Risk", 
-        "high": "High Risk"
-      },
-      "transactionsByType": "Transactions by Type",
-      "riskFlags": "Risk Flags",
-      "noRiskFlags": "No risk flags identified",
-      "noTransactions": "No transactions to display",
-      "documentationStatus": "Documentation Status",
-      "documentedTransactions": "Documented Transactions",
-      "uploadedDocuments": "Uploaded Documents",
-      "highRiskWarning": "High Risk Assessment",
-      "highRiskAdvice": "Your transfer pricing setup has been flagged as high risk. We recommend immediate consultation with transfer pricing specialists.",
-      "mediumRiskWarning": "Medium Risk Assessment",
-      "mediumRiskAdvice": "Some areas need attention to ensure full compliance with UAE transfer pricing requirements.",
-      "lowRiskCongrats": "Low Risk - Well Done!",
-      "lowRiskAdvice": "Your transfer pricing documentation appears to be in good order. Continue monitoring and updating as needed."
-    },
-    "riskFlags": {
-      "HIGH_VALUE_TRANSACTIONS": "High Value Transactions",
-      "HIGH_VALUE_TRANSACTIONSDesc": "Transactions exceed AED 10 million threshold requiring enhanced documentation",
-      "INSUFFICIENT_DOCUMENTATION": "Insufficient Documentation",
-      "INSUFFICIENT_DOCUMENTATIONDesc": "Less than 80% of transactions have adequate documentation",
-      "NO_TP_POLICY": "No Transfer Pricing Policy",
-      "NO_TP_POLICYDesc": "Written transfer pricing policy is missing or incomplete",
-      "NO_ARM_LENGTH_DOCUMENTATION": "No Arm's Length Documentation",
-      "NO_ARM_LENGTH_DOCUMENTATIONDesc": "Lack of documentation demonstrating arm's length nature of transactions"
-    },
-    "export": {
-      "export": "Export",
-      "exporting": "Exporting...",
-      "pdfSummary": "PDF Summary Report",
-      "excelData": "Excel Data Export"
-    },
-    "steps": {
-      "companyInfo": "Company Information",
-      "relatedParties": "Related Parties",
-      "transactions": "Transactions",
-      "compliance": "Compliance",
-      "documents": "Documents",
-      "summary": "Summary"
-    }
-  },
-  "validation": {
-    "companyNameTooShort": "Company name must be at least 2 characters",
-    "amountNegative": "Amount cannot be negative",
-    "smallBusinessReliefNotEligible": "Small Business Relief is only available for companies with revenue ≤ AED 3 million"
-  },
-  "invoiceScanner": {
-    "title": "Scan Invoice",
-    "description": "Upload or scan an invoice to automatically extract key information using OCR technology.",
-    "scanButton": "Scan Invoice",
-    "scanning": "Scanning Invoice...",
-    "processing": "Processing document with OCR technology",
-    "scanned": "Invoice Scanned Successfully",
-    "invalidFileType": "Please upload an image or PDF file",
-    "fileTooLarge": "File size must be less than 5MB"
-  },
-  "taxAgent": {
-    "title": "Tax Agent Selection",
-    "subtitle": "Select an FTA-approved tax agent to assist with your submissions",
-    "selectAgent": "Select Tax Agent",
-    "noAgent": "No agent selected",
-    "ftaApproved": "FTA Approved",
-    "specializations": "Specializations",
-    "viewProfile": "View FTA Profile",
-    "uploadCertificate": "Upload Tax Agent Certificate",
-    "uploadDescription": "Upload the official certificate or authorization document",
-    "replaceCertificate": "Replace Certificate",
-    "viewCertificate": "View Certificate",
-    "selected": "FTA Approved Agent Selected",
-    "selectionComplete": "Tax agent selection completed successfully!",
-    "selectionCompleteDesc": "Your selected agent can now assist with tax submissions and compliance.",
-    "info": "All listed agents are pre-approved by the FTA and authorized to represent taxpayers in the UAE.",
-    "upload": {
-      "invalidFileType": "Please upload a PDF or image file",
-      "fileTooLarge": "File size must be less than 5MB"
+      "title": "System Integrations (Optional)"
     }
   },
   "calendar": {
@@ -638,34 +244,59 @@
   },
   "language": {
     "select": "Select Language",
-    "en": "English",
-    "ar": "Arabic"
+    "english": "English",
+    "arabic": "العربية"
   },
   "currency": {
     "select": "Select Currency",
-    "aed": "UAE Dirham",
-    "usd": "US Dollar"
+    "aed": "AED - UAE Dirham",
+    "usd": "USD - US Dollar"
   },
-  "fta": {
-    "integration": {
-      "pending": "✅ Connected to FTA",
-      "connected": "✅ FTA Connected",
-      "disconnected": "❌ FTA Disconnected",
-      "syncing": "🔄 Syncing with FTA"
-    },
-    "simulation": {
-      "note": "⚠️ Demo Mode - FTA Simulation Active"
-    }
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email Address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember Me"
   },
   "trn": {
     "lookup": {
-      "label": "Search Company by TRN",
-      "helperText": "Enter 15-digit Tax Registration Number",
+      "title": "TRN Lookup",
+      "subtitle": "Search UAE company by 15-digit TRN",
+      "label": "Enter TRN Number",
+      "helperText": "Enter full TRN to retrieve FTA-registered company details",
       "search": "Search Company",
-      "placeholder": "Enter TRN (e.g., 100123456700003)"
+      "placeholder": "Enter TRN (e.g., 100123456700003)",
+      "searching": "Searching...",
+      "description": "Search for UAE-registered companies using their Tax Registration Number",
+      "invalidFormat": "Please enter a valid 15-digit TRN",
+      "notFound": "No company found with this TRN",
+      "error": "Error searching for TRN",
+      "businessType": "Business Type",
+      "emirate": "Emirate",
+      "registrationDate": "Registration Date",
+      "lastFiling": "Last Filing",
+      "complianceStatus": "Compliance Status",
+      "nonCompliantWarning": "This company has compliance issues. Please verify before proceeding.",
+      "suspendedWarning": "This TRN is currently suspended by FTA."
     }
   },
-  "auth": {
-    "logout": "Logout"
+  "validation": {
+    "companyNameTooShort": "Company name must be at least 2 characters",
+    "amountNegative": "Amount cannot be negative",
+    "smallBusinessReliefNotEligible": "Small Business Relief is only available for companies with revenue ≤ AED 3 million"
+  },
+  "errors": {
+    "general": "An error occurred. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "validation": "Please check your input and try again.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "notFound": "The requested resource was not found.",
+    "serverError": "Server error. Please try again later."
   }
 }

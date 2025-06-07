@@ -1,8 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
-  ArrowTrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon as TrendingUpIcon,
+  ArrowTrendingDownIcon as TrendingDownIcon,
   BanknotesIcon
 } from '@heroicons/react/24/outline';
 
@@ -35,7 +35,7 @@ const AccountingSummary: React.FC<AccountingSummaryProps> = ({
             </p>
           </div>
           <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-xl">
-            <ArrowTrendingUpIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
+            <TrendingUpIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
           </div>
         </div>
       </div>

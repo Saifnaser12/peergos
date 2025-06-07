@@ -564,9 +564,8 @@
       "saveSuccess": "Entry saved successfully",
       "deleteSuccess": "Entry deleted successfully",
       "error": "An error occurred. Please try again."
-    }
-  },
-  "errors": {
+    },
+    "errors": {
     "general": "An error occurred. Please try again.",
     "network": "Network error. Please check your connection.",
     "validation": "Please check your input and try again.",

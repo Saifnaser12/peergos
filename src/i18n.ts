@@ -1,17 +1,25 @@
-
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Import translation files
-import enTranslations from './locales/en.json';
-import arTranslations from './locales/ar/common.json';
+// Import consolidated translation files
+import enCommon from './locales/en/common.json';
+import enTranslation from './locales/en/translation.json';
+import enTransferPricing from './locales/en/transferPricing.json';
+
+import arCommon from './locales/ar/common.json';
+import arTranslation from './locales/ar/translation.json';
+import arTransferPricing from './locales/ar/transferPricing.json';
 
 const resources = {
   en: {
-    translation: enTranslations
+    common: enCommon,
+    translation: enTranslation,
+    transferPricing: enTransferPricing
   },
   ar: {
-    translation: arTranslations
+    common: arCommon,
+    translation: arTranslation,
+    transferPricing: arTransferPricing
   }
 };
 
@@ -47,11 +55,11 @@ i18n
     returnEmptyString: false,
     returnNull: false,
     returnObjects: false,
-    
+
     // Additional options for better handling
     saveMissing: false,
     updateMissing: false,
-    
+
     // Enable key separator
     keySeparator: '.',
     nsSeparator: false,
