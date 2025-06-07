@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography, Paper } from '@mui/material';
 
@@ -8,11 +9,11 @@ const Filing: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
-        {t('taxFiling.title')}
+        {t('nav.filing')}
       </Typography>
       <Paper sx={{ p: 3 }}>
         <Typography variant="body1">
-          {t('taxFiling.description')}
+          Tax filing functionality coming soon.
         </Typography>
       </Paper>
     </Box>
