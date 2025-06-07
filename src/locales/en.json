@@ -583,7 +583,114 @@
       "saveSuccess": "Entry saved successfully",
       "deleteSuccess": "Entry deleted successfully",
       "error": "An error occurred. Please try again."
+    },
+   "invoice": {
+    "modal": {
+      "title": "Invoice Details",
+      "customerInfo": "Customer Information",
+      "customerName": "Customer Name",
+      "customerNamePlaceholder": "Enter customer name",
+      "customerTRN": "Customer TRN (Optional)",
+      "street": "Street Address",
+      "city": "City",
+      "invoiceDetails": "Invoice Details",
+      "dueDate": "Due Date",
+      "serviceDescription": "Service Description",
+      "serviceDescriptionPlaceholder": "Describe the services provided",
+      "vatToggle": "Apply VAT (5%)",
+      "vatToggleHelp": "UAE VAT will be applied to the invoice",
+      "amountSummary": "Amount Summary",
+      "subtotal": "Subtotal",
+      "vat": "VAT",
+      "total": "Total Amount",
+      "cancel": "Cancel",
+      "generate": "Generate Invoice",
+      "generating": "Generating...",
+      "generationSuccess": "Invoice Generated Successfully!",
+      "generationSuccessDesc": "Your FTA-compliant invoice has been generated and is ready for download.",
+      "ftaCompliant": "✅ UAE FTA Compliant",
+      "ftaCompliantDesc": "Meets Peppol PINT AE standard for e-invoicing",
+      "downloadPDF": "📄 Download PDF Invoice",
+      "downloadJSON": "📊 Download FTA JSON",
+      "ftaJsonPreview": "FTA E-Invoice JSON Preview",
+      "generateAnother": "Generate Another",
+      "done": "Done"
+    },
+    "validation": {
+      "customerNameRequired": "Customer name is required",
+      "dueDateRequired": "Due date is required",
+      "descriptionRequired": "Service description is required",
+      "invalidTRN": "TRN must be exactly 15 digits",
+      "addressRequired": "Address is required",
+      "cityRequired": "City is required"
+    },
+    "error": {
+      "generationFailed": "Failed to generate invoice. Please try again."
     }
+  },
+  "categories": {
+        "rent": "Rent",
+        "salaries": "Salaries",
+        "supplies": "Supplies",
+        "utilities": "Utilities",
+        "marketing": "Marketing",
+        "other": "Other"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "viewReceipt": "View Receipt"
+      },
+      "noData": "No expense entries found",
+      "noDataDescription": "Start tracking your business expenses by adding your first expense entry."
+    },
+    "summary": {
+      "title": "Financial Overview",
+      "totalRevenue": "Total Revenue (This Month)",
+      "totalExpenses": "Total Expenses (This Month)",
+      "netIncome": "Net Income",
+      "thisMonth": "This Month",
+      "monthToDate": "Month to date",
+      "downloadPDF": "Download Summary PDF",
+      "downloadExcel": "Download Excel",
+      "viewFinancials": "View in Financial Reports"
+    },
+    "invoice": {
+      "title": "Invoice Generator",
+      "customerName": "Customer Name",
+      "customerNamePlaceholder": "Enter customer name",
+      "dueDate": "Due Date",
+      "serviceDescription": "Service Description",
+      "serviceDescriptionPlaceholder": "Describe the service or product",
+      "includeVAT": "Include VAT (5%)",
+      "includeVATHelp": "Add 5% VAT to the invoice total",
+      "summary": "Invoice Summary",
+      "subtotal": "Subtotal",
+      "vat": "VAT",
+      "total": "Total",
+      "generatePDF": "Generate PDF Invoice",
+      "customerName": "اسم الزبون",
+      "customerNamePlaceholder": "أدخل اسم الزبون",
+      "dueDate": "تاريخ الاستحقاق",
+      "serviceDescription": "وصف الخدمة",
+      "serviceDescriptionPlaceholder": "صف الخدمة أو المنتج",
+      "includeVAT": "تشمل ضريبة القيمة المضافة (5٪)",
+      "includeVATHelp": "إضافة 5٪ ضريبة القيمة المضافة على إجمالي الفاتورة",
+      "summary": "ملخص الفاتورة",
+      "subtotal": "المجموع الفرعي",
+      "vat": "ضريبة القيمة المضافة",
+      "total": "المجموع",
+      "generatePDF": "إنشاء فاتورة PDF",
+      "generate": "إنشاء فاتورة PDF"
+    }
+  },
+  "categories": {
+    "rent": "Rent",
+    "salaries": "Salaries",
+    "supplies": "Supplies",
+    "utilities": "Utilities",
+    "marketing": "Marketing",
+    "other": "Other"
   },
   "errors": {
     "general": "An error occurred. Please try again.",

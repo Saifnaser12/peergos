@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export enum InvoiceType {
@@ -43,6 +44,8 @@ export interface Party {
   address: Address;
   contactDetails?: ContactDetails;
   trn?: string; // For backward compatibility
+  companyID?: string; // For PINT AE
+  schemeID?: string; // For PINT AE
 }
 
 export interface InvoiceItem {
@@ -60,6 +63,10 @@ export interface InvoiceItem {
   vatAmount?: number; // For backward compatibility
   total?: number; // For backward compatibility
   vatRate?: number; // For backward compatibility
+  // PINT AE specific fields
+  unitsOfMeasure?: string;
+  classifiedTaxCategory?: string;
+  sellersItemIdentification?: string;
 }
 
 export interface Invoice {
@@ -78,15 +85,90 @@ export interface Invoice {
   total?: number; // For backward compatibility
   vatTotal?: number; // For backward compatibility
   subtotal?: number; // For backward compatibility
+  
+  // UAE FTA specific fields
   uuid?: string;
   signatureValue?: string;
   signatureDate?: string;
   qrCode?: string;
+  previousInvoiceHash?: string;
+  invoiceCounterValue?: number;
+  
+  // PINT AE specific fields
+  customizationID?: string; // "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0"
+  profileID?: string; // "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
+  businessProcessTypeID?: string;
+  
+  // Timestamps
   createdAt?: string;
   updatedAt?: string;
   submittedAt?: string;
   acknowledgedAt?: string;
   rejectionReason?: string;
+}
+
+// UAE FTA E-Invoice JSON structure for API submission
+export interface FTAEInvoice {
+  supplierTRN: string;
+  buyerTRN?: string;
+  issueDate: string;
+  invoiceNumber: string;
+  currency: string;
+  subtotal: number;
+  vatAmount: number;
+  totalAmount: number;
+  items: Array<{
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    taxRate: number;
+    taxAmount: number;
+    totalAmount: number;
+    productCode?: string;
+    unitsOfMeasure?: string;
+  }>;
+  seller: {
+    name: string;
+    trn: string;
+    address: {
+      street: string;
+      city: string;
+      emirate: string;
+      country: string;
+      postalCode?: string;
+    };
+    contact?: {
+      phone?: string;
+      email?: string;
+    };
+  };
+  buyer?: {
+    name: string;
+    trn?: string;
+    address: {
+      street: string;
+      city: string;
+      emirate: string;
+      country: string;
+      postalCode?: string;
+    };
+    contact?: {
+      phone?: string;
+      email?: string;
+    };
+  };
+  // PINT AE compliance
+  customizationID: string;
+  profileID: string;
+  invoiceTypeCode: string;
+  documentCurrencyCode: string;
+  taxCurrencyCode: string;
+  vatBreakdown: Array<{
+    taxableAmount: number;
+    taxRate: number;
+    taxAmount: number;
+    taxCategory: string;
+  }>;
 }
 
 // Zod schema for validation
@@ -124,7 +206,7 @@ export const invoiceSchema = z.object({
       country: z.string().min(1),
       postalCode: z.string().optional()
     }),
-    taxRegistrationNumber: z.string().regex(/^\d{15}$/, 'TRN must be exactly 15 digits'),
+    taxRegistrationNumber: z.string().regex(/^\d{15}$/, 'TRN must be exactly 15 digits').optional(),
     trn: z.string().regex(/^\d{15}$/, 'TRN must be exactly 15 digits').optional(),
     contactDetails: z.object({
       phone: z.string().optional(),
@@ -166,4 +248,4 @@ export const invoiceSchema = z.object({
   submittedAt: z.string().datetime().optional(),
   acknowledgedAt: z.string().datetime().optional(),
   rejectionReason: z.string().optional()
-}); 
+});

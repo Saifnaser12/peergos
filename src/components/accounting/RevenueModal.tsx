@@ -9,6 +9,7 @@ import {
   BanknotesIcon,
   DocumentIcon
 } from '@heroicons/react/24/outline';
+import InvoiceModal from './InvoiceModal';
 
 interface RevenueEntry {
   id: string;
@@ -43,6 +44,8 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
     amount: '',
     invoiceGenerated: false
   });
+
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -104,6 +107,11 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
     };
 
     onSave(revenueData);
+
+    // Show invoice modal if invoice generation was toggled
+    if (formData.invoiceGenerated) {
+      setShowInvoiceModal(true);
+    }
   };
 
   const handleInputChange = (field: string, value: string | boolean) => {
@@ -251,6 +259,23 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
           </div>
         </form>
       </div>
+
+      {/* Invoice Generation Modal */}
+      {showInvoiceModal && (
+        <InvoiceModal
+          isOpen={showInvoiceModal}
+          onClose={() => {
+            setShowInvoiceModal(false);
+            onClose(); // Close the revenue modal too
+          }}
+          revenueData={{
+            customer: formData.customer,
+            amount: parseFloat(formData.amount),
+            description: formData.description,
+            date: formData.date
+          }}
+        />
+      )}
     </div>
   );
 };

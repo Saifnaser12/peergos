@@ -1,6 +1,8 @@
-import { Invoice } from '../types/invoice';
+
+import { Invoice, FTAEInvoice } from '../types/invoice';
 import { InvoiceXMLGenerator } from '../utils/invoice/xml-generator';
 import CryptoJS from 'crypto-js';
+import jsPDF from 'jspdf';
 
 export class InvoiceService {
   private static instance: InvoiceService;
@@ -62,6 +64,211 @@ export class InvoiceService {
     });
   }
 
+  // Convert Invoice to FTA E-Invoice JSON format
+  public convertToFTAFormat(invoice: Invoice): FTAEInvoice {
+    return {
+      supplierTRN: invoice.seller.taxRegistrationNumber,
+      buyerTRN: invoice.buyer.taxRegistrationNumber,
+      issueDate: invoice.issueDate,
+      invoiceNumber: invoice.invoiceNumber,
+      currency: invoice.currency,
+      subtotal: invoice.amount - invoice.vatAmount,
+      vatAmount: invoice.vatAmount,
+      totalAmount: invoice.amount,
+      
+      items: invoice.items.map(item => ({
+        description: item.description,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        taxRate: item.taxRate,
+        taxAmount: item.taxAmount,
+        totalAmount: item.totalAmount,
+        productCode: item.productCode,
+        unitsOfMeasure: item.unitsOfMeasure || 'PCE'
+      })),
+      
+      seller: {
+        name: invoice.seller.name,
+        trn: invoice.seller.taxRegistrationNumber,
+        address: {
+          street: invoice.seller.address.street,
+          city: invoice.seller.address.city,
+          emirate: invoice.seller.address.emirate,
+          country: invoice.seller.address.country,
+          postalCode: invoice.seller.address.postalCode
+        },
+        contact: invoice.seller.contactDetails ? {
+          phone: invoice.seller.contactDetails.phone,
+          email: invoice.seller.contactDetails.email
+        } : undefined
+      },
+      
+      buyer: invoice.buyer ? {
+        name: invoice.buyer.name,
+        trn: invoice.buyer.taxRegistrationNumber,
+        address: {
+          street: invoice.buyer.address.street,
+          city: invoice.buyer.address.city,
+          emirate: invoice.buyer.address.emirate,
+          country: invoice.buyer.address.country,
+          postalCode: invoice.buyer.address.postalCode
+        },
+        contact: invoice.buyer.contactDetails ? {
+          phone: invoice.buyer.contactDetails.phone,
+          email: invoice.buyer.contactDetails.email
+        } : undefined
+      } : undefined,
+      
+      // PINT AE compliance fields
+      customizationID: "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      profileID: "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+      invoiceTypeCode: "380", // Commercial invoice
+      documentCurrencyCode: invoice.currency,
+      taxCurrencyCode: invoice.currency,
+      
+      vatBreakdown: invoice.items.reduce((acc, item) => {
+        const existing = acc.find(vat => vat.taxRate === item.taxRate);
+        if (existing) {
+          existing.taxableAmount += item.taxableAmount;
+          existing.taxAmount += item.taxAmount;
+        } else {
+          acc.push({
+            taxableAmount: item.taxableAmount,
+            taxRate: item.taxRate,
+            taxAmount: item.taxAmount,
+            taxCategory: item.taxCategory
+          });
+        }
+        return acc;
+      }, [] as Array<{taxableAmount: number; taxRate: number; taxAmount: number; taxCategory: string}>)
+    };
+  }
+
+  // Generate human-readable PDF
+  public generatePDF(invoice: Invoice, isRTL: boolean = false): Blob {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    // Set font for Arabic support if needed
+    if (isRTL) {
+      doc.setR2L(true);
+    }
+
+    let yPos = 20;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 20;
+    const contentWidth = pageWidth - (margin * 2);
+
+    // Header
+    doc.setFontSize(24);
+    doc.setFont(undefined, 'bold');
+    doc.text(isRTL ? 'فاتورة ضريبية' : 'TAX INVOICE', margin, yPos);
+    
+    // Invoice number and date
+    yPos += 15;
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'normal');
+    doc.text(`${isRTL ? 'رقم الفاتورة:' : 'Invoice Number:'} ${invoice.invoiceNumber}`, margin, yPos);
+    yPos += 7;
+    doc.text(`${isRTL ? 'التاريخ:' : 'Date:'} ${new Date(invoice.issueDate).toLocaleDateString()}`, margin, yPos);
+
+    // Supplier information
+    yPos += 20;
+    doc.setFont(undefined, 'bold');
+    doc.text(isRTL ? 'بيانات المورد' : 'SUPPLIER INFORMATION', margin, yPos);
+    
+    yPos += 10;
+    doc.setFont(undefined, 'normal');
+    doc.text(invoice.seller.name, margin, yPos);
+    yPos += 5;
+    doc.text(invoice.seller.address.street, margin, yPos);
+    yPos += 5;
+    doc.text(`${invoice.seller.address.city}, ${invoice.seller.address.emirate}`, margin, yPos);
+    yPos += 5;
+    doc.text(`${isRTL ? 'الرقم الضريبي:' : 'TRN:'} ${invoice.seller.taxRegistrationNumber}`, margin, yPos);
+
+    // Customer information (if available)
+    if (invoice.buyer && invoice.buyer.name) {
+      yPos += 20;
+      doc.setFont(undefined, 'bold');
+      doc.text(isRTL ? 'بيانات العميل' : 'CUSTOMER INFORMATION', margin, yPos);
+      
+      yPos += 10;
+      doc.setFont(undefined, 'normal');
+      doc.text(invoice.buyer.name, margin, yPos);
+      yPos += 5;
+      doc.text(invoice.buyer.address.street, margin, yPos);
+      yPos += 5;
+      doc.text(`${invoice.buyer.address.city}, ${invoice.buyer.address.emirate}`, margin, yPos);
+      if (invoice.buyer.taxRegistrationNumber) {
+        yPos += 5;
+        doc.text(`${isRTL ? 'الرقم الضريبي:' : 'TRN:'} ${invoice.buyer.taxRegistrationNumber}`, margin, yPos);
+      }
+    }
+
+    // Items table
+    yPos += 20;
+    doc.setFont(undefined, 'bold');
+    doc.text(isRTL ? 'تفاصيل الفاتورة' : 'INVOICE DETAILS', margin, yPos);
+
+    // Table headers
+    yPos += 15;
+    const colWidths = [60, 25, 30, 25, 30];
+    const headers = isRTL ? 
+      ['الوصف', 'الكمية', 'السعر', 'الضريبة', 'المجموع'] :
+      ['Description', 'Qty', 'Unit Price', 'VAT', 'Total'];
+
+    let xPos = margin;
+    headers.forEach((header, index) => {
+      doc.text(header, xPos, yPos);
+      xPos += colWidths[index];
+    });
+
+    // Table rows
+    yPos += 10;
+    doc.setFont(undefined, 'normal');
+    
+    invoice.items.forEach(item => {
+      xPos = margin;
+      const values = [
+        item.description.substring(0, 25) + (item.description.length > 25 ? '...' : ''),
+        item.quantity.toString(),
+        `${item.unitPrice.toFixed(2)} ${invoice.currency}`,
+        `${item.taxAmount.toFixed(2)}`,
+        `${item.totalAmount.toFixed(2)} ${invoice.currency}`
+      ];
+
+      values.forEach((value, index) => {
+        doc.text(value, xPos, yPos);
+        xPos += colWidths[index];
+      });
+      yPos += 7;
+    });
+
+    // Totals
+    yPos += 15;
+    const subtotal = invoice.amount - invoice.vatAmount;
+    
+    doc.setFont(undefined, 'bold');
+    doc.text(`${isRTL ? 'المجموع الفرعي:' : 'Subtotal:'} ${subtotal.toFixed(2)} ${invoice.currency}`, pageWidth - 80, yPos);
+    yPos += 7;
+    doc.text(`${isRTL ? 'ضريبة القيمة المضافة:' : 'VAT Amount:'} ${invoice.vatAmount.toFixed(2)} ${invoice.currency}`, pageWidth - 80, yPos);
+    yPos += 7;
+    doc.setFontSize(14);
+    doc.text(`${isRTL ? 'المجموع الكلي:' : 'TOTAL:'} ${invoice.amount.toFixed(2)} ${invoice.currency}`, pageWidth - 80, yPos);
+
+    // Footer
+    yPos = doc.internal.pageSize.getHeight() - 30;
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text(isRTL ? 'شكراً لتعاملكم معنا' : 'Thank you for your business', margin, yPos);
+
+    return new Blob([doc.output('blob')], { type: 'application/pdf' });
+  }
+
   public async generateInvoice(invoice: Invoice): Promise<string> {
     try {
       const xml = InvoiceXMLGenerator.generateXML(invoice);
@@ -73,6 +280,33 @@ export class InvoiceService {
     } catch (error) {
       console.error('Error generating invoice:', error);
       throw new Error('Failed to generate invoice');
+    }
+  }
+
+  // Generate dual output: PDF + FTA JSON
+  public async generateDualOutput(invoice: Invoice, language: 'en' | 'ar' = 'en'): Promise<{
+    pdf: Blob;
+    ftaJson: FTAEInvoice;
+    xmlString: string;
+  }> {
+    try {
+      // Generate human-readable PDF
+      const pdf = this.generatePDF(invoice, language === 'ar');
+      
+      // Generate FTA-compliant JSON
+      const ftaJson = this.convertToFTAFormat(invoice);
+      
+      // Generate XML for submission
+      const xmlString = await this.generateInvoice(invoice);
+      
+      return {
+        pdf,
+        ftaJson,
+        xmlString
+      };
+    } catch (error) {
+      console.error('Error generating dual output:', error);
+      throw new Error('Failed to generate invoice outputs');
     }
   }
 
@@ -196,4 +430,4 @@ export class InvoiceService {
       throw new Error('Failed to delete invoice');
     }
   }
-} 
+}
