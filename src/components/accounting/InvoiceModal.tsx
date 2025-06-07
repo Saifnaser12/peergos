@@ -16,6 +16,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { InvoiceService } from '../../services/invoice.service';
 import { Invoice, InvoiceItem, FTAEInvoice } from '../../types/invoice';
+import { downloadInvoiceXML, generateInvoiceXML, InvoiceData, downloadPhase2InvoiceXML, Phase2Invoice } from '../../utils/invoiceXml';
 
 interface InvoiceModalProps {
   isOpen: boolean;
@@ -681,7 +682,7 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </button>
             </div>
 
-            {/* XML Preview */}
+            {/*The code adds a button to download the Phase 2 compliant XML invoice, utilizing a new `downloadPhase2InvoiceXML` function.*/}
             {showXmlPreview && (
               <div className="mt-6">
                 <h5 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
