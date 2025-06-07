@@ -716,6 +716,14 @@
     "recentInvoices": "Recent Scanned Invoices",
     "invoicesProcessed": "Invoices processed through OCR scanning",
     "revenue": "Revenue",
-    "expenses": "Expenses"
+    "expenses": "Expenses",
+    "balanced": "Balanced",
+    "unbalanced": "Unbalanced",
+    "asOf": "As of",
+    "total": "Total",
+    "retainedEarnings": "Retained Earnings",
+    "totalLiabilitiesEquity": "Total Liabilities + Equity",
+    "imbalanceWarning": "Warning: Balance Sheet is not balanced. Assets must equal Liabilities + Equity.",
+    "difference": "Difference"
   }
 }

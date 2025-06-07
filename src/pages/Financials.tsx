@@ -400,6 +400,10 @@ const Financials: React.FC = () => {
     window.location.href = '/accounting?tab=revenue';
   };
 
+  const navigateToAccountingExpense = () => {
+    window.location.href = '/accounting?tab=expenses';
+  };
+
   return (
     <Box sx={{ p: 3, direction: i18n.language === 'ar' ? 'rtl' : 'ltr' }}>
       {/* Header */}
@@ -500,94 +504,102 @@ const Financials: React.FC = () => {
       </Card>
 
       {/* Statement Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Balance Sheet Preview */}
-        <Grid item xs={12} sm={6} lg={4}>
-          <Card sx={{ borderRadius: 3, height: '300px', position: 'relative' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <AccountBalanceIcon sx={{ mr: 1, color: theme.palette.secondary.main }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  {t('financials.balanceSheet', 'Balance Sheet')}
-                </Typography>
-                {summary.isBalanced && (
-                  <Chip label="Balanced" color="success" size="small" sx={{ ml: 1 }} />
-                )}
-              </Box>
-              
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 h-80 relative overflow-hidden">
+          <div className="p-6 h-full flex flex-col">
+            <div className="flex items-center mb-4">
+              <AccountBalanceIcon sx={{ mr: 1, color: theme.palette.secondary.main }} />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {t('financials.balanceSheet', 'Balance Sheet')}
+              </h3>
+              {summary.isBalanced && (
+                <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                  Balanced
+                </span>
+              )}
+            </div>
+            
+            <div className="space-y-4 flex-grow">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {t('financials.assets', 'Assets')}
-                </Typography>
-                <Typography variant="h6" color="info.main" sx={{ fontWeight: 600 }}>
+                </p>
+                <p className="text-xl font-semibold text-blue-600 dark:text-blue-400">
                   {formatCurrency(summary.totalAssets)}
-                </Typography>
-              </Box>
+                </p>
+              </div>
               
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {t('financials.liabilities', 'Liabilities')}
-                </Typography>
-                <Typography variant="h6" color="warning.main" sx={{ fontWeight: 600 }}>
+                </p>
+                <p className="text-xl font-semibold text-amber-600 dark:text-amber-400">
                   {formatCurrency(summary.totalLiabilities)}
-                </Typography>
-              </Box>
+                </p>
+              </div>
               
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" color="text.secondary">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {t('financials.equity', 'Equity')}
-                </Typography>
-                <Typography variant="h6" color="secondary.main" sx={{ fontWeight: 600 }}>
+                </p>
+                <p className="text-xl font-semibold text-purple-600 dark:text-purple-400">
                   {formatCurrency(summary.totalEquity)}
-                </Typography>
-              </Box>
-              
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<ViewIcon />}
-                onClick={() => setActiveTab(1)}
-                sx={{ position: 'absolute', bottom: 16, left: 16, right: 16 }}
-              >
-                {t('common.view', 'View Details')}
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
+                </p>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => setActiveTab(1)}
+              className="w-full bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-xl transition-colors duration-200 mt-4"
+            >
+              <ViewIcon sx={{ mr: 1, fontSize: 16 }} />
+              {t('common.view', 'View Details')}
+            </button>
+          </div>
+        </div>
 
         {/* Profit & Loss Chart */}
-        <Grid item xs={12} sm={6} lg={4}>
-          <Card sx={{ borderRadius: 3, height: '300px' }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                {t('financials.profitLoss', 'Profit & Loss')}
-              </Typography>
-              <ResponsiveContainer width="100%" height={200}>
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 h-80">
+          <div className="p-6 h-full">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              {t('financials.profitLoss', 'Profit & Loss')}
+            </h3>
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={profitLossData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="month" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <Tooltip 
+                    formatter={(value) => formatCurrency(Number(value))}
+                    contentStyle={{
+                      backgroundColor: isDarkMode ? '#374151' : '#ffffff',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '12px'
+                    }}
+                  />
                   <Line 
                     type="monotone" 
                     dataKey="profit" 
-                    stroke={theme.palette.primary.main} 
+                    stroke="#3b82f6" 
                     strokeWidth={3}
+                    dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </Grid>
+            </div>
+          </div>
+        </div>
 
         {/* Revenue vs Expenses Pie */}
-        <Grid item xs={12} sm={12} lg={4}>
-          <Card sx={{ borderRadius: 3, height: '300px' }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                {t('financials.revenueVsExpenses', 'Revenue vs Expenses')}
-              </Typography>
-              <ResponsiveContainer width="100%" height={200}>
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 h-80">
+          <div className="p-6 h-full">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              {t('financials.revenueVsExpenses', 'Revenue vs Expenses')}
+            </h3>
+            <div className="h-40">
+              <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={pieChartData}
@@ -600,135 +612,115 @@ const Financials: React.FC = () => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <Tooltip 
+                    formatter={(value) => formatCurrency(Number(value))}
+                    contentStyle={{
+                      backgroundColor: isDarkMode ? '#374151' : '#ffffff',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '12px'
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 1 }}>
-                {pieChartData.map((entry, index) => (
-                  <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box 
-                      sx={{ 
-                        width: 12, 
-                        height: 12, 
-                        bgcolor: entry.color, 
-                        borderRadius: 1, 
-                        mr: 0.5 
-                      }} 
-                    />
-                    <Typography variant="caption">{entry.name}</Typography>
-                  </Box>
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+            </div>
+            <div className="flex justify-center gap-4 mt-2">
+              {pieChartData.map((entry, index) => (
+                <div key={index} className="flex items-center">
+                  <div 
+                    className="w-3 h-3 rounded mr-2" 
+                    style={{ backgroundColor: entry.color }}
+                  />
+                  <span className="text-xs text-gray-600 dark:text-gray-400">{entry.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Quick Actions */}
-      <Paper sx={{ 
-        p: 4, 
-        mb: 4, 
-        borderRadius: 3, 
-        boxShadow: theme.shadows[2],
-        background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.primary.main, 0.02)})`
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+      <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 mb-6 shadow-lg border border-gray-100 dark:border-gray-700">
+        <div className="flex items-center mb-6">
           <AssessmentIcon sx={{ mr: 2, color: theme.palette.primary.main, fontSize: 28 }} />
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             {t('financials.quickActions', 'Quick Actions')}
           </Typography>
-        </Box>
+        </div>
         
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card sx={{ 
-              height: '100%', 
-              cursor: 'pointer', 
-              transition: 'all 0.2s ease-in-out',
-              '&:hover': { 
-                transform: 'translateY(-2px)',
-                boxShadow: theme.shadows[8]
-              }
-            }} onClick={navigateToAccounting}>
-              <CardContent sx={{ textAlign: 'center', p: 3 }}>
-                <RevenueIcon sx={{ fontSize: 40, color: theme.palette.success.main, mb: 2 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                  {t('financials.addRevenue', 'Add Revenue')}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {t('financials.recordSales', 'Record sales and income')}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card sx={{ 
-              height: '100%', 
-              cursor: 'pointer', 
-              transition: 'all 0.2s ease-in-out',
-              '&:hover': { 
-                transform: 'translateY(-2px)',
-                boxShadow: theme.shadows[8]
-              }
-            }} onClick={() => setOpenExpenseModal(true)}>
-              <CardContent sx={{ textAlign: 'center', p: 3 }}>
-                <ExpenseIcon sx={{ fontSize: 40, color: theme.palette.error.main, mb: 2 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                  {t('financials.addExpense', 'Add Expense')}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {t('financials.trackCosts', 'Track business costs')}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card sx={{ 
-              height: '100%', 
-              cursor: 'pointer', 
-              transition: 'all 0.2s ease-in-out',
-              '&:hover': { 
-                transform: 'translateY(-2px)',
-                boxShadow: theme.shadows[8]
-              }
-            }} onClick={() => handleExportPDF('comprehensive')}>
-              <CardContent sx={{ textAlign: 'center', p: 3 }}>
-                <PdfIcon sx={{ fontSize: 40, color: theme.palette.warning.main, mb: 2 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                  {t('financials.exportReports', 'Export Reports')}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {t('financials.downloadPdf', 'Download PDF reports')}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card sx={{ 
-              height: '100%', 
-              cursor: 'pointer', 
-              transition: 'all 0.2s ease-in-out',
-              '&:hover': { 
-                transform: 'translateY(-2px)',
-                boxShadow: theme.shadows[8]
-              }
-            }} onClick={handleExportExcel}>
-              <CardContent sx={{ textAlign: 'center', p: 3 }}>
-                <ExcelIcon sx={{ fontSize: 40, color: theme.palette.info.main, mb: 2 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                  {t('financials.exportData', 'Export Data')}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {t('financials.downloadExcel', 'Download Excel file')}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Paper>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Add Revenue Card */}
+          <div 
+            onClick={navigateToAccounting}
+            className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-xl border border-green-200 dark:border-green-700"
+          >
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500 rounded-2xl mb-4">
+                <RevenueIcon sx={{ fontSize: 32, color: 'white' }} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                {t('financials.addRevenue', 'Add Revenue')}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {t('financials.recordSales', 'Record sales and income')}
+              </p>
+            </div>
+          </div>
+
+          {/* Add Expense Card */}
+          <div 
+            onClick={() => setOpenExpenseModal(true)}
+            className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-xl border border-red-200 dark:border-red-700"
+          >
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-500 rounded-2xl mb-4">
+                <ExpenseIcon sx={{ fontSize: 32, color: 'white' }} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                {t('financials.addExpense', 'Add Expense')}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {t('financials.trackCosts', 'Track business costs')}
+              </p>
+            </div>
+          </div>
+
+          {/* Export Reports Card */}
+          <div 
+            onClick={() => handleExportPDF('comprehensive')}
+            className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-xl border border-amber-200 dark:border-amber-700"
+          >
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500 rounded-2xl mb-4">
+                <PdfIcon sx={{ fontSize: 32, color: 'white' }} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                {t('financials.exportReports', 'Export Reports')}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {t('financials.downloadPdf', 'Download PDF reports')}
+              </p>
+            </div>
+          </div>
+
+          {/* Export Data Card */}
+          <div 
+            onClick={handleExportExcel}
+            className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-xl border border-blue-200 dark:border-blue-700"
+          >
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-2xl mb-4">
+                <ExcelIcon sx={{ fontSize: 32, color: 'white' }} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                {t('financials.exportData', 'Export Data')}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {t('financials.downloadExcel', 'Download Excel file')}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Financial Reports Tabs */}
       <Paper sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: theme.shadows[4] }}>
