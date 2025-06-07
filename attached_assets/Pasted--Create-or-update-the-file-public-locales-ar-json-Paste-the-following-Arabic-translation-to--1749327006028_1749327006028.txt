@@ -1,0 +1,66 @@
+📁 Create (or update) the file: `public/locales/ar.json`
+
+Paste the following Arabic translation to support the Accounting module in Peergos — aligned with UAE FTA guidelines and top global systems (Xero, QuickBooks, Zoho):
+
+{
+  "accounting": {
+    "revenue": {
+      "title": "الإيرادات",
+      "add": "إضافة إيراد",
+      "date": "التاريخ",
+      "description": "الوصف",
+      "customer": "اسم العميل",
+      "amount": "المبلغ (بالدرهم)",
+      "generateInvoice": "إنشاء فاتورة"
+    },
+    "expenses": {
+      "title": "المصروفات",
+      "add": "إضافة مصروف",
+      "vendor": "المورّد",
+      "category": "الفئة",
+      "receipt": "الإيصال",
+      "uploadReceipt": "رفع الإيصال"
+    },
+    "summary": {
+      "title": "ملخص المحاسبة",
+      "totalRevenue": "إجمالي الإيرادات (هذا الشهر)",
+      "totalExpenses": "إجمالي المصروفات (هذا الشهر)",
+      "netIncome": "صافي الدخل",
+      "downloadPdf": "تحميل الملخص PDF",
+      "downloadExcel": "تحميل Excel",
+      "openInFinancials": "عرض في التقارير المالية"
+    },
+    "invoice": {
+      "modalTitle": "تفاصيل الفاتورة",
+      "customerName": "اسم العميل",
+      "dueDate": "تاريخ الاستحقاق",
+      "serviceDescription": "وصف الخدمة",
+      "vatToggle": "تطبيق ضريبة القيمة المضافة (5%)",
+      "generate": "إنشاء فاتورة PDF"
+    }
+  },
+  "categories": {
+    "revenue": {
+      "productSales": "مبيعات المنتجات",
+      "serviceIncome": "دخل الخدمات",
+      "rentalIncome": "دخل الإيجار",
+      "interestIncome": "دخل الفوائد",
+      "consulting": "دخل الاستشارات",
+      "other": "إيرادات أخرى"
+    },
+    "expenses": {
+      "rent": "الإيجار",
+      "utilities": "المرافق",
+      "salaries": "الرواتب",
+      "marketing": "التسويق",
+      "travel": "السفر",
+      "supplies": "اللوازم",
+      "software": "البرمجيات والاشتراكات",
+      "professional": "الرسوم المهنية",
+      "taxes": "الضرائب الحكومية",
+      "other": "مصروفات أخرى"
+    }
+  }
+}
+
+💡 This enables bilingual accounting functionality (English + Arabic) for SMEs. Use `t('accounting.revenue.title')` and `t('categories.expenses.rent')` patterns in your components.
