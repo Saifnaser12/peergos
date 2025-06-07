@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -26,7 +27,8 @@ import {
   useTheme,
   alpha,
   Tabs,
-  Tab
+  Tab,
+  LinearProgress
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -35,6 +37,7 @@ import {
   Assessment as AssessmentIcon,
   AccountBalance as AccountBalanceIcon,
   TrendingUp,
+  TrendingDown,
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
   Language as LanguageIcon,
@@ -43,7 +46,10 @@ import {
   PictureAsPdf as PdfIcon,
   TableChart as ExcelIcon,
   Receipt as CashFlowIcon,
-  Assignment as NotesIcon
+  Assignment as NotesIcon,
+  MonetizationOn as RevenueIcon,
+  ShoppingCart as ExpenseIcon,
+  Visibility as ViewIcon
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useTheme as useAppTheme } from '../context/ThemeContext';
@@ -59,6 +65,18 @@ import {
   exportComprehensivePDF,
   exportToExcel 
 } from '../utils/ftaReportsExport';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 
 // Types
 interface FinancialEntry {
@@ -69,6 +87,7 @@ interface FinancialEntry {
   date: string;
   description: string;
   type: 'revenue' | 'expense' | 'asset' | 'liability' | 'equity';
+  vendor?: string;
 }
 
 interface FinancialSummary {
@@ -81,14 +100,24 @@ interface FinancialSummary {
   isBalanced: boolean;
 }
 
+interface YearlySummary {
+  year: number;
+  revenue: number;
+  expenses: number;
+  netIncome: number;
+  growthRate: number;
+}
+
 // Categories configuration
 const CATEGORIES = {
   revenue: ['Product Sales', 'Services', 'Other Income'],
-  expense: ['Salaries', 'Rent', 'Utilities', 'Depreciation', 'Other'],
+  expense: ['Salaries', 'Rent', 'Utilities', 'Marketing', 'Supplies', 'Professional Fees', 'Other'],
   asset: ['Cash', 'Inventory', 'Receivables', 'Equipment'],
   liability: ['Payables', 'Loans', 'Guarantees'],
   equity: ['Owner Capital', 'Retained Earnings']
 };
+
+const CHART_COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#00ff00'];
 
 const Financials: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -96,6 +125,8 @@ const Financials: React.FC = () => {
   const theme = useTheme();
   const [activeTab, setActiveTab] = useState(0);
   const [notes, setNotes] = useState<any[]>([]);
+  const [openExpenseModal, setOpenExpenseModal] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<FinancialEntry | null>(null);
 
   const [financialData, setFinancialData] = useState<FinancialEntry[]>([
     {
@@ -114,7 +145,8 @@ const Financials: React.FC = () => {
       amount: 45000,
       date: '2024-01-01',
       description: 'Monthly Salaries',
-      type: 'expense'
+      type: 'expense',
+      vendor: 'Payroll Department'
     },
     {
       id: '3',
@@ -145,14 +177,13 @@ const Financials: React.FC = () => {
     }
   ]);
 
-  const [openDialog, setOpenDialog] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<FinancialEntry | null>(null);
-  const [newEntry, setNewEntry] = useState({
+  const [newExpense, setNewExpense] = useState({
+    vendor: '',
     category: '',
     subcategory: '',
     amount: 0,
     description: '',
-    type: 'revenue' as const
+    date: new Date().toISOString().split('T')[0]
   });
 
   // Calculate financial summary
@@ -194,46 +225,87 @@ const Financials: React.FC = () => {
 
   const summary = calculateSummary();
 
-  const handleAddEntry = () => {
-    if (newEntry.category && newEntry.amount && newEntry.description) {
-      const entry: FinancialEntry = {
+  // Calculate yearly summary
+  const calculateYearlySummary = (): YearlySummary => {
+    const currentYear = new Date().getFullYear();
+    const currentYearData = financialData.filter(item => 
+      new Date(item.date).getFullYear() === currentYear
+    );
+    
+    const revenue = currentYearData
+      .filter(item => item.type === 'revenue')
+      .reduce((sum, item) => sum + item.amount, 0);
+    
+    const expenses = currentYearData
+      .filter(item => item.type === 'expense')
+      .reduce((sum, item) => sum + item.amount, 0);
+    
+    const netIncome = revenue - expenses;
+    
+    return {
+      year: currentYear,
+      revenue,
+      expenses,
+      netIncome,
+      growthRate: 15.2 // Mock growth rate
+    };
+  };
+
+  const yearlySummary = calculateYearlySummary();
+
+  // Chart data for revenue vs expenses
+  const pieChartData = [
+    { name: t('financials.revenue'), value: summary.totalRevenue, color: '#10b981' },
+    { name: t('financials.expenses'), value: summary.totalExpenses, color: '#ef4444' }
+  ];
+
+  // Mock data for profit/loss over time
+  const profitLossData = [
+    { month: 'Jan', profit: 12000 },
+    { month: 'Feb', profit: 18000 },
+    { month: 'Mar', profit: 15000 },
+    { month: 'Apr', profit: 22000 },
+    { month: 'May', profit: 19000 },
+    { month: 'Jun', profit: 25000 }
+  ];
+
+  const handleAddExpense = () => {
+    if (newExpense.vendor && newExpense.category && newExpense.amount && newExpense.description) {
+      const expense: FinancialEntry = {
         id: Date.now().toString(),
-        category: newEntry.category,
-        subcategory: newEntry.subcategory,
-        amount: newEntry.amount,
-        date: new Date().toISOString().split('T')[0],
-        description: newEntry.description,
-        type: newEntry.type
+        category: newExpense.category,
+        subcategory: newExpense.subcategory,
+        amount: newExpense.amount,
+        date: newExpense.date,
+        description: newExpense.description,
+        type: 'expense',
+        vendor: newExpense.vendor
       };
-      setFinancialData([...financialData, entry]);
-      setNewEntry({ category: '', subcategory: '', amount: 0, description: '', type: 'revenue' });
-      setOpenDialog(false);
+      setFinancialData([...financialData, expense]);
+      setNewExpense({ 
+        vendor: '', 
+        category: '', 
+        subcategory: '', 
+        amount: 0, 
+        description: '', 
+        date: new Date().toISOString().split('T')[0] 
+      });
+      setOpenExpenseModal(false);
     }
   };
 
   const handleEditEntry = (entry: FinancialEntry) => {
     setEditingEntry(entry);
-    setNewEntry({
-      category: entry.category,
-      subcategory: entry.subcategory,
-      amount: entry.amount,
-      description: entry.description,
-      type: entry.type
-    });
-    setOpenDialog(true);
-  };
-
-  const handleUpdateEntry = () => {
-    if (editingEntry && newEntry.category && newEntry.amount && newEntry.description) {
-      const updatedData = financialData.map(item =>
-        item.id === editingEntry.id
-          ? { ...editingEntry, ...newEntry }
-          : item
-      );
-      setFinancialData(updatedData);
-      setEditingEntry(null);
-      setNewEntry({ category: '', subcategory: '', amount: 0, description: '', type: 'revenue' });
-      setOpenDialog(false);
+    if (entry.type === 'expense') {
+      setNewExpense({
+        vendor: entry.vendor || '',
+        category: entry.category,
+        subcategory: entry.subcategory,
+        amount: entry.amount,
+        description: entry.description,
+        date: entry.date
+      });
+      setOpenExpenseModal(true);
     }
   };
 
@@ -254,16 +326,6 @@ const Financials: React.FC = () => {
         period: `${new Date().getFullYear()} Financial Year`
       }
     };
-
-    // Store export state in localStorage
-    const exportState = {
-      timestamp: new Date().toISOString(),
-      type,
-      language: i18n.language,
-      recordCount: financialData.length,
-      notesCount: notes.length
-    };
-    localStorage.setItem('lastFinancialExport', JSON.stringify(exportState));
 
     let doc;
     let filename;
@@ -313,16 +375,6 @@ const Financials: React.FC = () => {
       }
     };
 
-    // Store export state
-    const exportState = {
-      timestamp: new Date().toISOString(),
-      type: 'excel',
-      language: i18n.language,
-      recordCount: financialData.length,
-      notesCount: notes.length
-    };
-    localStorage.setItem('lastFinancialExport', JSON.stringify(exportState));
-
     exportToExcel(exportData, t, isRTL);
   };
 
@@ -344,16 +396,20 @@ const Financials: React.FC = () => {
     }
   };
 
+  const navigateToAccounting = () => {
+    window.location.href = '/accounting';
+  };
+
   return (
     <Box sx={{ p: 3, direction: i18n.language === 'ar' ? 'rtl' : 'ltr' }}>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 600 }}>
+          <Typography variant="h4" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
             {t('financials.title', 'Financial Reports')}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {t('financials.subtitle', 'FTA-compliant financial statements and reports')}
+            {t('financials.subtitle', 'Simplified financial management for non-accountants')}
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -366,126 +422,245 @@ const Financials: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Balance Alert */}
-      {!summary.isBalanced && (
-        <Alert severity="warning" sx={{ mb: 3 }}>
-          Warning: Balance Sheet is not balanced. Assets must equal Liabilities + Equity.
-        </Alert>
-      )}
-
-      {/* Summary Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Income Statement Summary */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: theme.shadows[4],
-            background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`
-          }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <TrendingUp sx={{ mr: 1, color: theme.palette.primary.main }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Income Statement
+      {/* Yearly Summary Card */}
+      <Card sx={{ 
+        mb: 4, 
+        borderRadius: 3, 
+        boxShadow: theme.shadows[4],
+        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`
+      }}>
+        <CardContent sx={{ p: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
+              {t('financials.yearlySummary', `${yearlySummary.year} Financial Summary`)}
+            </Typography>
+            <Chip 
+              label={`+${yearlySummary.growthRate}% Growth`} 
+              color="success" 
+              sx={{ fontWeight: 600 }}
+            />
+          </Box>
+          
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={3}>
+              <Box sx={{ textAlign: 'center' }}>
+                <RevenueIcon sx={{ fontSize: 40, color: theme.palette.success.main, mb: 1 }} />
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t('financials.totalRevenue', 'Total Revenue')}
+                </Typography>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.success.main }}>
+                  {formatCurrency(yearlySummary.revenue)}
                 </Typography>
               </Box>
-              <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <Typography variant="body2" color="text.secondary">
-                    Revenue
-                  </Typography>
-                  <Typography variant="h6" color="success.main" sx={{ fontWeight: 600 }}>
-                    {formatCurrency(summary.totalRevenue)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={4}>
-                  <Typography variant="body2" color="text.secondary">
-                    Expenses
-                  </Typography>
-                  <Typography variant="h6" color="error.main" sx={{ fontWeight: 600 }}>
-                    {formatCurrency(summary.totalExpenses)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={4}>
-                  <Typography variant="body2" color="text.secondary">
-                    Net Income
-                  </Typography>
-                  <Typography 
-                    variant="h6" 
-                    color={summary.netIncome >= 0 ? 'success.main' : 'error.main'}
-                    sx={{ fontWeight: 600 }}
-                  >
-                    {formatCurrency(summary.netIncome)}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+            </Grid>
+            
+            <Grid item xs={12} md={3}>
+              <Box sx={{ textAlign: 'center' }}>
+                <ExpenseIcon sx={{ fontSize: 40, color: theme.palette.error.main, mb: 1 }} />
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t('financials.totalExpenses', 'Total Expenses')}
+                </Typography>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.error.main }}>
+                  {formatCurrency(yearlySummary.expenses)}
+                </Typography>
+              </Box>
+            </Grid>
+            
+            <Grid item xs={12} md={3}>
+              <Box sx={{ textAlign: 'center' }}>
+                <TrendingUp sx={{ fontSize: 40, color: theme.palette.primary.main, mb: 1 }} />
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t('financials.netIncome', 'Net Income')}
+                </Typography>
+                <Typography 
+                  variant="h4" 
+                  sx={{ 
+                    fontWeight: 700, 
+                    color: yearlySummary.netIncome >= 0 ? theme.palette.success.main : theme.palette.error.main 
+                  }}
+                >
+                  {formatCurrency(yearlySummary.netIncome)}
+                </Typography>
+              </Box>
+            </Grid>
+            
+            <Grid item xs={12} md={3}>
+              <Box sx={{ textAlign: 'center' }}>
+                <AccountBalanceIcon sx={{ fontSize: 40, color: theme.palette.info.main, mb: 1 }} />
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t('financials.profitMargin', 'Profit Margin')}
+                </Typography>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: theme.palette.info.main }}>
+                  {yearlySummary.revenue > 0 ? ((yearlySummary.netIncome / yearlySummary.revenue) * 100).toFixed(1) : 0}%
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
-        {/* Balance Sheet Summary */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: theme.shadows[4],
-            background: `linear-gradient(135deg, ${alpha(theme.palette.secondary.main, 0.1)}, ${alpha(theme.palette.secondary.main, 0.05)})`
-          }}>
+      {/* Statement Cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {/* Balance Sheet Preview */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3, height: '300px', position: 'relative' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <AccountBalanceIcon sx={{ mr: 1, color: theme.palette.secondary.main }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Balance Sheet
+                  {t('financials.balanceSheet', 'Balance Sheet')}
                 </Typography>
                 {summary.isBalanced && (
                   <Chip label="Balanced" color="success" size="small" sx={{ ml: 1 }} />
                 )}
               </Box>
-              <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <Typography variant="body2" color="text.secondary">
-                    Assets
-                  </Typography>
-                  <Typography variant="h6" color="info.main" sx={{ fontWeight: 600 }}>
-                    {formatCurrency(summary.totalAssets)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={4}>
-                  <Typography variant="body2" color="text.secondary">
-                    Liabilities
-                  </Typography>
-                  <Typography variant="h6" color="warning.main" sx={{ fontWeight: 600 }}>
-                    {formatCurrency(summary.totalLiabilities)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={4}>
-                  <Typography variant="body2" color="text.secondary">
-                    Equity
-                  </Typography>
-                  <Typography variant="h6" color="secondary.main" sx={{ fontWeight: 600 }}>
-                    {formatCurrency(summary.totalEquity)}
-                  </Typography>
-                </Grid>
-              </Grid>
+              
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  {t('financials.assets', 'Assets')}
+                </Typography>
+                <Typography variant="h6" color="info.main" sx={{ fontWeight: 600 }}>
+                  {formatCurrency(summary.totalAssets)}
+                </Typography>
+              </Box>
+              
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  {t('financials.liabilities', 'Liabilities')}
+                </Typography>
+                <Typography variant="h6" color="warning.main" sx={{ fontWeight: 600 }}>
+                  {formatCurrency(summary.totalLiabilities)}
+                </Typography>
+              </Box>
+              
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="body2" color="text.secondary">
+                  {t('financials.equity', 'Equity')}
+                </Typography>
+                <Typography variant="h6" color="secondary.main" sx={{ fontWeight: 600 }}>
+                  {formatCurrency(summary.totalEquity)}
+                </Typography>
+              </Box>
+              
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<ViewIcon />}
+                onClick={() => setActiveTab(1)}
+                sx={{ position: 'absolute', bottom: 16, left: 16, right: 16 }}
+              >
+                {t('common.view', 'View Details')}
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Profit & Loss Chart */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3, height: '300px' }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                {t('financials.profitLoss', 'Profit & Loss')}
+              </Typography>
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={profitLossData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="profit" 
+                    stroke={theme.palette.primary.main} 
+                    strokeWidth={3}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Revenue vs Expenses Pie */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3, height: '300px' }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                {t('financials.revenueVsExpenses', 'Revenue vs Expenses')}
+              </Typography>
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie
+                    data={pieChartData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={60}
+                    dataKey="value"
+                  >
+                    {pieChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                </PieChart>
+              </ResponsiveContainer>
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 1 }}>
+                {pieChartData.map((entry, index) => (
+                  <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box 
+                      sx={{ 
+                        width: 12, 
+                        height: 12, 
+                        bgcolor: entry.color, 
+                        borderRadius: 1, 
+                        mr: 0.5 
+                      }} 
+                    />
+                    <Typography variant="caption">{entry.name}</Typography>
+                  </Box>
+                ))}
+              </Box>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
 
-      {/* Export Controls */}
+      {/* Quick Actions */}
       <Paper sx={{ p: 3, mb: 4, borderRadius: 3, boxShadow: theme.shadows[2] }}>
         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-          {t('financials.exportControls', 'Export Financial Statements')}
+          {t('financials.quickActions', 'Quick Actions')}
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6} md={3}>
             <Button
               fullWidth
               variant="contained"
+              startIcon={<AddIcon />}
+              onClick={navigateToAccounting}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
+            >
+              {t('financials.addRevenue', 'Add Revenue')}
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<ExpenseIcon />}
+              onClick={() => setOpenExpenseModal(true)}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
+            >
+              {t('financials.addExpense', 'Add Expense')}
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
               startIcon={<PdfIcon />}
               onClick={() => handleExportPDF('comprehensive')}
               sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
             >
-              {t('financials.exportComprehensivePDF', 'Complete PDF')}
+              {t('financials.exportPDF', 'Export PDF')}
             </Button>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -499,57 +674,8 @@ const Financials: React.FC = () => {
               {t('financials.exportExcel', 'Export Excel')}
             </Button>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<TrendingUp />}
-              onClick={() => handleExportPDF('income')}
-              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
-            >
-              {t('financials.incomeStatement', 'Income Statement')}
-            </Button>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<AccountBalanceIcon />}
-              onClick={() => handleExportPDF('balance')}
-              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
-            >
-              {t('financials.balanceSheet', 'Balance Sheet')}
-            </Button>
-          </Grid>
         </Grid>
       </Paper>
-
-      {/* Management Controls */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 4, flexWrap: 'wrap' }}>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setOpenDialog(true)}
-          sx={{ borderRadius: 2, textTransform: 'none' }}
-        >
-          {t('financials.addEntry', 'Add Entry')}
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<CashFlowIcon />}
-          onClick={() => handleExportPDF('cashflow')}
-          sx={{ borderRadius: 2, textTransform: 'none' }}
-        >
-          {t('financials.cashFlowStatement', 'Cash Flow PDF')}
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<UploadIcon />}
-          sx={{ borderRadius: 2, textTransform: 'none' }}
-        >
-          {t('financials.uploadDocuments', 'Upload Documents')}
-        </Button>
-      </Box>
 
       {/* Financial Reports Tabs */}
       <Paper sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: theme.shadows[4] }}>
@@ -578,12 +704,6 @@ const Financials: React.FC = () => {
               sx={{ textTransform: 'none' }}
             />
             <Tab 
-              label={t('financials.notesToFinancials', 'Notes')} 
-              icon={<NotesIcon />}
-              iconPosition="start"
-              sx={{ textTransform: 'none' }}
-            />
-            <Tab 
               label={t('financials.dataEntries', 'Data Entries')} 
               icon={<AssessmentIcon />}
               iconPosition="start"
@@ -596,8 +716,7 @@ const Financials: React.FC = () => {
           {activeTab === 0 && <IncomeStatement data={financialData} />}
           {activeTab === 1 && <BalanceSheet data={financialData} netIncome={summary.netIncome} />}
           {activeTab === 2 && <CashFlowStatement data={financialData} netIncome={summary.netIncome} />}
-          {activeTab === 3 && <NotesToFinancials onNotesChange={setNotes} />}
-          {activeTab === 4 && (
+          {activeTab === 3 && (
             <TableContainer>
               <Table>
                 <TableHead>
@@ -672,13 +791,20 @@ const Financials: React.FC = () => {
         </Box>
       </Paper>
 
-      {/* Add/Edit Entry Dialog */}
+      {/* Add Expense Modal */}
       <Dialog 
-        open={openDialog} 
+        open={openExpenseModal} 
         onClose={() => {
-          setOpenDialog(false);
+          setOpenExpenseModal(false);
           setEditingEntry(null);
-          setNewEntry({ category: '', subcategory: '', amount: 0, description: '', type: 'revenue' });
+          setNewExpense({ 
+            vendor: '', 
+            category: '', 
+            subcategory: '', 
+            amount: 0, 
+            description: '', 
+            date: new Date().toISOString().split('T')[0] 
+          });
         }}
         maxWidth="sm"
         fullWidth
@@ -687,23 +813,41 @@ const Financials: React.FC = () => {
         }}
       >
         <DialogTitle sx={{ fontWeight: 600 }}>
-          {editingEntry ? t('financials.editEntry', 'Edit Entry') : t('financials.addEntry', 'Add New Entry')}
+          {editingEntry ? t('financials.editExpense', 'Edit Expense') : t('financials.addExpense', 'Add New Expense')}
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                select
-                label={t('common.type', 'Type')}
-                value={newEntry.type}
-                onChange={(e) => {
-                  setNewEntry({ ...newEntry, type: e.target.value as any, category: '' });
+                label={t('common.vendor', 'Vendor Name')}
+                value={newExpense.vendor}
+                onChange={(e) => setNewExpense({ ...newExpense, vendor: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label={t('common.date', 'Date')}
+                type="date"
+                value={newExpense.date}
+                onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })}
+                InputLabelProps={{
+                  shrink: true,
                 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                select
+                label={t('common.category', 'Category')}
+                value={newExpense.category}
+                onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
               >
-                {Object.keys(CATEGORIES).map((type) => (
-                  <MenuItem key={type} value={type}>
-                    {type}
+                {CATEGORIES.expense.map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
                   </MenuItem>
                 ))}
               </TextField>
@@ -711,34 +855,10 @@ const Financials: React.FC = () => {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                select
-                label={t('common.category', 'Category')}
-                value={newEntry.category}
-                onChange={(e) => setNewEntry({ ...newEntry, category: e.target.value })}
-                disabled={!newEntry.type}
-              >
-                {CATEGORIES[newEntry.type]?.map((category) => (
-                  <MenuItem key={category} value={category}>
-                    {category}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label={t('common.subcategory', 'Subcategory (Optional)')}
-                value={newEntry.subcategory}
-                onChange={(e) => setNewEntry({ ...newEntry, subcategory: e.target.value })}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
                 type="number"
                 label={t('common.amount', 'Amount (AED)')}
-                value={newEntry.amount}
-                onChange={(e) => setNewEntry({ ...newEntry, amount: parseFloat(e.target.value) || 0 })}
+                value={newExpense.amount}
+                onChange={(e) => setNewExpense({ ...newExpense, amount: parseFloat(e.target.value) || 0 })}
                 inputProps={{ step: '0.01', min: '0' }}
               />
             </Grid>
@@ -746,8 +866,8 @@ const Financials: React.FC = () => {
               <TextField
                 fullWidth
                 label={t('common.description', 'Description')}
-                value={newEntry.description}
-                onChange={(e) => setNewEntry({ ...newEntry, description: e.target.value })}
+                value={newExpense.description}
+                onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
                 multiline
                 rows={2}
               />
@@ -757,16 +877,23 @@ const Financials: React.FC = () => {
         <DialogActions sx={{ p: 3 }}>
           <Button 
             onClick={() => {
-              setOpenDialog(false);
+              setOpenExpenseModal(false);
               setEditingEntry(null);
-              setNewEntry({ category: '', subcategory: '', amount: 0, description: '', type: 'revenue' });
+              setNewExpense({ 
+                vendor: '', 
+                category: '', 
+                subcategory: '', 
+                amount: 0, 
+                description: '', 
+                date: new Date().toISOString().split('T')[0] 
+              });
             }}
             sx={{ textTransform: 'none' }}
           >
             {t('common.cancel', 'Cancel')}
           </Button>
           <Button 
-            onClick={editingEntry ? handleUpdateEntry : handleAddEntry} 
+            onClick={handleAddExpense} 
             variant="contained"
             sx={{ textTransform: 'none', borderRadius: 2 }}
           >
@@ -775,61 +902,60 @@ const Financials: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-        {/* Bookkeeping Section */}
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5" gutterBottom sx={{ color: theme.palette.text.primary, fontWeight: 600 }}>
-            {t('financials.bookkeeping', 'Bookkeeping & Document Management')}
-          </Typography>
+      {/* Bookkeeping Section */}
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h5" gutterBottom sx={{ color: theme.palette.text.primary, fontWeight: 600 }}>
+          {t('financials.bookkeeping', 'Bookkeeping & Document Management')}
+        </Typography>
 
-          <Grid container spacing={3} sx={{ mt: 1 }}>
-            <Grid item xs={12} md={6}>
-              <InvoiceScanner variant="card" />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Paper 
-                elevation={1} 
-                sx={{ 
-                  p: 3, 
-                  borderRadius: 2,
-                  backgroundColor: theme.palette.background.paper,
-                  border: `1px solid ${theme.palette.divider}`
-                }}
-              >
-                <Typography variant="h6" gutterBottom sx={{ color: theme.palette.text.primary }}>
-                  {t('financials.recentInvoices', 'Recent Scanned Invoices')}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  {t('financials.invoicesProcessed', 'Invoices processed through OCR scanning')}
-                </Typography>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <div>
-                      <p className="text-sm font-medium">DEWA - AED 525.00</p>
-                      <p className="text-xs text-gray-500">2024-01-15 • 95% confidence</p>
-                    </div>
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Processed</span>
-                  </div>
-
-                  <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <div>
-                      <p className="text-sm font-medium">Etisalat - AED 1,250.75</p>
-                      <p className="text-xs text-gray-500">2024-01-10 • 89% confidence</p>
-                    </div>
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Processed</span>
-                  </div>
-
-                  <div className="text-center pt-2">
-                    <InvoiceScanner variant="button" />
-                  </div>
-                </div>
-              </Paper>
-            </Grid>
+        <Grid container spacing={3} sx={{ mt: 1 }}>
+          <Grid item xs={12} md={6}>
+            <InvoiceScanner variant="card" />
           </Grid>
-        </Box>
-      </Box>
 
+          <Grid item xs={12} md={6}>
+            <Paper 
+              elevation={1} 
+              sx={{ 
+                p: 3, 
+                borderRadius: 2,
+                backgroundColor: theme.palette.background.paper,
+                border: `1px solid ${theme.palette.divider}`
+              }}
+            >
+              <Typography variant="h6" gutterBottom sx={{ color: theme.palette.text.primary }}>
+                {t('financials.recentInvoices', 'Recent Scanned Invoices')}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                {t('financials.invoicesProcessed', 'Invoices processed through OCR scanning')}
+              </Typography>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                  <div>
+                    <p className="text-sm font-medium">DEWA - AED 525.00</p>
+                    <p className="text-xs text-gray-500">2024-01-15 • 95% confidence</p>
+                  </div>
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Processed</span>
+                </div>
+
+                <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                  <div>
+                    <p className="text-sm font-medium">Etisalat - AED 1,250.75</p>
+                    <p className="text-xs text-gray-500">2024-01-10 • 89% confidence</p>
+                  </div>
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Processed</span>
+                </div>
+
+                <div className="text-center pt-2">
+                  <InvoiceScanner variant="button" />
+                </div>
+              </div>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+    </Box>
   );
 };
 
