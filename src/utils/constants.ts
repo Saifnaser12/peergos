@@ -54,3 +54,31 @@ export const expenseCategoryTranslations = {
   "VAT Paid": "accounting.expenses.categories.vatPaid",
   "Other Expenses": "accounting.expenses.categories.otherExpenses"
 };
+
+// Tax category mapping for VAT compliance and XML generation
+export const taxCategoryMapping = {
+  // Revenue categories
+  "Product Sales": { vatApplicable: true, reverseCharge: false },
+  "Service Income": { vatApplicable: true, reverseCharge: false },
+  "Rental Income": { vatApplicable: true, reverseCharge: false },
+  "Consulting Fees": { vatApplicable: true, reverseCharge: false },
+  "Commission Income": { vatApplicable: true, reverseCharge: false },
+  "Interest Income": { vatApplicable: false, reverseCharge: false }, // Financial services exemption
+  "Other Revenue": { vatApplicable: true, reverseCharge: false },
+
+  // Expense categories
+  "Cost of Goods Sold": { vatApplicable: true, reverseCharge: false },
+  "Salaries and Wages": { vatApplicable: false, reverseCharge: false }, // No VAT on salaries
+  "Rent": { vatApplicable: true, reverseCharge: false },
+  "Utilities": { vatApplicable: true, reverseCharge: false },
+  "Marketing and Advertising": { vatApplicable: true, reverseCharge: false },
+  "Software Subscriptions": { vatApplicable: true, reverseCharge: true }, // Often foreign suppliers
+  "Professional Services": { vatApplicable: true, reverseCharge: true }, // May include foreign suppliers
+  "Office Supplies": { vatApplicable: true, reverseCharge: false },
+  "Bank Charges": { vatApplicable: false, reverseCharge: false }, // Financial services exemption
+  "Insurance": { vatApplicable: false, reverseCharge: false }, // Insurance exemption
+  "Travel and Meals": { vatApplicable: true, reverseCharge: false },
+  "Depreciation": { vatApplicable: false, reverseCharge: false }, // Accounting entry, no VAT
+  "VAT Paid": { vatApplicable: false, reverseCharge: false }, // VAT payment itself
+  "Other Expenses": { vatApplicable: true, reverseCharge: false }
+};
