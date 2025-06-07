@@ -23,6 +23,7 @@ import Unauthorized from './pages/Unauthorized';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import VAT from './pages/VAT';
+import Accounting from './pages/Accounting';
 import CIT from './pages/CIT';
 import Financials from './pages/Financials';
 import TransferPricing from './pages/TransferPricing';
@@ -82,6 +83,7 @@ function AppContent() {
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="vat" element={<VAT />} />
+              <Route path="accounting" element={<Accounting />} />
               <Route path="cit" element={<CIT />} />
               <Route path="financials" element={<Financials />} />
               <Route path="transfer-pricing" element={<TransferPricing />} />

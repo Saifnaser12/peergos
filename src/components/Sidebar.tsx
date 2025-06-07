@@ -11,7 +11,8 @@ import {
   XMarkIcon,
   CalendarDaysIcon,
   CurrencyDollarIcon,
-  ReceiptPercentIcon
+  ReceiptPercentIcon,
+  CalculatorIcon
 } from '@heroicons/react/24/outline';
 
 interface SidebarProps {
@@ -41,6 +42,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       name: t('nav.vat'),
       path: '/vat',
       icon: ReceiptPercentIcon,
+    },
+    {
+      name: t('nav.accounting'),
+      path: '/accounting',
+      icon: CalculatorIcon,
     },
     {
       name: t('nav.financials'),

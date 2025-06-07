@@ -42,6 +42,7 @@
     "dashboard": "Dashboard",
     "cit": "Corporate Tax",
     "vat": "VAT",
+    "accounting": "Accounting",
     "financials": "Financials",
     "transferPricing": "Transfer Pricing",
     "assistant": "Tax Assistant",
@@ -464,6 +465,114 @@
     "companyNameTooShort": "Company name must be at least 2 characters",
     "amountNegative": "Amount cannot be negative",
     "smallBusinessReliefNotEligible": "Small Business Relief is only available for companies with revenue ≤ AED 3 million"
+  },
+  "accounting": {
+    "title": "Accounting",
+    "subtitle": "Track your business revenue and expenses",
+    "revenue": {
+      "title": "Revenue",
+      "addButton": "Add Revenue",
+      "table": {
+        "date": "Date",
+        "description": "Description",
+        "customer": "Customer",
+        "amount": "Amount (AED)",
+        "invoice": "Invoice",
+        "actions": "Actions"
+      },
+      "form": {
+        "title": "Add Revenue Entry",
+        "editTitle": "Edit Revenue Entry",
+        "date": "Date",
+        "datePlaceholder": "Select date",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter revenue description",
+        "customer": "Customer",
+        "customerPlaceholder": "Customer name or email (optional)",
+        "amount": "Amount (AED)",
+        "amountPlaceholder": "0.00",
+        "generateInvoice": "Generate Invoice",
+        "generateInvoiceHelp": "Automatically create an invoice for this revenue entry",
+        "save": "Save Revenue",
+        "cancel": "Cancel",
+        "update": "Update Revenue"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "viewInvoice": "View Invoice",
+        "generateInvoice": "Generate Invoice"
+      },
+      "noData": "No revenue entries found",
+      "noDataDescription": "Start tracking your business income by adding your first revenue entry."
+    },
+    "expenses": {
+      "title": "Expenses",
+      "addButton": "Add Expense",
+      "table": {
+        "date": "Date",
+        "description": "Description",
+        "vendor": "Vendor",
+        "category": "Category",
+        "amount": "Amount (AED)",
+        "receipt": "Receipt",
+        "actions": "Actions"
+      },
+      "form": {
+        "title": "Add Expense Entry",
+        "editTitle": "Edit Expense Entry",
+        "date": "Date",
+        "datePlaceholder": "Select date",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter expense description",
+        "vendor": "Vendor",
+        "vendorPlaceholder": "Vendor or supplier name",
+        "category": "Category",
+        "categoryPlaceholder": "Select category",
+        "amount": "Amount (AED)",
+        "amountPlaceholder": "0.00",
+        "receipt": "Receipt",
+        "receiptHelp": "Upload receipt (PDF or JPG, max 10MB)",
+        "save": "Save Expense",
+        "cancel": "Cancel",
+        "update": "Update Expense"
+      },
+      "categories": {
+        "rent": "Rent",
+        "salaries": "Salaries",
+        "supplies": "Supplies",
+        "utilities": "Utilities",
+        "marketing": "Marketing",
+        "other": "Other"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "viewReceipt": "View Receipt",
+        "uploadReceipt": "Upload Receipt"
+      },
+      "noData": "No expense entries found",
+      "noDataDescription": "Start tracking your business expenses by adding your first expense entry."
+    },
+    "totals": {
+      "totalRevenue": "Total Revenue",
+      "totalExpenses": "Total Expenses",
+      "netIncome": "Net Income"
+    },
+    "messages": {
+      "revenueAdded": "Revenue entry added successfully",
+      "revenueUpdated": "Revenue entry updated successfully",
+      "revenueDeleted": "Revenue entry deleted successfully",
+      "expenseAdded": "Expense entry added successfully",
+      "expenseUpdated": "Expense entry updated successfully",
+      "expenseDeleted": "Expense entry deleted successfully",
+      "invoiceGenerated": "Invoice generated successfully",
+      "receiptUploaded": "Receipt uploaded successfully",
+      "invalidFileType": "Invalid file type. Please upload PDF or JPG files only",
+      "fileTooLarge": "File size exceeds 10MB limit",
+      "deleteConfirm": "Are you sure you want to delete this entry?",
+      "deleteConfirmDescription": "This action cannot be undone."
+    }
   },
   "errors": {
     "general": "An error occurred. Please try again.",
