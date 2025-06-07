@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTax } from '../context/TaxContext';
+import { useFinance } from '../context/FinanceContext';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import TRNLookup from '../components/TRNLookup';
 import POSIntegrationStatus from '../components/POSIntegrationStatus';
@@ -19,8 +20,14 @@ const Dashboard: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { citData, vatData } = useTax();
+  const { revenue, expenses, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
 
-  // Mock data - in real app this would come from context/API
+  // Live financial data from FinanceContext
+  const totalRevenue = getTotalRevenue();
+  const totalExpenses = getTotalExpenses();
+  const netIncome = getNetIncome();
+
+  // Dashboard data with live financials
   const dashboardData = {
     cit: {
       liability: 125000,
@@ -33,8 +40,8 @@ const Dashboard: React.FC = () => {
       nextDue: '2024-02-28'
     },
     financials: {
-      revenue: 1250000,
-      netIncome: 287500,
+      revenue: totalRevenue,
+      netIncome: netIncome,
       status: 'current'
     },
     transferPricing: {
@@ -172,8 +179,58 @@ const Dashboard: React.FC = () => {
           })}
         </div>
 
+        {/* Live Financial Summary */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+              <ArrowTrendingUpIcon className="w-5 h-5 mr-2 text-green-500" />
+              {t('dashboard.liveFinancials', 'Live Financial Summary')}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {t('dashboard.liveFinancialsSubtitle', 'Real-time data from your accounting entries')}
+            </p>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                  <CurrencyDollarIcon className="w-8 h-8 text-green-600 dark:text-green-400 mx-auto mb-2" />
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    {t('financials.totalRevenue', 'Total Revenue')}
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    AED {totalRevenue.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+                  <ReceiptPercentIcon className="w-8 h-8 text-red-600 dark:text-red-400 mx-auto mb-2" />
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    {t('financials.totalExpenses', 'Total Expenses')}
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    AED {totalExpenses.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className={`${netIncome >= 0 ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-orange-50 dark:bg-orange-900/20'} rounded-lg p-4`}>
+                  <ChartBarIcon className={`w-8 h-8 ${netIncome >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'} mx-auto mb-2`} />
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    {t('financials.netIncome', 'Net Income')}
+                  </p>
+                  <p className={`text-2xl font-bold ${netIncome >= 0 ? 'text-gray-900 dark:text-white' : 'text-orange-600 dark:text-orange-400'}`}>
+                    AED {netIncome.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8"></div>
           {/* FTA Integration Card */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="mb-4">

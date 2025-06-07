@@ -98,7 +98,9 @@
       "fileVAT": "File VAT Return",
       "calculateCIT": "Calculate CIT",
       "viewFinancials": "View Financials"
-    }
+    },
+    "liveFinancials": "Live Financial Summary",
+    "liveFinancialsSubtitle": "Real-time data from your accounting entries"
   },
   "vat": {
     "title": "VAT Filing",
