@@ -206,12 +206,7 @@ const bufferPolyfill = {
 
 // Apply polyfills to globalThis first
 if (typeof globalThis.process === 'undefined') {
-  globalThis.process = processPolyfill;
-}
-
-// Ensure process is available as a global variable
-if (typeof process === 'undefined') {
-  (globalThis as any).process = processPolyfill;
+  globalThis.process = globalThis.process;
 }
 
 if (typeof globalThis.global === 'undefined') {

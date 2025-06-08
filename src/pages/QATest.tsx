@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -154,7 +153,7 @@ const QATest: React.FC = () => {
   // Page Load Tests
   const runPageLoadTests = async (suiteIndex: number) => {
     updateSuiteStatus(suiteIndex, 'running');
-    
+
     const pageTests = [
       { path: '/dashboard', name: 'Dashboard loads successfully' },
       { path: '/cit', name: 'CIT page loads (admin/accountant)' },
@@ -167,16 +166,16 @@ const QATest: React.FC = () => {
     for (let i = 0; i < pageTests.length; i++) {
       const test = pageTests[i];
       updateTestResult(suiteIndex, i, { status: 'running' });
-      
+
       try {
         // Simulate page load test by checking if elements exist
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Check if the page path is valid (basic validation)
         const isValidPage = ['dashboard', 'cit', 'vat', 'financials', 'assistant', 'accounting'].includes(
           test.path.substring(1)
         );
-        
+
         if (isValidPage) {
           updateTestResult(suiteIndex, i, { 
             status: 'passed', 
@@ -214,11 +213,11 @@ const QATest: React.FC = () => {
   // Translation Tests
   const runTranslationTests = async (suiteIndex: number) => {
     updateSuiteStatus(suiteIndex, 'running');
-    
+
     for (let i = 0; i < 7; i++) {
       updateTestResult(suiteIndex, i, { status: 'running' });
       await new Promise(resolve => setTimeout(resolve, 300));
-      
+
       switch (i) {
         case 0: // No "Title" placeholders
           const hasTitle = document.body.innerHTML.includes('"Title"') || 
@@ -229,7 +228,7 @@ const QATest: React.FC = () => {
             duration: 300
           });
           break;
-          
+
         case 1: // No "Subtitle" placeholders
           const hasSubtitle = document.body.innerHTML.includes('"Subtitle"') || 
                              document.body.innerHTML.includes('Subtitle');
@@ -239,7 +238,7 @@ const QATest: React.FC = () => {
             duration: 300
           });
           break;
-          
+
         case 2: // No nav.* placeholders
           const hasNavPlaceholder = document.body.innerHTML.includes('nav.');
           updateTestResult(suiteIndex, i, { 
@@ -248,7 +247,7 @@ const QATest: React.FC = () => {
             duration: 300
           });
           break;
-          
+
         case 3: // English translations
           updateTestResult(suiteIndex, i, { 
             status: i18n.language === 'en' ? 'passed' : 'failed',
@@ -256,7 +255,7 @@ const QATest: React.FC = () => {
             duration: 300
           });
           break;
-          
+
         case 4: // Arabic translations
           try {
             await i18n.changeLanguage('ar');
@@ -274,7 +273,7 @@ const QATest: React.FC = () => {
             });
           }
           break;
-          
+
         case 5: // RTL layout
           updateTestResult(suiteIndex, i, { 
             status: 'passed',
@@ -282,7 +281,7 @@ const QATest: React.FC = () => {
             duration: 300
           });
           break;
-          
+
         case 6: // Navigation labels
           updateTestResult(suiteIndex, i, { 
             status: 'passed',
@@ -292,18 +291,18 @@ const QATest: React.FC = () => {
           break;
       }
     }
-    
+
     updateSuiteStatus(suiteIndex, 'completed');
   };
 
   // AI Assistant Tests
   const runAssistantTests = async (suiteIndex: number) => {
     updateSuiteStatus(suiteIndex, 'running');
-    
+
     for (let i = 0; i < 5; i++) {
       updateTestResult(suiteIndex, i, { status: 'running' });
       await new Promise(resolve => setTimeout(resolve, 800));
-      
+
       switch (i) {
         case 0: // Basic response
           updateTestResult(suiteIndex, i, { 
@@ -312,7 +311,7 @@ const QATest: React.FC = () => {
             duration: 800
           });
           break;
-          
+
         case 1: // Financial context injection
           const hasFinancialData = financialData && Object.keys(financialData).length > 0;
           updateTestResult(suiteIndex, i, { 
@@ -321,7 +320,7 @@ const QATest: React.FC = () => {
             duration: 800
           });
           break;
-          
+
         case 2: // Tax-specific context
           updateTestResult(suiteIndex, i, { 
             status: 'passed',
@@ -329,7 +328,7 @@ const QATest: React.FC = () => {
             duration: 800
           });
           break;
-          
+
         case 3: // Missing financials warning
           updateTestResult(suiteIndex, i, { 
             status: 'passed',
@@ -337,7 +336,7 @@ const QATest: React.FC = () => {
             duration: 800
           });
           break;
-          
+
         case 4: // Simulation mode
           updateTestResult(suiteIndex, i, { 
             status: 'passed',
@@ -347,14 +346,14 @@ const QATest: React.FC = () => {
           break;
       }
     }
-    
+
     updateSuiteStatus(suiteIndex, 'completed');
   };
 
   // Export Tests
   const runExportTests = async (suiteIndex: number) => {
     updateSuiteStatus(suiteIndex, 'running');
-    
+
     const exportTests = [
       'PDF export - Financials',
       'PDF export - CIT', 
@@ -362,11 +361,11 @@ const QATest: React.FC = () => {
       'Excel export functionality',
       'XML invoice generation'
     ];
-    
+
     for (let i = 0; i < exportTests.length; i++) {
       updateTestResult(suiteIndex, i, { status: 'running' });
       await new Promise(resolve => setTimeout(resolve, 600));
-      
+
       // Simulate export function test
       try {
         updateTestResult(suiteIndex, i, { 
@@ -382,21 +381,21 @@ const QATest: React.FC = () => {
         });
       }
     }
-    
+
     updateSuiteStatus(suiteIndex, 'completed');
   };
 
   // Role-based Access Tests
   const runRoleTests = async (suiteIndex: number) => {
     updateSuiteStatus(suiteIndex, 'running');
-    
+
     const roles = ['admin', 'accountant', 'assistant', 'sme_client'];
     const originalRole = role;
-    
+
     for (let i = 0; i < 5; i++) {
       updateTestResult(suiteIndex, i, { status: 'running' });
       await new Promise(resolve => setTimeout(resolve, 400));
-      
+
       if (i < 4) {
         const testRole = roles[i];
         setRole(testRole as any);
@@ -413,7 +412,7 @@ const QATest: React.FC = () => {
         });
       }
     }
-    
+
     // Restore original role
     setRole(originalRole);
     updateSuiteStatus(suiteIndex, 'completed');
@@ -422,11 +421,11 @@ const QATest: React.FC = () => {
   // TRN & Error Handling Tests
   const runTRNTests = async (suiteIndex: number) => {
     updateSuiteStatus(suiteIndex, 'running');
-    
+
     // Check if required libraries are available
     const hasJsSHA = typeof (window as any)?.jsSHA !== 'undefined';
     const hasQRCode = typeof (window as any)?.QRCode !== 'undefined';
-    
+
     const tests = [
       { name: 'Valid TRN format', trn: '100123456700003', shouldPass: true },
       { name: 'Invalid TRN format', trn: '12345', shouldPass: false },
@@ -434,14 +433,14 @@ const QATest: React.FC = () => {
       { name: 'Network failure', trn: 'NETWORK_FAIL', shouldPass: false },
       { name: 'Form validation', trn: '', shouldPass: false }
     ];
-    
+
     for (let i = 0; i < tests.length; i++) {
       updateTestResult(suiteIndex, i, { status: 'running' });
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       const test = tests[i];
       const isValidTRN = test.trn.length === 15 && /^\d+$/.test(test.trn);
-      
+
       if (test.name.includes('Network failure')) {
         updateTestResult(suiteIndex, i, { 
           status: 'passed',
@@ -480,7 +479,7 @@ const QATest: React.FC = () => {
       details: hasQRCode ? 'QRCode library loaded' : 'QRCode library missing',
       duration: 300
     });
-    
+
     updateSuiteStatus(suiteIndex, 'completed');
   };
 
@@ -488,7 +487,7 @@ const QATest: React.FC = () => {
     setIsRunning(true);
     setOverallProgress(0);
     setTestSuites(initializeTestSuites());
-    
+
     const testRunners = [
       runPageLoadTests,
       runTranslationTests,
@@ -497,12 +496,12 @@ const QATest: React.FC = () => {
       runRoleTests,
       runTRNTests
     ];
-    
+
     for (let i = 0; i < testRunners.length; i++) {
       await testRunners[i](i);
       setOverallProgress(((i + 1) / testRunners.length) * 100);
     }
-    
+
     setIsRunning(false);
   };
 
@@ -526,146 +525,148 @@ const QATest: React.FC = () => {
     const passed = allTests.filter(t => t.status === 'passed').length;
     const failed = allTests.filter(t => t.status === 'failed').length;
     const total = allTests.length;
-    
+
     return { passed, failed, total, pending: total - passed - failed };
   };
 
   const stats = getOverallStats();
 
   return (
-    <Box className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <Paper elevation={2} className="p-6 mb-6">
-          <Box className="flex items-center justify-between mb-4">
-            <Typography variant="h4" className="font-bold">
-              🧪 QA Test Suite
-            </Typography>
-            <Button
-              variant="contained"
-              startIcon={<PlayIcon />}
-              onClick={runAllTests}
-              disabled={isRunning}
-              size="large"
-            >
-              {isRunning ? 'Running Tests...' : 'Run All Tests'}
-            </Button>
-          </Box>
-          
-          {/* Progress */}
-          <Box className="mb-4">
-            <Typography variant="body2" className="mb-2">
-              Overall Progress: {Math.round(overallProgress)}%
-            </Typography>
-            <LinearProgress 
-              variant="determinate" 
-              value={overallProgress} 
-              className="h-2 rounded mb-4"
-            />
-          </Box>
+    <ErrorBoundary>
+      <Box className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <Paper elevation={2} className="p-6 mb-6">
+            <Box className="flex items-center justify-between mb-4">
+              <Typography variant="h4" className="font-bold">
+                🧪 QA Test Suite
+              </Typography>
+              <Button
+                variant="contained"
+                startIcon={<PlayIcon />}
+                onClick={runAllTests}
+                disabled={isRunning}
+                size="large"
+              >
+                {isRunning ? 'Running Tests...' : 'Run All Tests'}
+              </Button>
+            </Box>
 
-          {/* Stats */}
-          <Grid container spacing={2}>
-            <Grid item xs={6} sm={3}>
-              <Card>
-                <CardContent className="text-center">
-                  <Typography variant="h6" className="text-green-600">{stats.passed}</Typography>
-                  <Typography variant="body2">Passed</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Card>
-                <CardContent className="text-center">
-                  <Typography variant="h6" className="text-red-600">{stats.failed}</Typography>
-                  <Typography variant="body2">Failed</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Card>
-                <CardContent className="text-center">
-                  <Typography variant="h6" className="text-gray-600">{stats.pending}</Typography>
-                  <Typography variant="body2">Pending</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Card>
-                <CardContent className="text-center">
-                  <Typography variant="h6">{stats.total}</Typography>
-                  <Typography variant="body2">Total</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Paper>
+            {/* Progress */}
+            <Box className="mb-4">
+              <Typography variant="body2" className="mb-2">
+                Overall Progress: {Math.round(overallProgress)}%
+              </Typography>
+              <LinearProgress 
+                variant="determinate" 
+                value={overallProgress} 
+                className="h-2 rounded mb-4"
+              />
+            </Box>
 
-        {/* Test Suites */}
-        {testSuites.map((suite, suiteIndex) => (
-          <Accordion key={suite.name} defaultExpanded={false}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box className="flex items-center justify-between w-full mr-4">
-                <Typography variant="h6">{suite.name}</Typography>
-                <Box className="flex items-center gap-2">
-                  <Chip 
-                    label={`${Math.round(getSuiteProgress(suite))}%`}
-                    color={getSuiteProgress(suite) === 100 ? "success" : "default"}
-                    size="small"
-                  />
-                  <Chip 
-                    label={suite.status}
-                    color={suite.status === 'completed' ? "success" : suite.status === 'running' ? "warning" : "default"}
-                    size="small"
-                  />
-                </Box>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <List>
-                {suite.tests.map((test, testIndex) => (
-                  <ListItem key={`${suiteIndex}-${testIndex}`}>
-                    <ListItemIcon>
-                      {getTestIcon(test.status)}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={test.name}
-                      secondary={
-                        <Box>
-                          {test.details && (
-                            <Typography variant="body2" className="text-green-600">
-                              {test.details}
-                            </Typography>
-                          )}
-                          {test.error && (
-                            <Typography variant="body2" className="text-red-600">
-                              Error: {test.error}
-                            </Typography>
-                          )}
-                          {test.duration && (
-                            <Typography variant="caption" className="text-gray-500">
-                              Duration: {test.duration}ms
-                            </Typography>
-                          )}
-                        </Box>
-                      }
+            {/* Stats */}
+            <Grid container spacing={2}>
+              <Grid item xs={6} sm={3}>
+                <Card>
+                  <CardContent className="text-center">
+                    <Typography variant="h6" className="text-green-600">{stats.passed}</Typography>
+                    <Typography variant="body2">Passed</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <Card>
+                  <CardContent className="text-center">
+                    <Typography variant="h6" className="text-red-600">{stats.failed}</Typography>
+                    <Typography variant="body2">Failed</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <Card>
+                  <CardContent className="text-center">
+                    <Typography variant="h6" className="text-gray-600">{stats.pending}</Typography>
+                    <Typography variant="body2">Pending</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <Card>
+                  <CardContent className="text-center">
+                    <Typography variant="h6">{stats.total}</Typography>
+                    <Typography variant="body2">Total</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          </Paper>
+
+          {/* Test Suites */}
+          {testSuites.map((suite, suiteIndex) => (
+            <Accordion key={suite.name} defaultExpanded={false}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box className="flex items-center justify-between w-full mr-4">
+                  <Typography variant="h6">{suite.name}</Typography>
+                  <Box className="flex items-center gap-2">
+                    <Chip 
+                      label={`${Math.round(getSuiteProgress(suite))}%`}
+                      color={getSuiteProgress(suite) === 100 ? "success" : "default"}
+                      size="small"
                     />
-                  </ListItem>
-                ))}
-              </List>
-            </AccordionDetails>
-          </Accordion>
-        ))}
+                    <Chip 
+                      label={suite.status}
+                      color={suite.status === 'completed' ? "success" : suite.status === 'running' ? "warning" : "default"}
+                      size="small"
+                    />
+                  </Box>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <List>
+                  {suite.tests.map((test, testIndex) => (
+                    <ListItem key={`${suiteIndex}-${testIndex}`}>
+                      <ListItemIcon>
+                        {getTestIcon(test.status)}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={test.name}
+                        secondary={
+                          <Box>
+                            {test.details && (
+                              <Typography variant="body2" className="text-green-600">
+                                {test.details}
+                              </Typography>
+                            )}
+                            {test.error && (
+                              <Typography variant="body2" className="text-red-600">
+                                Error: {test.error}
+                              </Typography>
+                            )}
+                            {test.duration && (
+                              <Typography variant="caption" className="text-gray-500">
+                                Duration: {test.duration}ms
+                              </Typography>
+                            )}
+                          </Box>
+                        }
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+          ))}
 
-        {/* Footer */}
-        <Paper elevation={1} className="p-4 mt-6">
-          <Alert severity="info">
-            This internal QA testing suite simulates comprehensive system validation. 
-            Use this before production deployments to ensure all functionality works correctly.
-          </Alert>
-        </Paper>
-      </div>
-    </Box>
+          {/* Footer */}
+          <Paper elevation={1} className="p-4 mt-6">
+            <Alert severity="info">
+              This internal QA testing suite simulates comprehensive system validation. 
+              Use this before production deployments to ensure all functionality works correctly.
+            </Alert>
+          </Paper>
+        </div>
+      </Box>
+    </ErrorBoundary>
   );
 };
 

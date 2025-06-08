@@ -1,9 +1,14 @@
 // Import polyfills first before anything else
 import './polyfills';
 
-// Ensure process is available globally before React imports
-if (typeof globalThis !== 'undefined' && typeof globalThis.process === 'undefined') {
-  globalThis.process = (window as any).process || { env: {} };
+// Ensure critical globals are available
+if (typeof globalThis !== 'undefined') {
+  if (typeof globalThis.process === 'undefined') {
+    globalThis.process = { env: {} };
+  }
+  if (typeof globalThis.global === 'undefined') {
+    globalThis.global = globalThis;
+  }
 }
 
 import React, { StrictMode } from 'react'
