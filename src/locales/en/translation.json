@@ -23,7 +23,7 @@
   "Sales exempt from VAT": "Sales exempt from VAT",
   "Purchases": "Purchases",
   "Purchases with Recoverable VAT": "Purchases where VAT can be recovered",
-  "Business purchases where VAT can be recovered": "Business purchases where VAT can be recovered",
+  "Business purchases where VAT can be recovered": "Purchases where VAT can be recovered",
   "Purchases without Recoverable VAT": "Purchases where VAT cannot be recovered",
   "Reverse Charge Mechanism": "Reverse Charge Mechanism",
   "Imports of Goods/Services": "Imports of Goods/Services",
@@ -115,6 +115,15 @@
       "placeholder": "Ask about VAT, CIT, Transfer Pricing, or general tax questions...",
       "send": "Send"
     },
+    "suggestions": {
+      "title": "Suggested Questions"
+    },
+    "categories": {
+      "cit": "CIT",
+      "vat": "VAT", 
+      "transferPricing": "Transfer Pricing",
+      "general": "General"
+    },
     "export": {
       "chat": "Export Chat",
       "auditLog": "Export Audit Log"
@@ -124,17 +133,15 @@
       "default": "I'm here to help with UAE tax compliance. Please try rephrasing your question.",
       "apiError": "I'm having trouble connecting to my knowledge base right now. Please try again in a moment, or contact support if the issue persists."
     },
-    "categories": {
-      "cit": "Corporate Tax",
-      "vat": "VAT",
-      "transferPricing": "Transfer Pricing",
-      "general": "General"
+    "draftFiling": {
+      "detected": "Draft Filing Detected",
+      "citDetected": "I detected CIT filing information in my response. Would you like to simulate a draft filing?",
+      "vatDetected": "I detected VAT filing information in my response. Would you like to simulate a draft filing?", 
+      "simulate": "Simulate Filing",
+      "success": "Draft filing prepared. Redirecting to preview..."
     },
-    "suggestions": {
-      "title": "Suggested Questions"
-    },
+    "error": "Error getting response from assistant. Please check your API key or try again.",
     "exportSuccess": "Chat exported successfully",
-    "auditExported": "Audit log exported successfully",
-    "error": "Error getting response from assistant. Please check your API key or try again."
+    "auditExported": "Audit log exported successfully"
   }
 }

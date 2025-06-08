@@ -217,17 +217,64 @@ const VAT: React.FC = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [showSubmissionModal, setShowSubmissionModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [draftSource, setDraftSource] = useState<string | null>(null);
+
+  // Check for preview mode and load draft data
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const source = urlParams.get('source');
+    
+    if (mode === 'preview') {
+      setIsPreviewMode(true);
+      setDraftSource(source);
+      
+      // Load draft data from sessionStorage
+      const draftData = sessionStorage.getItem('draftVATFiling');
+      if (draftData) {
+        try {
+          const parsed = JSON.parse(draftData);
+          if (parsed.data) {
+            setFormData(prev => ({
+              ...prev,
+              standardRatedSales: parsed.data.revenue || prev.standardRatedSales,
+              purchasesWithVAT: parsed.data.expenses || prev.purchasesWithVAT,
+              companyName: prev.companyName || 'Draft Company',
+              trn: prev.trn || '100123456700003',
+              taxPeriod: parsed.data.period || prev.taxPeriod
+            }));
+          }
+        } catch (error) {
+          console.error('Error loading draft VAT data:', error);
+        }
+      }
+    }
+  }, []);
 
   return (
     <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
-            {t('VAT Return Filing')}
-          </Typography>
-          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mt: 1 }}>
-            {t('UAE FTA-compliant VAT return submission')}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+              {t('VAT Return Filing')}
+            </Typography>
+            {isPreviewMode && (
+              <Chip
+                label={`🧪 ${t('vat.preview.mode', 'Draft Filing Mode')}`}
+                color="info"
+                variant="outlined"
+                sx={{ fontWeight: 600 }}
+              />
+            )}
+          </Box>
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+            {isPreviewMode 
+              ? t('vat.preview.subtitle', `Preview mode - Data sourced from ${draftSource || 'assistant'}`)
+              : t('UAE FTA-compliant VAT return submission')
+            }
           </Typography>
         </Box>
         <FormControlLabel
@@ -242,6 +289,14 @@ const VAT: React.FC = () => {
           label={t('Dark Mode')}
         />
       </Box>
+      
+      {isPreviewMode && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          <Typography variant="body2">
+            {t('vat.preview.warning', 'This is a draft filing simulation. No actual submission will be made to FTA. Review the data and make adjustments as needed.')}
+          </Typography>
+        </Alert>
+      )}
 
       <Grid container spacing={3}>
         {/* Form Section */}

@@ -116,6 +116,39 @@ const CIT: React.FC = () => {
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showSubmissionModal, setShowSubmissionModal] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [draftSource, setDraftSource] = useState<string | null>(null);
+
+  // Check for preview mode and load draft data
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const source = urlParams.get('source');
+    
+    if (mode === 'preview') {
+      setIsPreviewMode(true);
+      setDraftSource(source);
+      
+      // Load draft data from sessionStorage
+      const draftData = sessionStorage.getItem('draftCITFiling');
+      if (draftData) {
+        try {
+          const parsed = JSON.parse(draftData);
+          if (parsed.data) {
+            setFormData(prev => ({
+              ...prev,
+              revenue: parsed.data.revenue || prev.revenue,
+              expenses: parsed.data.expenses || prev.expenses,
+              companyName: prev.companyName || 'Draft Company',
+              trn: prev.trn || '100123456700003'
+            }));
+          }
+        } catch (error) {
+          console.error('Error loading draft CIT data:', error);
+        }
+      }
+    }
+  }, []);
 
   // Calculate CIT based on form data
   const citCalculation = useMemo((): CITCalculation => {
@@ -346,17 +379,38 @@ const CIT: React.FC = () => {
       <Box sx={{ mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Box>
-            <Typography variant="h3" component="h1" sx={{ mb: 1, fontWeight: 300 }}>
-              {t('dashboard.cit.title')}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+              <Typography variant="h3" component="h1" sx={{ fontWeight: 300 }}>
+                {t('dashboard.cit.title')}
+              </Typography>
+              {isPreviewMode && (
+                <Chip
+                  label={`🧪 ${t('cit.preview.mode', 'Draft Filing Mode')}`}
+                  color="info"
+                  variant="outlined"
+                  sx={{ fontWeight: 600 }}
+                />
+              )}
+            </Box>
             <Typography variant="subtitle1" color="text.secondary">
-              {t('dashboard.cit.subtitle')}
+              {isPreviewMode 
+                ? t('cit.preview.subtitle', `Preview mode - Data sourced from ${draftSource || 'assistant'}`)
+                : t('dashboard.cit.subtitle')
+              }
             </Typography>
           </Box>
           {formData.trn && (
             <FTAIntegrationStatus trn={formData.trn} variant="badge" />
           )}
         </Box>
+        
+        {isPreviewMode && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            <Typography variant="body2">
+              {t('cit.preview.warning', 'This is a draft filing simulation. No actual submission will be made to FTA. Review the data and make adjustments as needed.')}
+            </Typography>
+          </Alert>
+        )}
       </Box>
 
       <Grid container spacing={3}>

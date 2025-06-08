@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Typography, Paper, TextField, Button, IconButton, Card, CardContent, Alert, Snackbar, CircularProgress, Fab, Menu, MenuItem } from '@mui/material';
+import { Box, Typography, Paper, TextField, Button, IconButton, Card, CardContent, Alert, Snackbar, CircularProgress, Fab, Menu, MenuItem, Chip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { 
   PaperAirplaneIcon, 
   DocumentArrowDownIcon, 
@@ -8,9 +9,12 @@ import {
   SparklesIcon,
   QuestionMarkCircleIcon,
   ChatBubbleLeftRightIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
+  DocumentDuplicateIcon,
+  BeakerIcon
 } from '@heroicons/react/24/outline';
 import { useTax } from '../context/TaxContext';
+import { useFinance } from '../context/FinanceContext';
 
 // TODO: Move to environment variables later
 const OPENAI_API_KEY = 'sk-placeholder-your-openai-api-key-here';
@@ -21,6 +25,23 @@ interface Message {
   type: 'user' | 'assistant';
   timestamp: Date;
   isTyping?: boolean;
+  filingIntent?: FilingIntent;
+}
+
+interface FilingIntent {
+  type: 'CIT' | 'VAT';
+  extractedData: {
+    revenue?: number;
+    expenses?: number;
+    taxableIncome?: number;
+    citPayable?: number;
+    outputVAT?: number;
+    inputVAT?: number;
+    netVAT?: number;
+    period?: string;
+    summary?: string;
+  };
+  confidence: number;
 }
 
 interface AuditLog {
@@ -90,6 +111,8 @@ interface SuggestedQuestion {
 const Assistant: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { state } = useTax();
+  const { getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -100,6 +123,111 @@ const Assistant: React.FC = () => {
   const [uaeMode] = useState(true); // Always enabled for UAE compliance
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isRTL = i18n.language === 'ar';
+
+  // Detect filing intent from assistant responses
+  const detectFilingIntent = (content: string): FilingIntent | null => {
+    const citPatterns = [
+      /estimated CIT payable.*?AED\s*([\d,]+)/i,
+      /corporate tax.*?due.*?AED\s*([\d,]+)/i,
+      /CIT liability.*?AED\s*([\d,]+)/i,
+      /taxable income.*?AED\s*([\d,]+)/i,
+      /file.*?CIT.*?summary/i
+    ];
+
+    const vatPatterns = [
+      /VAT.*?payable.*?AED\s*([\d,]+)/i,
+      /output VAT.*?AED\s*([\d,]+)/i,
+      /input VAT.*?AED\s*([\d,]+)/i,
+      /net VAT.*?AED\s*([\d,]+)/i,
+      /file.*?VAT.*?summary/i,
+      /VAT return.*?period/i
+    ];
+
+    const extractNumbers = (text: string) => {
+      const numbers = text.match(/AED\s*([\d,]+)/g);
+      return numbers ? numbers.map(n => parseInt(n.replace(/[^\d]/g, ''))) : [];
+    };
+
+    // Check CIT patterns
+    for (const pattern of citPatterns) {
+      if (pattern.test(content)) {
+        const numbers = extractNumbers(content);
+        return {
+          type: 'CIT',
+          extractedData: {
+            revenue: getTotalRevenue(),
+            expenses: getTotalExpenses(),
+            taxableIncome: getNetIncome(),
+            citPayable: numbers[0] || 0,
+            period: `${new Date().getFullYear()}`,
+            summary: content.substring(0, 200)
+          },
+          confidence: 0.85
+        };
+      }
+    }
+
+    // Check VAT patterns
+    for (const pattern of vatPatterns) {
+      if (pattern.test(content)) {
+        const numbers = extractNumbers(content);
+        return {
+          type: 'VAT',
+          extractedData: {
+            revenue: getTotalRevenue(),
+            expenses: getTotalExpenses(),
+            outputVAT: numbers[0] || 0,
+            inputVAT: numbers[1] || 0,
+            netVAT: numbers[0] - (numbers[1] || 0),
+            period: `${new Date().getFullYear()}-Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
+            summary: content.substring(0, 200)
+          },
+          confidence: 0.80
+        };
+      }
+    }
+
+    return null;
+  };
+
+  // Handle draft filing simulation
+  const handleDraftFiling = (message: Message) => {
+    if (!message.filingIntent) return;
+
+    const { type, extractedData } = message.filingIntent;
+    
+    // Store draft data in sessionStorage for preview pages
+    const draftData = {
+      source: 'assistant',
+      timestamp: new Date().toISOString(),
+      assistantMessageId: message.id,
+      simulationMode: true,
+      data: extractedData
+    };
+
+    sessionStorage.setItem(`draft${type}Filing`, JSON.stringify(draftData));
+
+    // Audit log for draft filing simulation
+    const auditEntry: AuditLog = {
+      id: Date.now().toString(),
+      userMessage: `Draft ${type} filing simulation`,
+      assistantReply: `Simulated ${type} filing with extracted data`,
+      timestamp: new Date(),
+      responseTime: 0
+    };
+    setAuditLogs(prev => [...prev, auditEntry]);
+
+    setSuccess(t('assistant.draftFiling.success', `Draft ${type} filing prepared. Redirecting to preview...`));
+
+    // Navigate to preview page
+    setTimeout(() => {
+      if (type === 'CIT') {
+        navigate('/cit?mode=preview&source=assistant');
+      } else {
+        navigate('/vat?mode=preview&source=assistant');
+      }
+    }, 1500);
+  };
 
   // OpenAI GPT-4 API integration with UAE CIT/VAT training
   const callOpenAI = async (userMessage: string): Promise<string> => {
@@ -284,11 +412,15 @@ const Assistant: React.FC = () => {
       // Call OpenAI GPT-4 API
       const response = await callOpenAI(currentInput);
 
+      // Detect filing intent in the response
+      const filingIntent = detectFilingIntent(response);
+
       const assistantMessage: Message = {
         id: (Date.now() + 2).toString(),
         content: response,
         type: 'assistant',
         timestamp: new Date(),
+        filingIntent
       };
 
       setMessages(prev => prev.filter(msg => !msg.isTyping).concat([assistantMessage]));
@@ -451,6 +583,39 @@ Assistant: ${log.assistantReply}
                         <Typography variant="body1" className="whitespace-pre-wrap">
                           {message.content}
                         </Typography>
+                        
+                        {/* Draft Filing Intent Detection */}
+                        {message.filingIntent && message.filingIntent.confidence > 0.7 && (
+                          <Box className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <Box className="flex items-center gap-2 mb-2">
+                              <BeakerIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                              <Typography variant="caption" className="text-blue-700 dark:text-blue-300 font-semibold uppercase tracking-wide">
+                                {t('assistant.draftFiling.detected', 'Draft Filing Detected')}
+                              </Typography>
+                              <Chip 
+                                label={`🧪 ${message.filingIntent.type}`}
+                                size="small"
+                                className="bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200"
+                              />
+                            </Box>
+                            <Typography variant="body2" className="text-blue-600 dark:text-blue-300 mb-3">
+                              {message.filingIntent.type === 'CIT' 
+                                ? t('assistant.draftFiling.citDetected', 'I detected CIT filing information in my response. Would you like to simulate a draft filing?')
+                                : t('assistant.draftFiling.vatDetected', 'I detected VAT filing information in my response. Would you like to simulate a draft filing?')
+                              }
+                            </Typography>
+                            <Button
+                              variant="contained"
+                              size="small"
+                              startIcon={<DocumentDuplicateIcon className="h-4 w-4" />}
+                              onClick={() => handleDraftFiling(message)}
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                              {t('assistant.draftFiling.simulate', `Simulate ${message.filingIntent.type} Filing`)}
+                            </Button>
+                          </Box>
+                        )}
+                        
                         <Typography 
                           variant="caption" 
                           className={`block mt-2 ${
