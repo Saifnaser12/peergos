@@ -70,6 +70,9 @@ interface CITCalculation {
   citPayable: number;
   effectiveRate: number;
   smallBusinessReliefApplied: boolean;
+  isQFZP?: boolean;
+  qualifyingIncome?: number;
+  nonQualifyingIncome?: number;
 }
 
 interface UploadedFile {
@@ -167,9 +170,41 @@ const CIT: React.FC = () => {
     const smallBusinessReliefApplied = formData.smallBusinessRelief && formData.revenue <= 3000000;
 
     let citPayable = 0;
+    
+    // Check for Free Zone QFZP status from localStorage (Setup data)
+    const setupData = localStorage.getItem('setupData');
+    let isQFZP = false;
+    let qualifyingIncome = 0;
+    let nonQualifyingIncome = taxableIncome;
+    
+    if (setupData) {
+      try {
+        const parsed = JSON.parse(setupData);
+        isQFZP = parsed.isQFZP || false;
+        
+        if (isQFZP && parsed.freeZoneIncome) {
+          // For QFZPs, split income into qualifying and non-qualifying
+          qualifyingIncome = Math.min(taxableIncome, parsed.freeZoneIncome.qualifying || 0);
+          nonQualifyingIncome = Math.max(0, taxableIncome - qualifyingIncome);
+        }
+      } catch (error) {
+        console.warn('Error parsing setup data for QFZP calculation:', error);
+      }
+    }
+
     if (!smallBusinessReliefApplied) {
-      if (taxableIncome > 375000) {
-        citPayable = (taxableIncome - 375000) * 0.09; // 9% on amount above AED 375,000
+      if (isQFZP) {
+        // QFZP Treatment:
+        // - 0% on Qualifying Income
+        // - 9% on Non-Qualifying Income above AED 375k
+        if (nonQualifyingIncome > 375000) {
+          citPayable = (nonQualifyingIncome - 375000) * 0.09;
+        }
+      } else {
+        // Standard CIT: 9% on total taxable income above AED 375k
+        if (taxableIncome > 375000) {
+          citPayable = (taxableIncome - 375000) * 0.09;
+        }
       }
     }
 
@@ -181,7 +216,10 @@ const CIT: React.FC = () => {
       allowedLosses,
       citPayable,
       effectiveRate,
-      smallBusinessReliefApplied
+      smallBusinessReliefApplied,
+      isQFZP,
+      qualifyingIncome,
+      nonQualifyingIncome
     };
   }, [formData]);
 
@@ -759,6 +797,22 @@ const CIT: React.FC = () => {
                 <Typography variant="h6" sx={{ fontWeight: 500 }}>
                   {formatCurrency(citCalculation.taxableIncome)}
                 </Typography>
+                
+                {/* QFZP Income Breakdown */}
+                {citCalculation.isQFZP && (
+                  <Box sx={{ mt: 1, p: 2, bgcolor: 'info.50', borderRadius: 1, border: '1px solid', borderColor: 'info.200' }}>
+                    <Typography variant="caption" sx={{ fontWeight: 600, color: 'info.main', display: 'block' }}>
+                      🏢 FREE ZONE QFZP STATUS
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'info.main', fontSize: '0.75rem' }}>
+                      Qualifying Income (0% rate): AED {citCalculation.qualifyingIncome?.toLocaleString() || 0}
+                    </Typography>
+                    <Typography variant="caption" sx={{ display: 'block', color: 'info.main', fontSize: '0.75rem' }}>
+                      Non-Qualifying Income (9% rate): AED {citCalculation.nonQualifyingIncome?.toLocaleString() || 0}
+                    </Typography>
+                  </Box>
+                )}
+                
                 <Box sx={{ mt: 1, p: 1, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
                   <Typography variant="caption" sx={{ fontWeight: 600, color: 'success.main' }}>
                     {isUpdating ? '🔄 UPDATING...' : '✅ AUTO-SYNC'} Live Taxable Income: AED {netIncome.toLocaleString()}
@@ -850,8 +904,12 @@ const CIT: React.FC = () => {
               >
                 <Typography variant="body2">
                   {citCalculation.citPayable === 0 
-                    ? t('cit.compliance.noCitDue')
-                    : t('cit.compliance.citDue')
+                    ? (citCalculation.isQFZP 
+                        ? 'No CIT due - QFZP benefits applied to qualifying income'
+                        : t('cit.compliance.noCitDue'))
+                    : (citCalculation.isQFZP 
+                        ? `CIT due on non-qualifying income only (QFZP)`
+                        : t('cit.compliance.citDue'))
                   }
                 </Typography>
               </Alert>

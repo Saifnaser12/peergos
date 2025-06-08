@@ -27,6 +27,10 @@ interface SetupData {
   freeZoneAddress: string;
   freeZoneEmployees: number;
   freeZoneOperatingExpenses: number;
+  freeZoneIncome: {
+    qualifying: number;
+    nonQualifying: number;
+  };
 }
 
 const Setup: React.FC = () => {
@@ -45,7 +49,11 @@ const Setup: React.FC = () => {
     freeZoneName: '',
     freeZoneAddress: '',
     freeZoneEmployees: 0,
-    freeZoneOperatingExpenses: 0
+    freeZoneOperatingExpenses: 0,
+    freeZoneIncome: {
+      qualifying: 0,
+      nonQualifying: 0
+    }
   });
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -65,7 +73,7 @@ const Setup: React.FC = () => {
   const handleSubmit = () => {
     // Mark final step as completed
     setCompletedSteps(prev => [...prev, currentStep]);
-    
+
     // Calculate QFZP qualification for Free Zone companies
     let qfzpStatus = null;
     if (formData.isFreeZone) {
@@ -73,20 +81,20 @@ const Setup: React.FC = () => {
       const isQualified = formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000;
       qfzpStatus = isQualified ? 'qualified' : 'unqualified';
     }
-    
+
     const setupData = {
       ...formData,
       qfzpStatus,
       setupCompletedAt: new Date().toISOString()
     };
-    
+
     // Show confetti celebration
     setShowConfetti(true);
     const message = formData.isFreeZone 
       ? `🎉 Congratulations! Your Free Zone company setup is complete. QFZP Status: ${qfzpStatus?.toUpperCase()}. Welcome to automated tax management!`
       : "🎉 Congratulations! Your Peergos tax system is now fully configured and ready for UAE compliance. Welcome to automated tax management!";
     setAiMessage(message);
-    
+
     // Save to localStorage or context
     localStorage.setItem('peergos_setup_complete', 'true');
     localStorage.setItem('peergos_organization_data', JSON.stringify(setupData));
@@ -173,7 +181,7 @@ const Setup: React.FC = () => {
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
           {t('setup.subtitle', 'Configure your organization details to get started')}
         </p>
-        
+
         {/* Progress Bar */}
         <div className="mt-4 max-w-xs mx-auto">
           <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-1">
@@ -223,7 +231,7 @@ const Setup: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Confetti Effect */}
             {showConfetti && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -462,14 +470,13 @@ const Setup: React.FC = () => {
                       />
                     </div>
 
-                    {/* QFZP Status Preview */}
-                    {formData.freeZoneEmployees > 0 || formData.freeZoneOperatingExpenses > 0 ? (
-                      <div className={`p-3 rounded-lg border ${
-                        formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000
-                          ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                          : 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
-                      }`}>
-                        <div className="flex items-center space-x-2">
+                      {/* QFZP Status Display */}
+                      <div className="mt-4 p-3 rounded-lg border">
+                        <div className={`flex items-center space-x-2 ${
+                          formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000
+                            ? 'text-green-700 dark:text-green-300'
+                            : 'text-orange-700 dark:text-orange-300'
+                        }`}>
                           <div className={`w-3 h-3 rounded-full ${
                             formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000
                               ? 'bg-green-500'
@@ -494,7 +501,63 @@ const Setup: React.FC = () => {
                           }
                         </p>
                       </div>
-                    ) : null}
+
+                      {/* Free Zone Income Categorization (for QFZP CIT calculation) */}
+                      {formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000 && (
+                        <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                          <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-3">
+                            QFZP Income Categories (for CIT Calculation)
+                          </h4>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label htmlFor="qualifyingIncome" className="block text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">
+                                Qualifying Income (0% CIT rate)
+                              </label>
+                              <input
+                                id="qualifyingIncome"
+                                type="number"
+                                className="w-full px-3 py-2 border border-blue-300 dark:border-blue-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
+                                value={formData.freeZoneIncome?.qualifying || 0}
+                                onChange={(e) => setFormData({
+                                  ...formData, 
+                                  freeZoneIncome: {
+                                    ...formData.freeZoneIncome,
+                                    qualifying: parseInt(e.target.value) || 0
+                                  }
+                                })}
+                                placeholder="0"
+                              />
+                              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                Exports, intra-zone trade, qualifying activities
+                              </p>
+                            </div>
+
+                            <div>
+                              <label htmlFor="nonQualifyingIncome" className="block text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">
+                                Non-Qualifying Income (9% CIT rate)
+                              </label>
+                              <input
+                                id="nonQualifyingIncome"
+                                type="number"
+                                className="w-full px-3 py-2 border border-blue-300 dark:border-blue-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:text-white"
+                                value={formData.freeZoneIncome?.nonQualifying || 0}
+                                onChange={(e) => setFormData({
+                                  ...formData, 
+                                  freeZoneIncome: {
+                                    ...formData.freeZoneIncome,
+                                    nonQualifying: parseInt(e.target.value) || 0
+                                  }
+                                })}
+                                placeholder="0"
+                              />
+                              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                Mainland sales, domestic consumption
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                   </div>
                 )}
               </div>
