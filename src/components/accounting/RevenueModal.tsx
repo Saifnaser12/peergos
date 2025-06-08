@@ -10,7 +10,13 @@ import {
   TagIcon
 } from '@heroicons/react/24/outline';
 import InvoiceModal from './InvoiceModal';
-import { revenueCategories, revenueCategoryTranslations } from '../../utils/constants';
+import { 
+  revenueCategories, 
+  revenueCategoryTranslations,
+  freeZoneIncomeTypes,
+  freeZoneIncomeSubcategories,
+  freeZoneIncomeTranslations
+} from '../../utils/constants';
 
 interface RevenueEntry {
   id: string;
@@ -44,12 +50,19 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
     customer: '',
     category: '',
     amount: '',
-    invoiceGenerated: false
+    invoiceGenerated: false,
+    freeZoneIncomeType: '',
+    freeZoneSubcategory: ''
   });
 
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const getAvailableSubcategories = () => {
+    if (!formData.freeZoneIncomeType) return [];
+    return freeZoneIncomeSubcategories[formData.freeZoneIncomeType as keyof typeof freeZoneIncomeSubcategories] || [];
+  };
 
   useEffect(() => {
     if (editingRevenue) {
@@ -59,7 +72,9 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
         customer: editingRevenue.customer || '',
         category: editingRevenue.category || '',
         amount: editingRevenue.amount.toString(),
-        invoiceGenerated: editingRevenue.invoiceGenerated
+        invoiceGenerated: editingRevenue.invoiceGenerated,
+        freeZoneIncomeType: editingRevenue.freeZoneIncomeType || '',
+        freeZoneSubcategory: editingRevenue.freeZoneSubcategory || ''
       });
     } else {
       setFormData({
@@ -68,7 +83,9 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
         customer: '',
         category: '',
         amount: '',
-        invoiceGenerated: false
+        invoiceGenerated: false,
+        freeZoneIncomeType: '',
+        freeZoneSubcategory: ''
       });
     }
     setErrors({});
@@ -111,7 +128,9 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
       category: formData.category,
       amount: parseFloat(formData.amount),
       invoiceGenerated: formData.invoiceGenerated,
-      invoiceId: formData.invoiceGenerated ? Date.now().toString() : undefined
+      invoiceId: formData.invoiceGenerated ? Date.now().toString() : undefined,
+      freeZoneIncomeType: formData.freeZoneIncomeType || undefined,
+      freeZoneSubcategory: formData.freeZoneSubcategory || undefined
     };
 
     // Save data - this will trigger real-time updates across the app
@@ -250,6 +269,70 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
               }`}
             />
             {errors.amount && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount}</p>}
+          </div>
+
+          {/* Free Zone Income Classification */}
+          <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+            <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-200 flex items-center">
+              <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+              {t('accounting.revenue.form.freeZoneClassification', 'Free Zone Income Classification')}
+            </h4>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('accounting.revenue.form.incomeType', 'Income Type')}
+              </label>
+              <select
+                value={formData.freeZoneIncomeType}
+                onChange={(e) => {
+                  handleInputChange('freeZoneIncomeType', e.target.value);
+                  handleInputChange('freeZoneSubcategory', ''); // Reset subcategory
+                }}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-150"
+              >
+                <option value="">{t('accounting.revenue.form.selectIncomeType', 'Select Income Type')}</option>
+                {freeZoneIncomeTypes.map(type => (
+                  <option key={type} value={type}>
+                    {t(freeZoneIncomeTranslations[type] || type)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {formData.freeZoneIncomeType && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('accounting.revenue.form.subcategory', 'Subcategory')}
+                </label>
+                <select
+                  value={formData.freeZoneSubcategory}
+                  onChange={(e) => handleInputChange('freeZoneSubcategory', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-150"
+                >
+                  <option value="">{t('accounting.revenue.form.selectSubcategory', 'Select Subcategory')}</option>
+                  {getAvailableSubcategories().map(subcategory => (
+                    <option key={subcategory} value={subcategory}>
+                      {t(freeZoneIncomeTranslations[subcategory] || subcategory)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {formData.freeZoneIncomeType === 'non-qualifying' && (
+              <div className="p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+                <div className="flex items-center">
+                  <svg className="h-4 w-4 text-orange-600 dark:text-orange-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                  <span className="text-sm text-orange-800 dark:text-orange-200">
+                    {t('accounting.revenue.form.nonQualifyingWarning', 'Non-qualifying income may affect QFZP status if it exceeds de minimis thresholds (5% or AED 5M)')}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Generate Invoice Toggle */}

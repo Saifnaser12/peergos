@@ -18,6 +18,7 @@ import AccountingSummary from '../components/accounting/AccountingSummary';
 import InvoiceModal from '../components/accounting/InvoiceModal';
 import { ArrowTrendingUpIcon as TrendingUpIcon } from '@heroicons/react/24/outline';
 import { useFinance } from '../context/FinanceContext';
+import { FREE_ZONE_THRESHOLDS } from '../utils/constants';
 
 interface RevenueEntry {
   id: string;
@@ -44,7 +45,21 @@ interface ExpenseEntry {
 
 const Accounting: React.FC = () => {
   const { t } = useTranslation();
-  const { revenue, expenses, addRevenue, addExpense, deleteRevenue, deleteExpense, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
+  const { 
+    revenue, 
+    expenses, 
+    addRevenue, 
+    addExpense, 
+    deleteRevenue, 
+    deleteExpense, 
+    getTotalRevenue, 
+    getTotalExpenses, 
+    getNetIncome,
+    getQualifyingIncome,
+    getNonQualifyingIncome,
+    getNonQualifyingPercentage,
+    checkDeMinimisThreshold
+  } = useFinance();
 
   // State management
   const [isRevenueModalOpen, setIsRevenueModalOpen] = useState(false);
@@ -152,6 +167,12 @@ const Accounting: React.FC = () => {
   const totalExpenses = getTotalExpenses();
   const netIncome = getNetIncome();
 
+  // Free Zone Income Analytics
+  const qualifyingIncome = getQualifyingIncome();
+  const nonQualifyingIncome = getNonQualifyingIncome();
+  const nonQualifyingPercentage = getNonQualifyingPercentage();
+  const deMinimisCheck = checkDeMinimisThreshold();
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -181,6 +202,175 @@ const Accounting: React.FC = () => {
           netIncome={netIncome}
           formatCurrency={formatCurrency}
         />
+
+        {/* Free Zone Income Analysis */}
+        {(qualifyingIncome > 0 || nonQualifyingIncome > 0) && (
+          <div className="mb-8">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                    <svg className="h-6 w-6 text-blue-600 dark:text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                    </svg>
+                    {t('accounting.freeZone.title', 'Free Zone Income Analysis')}
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Qualifying Income */}
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                          {t('accounting.freeZone.qualifyingIncome', 'Qualifying Income')}
+                        </p>
+                        <p className="text-2xl font-bold text-green-900 dark:text-green-100">
+                          {formatCurrency(qualifyingIncome)}
+                        </p>
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                          {totalRevenue > 0 ? `${((qualifyingIncome / totalRevenue) * 100).toFixed(1)}%` : '0%'} of total revenue
+                        </p>
+                      </div>
+                      <div className="w-12 h-12 bg-green-100 dark:bg-green-800 rounded-lg flex items-center justify-center">
+                        <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Non-Qualifying Income */}
+                  <div className={`rounded-xl p-4 border ${
+                    deMinimisCheck.isCompliant 
+                      ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800'
+                      : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className={`text-sm font-medium ${
+                          deMinimisCheck.isCompliant 
+                            ? 'text-yellow-700 dark:text-yellow-300'
+                            : 'text-red-700 dark:text-red-300'
+                        }`}>
+                          {t('accounting.freeZone.nonQualifyingIncome', 'Non-Qualifying Income')}
+                        </p>
+                        <p className={`text-2xl font-bold ${
+                          deMinimisCheck.isCompliant 
+                            ? 'text-yellow-900 dark:text-yellow-100'
+                            : 'text-red-900 dark:text-red-100'
+                        }`}>
+                          {formatCurrency(nonQualifyingIncome)}
+                        </p>
+                        <p className={`text-xs mt-1 ${
+                          deMinimisCheck.isCompliant 
+                            ? 'text-yellow-600 dark:text-yellow-400'
+                            : 'text-red-600 dark:text-red-400'
+                        }`}>
+                          {nonQualifyingPercentage.toFixed(1)}% of total revenue
+                        </p>
+                      </div>
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                        deMinimisCheck.isCompliant 
+                          ? 'bg-yellow-100 dark:bg-yellow-800'
+                          : 'bg-red-100 dark:bg-red-800'
+                      }`}>
+                        <svg className={`w-6 h-6 ${
+                          deMinimisCheck.isCompliant 
+                            ? 'text-yellow-600 dark:text-yellow-400'
+                            : 'text-red-600 dark:text-red-400'
+                        }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Compliance Status */}
+                  <div className={`rounded-xl p-4 border ${
+                    deMinimisCheck.isCompliant 
+                      ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                      : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className={`text-sm font-medium ${
+                          deMinimisCheck.isCompliant 
+                            ? 'text-green-700 dark:text-green-300'
+                            : 'text-red-700 dark:text-red-300'
+                        }`}>
+                          {t('accounting.freeZone.complianceStatus', 'QFZP Compliance')}
+                        </p>
+                        <p className={`text-lg font-bold ${
+                          deMinimisCheck.isCompliant 
+                            ? 'text-green-900 dark:text-green-100'
+                            : 'text-red-900 dark:text-red-100'
+                        }`}>
+                          {deMinimisCheck.isCompliant ? t('accounting.freeZone.compliant', 'Compliant') : t('accounting.freeZone.nonCompliant', 'Non-Compliant')}
+                        </p>
+                        <p className={`text-xs mt-1 ${
+                          deMinimisCheck.isCompliant 
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-red-600 dark:text-red-400'
+                        }`}>
+                          {deMinimisCheck.isCompliant 
+                            ? t('accounting.freeZone.withinLimits', 'Within de minimis limits')
+                            : t('accounting.freeZone.exceedsLimits', 'Exceeds de minimis thresholds')
+                          }
+                        </p>
+                      </div>
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                        deMinimisCheck.isCompliant 
+                          ? 'bg-green-100 dark:bg-green-800'
+                          : 'bg-red-100 dark:bg-red-800'
+                      }`}>
+                        {deMinimisCheck.isCompliant ? (
+                          <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
+                          </svg>
+                        ) : (
+                          <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Compliance Warning */}
+                {!deMinimisCheck.isCompliant && (
+                  <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                    <div className="flex items-start">
+                      <svg className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      <div>
+                        <h4 className="text-sm font-semibold text-red-800 dark:text-red-200 mb-1">
+                          {t('accounting.freeZone.warningTitle', 'QFZP De Minimis Threshold Exceeded')}
+                        </h4>
+                        <p className="text-sm text-red-700 dark:text-red-300 mb-2">
+                          {t('accounting.freeZone.warningMessage', 'Your non-qualifying income exceeds the de minimis thresholds:')}
+                        </p>
+                        <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
+                          {deMinimisCheck.exceedsPercentage && (
+                            <li>• {t('accounting.freeZone.percentageExceeded', 'Percentage: {{percentage}}% (limit: 5%)', { percentage: deMinimisCheck.percentage.toFixed(1) })}</li>
+                          )}
+                          {deMinimisCheck.exceedsAmount && (
+                            <li>• {t('accounting.freeZone.amountExceeded', 'Amount: {{amount}} (limit: AED 5M)', { amount: formatCurrency(deMinimisCheck.amount) })}</li>
+                          )}
+                        </ul>
+                        <p className="text-sm text-red-700 dark:text-red-300 mt-2">
+                          {t('accounting.freeZone.warningAdvice', 'This may affect your QFZP status and tax benefits. Consider restructuring transactions or consult a tax advisor.')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="mb-8">

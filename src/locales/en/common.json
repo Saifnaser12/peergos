@@ -512,5 +512,60 @@
       "performance": "Performance",
       "knowledgeHandling": "Knowledge Handling"
     }
+  },
+  "accounting": {
+    "revenue": {
+      "form": {
+        "category": "Category",
+        "categoryPlaceholder": "Select revenue category",
+        "freeZoneClassification": "Free Zone Income Classification",
+        "incomeType": "Income Type",
+        "selectIncomeType": "Select Income Type",
+        "subcategory": "Subcategory",
+        "selectSubcategory": "Select Subcategory",
+        "nonQualifyingWarning": "Non-qualifying income may affect QFZP status if it exceeds de minimis thresholds (5% or AED 5M)"
+      },
+      "freeZone": {
+        "qualifying": "Qualifying Income",
+        "nonQualifying": "Non-Qualifying Income",
+        "subcategories": {
+          "exports": "Exports",
+          "intraZoneTrade": "Intra-Zone Trade",
+          "servicesOutsideUAE": "Services Outside UAE",
+          "intellectualProperty": "Intellectual Property",
+          "financialServices": "Financial Services",
+          "mainlandSales": "Mainland Sales",
+          "servicesInUAE": "Services in UAE",
+          "domesticConsumption": "Domestic Consumption",
+          "localMarketSales": "Local Market Sales"
+        }
+      },
+    "expenses": {
+      "rent": "Rent",
+      "utilities": "Utilities",
+      "salaries": "Salaries",
+      "marketing": "Marketing",
+      "travel": "Travel",
+      "supplies": "Supplies",
+      "software": "Software & Subscriptions",
+      "professional": "Professional Fees",
+      "taxes": "Government Taxes",
+      "other": "Other Expenses"
+    },
+    "freeZone": {
+      "title": "Free Zone Income Analysis",
+      "qualifyingIncome": "Qualifying Income",
+      "nonQualifyingIncome": "Non-Qualifying Income",
+      "complianceStatus": "QFZP Compliance",
+      "compliant": "Compliant",
+      "nonCompliant": "Non-Compliant",
+      "withinLimits": "Within de minimis limits",
+      "exceedsLimits": "Exceeds de minimis thresholds",
+      "warningTitle": "QFZP De Minimis Threshold Exceeded",
+      "warningMessage": "Your non-qualifying income exceeds the de minimis thresholds:",
+      "percentageExceeded": "Percentage: {{percentage}}% (limit: 5%)",
+      "amountExceeded": "Amount: {{amount}} (limit: AED 5M)",
+      "warningAdvice": "This may affect your QFZP status and tax benefits. Consider restructuring transactions or consult a tax advisor."
+    }
   }
 }

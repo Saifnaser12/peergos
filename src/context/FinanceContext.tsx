@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 type Revenue = { 
@@ -7,6 +6,7 @@ type Revenue = {
   description: string; 
   date: string;
   category?: string;
+  freeZoneIncomeType?: 'qualifying' | 'non-qualifying';
 };
 
 type Expense = { 
@@ -42,6 +42,16 @@ interface FinanceContextType {
     expenseCount: number;
     lastUpdated: string;
   };
+  getQualifyingIncome: () => number;
+  getNonQualifyingIncome: () => number;
+  getNonQualifyingPercentage: () => number;
+  checkDeMinimisThreshold: () => {
+    exceedsPercentage: boolean;
+    exceedsAmount: boolean;
+    percentage: number;
+    amount: number;
+    isCompliant: boolean;
+  };
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
@@ -69,7 +79,7 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
   useEffect(() => {
     const savedRevenue = localStorage.getItem('peergos-revenue');
     const savedExpenses = localStorage.getItem('peergos-expenses');
-    
+
     if (savedRevenue) {
       try {
         setRevenue(JSON.parse(savedRevenue));
@@ -77,7 +87,7 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
         console.error('Error loading revenue from localStorage:', error);
       }
     }
-    
+
     if (savedExpenses) {
       try {
         setExpenses(JSON.parse(savedExpenses));
@@ -138,9 +148,41 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
     return getTotalRevenue() - getTotalExpenses();
   }, [getTotalRevenue, getTotalExpenses]);
 
+  // Free Zone Income Analytics
+  const getQualifyingIncome = useCallback(() => {
+    return revenue
+      .filter(item => item.freeZoneIncomeType === 'qualifying')
+      .reduce((sum, item) => sum + item.amount, 0);
+  }, [revenue]);
+
+  const getNonQualifyingIncome = useCallback(() => {
+    return revenue
+      .filter(item => item.freeZoneIncomeType === 'non-qualifying')
+      .reduce((sum, item) => sum + item.amount, 0);
+  }, [revenue]);
+
+  const getNonQualifyingPercentage = useCallback(() => {
+    const totalRevenue = getTotalRevenue();
+    const nonQualifying = getNonQualifyingIncome();
+    return totalRevenue > 0 ? (nonQualifying / totalRevenue) * 100 : 0;
+  }, [getTotalRevenue, getNonQualifyingIncome]);
+
+  const checkDeMinimisThreshold = useCallback(() => {
+    const nonQualifying = getNonQualifyingIncome();
+    const percentage = getNonQualifyingPercentage();
+
+    return {
+      exceedsPercentage: percentage > 5,
+      exceedsAmount: nonQualifying > 5000000,
+      percentage,
+      amount: nonQualifying,
+      isCompliant: percentage <= 5 && nonQualifying <= 5000000
+    };
+  }, [getNonQualifyingIncome, getNonQualifyingPercentage]);
+
   const subscribeToUpdates = useCallback((callback: FinanceUpdateCallback) => {
     setUpdateCallbacks(prev => new Set([...prev, callback]));
-    
+
     // Return unsubscribe function
     return () => {
       setUpdateCallbacks(prev => {
@@ -176,7 +218,11 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
       getTotalExpenses,
       getNetIncome,
       subscribeToUpdates,
-      getFinancialSummary
+      getFinancialSummary,
+      getQualifyingIncome,
+      getNonQualifyingIncome,
+      getNonQualifyingPercentage,
+      checkDeMinimisThreshold
     }}>
       {children}
     </FinanceContext.Provider>
