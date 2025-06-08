@@ -129,11 +129,11 @@ const CIT: React.FC = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
     const source = urlParams.get('source');
-    
+
     if (mode === 'preview') {
       setIsPreviewMode(true);
       setDraftSource(source);
-      
+
       // Load draft data from sessionStorage
       const draftData = sessionStorage.getItem('draftCITFiling');
       if (draftData) {
@@ -170,18 +170,18 @@ const CIT: React.FC = () => {
     const smallBusinessReliefApplied = formData.smallBusinessRelief && formData.revenue <= 3000000;
 
     let citPayable = 0;
-    
+
     // Check for Free Zone QFZP status from localStorage (Setup data)
     const setupData = localStorage.getItem('setupData');
     let isQFZP = false;
     let qualifyingIncome = 0;
     let nonQualifyingIncome = taxableIncome;
-    
+
     if (setupData) {
       try {
         const parsed = JSON.parse(setupData);
         isQFZP = parsed.isQFZP || false;
-        
+
         if (isQFZP && parsed.freeZoneIncome) {
           // For QFZPs, split income into qualifying and non-qualifying
           qualifyingIncome = Math.min(taxableIncome, parsed.freeZoneIncome.qualifying || 0);
@@ -349,9 +349,9 @@ const CIT: React.FC = () => {
   const handleGenerateFTAPDF = async () => {
     try {
       const { FTAPDFExporter } = await import('../utils/ftaPdfExport');
-      
+
       const exporter = new FTAPDFExporter(t, i18n.language === 'ar');
-      
+
       const companyInfo = {
         name: formData.companyName || 'Company Name',
         trn: formData.trn || 'TRN Required',
@@ -482,7 +482,7 @@ const CIT: React.FC = () => {
             <FTAIntegrationStatus trn={formData.trn} variant="badge" />
           )}
         </Box>
-        
+
         {isPreviewMode && (
           <Alert severity="info" sx={{ mb: 2 }}>
             <Typography variant="body2">
@@ -797,7 +797,7 @@ const CIT: React.FC = () => {
                 <Typography variant="h6" sx={{ fontWeight: 500 }}>
                   {formatCurrency(citCalculation.taxableIncome)}
                 </Typography>
-                
+
                 {/* QFZP Income Breakdown */}
                 {citCalculation.isQFZP && (
                   <Box sx={{ mt: 1, p: 2, bgcolor: 'info.50', borderRadius: 1, border: '1px solid', borderColor: 'info.200' }}>
@@ -812,15 +812,60 @@ const CIT: React.FC = () => {
                     </Typography>
                   </Box>
                 )}
-                
-                <Box sx={{ mt: 1, p: 1, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
-                  <Typography variant="caption" sx={{ fontWeight: 600, color: 'success.main' }}>
+
+                <Box sx={{ mt: 1, p: 2, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
+                  <Typography variant="caption" color="success.main" sx={{ fontWeight: 600 }}>
                     {isUpdating ? '🔄 UPDATING...' : '✅ AUTO-SYNC'} Live Taxable Income: AED {netIncome.toLocaleString()}
                   </Typography>
                   <Typography variant="caption" sx={{ display: 'block', color: 'success.main', fontSize: '0.65rem' }}>
                     Updates automatically from Accounting module • Last: {new Date(summary.lastUpdated).toLocaleTimeString()}
                   </Typography>
                 </Box>
+
+                {/* Free Zone Income Split Display */}
+                {citCalculation.isQFZP && (
+                  <Box sx={{ mt: 2, p: 3, bgcolor: 'blue.50', borderRadius: 2, border: '1px solid', borderColor: 'blue.200' }}>
+                    <Typography variant="h6" sx={{ mb: 2, color: 'blue.main', fontWeight: 600 }}>
+                      🏢 {t('cit.freeZone.incomeBreakdown', 'Free Zone Income Breakdown')}
+                    </Typography>
+
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} md={6}>
+                        <Box sx={{ p: 2, bgcolor: 'green.50', borderRadius: 1, border: '1px solid', borderColor: 'green.200' }}>
+                          <Typography variant="subtitle2" sx={{ color: 'green.main', fontWeight: 600, mb: 1 }}>
+                            {t('cit.freeZone.qualifyingIncome', 'Qualifying Income')} (0% CIT)
+                          </Typography>
+                          <Typography variant="h6" sx={{ color: 'green.main', fontWeight: 700 }}>
+                            AED {citCalculation.qualifyingIncome?.toLocaleString() || 0}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'green.600', fontSize: '0.75rem' }}>
+                            {t('cit.freeZone.qualifyingDescription', 'Exports, intra-zone trade, qualifying activities')}
+                          </Typography>
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={12} md={6}>
+                        <Box sx={{ p: 2, bgcolor: 'orange.50', borderRadius: 1, border: '1px solid', borderColor: 'orange.200' }}>
+                          <Typography variant="subtitle2" sx={{ color: 'orange.main', fontWeight: 600, mb: 1 }}>
+                            {t('cit.freeZone.nonQualifyingIncome', 'Non-Qualifying Income')} (9% CIT)
+                          </Typography>
+                          <Typography variant="h6" sx={{ color: 'orange.main', fontWeight: 700 }}>
+                            AED {citCalculation.nonQualifyingIncome?.toLocaleString() || 0}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'orange.600', fontSize: '0.75rem' }}>
+                            {t('cit.freeZone.nonQualifyingDescription', 'Mainland sales, domestic consumption')}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
+
+                    <Box sx={{ mt: 2, p: 2, bgcolor: 'blue.100', borderRadius: 1 }}>
+                      <Typography variant="caption" sx={{ color: 'blue.main', fontWeight: 600, fontSize: '0.8rem' }}>
+                        📄 {t('cit.freeZone.footnote', 'Includes QFZP income at 0% per FTA regulations')}
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
               </Box>
 
               <Divider sx={{ my: 2 }} />

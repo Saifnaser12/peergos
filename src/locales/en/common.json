@@ -396,7 +396,16 @@
   "validation": {
     "companyNameTooShort": "Company name must be at least 2 characters",
     "amountNegative": "Amount cannot be negative",
-    "smallBusinessReliefNotEligible": "Small Business Relief is only available for companies with revenue ≤ AED 3 million"
+    "smallBusinessReliefNotEligible": "Small Business Relief is only available for companies with revenue ≤ AED 3 million",
+    "freeZone": {
+      "incomeBreakdown": "Free Zone Income Breakdown",
+      "qualifyingIncome": "Qualifying Income",
+      "nonQualifyingIncome": "Non-Qualifying Income",
+      "qualifyingDescription": "Exports, intra-zone trade, qualifying activities",
+      "nonQualifyingDescription": "Mainland sales, domestic consumption",
+      "footnote": "Includes QFZP income at 0% per FTA regulations"
+    },
+    "smallBusinessReliefApplied": "Small Business Relief Applied"
   },
   "errors": {
     "general": "An error occurred. Please try again.",

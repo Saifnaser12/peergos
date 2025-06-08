@@ -1,4 +1,3 @@
-
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { TFunction } from 'i18next';
@@ -21,6 +20,9 @@ interface CITData {
   taxAdjustments?: number;
   exemptIncome?: number;
   carriedForwardLosses?: number;
+  isQFZP?: boolean;
+  qualifyingIncome?: number;
+  nonQualifyingIncome?: number;
 }
 
 interface VATData {
@@ -95,7 +97,7 @@ class FTAPDFExporter {
 
   private addCompanySection(companyInfo: CompanyInfo, yPosition: number): number {
     const startY = yPosition;
-    
+
     // Company Information Section
     this.doc.setFontSize(12);
     this.doc.setFont('helvetica', 'bold');
@@ -142,11 +144,11 @@ class FTAPDFExporter {
 
     this.doc.setFontSize(10);
     this.doc.setFont('helvetica', 'normal');
-    
+
     // Declaration box
     this.doc.setDrawColor(100, 100, 100);
     this.doc.rect(this.margin, yPosition, this.pageWidth - 2 * this.margin, 25);
-    
+
     // Declaration text
     const lines = this.doc.splitTextToSize(declarationText, this.pageWidth - 2 * this.margin - 10);
     this.doc.text(lines, this.margin + 5, yPosition + 8);
@@ -253,11 +255,11 @@ class FTAPDFExporter {
     this.doc.setFontSize(12);
     this.doc.setTextColor(255, 255, 255);
     this.doc.setFont('helvetica', 'bold');
-    
+
     const statusText = vatData.isRefundable 
       ? (this.isRTL ? 'مبلغ قابل للاسترداد' : 'REFUND DUE')
       : (this.isRTL ? 'مبلغ مستحق الدفع' : 'AMOUNT PAYABLE');
-    
+
     this.doc.text(statusText, this.pageWidth / 2, currentY + 8, { align: 'center' });
     this.doc.setTextColor(0, 0, 0);
     currentY += 20;
@@ -325,11 +327,11 @@ class FTAPDFExporter {
     this.doc.setFontSize(12);
     this.doc.setTextColor(255, 255, 255);
     this.doc.setFont('helvetica', 'bold');
-    
+
     const balanceText = financialData.isBalanced 
       ? (this.isRTL ? 'الميزانية متوازنة' : 'BALANCE SHEET BALANCED')
       : (this.isRTL ? 'الميزانية غير متوازنة' : 'BALANCE SHEET NOT BALANCED');
-    
+
     this.doc.text(balanceText, this.pageWidth / 2, currentY + 8, { align: 'center' });
     this.doc.setTextColor(0, 0, 0);
 

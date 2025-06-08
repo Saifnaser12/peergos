@@ -147,6 +147,18 @@
       "table": {
         "date": "التاريخ",
         "description": "الوصف",
+
+  "cit": {
+    "freeZone": {
+      "incomeBreakdown": "تفصيل دخل المنطقة الحرة",
+      "qualifyingIncome": "الدخل المؤهل",
+      "nonQualifyingIncome": "الدخل غير المؤهل", 
+      "qualifyingDescription": "الصادرات، التجارة بين المناطق، الأنشطة المؤهلة",
+      "nonQualifyingDescription": "مبيعات البر الرئيسي، الاستهلاك المحلي",
+      "footnote": "يشمل دخل الشخص المؤهل في المنطقة الحرة بنسبة 0% وفقاً لأنظمة الهيئة الاتحادية للضرائب"
+    }
+  },
+
         "customer": "العميل",
         "category": "الفئة",
         "amount": "المبلغ (درهم)",
