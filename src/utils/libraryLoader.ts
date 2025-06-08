@@ -117,6 +117,50 @@ class LibraryLoader {
     if (cached.error) return 'error';
     return 'loading';
   }
+
+  // Add the missing methods that are being called
+  async loadJsSHA(): Promise<any> {
+    return this.loadLibrary({
+      name: 'jsSHA',
+      url: 'https://cdn.jsdelivr.net/npm/jssha@3.3.1/dist/sha.min.js',
+      globalName: 'jsSHA',
+      fallback: () => {
+        console.warn('jsSHA not available, cryptographic functions will be disabled');
+        return null;
+      }
+    });
+  }
+
+  async loadQRCode(): Promise<any> {
+    return this.loadLibrary({
+      name: 'QRCode',
+      url: 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js',
+      globalName: 'QRCode',
+      fallback: () => {
+        console.warn('QRCode not available, QR code generation will be disabled');
+        return null;
+      }
+    });
+  }
+
+  async loadPDFLib(): Promise<any> {
+    return this.loadLibrary({
+      name: 'PDFLib',
+      url: 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
+      globalName: 'PDFLib',
+      fallback: () => {
+        console.warn('PDFLib not available, PDF generation will be disabled');
+        return {
+          PDFDocument: {
+            create: () => ({ 
+              addPage: () => ({}), 
+              save: () => new Uint8Array() 
+            })
+          }
+        };
+      }
+    });
+  }
 }
 
 // Create and export the singleton instance
@@ -124,46 +168,15 @@ export const libraryLoader = LibraryLoader.getInstance();
 
 // Export helper functions that use the singleton
 export const loadJsSHA = async (): Promise<any> => {
-  return libraryLoader.loadLibrary({
-    name: 'jsSHA',
-    url: 'https://cdn.jsdelivr.net/npm/jssha@3.3.1/dist/sha.min.js',
-    globalName: 'jsSHA',
-    fallback: () => {
-      console.warn('jsSHA not available, cryptographic functions will be disabled');
-      return null;
-    }
-  });
+  return libraryLoader.loadJsSHA();
 };
 
 export const loadQRCode = async (): Promise<any> => {
-  return libraryLoader.loadLibrary({
-    name: 'QRCode',
-    url: 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js',
-    globalName: 'QRCode',
-    fallback: () => {
-      console.warn('QRCode not available, QR code generation will be disabled');
-      return null;
-    }
-  });
+  return libraryLoader.loadQRCode();
 };
 
 export const loadPDFLib = async (): Promise<any> => {
-  return libraryLoader.loadLibrary({
-    name: 'PDFLib',
-    url: 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
-    globalName: 'PDFLib',
-    fallback: () => {
-      console.warn('PDFLib not available, PDF generation will be disabled');
-      return {
-        PDFDocument: {
-          create: () => ({ 
-            addPage: () => ({}), 
-            save: () => new Uint8Array() 
-          })
-        }
-      };
-    }
-  });
+  return libraryLoader.loadPDFLib();
 };
 
 export const initializeLibraries = async (): Promise<void> => {
