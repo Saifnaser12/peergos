@@ -1,5 +1,18 @@
-// import jsSHA from 'jssha';
-// import QRCode from 'qrcode';
+// Import with error handling for missing dependencies
+let jsSHA: any;
+let QRCode: any;
+
+try {
+  jsSHA = require('jssha');
+} catch (error) {
+  console.warn('jsSHA not available, cryptographic functions will be disabled');
+}
+
+try {
+  QRCode = require('qrcode');
+} catch (error) {
+  console.warn('QRCode not available, QR code generation will be disabled');
+}
 
 // Simplified hash generation
 export function generateHash(invoiceXML: string): string {

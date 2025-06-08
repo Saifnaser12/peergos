@@ -76,7 +76,6 @@ import {
   Cell
 } from 'recharts';
 import { useFinance } from '../context/FinanceContext';
-import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
 // Types
 interface FinancialEntry {
