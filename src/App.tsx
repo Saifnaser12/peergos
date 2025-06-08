@@ -27,10 +27,11 @@ import VAT from './pages/VAT';
 import Accounting from './pages/Accounting';
 import CIT from './pages/CIT';
 import Financials from './pages/Financials';
+import TransferPricingPage from './pages/TransferPricingPage';
 import TransferPricing from './pages/TransferPricing';
-import Filing from './pages/Filing';
-import Assistant from './pages/Assistant';
 import Calendar from './pages/Calendar';
+import Assistant from './pages/Assistant';
+import SimpleInvoice from './pages/SimpleInvoice';
 
 // Internal component to handle theme with i18n
 function AppContent() {
@@ -91,6 +92,7 @@ function AppContent() {
               <Route path="filing" element={<Filing />} />
               <Route path="assistant" element={<Assistant />} />
               <Route path="calendar" element={<Calendar />} />
+              <Route path="/simple-invoice" element={<SimpleInvoice />} />
               <Route path="unauthorized" element={<Unauthorized />} />
             </Route>
           </Routes>
