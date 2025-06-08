@@ -280,7 +280,7 @@ const Financials: React.FC = () => {
       totalRevenue,
       totalExpenses,
       netIncome: netProfit,
-      revenues: revenues.map(r => ({
+      revenues: revenue.map(r => ({
         id: r.id,
         amount: r.amount,
         description: r.description,
@@ -305,7 +305,7 @@ const Financials: React.FC = () => {
       totalRevenue,
       totalExpenses,
       netIncome: netProfit,
-      revenues: revenues.map(r => ({
+      revenues: revenue.map(r => ({
         id: r.id,
         amount: r.amount,
         description: r.description,
@@ -1061,7 +1061,7 @@ const Financials: React.FC = () => {
           </Grid>
         </Grid>
       </Box>
-      
+
       {/* Success/Warning Alerts */}
       <Snackbar
         open={showSuccessAlert}

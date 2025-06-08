@@ -39,6 +39,7 @@ import { TaxProvider } from './context/TaxContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { SettingsProvider } from './context/SettingsContext';
 import { WhitelabelProvider } from './context/WhitelabelContext';
+import { FinanceProvider } from './context/FinanceContext';
 
 const theme = createTheme({
   palette: {
@@ -65,33 +66,35 @@ const App: React.FC = () => {
               <UserRoleProvider>
                 <TaxProvider>
                   <NotificationProvider>
-                    <Router>
-                      <div className="App" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-                        <Suspense fallback={<Spinner />}>
-                          <Routes>
-                            <Route path="/" element={<Landing />} />
-                            <Route path="/home" element={<Layout><Home /></Layout>} />
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/register" element={<Register />} />
-                            <Route path="/setup" element={<Setup />} />
-                            <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
-                            <Route path="/filing" element={<Layout><Filing /></Layout>} />
-                            <Route path="/vat" element={<Layout><VAT /></Layout>} />
-                            <Route path="/cit" element={<Layout><CIT /></Layout>} />
-                            <Route path="/transfer-pricing" element={<Layout><TransferPricing /></Layout>} />
-                            <Route path="/accounting" element={<Layout><Accounting /></Layout>} />
-                            <Route path="/financials" element={<Layout><Financials /></Layout>} />
-                            <Route path="/calendar" element={<Layout><Calendar /></Layout>} />
-                            <Route path="/assistant" element={<Layout><Assistant /></Layout>} />
-                            <Route path="/admin" element={<Layout><Admin /></Layout>} />
-                            <Route path="/qa-test" element={<Layout><QATest /></Layout>} />
-                            <Route path="/backup" element={<Layout><BackupManager /></Layout>} />
-                            <Route path="/whitelabel" element={<Layout><WhitelabelPage /></Layout>} />
-                            <Route path="*" element={<Navigate to="/home" replace />} />
-                          </Routes>
-                        </Suspense>
-                      </div>
-                    </Router>
+                    <FinanceProvider>
+                      <Router>
+                        <div className="App" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                          <Suspense fallback={<Spinner />}>
+                            <Routes>
+                              <Route path="/" element={<Landing />} />
+                              <Route path="/home" element={<Layout><Home /></Layout>} />
+                              <Route path="/login" element={<Login />} />
+                              <Route path="/register" element={<Register />} />
+                              <Route path="/setup" element={<Setup />} />
+                              <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
+                              <Route path="/filing" element={<Layout><Filing /></Layout>} />
+                              <Route path="/vat" element={<Layout><VAT /></Layout>} />
+                              <Route path="/cit" element={<Layout><CIT /></Layout>} />
+                              <Route path="/transfer-pricing" element={<Layout><TransferPricing /></Layout>} />
+                              <Route path="/accounting" element={<Layout><Accounting /></Layout>} />
+                              <Route path="/financials" element={<Layout><Financials /></Layout>} />
+                              <Route path="/calendar" element={<Layout><Calendar /></Layout>} />
+                              <Route path="/assistant" element={<Layout><Assistant /></Layout>} />
+                              <Route path="/admin" element={<Layout><Admin /></Layout>} />
+                              <Route path="/qa-test" element={<Layout><QATest /></Layout>} />
+                              <Route path="/backup" element={<Layout><BackupManager /></Layout>} />
+                              <Route path="/whitelabel" element={<Layout><WhitelabelPage /></Layout>} />
+                              <Route path="*" element={<Navigate to="/home" replace />} />
+                            </Routes>
+                          </Suspense>
+                        </div>
+                      </Router>
+                    </FinanceProvider>
                   </NotificationProvider>
                 </TaxProvider>
               </UserRoleProvider>

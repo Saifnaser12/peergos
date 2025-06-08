@@ -1,4 +1,3 @@
-
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
@@ -55,7 +54,7 @@ const addFTAHeader = (doc: jsPDF, companyInfo: any, title: string, isRTL: boolea
   const pageWidth = doc.internal.pageSize.width;
   const margin = 14;
   const centerX = pageWidth / 2;
-  
+
   // FTA Logo placeholder
   doc.setFillColor(0, 100, 150);
   doc.rect(margin, 10, 25, 15, 'F');
@@ -63,13 +62,13 @@ const addFTAHeader = (doc: jsPDF, companyInfo: any, title: string, isRTL: boolea
   doc.setTextColor(255, 255, 255);
   doc.text('FTA', margin + 12.5, 19, { align: 'center' });
   doc.setTextColor(0, 0, 0);
-  
+
   // Company header section
   if (isRTL) {
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
     doc.text(companyInfo.name, pageWidth - margin, 20, { align: 'right' });
-    
+
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
     doc.text(`${companyInfo.trn} :الرقم الضريبي`, pageWidth - margin, 30, { align: 'right' });
@@ -78,13 +77,13 @@ const addFTAHeader = (doc: jsPDF, companyInfo: any, title: string, isRTL: boolea
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
     doc.text(companyInfo.name, margin + 35, 20);
-    
+
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
     doc.text(`TRN: ${companyInfo.trn}`, margin + 35, 30);
     doc.text(companyInfo.address, margin + 35, 38);
   }
-  
+
   // Title
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
@@ -94,7 +93,7 @@ const addFTAHeader = (doc: jsPDF, companyInfo: any, title: string, isRTL: boolea
   } else {
     doc.text(title, centerX, titleY, { align: 'center' });
   }
-  
+
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   const periodText = isRTL ? `${companyInfo.period} :للفترة` : `For the period: ${companyInfo.period}`;
@@ -103,7 +102,7 @@ const addFTAHeader = (doc: jsPDF, companyInfo: any, title: string, isRTL: boolea
   } else {
     doc.text(periodText, centerX, 65, { align: 'center' });
   }
-  
+
   // FTA Compliance note
   doc.setFontSize(8);
   doc.setTextColor(100, 100, 100);
@@ -116,7 +115,7 @@ const addFTAHeader = (doc: jsPDF, companyInfo: any, title: string, isRTL: boolea
     doc.text(complianceText, centerX, 75, { align: 'center' });
   }
   doc.setTextColor(0, 0, 0);
-  
+
   return 85; // Return Y position for content start
 };
 
@@ -126,25 +125,25 @@ export const exportIncomeStatementToPDF = (exportData: ExportData, t: TFunction,
     unit: 'mm',
     format: 'a4'
   });
-  
+
   let yPosition = addFTAHeader(doc, exportData.companyInfo, t('financials.incomeStatement', 'Income Statement'), isRTL);
-  
+
   const revenues = exportData.data.filter(item => item.type === 'revenue');
   const expenses = exportData.data.filter(item => item.type === 'expense');
-  
+
   // Group by category
   const revenueGroups = revenues.reduce((acc, item) => {
     if (!acc[item.category]) acc[item.category] = [];
     acc[item.category].push(item);
     return acc;
   }, {} as Record<string, FinancialEntry[]>);
-  
+
   const expenseGroups = expenses.reduce((acc, item) => {
     if (!acc[item.category]) acc[item.category] = [];
     acc[item.category].push(item);
     return acc;
   }, {} as Record<string, FinancialEntry[]>);
-  
+
   // Revenue section
   const revenueRows: any[] = [];
   Object.entries(revenueGroups).forEach(([category, items]) => {
@@ -154,7 +153,7 @@ export const exportIncomeStatementToPDF = (exportData: ExportData, t: TFunction,
     });
   });
   revenueRows.push(['Total Revenue', formatCurrency(exportData.summary.totalRevenue)]);
-  
+
   (doc as any).autoTable({
     startY: yPosition,
     head: [['Revenue', 'Amount (AED)']],
@@ -162,9 +161,9 @@ export const exportIncomeStatementToPDF = (exportData: ExportData, t: TFunction,
     headStyles: { fillColor: [0, 150, 0] },
     margin: { left: 14, right: 14 }
   });
-  
+
   yPosition = (doc as any).lastAutoTable.finalY + 20;
-  
+
   // Expenses section
   const expenseRows: any[] = [];
   Object.entries(expenseGroups).forEach(([category, items]) => {
@@ -174,7 +173,7 @@ export const exportIncomeStatementToPDF = (exportData: ExportData, t: TFunction,
     });
   });
   expenseRows.push(['Total Expenses', formatCurrency(exportData.summary.totalExpenses)]);
-  
+
   (doc as any).autoTable({
     startY: yPosition,
     head: [['Expenses', 'Amount (AED)']],
@@ -182,9 +181,9 @@ export const exportIncomeStatementToPDF = (exportData: ExportData, t: TFunction,
     headStyles: { fillColor: [150, 0, 0] },
     margin: { left: 14, right: 14 }
   });
-  
+
   yPosition = (doc as any).lastAutoTable.finalY + 20;
-  
+
   // Net Income
   (doc as any).autoTable({
     startY: yPosition,
@@ -194,7 +193,7 @@ export const exportIncomeStatementToPDF = (exportData: ExportData, t: TFunction,
     bodyStyles: { fontStyle: 'bold' },
     margin: { left: 14, right: 14 }
   });
-  
+
   return doc;
 };
 
@@ -204,17 +203,17 @@ export const exportBalanceSheetToPDF = (exportData: ExportData, t: TFunction, is
     unit: 'mm',
     format: 'a4'
   });
-  
+
   let yPosition = addFTAHeader(doc, exportData.companyInfo, t('financials.balanceSheet', 'Balance Sheet'), isRTL);
-  
+
   const assets = exportData.data.filter(item => item.type === 'asset');
   const liabilities = exportData.data.filter(item => item.type === 'liability');
   const equity = exportData.data.filter(item => item.type === 'equity');
-  
+
   // Assets section
   const assetRows = assets.map(item => [item.description, formatCurrency(item.amount)]);
   assetRows.push(['Total Assets', formatCurrency(exportData.summary.totalAssets)]);
-  
+
   (doc as any).autoTable({
     startY: yPosition,
     head: [['Assets', 'Amount (AED)']],
@@ -222,13 +221,13 @@ export const exportBalanceSheetToPDF = (exportData: ExportData, t: TFunction, is
     headStyles: { fillColor: [0, 100, 150] },
     margin: { left: 14, right: 14 }
   });
-  
+
   yPosition = (doc as any).lastAutoTable.finalY + 20;
-  
+
   // Liabilities section
   const liabilityRows = liabilities.map(item => [item.description, formatCurrency(item.amount)]);
   liabilityRows.push(['Total Liabilities', formatCurrency(exportData.summary.totalLiabilities)]);
-  
+
   (doc as any).autoTable({
     startY: yPosition,
     head: [['Liabilities', 'Amount (AED)']],
@@ -236,14 +235,14 @@ export const exportBalanceSheetToPDF = (exportData: ExportData, t: TFunction, is
     headStyles: { fillColor: [150, 100, 0] },
     margin: { left: 14, right: 14 }
   });
-  
+
   yPosition = (doc as any).lastAutoTable.finalY + 10;
-  
+
   // Equity section
   const equityRows = equity.map(item => [item.description, formatCurrency(item.amount)]);
   equityRows.push(['Retained Earnings', formatCurrency(exportData.summary.netIncome)]);
   equityRows.push(['Total Equity', formatCurrency(exportData.summary.totalEquity)]);
-  
+
   (doc as any).autoTable({
     startY: yPosition,
     head: [['Equity', 'Amount (AED)']],
@@ -251,7 +250,7 @@ export const exportBalanceSheetToPDF = (exportData: ExportData, t: TFunction, is
     headStyles: { fillColor: [100, 0, 150] },
     margin: { left: 14, right: 14 }
   });
-  
+
   return doc;
 };
 
@@ -261,15 +260,15 @@ export const exportCashFlowToPDF = (exportData: ExportData, t: TFunction, isRTL:
     unit: 'mm',
     format: 'a4'
   });
-  
+
   let yPosition = addFTAHeader(doc, exportData.companyInfo, t('financials.cashFlowStatement', 'Cash Flow Statement'), isRTL);
-  
+
   // Mock cash flow data (in real implementation, derive from actual cash movements)
   const operatingCashFlow = exportData.summary.netIncome + 15000 - 5000 + 8000 - 12000 - 2000;
   const investingCashFlow = -25000 - 10000;
   const financingCashFlow = 20000 - 8000 + 15000 - 5000;
   const netCashFlow = operatingCashFlow + investingCashFlow + financingCashFlow;
-  
+
   const cashFlowData = [
     ['Operating Activities', ''],
     ['  Net Income', formatCurrency(exportData.summary.netIncome)],
@@ -291,7 +290,7 @@ export const exportCashFlowToPDF = (exportData: ExportData, t: TFunction, isRTL:
     ['', ''],
     ['Net Increase in Cash', formatCurrency(netCashFlow)]
   ];
-  
+
   (doc as any).autoTable({
     startY: yPosition,
     head: [['Cash Flow Item', 'Amount (AED)']],
@@ -299,7 +298,7 @@ export const exportCashFlowToPDF = (exportData: ExportData, t: TFunction, isRTL:
     headStyles: { fillColor: [0, 150, 100] },
     margin: { left: 14, right: 14 }
   });
-  
+
   return doc;
 };
 
@@ -309,36 +308,36 @@ export const exportComprehensivePDF = (exportData: ExportData, t: TFunction, isR
     unit: 'mm',
     format: 'a4'
   });
-  
+
   const pageWidth = doc.internal.pageSize.width;
   const centerX = pageWidth / 2;
   const margin = 14;
-  
+
   // Cover page with FTA branding
   doc.setFillColor(0, 100, 150);
   doc.rect(0, 0, pageWidth, 60, 'F');
-  
+
   doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(255, 255, 255);
   const coverTitle = isRTL ? 'البيانات المالية' : 'Financial Statements';
   doc.text(coverTitle, centerX, 35, { align: 'center' });
-  
+
   doc.setTextColor(0, 0, 0);
   doc.setFontSize(18);
   doc.setFont('helvetica', 'normal');
   doc.text(exportData.companyInfo.name, centerX, 80, { align: 'center' });
-  
+
   const trnText = isRTL ? `${exportData.companyInfo.trn} :الرقم الضريبي` : `TRN: ${exportData.companyInfo.trn}`;
   doc.text(trnText, centerX, 95, { align: 'center' });
   doc.text(exportData.companyInfo.period, centerX, 110, { align: 'center' });
-  
+
   doc.setFontSize(12);
   const complianceText = isRTL 
     ? 'معد وفقاً لمعايير هيئة الضرائب والمعايير الدولية للتقارير المالية'
     : 'Prepared in accordance with FTA guidelines and IFRS standards';
   doc.text(complianceText, centerX, 130, { align: 'center' });
-  
+
   // Generate timestamp
   doc.setFontSize(10);
   doc.setTextColor(100, 100, 100);
@@ -346,29 +345,29 @@ export const exportComprehensivePDF = (exportData: ExportData, t: TFunction, isR
     ? `تاريخ التوليد: ${new Date().toLocaleDateString('ar-AE')}`
     : `Generated on: ${new Date().toLocaleDateString()}`;
   doc.text(timestamp, centerX, 250, { align: 'center' });
-  
+
   // Add each statement on separate pages
   doc.addPage();
   const incomeDoc = exportIncomeStatementToPDF(exportData, t, isRTL);
-  
+
   doc.addPage();
   const balanceDoc = exportBalanceSheetToPDF(exportData, t, isRTL);
-  
+
   doc.addPage();
   const cashFlowDoc = exportCashFlowToPDF(exportData, t, isRTL);
-  
+
   // Add notes section with enhanced formatting
   if (exportData.notes.length > 0) {
     doc.addPage();
     const notesTitle = isRTL ? 'ملاحظات على البيانات المالية' : 'Notes to Financial Statements';
     let yPos = addFTAHeader(doc, exportData.companyInfo, notesTitle, isRTL);
-    
+
     exportData.notes.forEach((note, index) => {
       if (yPos > 240) {
         doc.addPage();
         yPos = 30;
       }
-      
+
       // Note number and title
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
@@ -379,7 +378,7 @@ export const exportComprehensivePDF = (exportData: ExportData, t: TFunction, isR
         doc.text(noteHeader, margin, yPos);
       }
       yPos += 10;
-      
+
       // Note content
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
@@ -391,7 +390,7 @@ export const exportComprehensivePDF = (exportData: ExportData, t: TFunction, isR
         doc.text(splitContent, margin, yPos);
       }
       yPos += splitContent.length * 5 + 10;
-      
+
       // Tags
       if (note.tags.length > 0) {
         doc.setFontSize(8);
@@ -405,7 +404,7 @@ export const exportComprehensivePDF = (exportData: ExportData, t: TFunction, isR
         doc.setTextColor(0, 0, 0);
         yPos += 15;
       }
-      
+
       // Separator line
       if (index < exportData.notes.length - 1) {
         doc.setDrawColor(200, 200, 200);
@@ -414,7 +413,7 @@ export const exportComprehensivePDF = (exportData: ExportData, t: TFunction, isR
       }
     });
   }
-  
+
   // Footer on all pages
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
@@ -426,13 +425,13 @@ export const exportComprehensivePDF = (exportData: ExportData, t: TFunction, isR
       : `Page ${i} of ${pageCount} | Generated by Peergos`;
     doc.text(footerText, centerX, 285, { align: 'center' });
   }
-  
+
   return doc;
 };
 
-export const exportToExcel = (exportData: ExportData, t: TFunction, isRTL: boolean = false): void => {
+export const exportToExcelFinal = (exportData: ExportData, t: TFunction, isRTL: boolean = false): void => {
   const workbook = XLSX.utils.book_new();
-  
+
   // Income Statement sheet
   const incomeData = [
     ['Income Statement'],
@@ -443,7 +442,7 @@ export const exportToExcel = (exportData: ExportData, t: TFunction, isRTL: boole
     ['REVENUE'],
     ['Description', 'Amount (AED)']
   ];
-  
+
   const revenues = exportData.data.filter(item => item.type === 'revenue');
   revenues.forEach(item => {
     incomeData.push([item.description, item.amount]);
@@ -452,7 +451,7 @@ export const exportToExcel = (exportData: ExportData, t: TFunction, isRTL: boole
   incomeData.push(['']);
   incomeData.push(['EXPENSES']);
   incomeData.push(['Description', 'Amount (AED)']);
-  
+
   const expenses = exportData.data.filter(item => item.type === 'expense');
   expenses.forEach(item => {
     incomeData.push([item.description, item.amount]);
@@ -460,10 +459,10 @@ export const exportToExcel = (exportData: ExportData, t: TFunction, isRTL: boole
   incomeData.push(['Total Expenses', exportData.summary.totalExpenses]);
   incomeData.push(['']);
   incomeData.push(['Net Income', exportData.summary.netIncome]);
-  
+
   const incomeSheet = XLSX.utils.aoa_to_sheet(incomeData);
   XLSX.utils.book_append_sheet(workbook, incomeSheet, 'Income Statement');
-  
+
   // Balance Sheet sheet
   const balanceData = [
     ['Balance Sheet'],
@@ -474,7 +473,7 @@ export const exportToExcel = (exportData: ExportData, t: TFunction, isRTL: boole
     ['ASSETS'],
     ['Description', 'Amount (AED)']
   ];
-  
+
   const assets = exportData.data.filter(item => item.type === 'asset');
   assets.forEach(item => {
     balanceData.push([item.description, item.amount]);
@@ -483,7 +482,7 @@ export const exportToExcel = (exportData: ExportData, t: TFunction, isRTL: boole
   balanceData.push(['']);
   balanceData.push(['LIABILITIES']);
   balanceData.push(['Description', 'Amount (AED)']);
-  
+
   const liabilities = exportData.data.filter(item => item.type === 'liability');
   liabilities.forEach(item => {
     balanceData.push([item.description, item.amount]);
@@ -492,17 +491,17 @@ export const exportToExcel = (exportData: ExportData, t: TFunction, isRTL: boole
   balanceData.push(['']);
   balanceData.push(['EQUITY']);
   balanceData.push(['Description', 'Amount (AED)']);
-  
+
   const equity = exportData.data.filter(item => item.type === 'equity');
   equity.forEach(item => {
     balanceData.push([item.description, item.amount]);
   });
   balanceData.push(['Retained Earnings', exportData.summary.netIncome]);
   balanceData.push(['Total Equity', exportData.summary.totalEquity]);
-  
+
   const balanceSheet = XLSX.utils.aoa_to_sheet(balanceData);
   XLSX.utils.book_append_sheet(workbook, balanceSheet, 'Balance Sheet');
-  
+
   // Notes sheet with enhanced formatting
   if (exportData.notes.length > 0) {
     const notesTitle = isRTL ? 'ملاحظات على البيانات المالية' : 'Notes to Financial Statements';
@@ -512,7 +511,7 @@ export const exportToExcel = (exportData: ExportData, t: TFunction, isRTL: boole
     const contentHeader = isRTL ? 'المحتوى' : 'Content';
     const tagsHeader = isRTL ? 'العلامات' : 'Tags';
     const modifiedHeader = isRTL ? 'تاريخ التعديل' : 'Last Modified';
-    
+
     const notesData = [
       [notesTitle],
       [companyLabel, exportData.companyInfo.name],
@@ -521,7 +520,7 @@ export const exportToExcel = (exportData: ExportData, t: TFunction, isRTL: boole
       [''],
       [noteNumHeader, titleHeader, contentHeader, tagsHeader, modifiedHeader]
     ];
-    
+
     exportData.notes.forEach((note, index) => {
       notesData.push([
         index + 1,
@@ -531,9 +530,9 @@ export const exportToExcel = (exportData: ExportData, t: TFunction, isRTL: boole
         new Date(note.lastModified).toLocaleDateString(isRTL ? 'ar-AE' : 'en-AE')
       ]);
     });
-    
+
     const notesSheet = XLSX.utils.aoa_to_sheet(notesData);
-    
+
     // Set column widths
     notesSheet['!cols'] = [
       { width: 10 },
@@ -542,21 +541,61 @@ export const exportToExcel = (exportData: ExportData, t: TFunction, isRTL: boole
       { width: 20 },
       { width: 15 }
     ];
-    
+
     // Set RTL direction if needed
     if (isRTL) {
       notesSheet['!dir'] = 'rtl';
     }
-    
+
     XLSX.utils.book_append_sheet(workbook, notesSheet, isRTL ? 'الملاحظات' : 'Notes');
   }
-  
+
   // Download the file with appropriate filename
   const dateStr = new Date().toISOString().split('T')[0];
   const companyName = exportData.companyInfo.name.replace(/\s+/g, '_');
   const filename = isRTL 
     ? `البيانات_المالية_${companyName}_${dateStr}.xlsx`
     : `Financial_Statements_${companyName}_${dateStr}.xlsx`;
-  
+
   XLSX.writeFile(workbook, filename);
+};
+export const exportToPDF = (data: any) => {
+  exportComprehensivePDF(data);
+};
+
+export const exportToExcel = (data: any) => {
+  try {
+    // Create CSV content
+    let csvContent = "Type,Date,Category,Description,Amount\n";
+
+    // Add revenue data
+    if (data.revenues) {
+      data.revenues.forEach((item: any) => {
+        csvContent += `Revenue,${item.date},${item.category || 'General'},"${item.description}",${item.amount}\n`;
+      });
+    }
+
+    // Add expense data
+    if (data.expenses) {
+      data.expenses.forEach((item: any) => {
+        csvContent += `Expense,${item.date},${item.category},"${item.description}",${item.amount}\n`;
+      });
+    }
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `financial-data-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  } catch (error) {
+    console.error('Error generating Excel export:', error);
+    throw error;
+  }
 };
