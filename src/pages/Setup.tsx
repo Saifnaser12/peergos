@@ -22,6 +22,11 @@ interface SetupData {
   fiscalYearEnd: string;
   businessType: string;
   address: string;
+  isFreeZone: boolean;
+  freeZoneName: string;
+  freeZoneAddress: string;
+  freeZoneEmployees: number;
+  freeZoneOperatingExpenses: number;
 }
 
 const Setup: React.FC = () => {
@@ -35,7 +40,12 @@ const Setup: React.FC = () => {
     fiscalYearStart: '',
     fiscalYearEnd: '',
     businessType: '',
-    address: ''
+    address: '',
+    isFreeZone: false,
+    freeZoneName: '',
+    freeZoneAddress: '',
+    freeZoneEmployees: 0,
+    freeZoneOperatingExpenses: 0
   });
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -56,13 +66,30 @@ const Setup: React.FC = () => {
     // Mark final step as completed
     setCompletedSteps(prev => [...prev, currentStep]);
     
+    // Calculate QFZP qualification for Free Zone companies
+    let qfzpStatus = null;
+    if (formData.isFreeZone) {
+      // QFZP qualification criteria: <50 employees AND <500k AED annual expenses
+      const isQualified = formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000;
+      qfzpStatus = isQualified ? 'qualified' : 'unqualified';
+    }
+    
+    const setupData = {
+      ...formData,
+      qfzpStatus,
+      setupCompletedAt: new Date().toISOString()
+    };
+    
     // Show confetti celebration
     setShowConfetti(true);
-    setAiMessage("🎉 Congratulations! Your Peergos tax system is now fully configured and ready for UAE compliance. Welcome to automated tax management!");
+    const message = formData.isFreeZone 
+      ? `🎉 Congratulations! Your Free Zone company setup is complete. QFZP Status: ${qfzpStatus?.toUpperCase()}. Welcome to automated tax management!`
+      : "🎉 Congratulations! Your Peergos tax system is now fully configured and ready for UAE compliance. Welcome to automated tax management!";
+    setAiMessage(message);
     
     // Save to localStorage or context
     localStorage.setItem('peergos_setup_complete', 'true');
-    localStorage.setItem('peergos_organization_data', JSON.stringify(formData));
+    localStorage.setItem('peergos_organization_data', JSON.stringify(setupData));
 
     // Navigate to dashboard after celebration
     setTimeout(() => {
@@ -77,7 +104,11 @@ const Setup: React.FC = () => {
       case 2:
         return formData.fiscalYearStart && formData.fiscalYearEnd;
       case 3:
-        return formData.businessType && formData.address;
+        const basicDetailsValid = formData.businessType && formData.address;
+        if (formData.isFreeZone) {
+          return basicDetailsValid && formData.freeZoneName && formData.freeZoneAddress;
+        }
+        return basicDetailsValid;
       case 4:
         return true; // Tax agent selection is optional
       case 5:
@@ -92,7 +123,7 @@ const Setup: React.FC = () => {
     const guidance = {
       1: "Welcome to Peergos — your UAE tax assistant! 🇦🇪 Let's start by setting up your company details. I'll need your organization name and TRN (Tax Registration Number) to ensure FTA compliance.",
       2: "Great! Now let's configure your fiscal year. This determines your CIT filing deadlines. Most UAE companies use calendar year (Jan-Dec), but you can customize based on your business needs.",
-      3: "Perfect! Next, I need your business type and address. This helps me provide accurate tax guidance based on UAE regulations and your specific business structure.",
+      3: "Perfect! Next, I need your business type and address. If you operate in a Free Zone, I'll also determine your QFZP (Qualifying Free Zone Person) status for special tax treatments.",
       4: "You're doing great! 🎯 Tax agent selection is optional but recommended for complex filings. FTA-approved agents can help ensure compliance and represent you during audits.",
       5: "Almost there! System integrations help automate your bookkeeping. Connect your POS or accounting software to sync transactions automatically. Don't worry - this is optional and can be set up later."
     };
@@ -103,7 +134,7 @@ const Setup: React.FC = () => {
     const tips = {
       1: "💡 Tip: Your TRN should be 15 digits starting with '1'. Example: 100000000000003",
       2: "💡 Tip: CIT filing deadline is 9 months after your fiscal year end",
-      3: "💡 Tip: Free Zone companies may have different tax treatments",
+      3: "💡 Tip: QFZP qualification requires <50 employees and <500k AED annual operating expenses",
       4: "💡 Tip: Tax agents charge 0.1-0.5% of revenue for compliance services",
       5: "💡 Tip: Automated integrations reduce manual data entry by 80%"
     };
@@ -348,6 +379,124 @@ const Setup: React.FC = () => {
                   className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   placeholder="Enter your business address"
                 />
+              </div>
+
+              {/* Free Zone Section */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="flex items-center space-x-3 mb-4">
+                  <input
+                    type="checkbox"
+                    id="freeZoneCheckbox"
+                    checked={formData.isFreeZone}
+                    onChange={(e) => handleInputChange('isFreeZone', e.target.checked)}
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="freeZoneCheckbox" className="text-sm font-medium text-gray-900 dark:text-white">
+                    {t('setup.step3.freeZone', 'I operate in a UAE Free Zone')}
+                  </label>
+                </div>
+
+                {formData.isFreeZone && (
+                  <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {t('setup.step3.freeZoneName', 'Free Zone Name')}
+                        </label>
+                        <select
+                          value={formData.freeZoneName}
+                          onChange={(e) => handleInputChange('freeZoneName', e.target.value)}
+                          className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        >
+                          <option value="">Select Free Zone</option>
+                          <option value="DIFC">Dubai International Financial Centre (DIFC)</option>
+                          <option value="DMCC">Dubai Multi Commodities Centre (DMCC)</option>
+                          <option value="JAFZA">Jebel Ali Free Zone (JAFZA)</option>
+                          <option value="ADGM">Abu Dhabi Global Market (ADGM)</option>
+                          <option value="RAK">Ras Al Khaimah Economic Zone (RAKEZ)</option>
+                          <option value="SAIF">Sharjah Airport International Free Zone (SAIF)</option>
+                          <option value="AFZA">Ajman Free Zone (AFZA)</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {t('setup.step3.employees', 'Number of Employees')}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={formData.freeZoneEmployees}
+                          onChange={(e) => handleInputChange('freeZoneEmployees', parseInt(e.target.value) || 0)}
+                          className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {t('setup.step3.freeZoneAddress', 'Free Zone Registered Address')}
+                      </label>
+                      <textarea
+                        value={formData.freeZoneAddress}
+                        onChange={(e) => handleInputChange('freeZoneAddress', e.target.value)}
+                        rows={2}
+                        className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="Enter your Free Zone registered address"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {t('setup.step3.operatingExpenses', 'Annual Operating Expenses in Free Zone (AED)')}
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={formData.freeZoneOperatingExpenses}
+                        onChange={(e) => handleInputChange('freeZoneOperatingExpenses', parseFloat(e.target.value) || 0)}
+                        className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="0"
+                      />
+                    </div>
+
+                    {/* QFZP Status Preview */}
+                    {formData.freeZoneEmployees > 0 || formData.freeZoneOperatingExpenses > 0 ? (
+                      <div className={`p-3 rounded-lg border ${
+                        formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000
+                          ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                          : 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
+                      }`}>
+                        <div className="flex items-center space-x-2">
+                          <div className={`w-3 h-3 rounded-full ${
+                            formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000
+                              ? 'bg-green-500'
+                              : 'bg-orange-500'
+                          }`}></div>
+                          <span className={`text-sm font-medium ${
+                            formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000
+                              ? 'text-green-800 dark:text-green-200'
+                              : 'text-orange-800 dark:text-orange-200'
+                          }`}>
+                            QFZP Status: {formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000 ? 'Qualified' : 'Unqualified'}
+                          </span>
+                        </div>
+                        <p className={`text-xs mt-1 ${
+                          formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000
+                            ? 'text-green-700 dark:text-green-300'
+                            : 'text-orange-700 dark:text-orange-300'
+                        }`}>
+                          {formData.freeZoneEmployees < 50 && formData.freeZoneOperatingExpenses < 500000 
+                            ? 'Your company qualifies for QFZP benefits and special tax treatments.'
+                            : 'Your company does not qualify for QFZP status. Standard Free Zone tax rules apply.'
+                          }
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
               </div>
             </div>
           )}

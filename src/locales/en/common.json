@@ -180,7 +180,12 @@
     "step3": {
       "title": "Business Details",
       "businessType": "Business Type",
-      "address": "Business Address"
+      "address": "Business Address",
+      "freeZone": "I operate in a UAE Free Zone",
+      "freeZoneName": "Free Zone Name",
+      "freeZoneAddress": "Free Zone Registered Address",
+      "employees": "Number of Employees",
+      "operatingExpenses": "Annual Operating Expenses in Free Zone (AED)"
     },
     "step4": {
       "title": "Tax Agent Selection (Optional)",
