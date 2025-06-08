@@ -1,6 +1,7 @@
 
 import { Invoice, FTAEInvoice } from '../types/invoice';
 import { InvoiceXMLGenerator } from '../utils/invoice/xml-generator';
+import { processInvoiceForPhase2, Phase2InvoiceData, validatePhase2Compliance } from '../utils/phase2Compliance';
 import CryptoJS from 'crypto-js';
 import jsPDF from 'jspdf';
 
@@ -307,6 +308,60 @@ export class InvoiceService {
     } catch (error) {
       console.error('Error generating dual output:', error);
       throw new Error('Failed to generate invoice outputs');
+    }
+  }
+
+  // Generate Phase 2 compliant invoice with hash, signature, and QR code
+  public async generatePhase2Invoice(invoice: Invoice): Promise<Phase2InvoiceData> {
+    try {
+      // Generate XML
+      const xmlString = await this.generateInvoice(invoice);
+      
+      // Process for Phase 2 compliance
+      const phase2Data = await processInvoiceForPhase2(xmlString, {
+        sellerTRN: invoice.seller.taxRegistrationNumber,
+        buyerTRN: invoice.buyer?.taxRegistrationNumber || '',
+        invoiceDate: invoice.issueDate,
+        totalAmount: invoice.amount
+      });
+      
+      // Validate compliance
+      const validation = validatePhase2Compliance(phase2Data);
+      if (!validation.isCompliant) {
+        throw new Error(`Phase 2 compliance validation failed: ${validation.errors.join(', ')}`);
+      }
+      
+      return phase2Data;
+    } catch (error) {
+      console.error('Error generating Phase 2 invoice:', error);
+      throw new Error('Failed to generate Phase 2 compliant invoice');
+    }
+  }
+
+  // Generate comprehensive output: PDF + FTA JSON + Phase 2 compliance
+  public async generateCompleteOutput(invoice: Invoice, language: 'en' | 'ar' = 'en'): Promise<{
+    pdf: Blob;
+    ftaJson: FTAEInvoice;
+    phase2Data: Phase2InvoiceData;
+  }> {
+    try {
+      // Generate human-readable PDF
+      const pdf = this.generatePDF(invoice, language === 'ar');
+      
+      // Generate FTA-compliant JSON
+      const ftaJson = this.convertToFTAFormat(invoice);
+      
+      // Generate Phase 2 compliant data
+      const phase2Data = await this.generatePhase2Invoice(invoice);
+      
+      return {
+        pdf,
+        ftaJson,
+        phase2Data
+      };
+    } catch (error) {
+      console.error('Error generating complete output:', error);
+      throw new Error('Failed to generate complete invoice output');
     }
   }
 

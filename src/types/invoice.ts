@@ -107,6 +107,18 @@ export interface Invoice {
   rejectionReason?: string;
 }
 
+// Phase 2 Invoice Data with compliance fields
+export interface Phase2InvoiceData {
+  xml: string;
+  hash: string;
+  signature: string;
+  qrCode: string;
+  sellerTRN: string;
+  buyerTRN: string;
+  invoiceDate: string;
+  totalAmount: number;
+}
+
 // UAE FTA E-Invoice JSON structure for API submission
 export interface FTAEInvoice {
   supplierTRN: string;
