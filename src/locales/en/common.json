@@ -300,3 +300,18 @@
     "serverError": "Server error. Please try again later."
   }
 }
+{
+  "loading": "Loading...",
+  "save": "Save",
+  "cancel": "Cancel",
+  "edit": "Edit",
+  "delete": "Delete",
+  "submit": "Submit",
+  "export": "Export",
+  "download": "Download",
+  "search": "Search",
+  "filter": "Filter",
+  "noData": "No data available",
+  "error": "Error",
+  "success": "Success"
+}

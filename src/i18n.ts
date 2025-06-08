@@ -30,11 +30,14 @@ const resources = {
   }
 };
 
+// Get saved language or default to English
+const savedLanguage = localStorage.getItem('language') || 'en';
+
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'en',
+    lng: savedLanguage,
     fallbackLng: 'en',
     debug: false,
     
@@ -75,6 +78,17 @@ i18n
     keySeparator: '.',
     nsSeparator: false,
   });
+
+// Set initial document direction
+document.documentElement.dir = savedLanguage === 'ar' ? 'rtl' : 'ltr';
+document.documentElement.lang = savedLanguage;
+
+// Listen for language changes to update document direction
+i18n.on('languageChanged', (lng: string) => {
+  document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
+  document.documentElement.lang = lng;
+  localStorage.setItem('language', lng);
+});
 
 export default i18n;
 export { useTranslation } from 'react-i18next';

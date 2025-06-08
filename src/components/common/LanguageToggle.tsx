@@ -9,8 +9,7 @@ export const LanguageToggle: React.FC = () => {
   const toggleLanguage = () => {
     const newLang = i18n.language === 'ar' ? 'en' : 'ar';
     i18n.changeLanguage(newLang);
-    document.dir = newLang === 'ar' ? 'rtl' : 'ltr';
-    localStorage.setItem('language', newLang);
+    // Document direction will be handled by i18n language change listener
   };
 
   return (
