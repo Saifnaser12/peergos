@@ -7,6 +7,8 @@ import { useFinancialSync } from '../hooks/useFinancialSync';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import TRNLookup from '../components/TRNLookup';
 import POSIntegrationStatus from '../components/POSIntegrationStatus';
+import FTAComplianceCenter from '../components/FTAComplianceCenter';
+import RealTimeTaxCalculator from '../components/RealTimeTaxCalculator';
 import {
   DocumentTextIcon,
   ReceiptPercentIcon,
@@ -234,6 +236,16 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* FTA Compliance Center */}
+        <div className="mb-8">
+          <FTAComplianceCenter trn="100123456700003" revenue={totalRevenue} />
+        </div>
+
+        {/* Real-Time Tax Calculator */}
+        <div className="mb-8">
+          <RealTimeTaxCalculator />
         </div>
 
         {/* Main Content Grid */}

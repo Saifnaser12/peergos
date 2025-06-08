@@ -12,6 +12,11 @@ import {
   Clock as ClockIcon
 } from 'lucide-react';
 import { Assignment as AssignmentIcon } from '@mui/icons-material';
+import TaxAgentSelector from '../components/TaxAgentSelector';
+import POSIntegrationToggle from '../components/POSIntegrationToggle';
+import QAChecklist from '../components/QAChecklist';
+import AuditTrailLogger from '../components/AuditTrailLogger';
+import SystemHealthMonitor from '../components/SystemHealthMonitor';
 
 const Admin: React.FC = () => {
   const navigate = useNavigate();

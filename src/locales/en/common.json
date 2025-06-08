@@ -204,6 +204,90 @@
       "completion": "🎉 Congratulations! Your Peergos tax system is now fully configured and ready for UAE compliance!"
     }
   },
+  "compliance": {
+    "center": {
+      "title": "FTA Compliance Center",
+      "subtitle": "UAE Federal Tax Authority compliance monitoring",
+      "overallStatus": "Overall Status",
+      "compliant": "Compliant",
+      "warning": "Warning",
+      "nonCompliant": "Non-Compliant",
+      "downloadReport": "Download Compliance Report",
+      "scheduleReview": "Schedule Compliance Review",
+      "viewCalendar": "View Tax Calendar"
+    },
+    "items": {
+      "vatRegistration": "VAT Registration Status",
+      "vatFiling": "VAT Return Filing",
+      "citRegistration": "Corporate Income Tax Registration",
+      "citFiling": "CIT Return Filing",
+      "esrCompliance": "Economic Substance Regulations",
+      "transferPricing": "Transfer Pricing Documentation",
+      "dstCompliance": "Digital Services Tax",
+      "exciseTax": "Excise Tax Compliance",
+      "recordKeeping": "Books and Records",
+      "amlCompliance": "AML/CTF Compliance"
+    }
+  },
+  "taxCalculator": {
+    "title": "Real-Time Tax Calculator",
+    "subtitle": "Live tax calculations based on your financial data",
+    "recalculate": "Recalculate",
+    "calculating": "Calculating tax liabilities...",
+    "vatDue": "VAT Due",
+    "citDue": "CIT Due",
+    "exciseTax": "Excise Tax",
+    "totalLiability": "Total Liability",
+    "effectiveRate": "Effective Tax Rate",
+    "nextFiling": "Next Filing Due",
+    "recommendations": "Tax Optimization Recommendations",
+    "disclaimer": "These calculations are estimates based on current UAE tax rates and available data. Actual tax liabilities may vary. Consult with a qualified tax advisor for precise calculations and compliance guidance."
+  },
+  "audit": {
+    "title": "Audit Trail",
+    "subtitle": "Complete activity log for compliance monitoring",
+    "recentActivity": "Recent Audit Activity",
+    "viewAll": "View All Audit Logs",
+    "filters": "Filters",
+    "export": "Export",
+    "action": "Action",
+    "entity": "Entity",
+    "severity": "Severity",
+    "changes": "Changes",
+    "noLogs": "No audit logs match the current filters"
+  },
+  "health": {
+    "title": "System Health Monitor",
+    "subtitle": "Real-time monitoring of critical system components",
+    "overallStatus": "Overall Status",
+    "refresh": "Refresh",
+    "checking": "Checking...",
+    "ftaConnection": "FTA API Connection",
+    "database": "Database Performance",
+    "encryption": "Data Encryption",
+    "backup": "Data Backup Status",
+    "ssl": "SSL Certificate",
+    "compliance": "Compliance Checks",
+    "storage": "Storage Usage",
+    "apiRate": "API Rate Limits",
+    "cloudInfra": "Cloud Infrastructure",
+    "security": "Security Status",
+    "performance": "Performance Metrics",
+    "recommendations": "System Recommendations",
+    "viewDetailed": "View Detailed Health Report"
+  },
+  "validation": {
+    "title": "FTA Validation Center",
+    "subtitle": "Comprehensive validation for tax documents and returns",
+    "validateTRN": "Validate TRN",
+    "validateInvoice": "Validate Tax Invoice",
+    "validateVAT": "Validate VAT Return",
+    "validateCIT": "Validate CIT Return",
+    "validationScore": "Validation Score",
+    "errors": "Errors",
+    "warnings": "Warnings",
+    "businessRules": "Business Rules Check"
+  },
   "calendar": {
     "title": "Tax Calendar & Deadlines",
     "subtitle": "Track your tax filing deadlines and compliance dates",
