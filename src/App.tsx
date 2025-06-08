@@ -32,6 +32,7 @@ import TransferPricing from './pages/TransferPricing';
 import Calendar from './pages/Calendar';
 import Assistant from './pages/Assistant';
 import SimpleInvoice from './pages/SimpleInvoice';
+import Filing from './pages/Filing';
 
 // Internal component to handle theme with i18n
 function AppContent() {
