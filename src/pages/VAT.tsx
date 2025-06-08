@@ -54,6 +54,8 @@ interface VATFormData {
   companyName: string;
   trn: string;
   taxPeriod: string;
+  isDesignatedZone: boolean;
+  designatedZoneImports: number;
 }
 
 interface VATCalculations {
@@ -85,6 +87,8 @@ const VAT: React.FC = () => {
     companyName: '',
     trn: '',
     taxPeriod: `${new Date().getFullYear()}-Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
+    isDesignatedZone: false,
+    designatedZoneImports: 0,
   });
 
   // Auto-update financial data when accounting entries change
@@ -118,7 +122,14 @@ const VAT: React.FC = () => {
 
   const calculateVAT = useCallback((): VATCalculations => {
     const outputVAT = formData.standardRatedSales * 0.05;
-    const inputVAT = formData.purchasesWithVAT * 0.05;
+    let inputVAT = formData.purchasesWithVAT * 0.05;
+    
+    // Add reverse charge VAT for designated zone imports
+    if (formData.isDesignatedZone) {
+      const reverseChargeVAT = formData.designatedZoneImports * 0.05;
+      inputVAT += reverseChargeVAT;
+    }
+    
     const netVAT = outputVAT - inputVAT;
 
     return {
@@ -379,6 +390,32 @@ const VAT: React.FC = () => {
 
             <Divider sx={{ my: 4 }} />
 
+            {/* Designated Zone Section */}
+            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+              {t('Designated Zone Information')}
+            </Typography>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={formData.isDesignatedZone}
+                      onChange={(e) => setFormData(prev => ({ 
+                        ...prev, 
+                        isDesignatedZone: e.target.checked,
+                        designatedZoneImports: e.target.checked ? prev.designatedZoneImports : 0
+                      }))}
+                      color="primary"
+                    />
+                  }
+                  label={t('Operating in Designated Zone (applies reverse charge on mainland imports)')}
+                  sx={{ mb: 2 }}
+                />
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 4 }} />
+
             {/* Sales Section */}
             <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
               {t('Sales')}
@@ -479,6 +516,27 @@ const VAT: React.FC = () => {
                   {...inputFieldProps}
                 />
               </Grid>
+              {formData.isDesignatedZone && (
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    label={t('Designated Zone Mainland Imports')}
+                    placeholder={t('Imports from mainland UAE subject to reverse charge')}
+                    value={formData.designatedZoneImports || ''}
+                    onChange={handleInputChange('designatedZoneImports')}
+                    error={!!errors.designatedZoneImports}
+                    helperText={errors.designatedZoneImports || t('Reverse charge applies on supplies from mainland UAE')}
+                    {...inputFieldProps}
+                    sx={{
+                      ...inputFieldProps.sx,
+                      '& .MuiOutlinedInput-root': {
+                        ...inputFieldProps.sx['& .MuiOutlinedInput-root'],
+                        backgroundColor: alpha(theme.palette.info.main, 0.05),
+                        borderColor: theme.palette.info.main,
+                      },
+                    }}
+                  />
+                </Grid>
+              )}
             </Grid>
 
             <Divider sx={{ my: 4 }} />
@@ -603,6 +661,16 @@ const VAT: React.FC = () => {
                     {formatCurrency(calculations.inputVAT)}
                   </Typography>
                 </Box>
+                {formData.isDesignatedZone && formData.designatedZoneImports > 0 && (
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2" sx={{ fontSize: '0.8rem', color: 'info.main' }}>
+                      {t('• Reverse Charge VAT (Designated Zone)')}
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'info.main' }}>
+                      {formatCurrency(formData.designatedZoneImports * 0.05)}
+                    </Typography>
+                  </Box>
+                )}
                 <Divider sx={{ my: 2 }} />
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>

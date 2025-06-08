@@ -577,5 +577,30 @@
       "amountExceeded": "Amount: {{amount}} (limit: AED 5M)",
       "warningAdvice": "This may affect your QFZP status and tax benefits. Consider restructuring transactions or consult a tax advisor."
     }
-  }
+  },
+  "vat": {
+      "export": {
+        "generateFTAPDF": "Generate FTA PDF",
+        "ftaPdfSuccess": "FTA-style VAT PDF generated successfully",
+        "ftaPdfError": "Error generating FTA PDF"
+      },
+      "fta": {
+        "submitSuccess": "VAT return submitted successfully",
+        "submitError": "Error submitting VAT return",
+        "submitting": "Submitting..."
+      },
+      "submitReturn": "Submit VAT Return",
+      "preview": {
+        "mode": "Draft Filing Mode",
+        "subtitle": "Preview mode - Data sourced from assistant",
+        "warning": "This is a draft filing simulation. No actual submission will be made to FTA. Review the data and make adjustments as needed."
+      },
+      "designatedZone": {
+        "operating": "Operating in Designated Zone (applies reverse charge on mainland imports)",
+        "mainlandImports": "Designated Zone Mainland Imports",
+        "mainlandImportsPlaceholder": "Imports from mainland UAE subject to reverse charge",
+        "reverseChargeNote": "Reverse charge applies on supplies from mainland UAE",
+        "reverseChargeVAT": "• Reverse Charge VAT (Designated Zone)"
+      }
+    }
 }
