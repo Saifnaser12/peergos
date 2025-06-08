@@ -61,8 +61,7 @@ import {
   exportIncomeStatementToPDF, 
   exportBalanceSheetToPDF, 
   exportCashFlowToPDF,
-  exportComprehensivePDF,
-  exportToExcel 
+  exportComprehensivePDF
 } from '../utils/ftaReportsExport';
 import {
   LineChart,
