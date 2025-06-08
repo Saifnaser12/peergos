@@ -1,208 +1,100 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import AppLayout from './components/AppLayout';
-import { createTheme } from './theme';
-import { ThemeProvider as CustomThemeProvider } from './context/ThemeContext';
-import { TaxProvider } from './context/TaxContext';
-import { UserRoleProvider } from './context/UserRoleContext';
-import { SettingsProvider } from './context/SettingsContext';
-import { I18nextProvider } from 'react-i18next';
-import i18n from './i18n';
-import { NotificationProvider } from './context/NotificationContext';
-import { TaxAgentProvider } from './context/TaxAgentContext';
-import { POSIntegrationProvider } from './context/POSIntegrationContext';
-import { FinanceProvider } from './context/FinanceContext';
 
-// Import your existing pages
+// Components
+import Layout from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
+import Spinner from './components/Spinner';
+
+// Pages
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
+import Filing from './pages/Filing';
+import VAT from './pages/VAT';
+import CIT from './pages/CIT';
+import TransferPricing from './pages/TransferPricing';
+import Accounting from './pages/Accounting';
+import Financials from './pages/Financials';
+import Calendar from './pages/Calendar';
+import Assistant from './pages/Assistant';
 import Setup from './pages/Setup';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Unauthorized from './pages/Unauthorized';
-import ProtectedRoute from './components/ProtectedRoute';
-import Dashboard from './pages/Dashboard';
-import VAT from './pages/VAT';
-import Accounting from './pages/Accounting';
-import CIT from './pages/CIT';
-import Financials from './pages/Financials';
-import TransferPricingPage from './pages/TransferPricingPage';
-import TransferPricing from './pages/TransferPricing';
-import Calendar from './pages/Calendar';
-import Assistant from './pages/Assistant';
-import SimpleInvoice from './pages/SimpleInvoice';
-import Filing from './pages/Filing';
-import QAChecklist from './components/QAChecklist';
+import Admin from './pages/Admin';
 import QATest from './pages/QATest';
 
-// React Router with future flags to eliminate warnings
-const AppRouter = ({ children }: { children: React.ReactNode }) => (
-  <Router
-    future={{
-      v7_startTransition: true,
-      v7_relativeSplatPath: true,
-    }}
-  >
-    {children}
-  </Router>
-);
+// Context
+import { ThemeProvider as CustomThemeProvider } from './context/ThemeContext';
+import { UserRoleProvider } from './context/UserRoleContext';
+import { TaxProvider } from './context/TaxContext';
+import { NotificationProvider } from './context/NotificationContext';
+import { SettingsProvider } from './context/SettingsContext';
 
-// Internal component to handle theme with i18n
-function AppContent() {
-  const direction = i18n.language === 'ar' ? 'rtl' : 'ltr';
-  const theme = createTheme(direction);
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
 
-  const [isSetupComplete, setIsSetupComplete] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    try {
-      // Check if setup is complete
-      const setupComplete = localStorage.getItem('peergos_setup_complete') === 'true';
-      setIsSetupComplete(setupComplete);
-    } catch (error) {
-      console.error('Error checking setup status:', error);
-      setIsSetupComplete(false);
-    }
-  }, []);
-
-  // Show loading while checking setup status
-  if (isSetupComplete === null) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    );
-  }
+const App: React.FC = () => {
+  const { i18n } = useTranslation();
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <ErrorBoundary>
-        <AppRouter>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-
-            {/* Setup route - accessible without layout */}
-            <Route path="/setup" element={<Setup />} />
-
-            {/* Protected routes with layout */}
-            <Route path="/" element={
-              isSetupComplete ? (
-                <AppLayout />
-              ) : (
-                <Navigate to="/setup" replace />
-              )
-            }>
-              {/* Nested routes that will render in the Outlet */}
-              <Route index element={<Navigate to="/dashboard" replace />} />
-
-              <Route path="dashboard" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "sme_client"]}>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
-
-              <Route path="vat" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
-                  <VAT />
-                </ProtectedRoute>
-              } />
-
-              <Route path="accounting" element={
-                <ProtectedRoute rolesAllowed={["admin", "sme_client"]}>
-                  <Accounting />
-                </ProtectedRoute>
-              } />
-
-              <Route path="cit" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
-                  <CIT />
-                </ProtectedRoute>
-              } />
-
-              <Route path="financials" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
-                  <Financials />
-                </ProtectedRoute>
-              } />
-
-              <Route path="transfer-pricing" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
-                  <TransferPricing />
-                </ProtectedRoute>
-              } />
-              <Route path="/qa-checklist" element={
-                <ProtectedRoute rolesAllowed={['admin']}>
-                  <QAChecklist />
-                </ProtectedRoute>
-              } />
-
-              <Route path="filing" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
-                  <Filing />
-                </ProtectedRoute>
-              } />
-
-              <Route path="assistant" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "sme_client"]}>
-                  <Assistant />
-                </ProtectedRoute>
-              } />
-
-              <Route path="calendar" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "sme_client"]}>
-                  <Calendar />
-                </ProtectedRoute>
-              } />
-
-              <Route path="simple-invoice" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
-                  <SimpleInvoice />
-                </ProtectedRoute>
-              } />
-
-              <Route path="unauthorized" element={<Unauthorized />} />
-
-              {/* Hidden QA Test Route */}
-              <Route path="qa-check" element={
-                <ProtectedRoute rolesAllowed={["admin"]}>
-                  <QATest />
-                </ProtectedRoute>
-              } />
-            </Route>
-          </Routes>
-        </AppRouter>
-      </ErrorBoundary>
-    </ThemeProvider>
-  );
-}
-
-
-function App() {
-  return (
-    <I18nextProvider i18n={i18n}>
-      <SettingsProvider>
-        <FinanceProvider>
-          <CustomThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <CustomThemeProvider>
+          <UserRoleProvider>
             <TaxProvider>
-              <UserRoleProvider>
-                <NotificationProvider>
-                  <TaxAgentProvider>
-                    <POSIntegrationProvider>
-                      <AppContent />
-                    </POSIntegrationProvider>
-                  </TaxAgentProvider>
-                </NotificationProvider>
-              </UserRoleProvider>
+              <NotificationProvider>
+                <SettingsProvider>
+                  <Router
+                    future={{
+                      v7_startTransition: true,
+                      v7_relativeSplatPath: true,
+                    }}
+                  >
+                    <div className="App" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                      <Suspense fallback={<Spinner />}>
+                        <Routes>
+                          <Route path="/" element={<Navigate to="/home" replace />} />
+                          <Route path="/home" element={<Layout><Home /></Layout>} />
+                          <Route path="/login" element={<Login />} />
+                          <Route path="/register" element={<Register />} />
+                          <Route path="/setup" element={<Setup />} />
+                          <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
+                          <Route path="/filing" element={<Layout><Filing /></Layout>} />
+                          <Route path="/vat" element={<Layout><VAT /></Layout>} />
+                          <Route path="/cit" element={<Layout><CIT /></Layout>} />
+                          <Route path="/transfer-pricing" element={<Layout><TransferPricing /></Layout>} />
+                          <Route path="/accounting" element={<Layout><Accounting /></Layout>} />
+                          <Route path="/financials" element={<Layout><Financials /></Layout>} />
+                          <Route path="/calendar" element={<Layout><Calendar /></Layout>} />
+                          <Route path="/assistant" element={<Layout><Assistant /></Layout>} />
+                          <Route path="/admin" element={<Layout><Admin /></Layout>} />
+                          <Route path="/qa-test" element={<Layout><QATest /></Layout>} />
+                          <Route path="*" element={<Navigate to="/home" replace />} />
+                        </Routes>
+                      </Suspense>
+                    </div>
+                  </Router>
+                </SettingsProvider>
+              </NotificationProvider>
             </TaxProvider>
-          </CustomThemeProvider>
-        </FinanceProvider>
-      </SettingsProvider>
-    </I18nextProvider>
+          </UserRoleProvider>
+        </CustomThemeProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
-}
+};
 
 export default App;

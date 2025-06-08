@@ -1,3 +1,4 @@
+
 // Import polyfills first before anything else
 import './polyfills';
 
@@ -11,22 +12,24 @@ if (typeof globalThis !== 'undefined') {
   }
 }
 
-import React, { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-import { LibraryLoader } from './utils/libraryLoader'
-import './i18n'
-import { AuditProvider } from './context/AuditContext'
-import { AppContextProvider } from './context/AppContext'
+import React, { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+import './index.css';
+import { LibraryLoader } from './utils/libraryLoader';
+import './i18n';
+import { AuditProvider } from './context/AuditContext';
+import { AppContextProvider } from './context/AppContext';
 
-// Initialize libraries
-LibraryLoader.loadLibraries();
+// Initialize libraries asynchronously
+LibraryLoader.loadLibraries().catch((error) => {
+  console.warn('Some libraries failed to load:', error);
+});
 
-const container = document.getElementById('root')
-if (!container) throw new Error('Root element not found')
+const container = document.getElementById('root');
+if (!container) throw new Error('Root element not found');
 
-const root = createRoot(container)
+const root = createRoot(container);
 
 root.render(
   <StrictMode>
@@ -36,4 +39,4 @@ root.render(
       </AuditProvider>
     </AppContextProvider>
   </StrictMode>
-)
+);

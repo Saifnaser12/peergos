@@ -1,3 +1,4 @@
+
 modules = ["nodejs-18", "web"]
 run = "npm run dev"
 
@@ -16,31 +17,32 @@ to = "/index.html"
 runButton = "Dev Server"
 
 [[workflows.workflow]]
-name = "Development Server"
-author = 43486346
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev -- --host 0.0.0.0 --port 5000"
-
-[[workflows.workflow]]
 name = "Dev Server"
-author = 43486346
+author = "user"
 mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
 
+[[workflows.workflow]]
+name = "Build Production"
+author = "user"
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run build"
+
+[[workflows.workflow]]
+name = "Install Dependencies"
+author = "user"
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install"
+
 [[ports]]
 localPort = 5000
 externalPort = 80
-
-[deployment]
-build = ["sh", "-c", "npm run build"]
-publicDir = "dist"
-
-[[deployment.rewrites]]
-from = "/*"
-to = "/index.html"
