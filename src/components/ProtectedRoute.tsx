@@ -1,32 +1,23 @@
 
 import React from 'react';
-import { useLocation, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useUserRole } from '../context/UserRoleContext';
-import type { Permission, Resource } from '../config/permissions';
 
 interface ProtectedRouteProps {
+  rolesAllowed: string[];
   children: React.ReactNode;
-  requiredPermission?: Permission;
-  resource?: Resource;
   redirectTo?: string;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  rolesAllowed,
   children,
-  requiredPermission = 'view',
-  resource,
   redirectTo = '/unauthorized'
 }) => {
-  const { canAccess, hasPermission } = useUserRole();
-  const location = useLocation();
+  const { role } = useUserRole();
 
-  // Check if user can access the current route
-  if (!canAccess(location.pathname)) {
-    return <Navigate to={redirectTo} replace />;
-  }
-
-  // If specific resource and permission are required, check those too
-  if (resource && !hasPermission(resource, requiredPermission)) {
+  // Check if user's current role is in the allowed roles
+  if (!rolesAllowed.includes(role)) {
     return <Navigate to={redirectTo} replace />;
   }
 

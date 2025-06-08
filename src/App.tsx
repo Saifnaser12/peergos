@@ -84,16 +84,67 @@ function AppContent() {
             }>
               {/* Nested routes that will render in the Outlet */}
               <Route index element={<Navigate to="/dashboard" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="vat" element={<VAT />} />
-              <Route path="accounting" element={<Accounting />} />
-              <Route path="cit" element={<CIT />} />
-              <Route path="financials" element={<Financials />} />
-              <Route path="transfer-pricing" element={<TransferPricing />} />
-              <Route path="filing" element={<Filing />} />
-              <Route path="assistant" element={<Assistant />} />
-              <Route path="calendar" element={<Calendar />} />
-              <Route path="/simple-invoice" element={<SimpleInvoice />} />
+              
+              <Route path="dashboard" element={
+                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "viewer"]}>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="vat" element={
+                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
+                  <VAT />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="accounting" element={
+                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
+                  <Accounting />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="cit" element={
+                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
+                  <CIT />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="financials" element={
+                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
+                  <Financials />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="transfer-pricing" element={
+                <ProtectedRoute rolesAllowed={["admin"]}>
+                  <TransferPricing />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="filing" element={
+                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
+                  <Filing />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="assistant" element={
+                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
+                  <Assistant />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="calendar" element={
+                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "viewer"]}>
+                  <Calendar />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="simple-invoice" element={
+                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
+                  <SimpleInvoice />
+                </ProtectedRoute>
+              } />
+              
               <Route path="unauthorized" element={<Unauthorized />} />
             </Route>
           </Routes>
