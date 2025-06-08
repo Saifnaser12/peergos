@@ -1,50 +1,3 @@
-
-import { useEffect, useState, useCallback } from 'react';
-import { useFinance } from '../context/FinanceContext';
-
-export const useFinancialSync = () => {
-  const { 
-    subscribeToUpdates, 
-    getFinancialSummary,
-    getTotalRevenue,
-    getTotalExpenses,
-    getNetIncome
-  } = useFinance();
-  
-  const [summary, setSummary] = useState(getFinancialSummary());
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  const refreshSummary = useCallback(() => {
-    setIsUpdating(true);
-    const newSummary = getFinancialSummary();
-    setSummary(newSummary);
-    
-    // Brief loading state for visual feedback
-    setTimeout(() => setIsUpdating(false), 100);
-  }, [getFinancialSummary]);
-
-  useEffect(() => {
-    // Subscribe to finance updates
-    const unsubscribe = subscribeToUpdates(refreshSummary);
-    
-    // Initial load
-    refreshSummary();
-    
-    return unsubscribe;
-  }, [subscribeToUpdates, refreshSummary]);
-
-  return {
-    summary,
-    isUpdating,
-    refreshSummary,
-    // Direct access to current values
-    totalRevenue: getTotalRevenue(),
-    totalExpenses: getTotalExpenses(),
-    netIncome: getNetIncome()
-  };
-};
-
-export default useFinancialSync;
 import { useState, useEffect, useCallback } from 'react';
 import { useFinance } from '../context/FinanceContext';
 
@@ -56,7 +9,7 @@ interface FinancialSyncData {
 }
 
 export const useFinancialSync = () => {
-  const { getFinancialSummary, subscribeToUpdates } = useFinance();
+  const { getFinancialSummary, subscribeToUpdates, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
   const [isUpdating, setIsUpdating] = useState(false);
   const [summary, setSummary] = useState<FinancialSyncData>({
     totalRevenue: 0,
@@ -67,7 +20,7 @@ export const useFinancialSync = () => {
 
   const updateSummary = useCallback(() => {
     setIsUpdating(true);
-    
+
     try {
       const financialSummary = getFinancialSummary();
       setSummary({
@@ -96,9 +49,9 @@ export const useFinancialSync = () => {
   return {
     summary,
     isUpdating,
-    totalRevenue: summary.totalRevenue,
-    totalExpenses: summary.totalExpenses,
-    netIncome: summary.netIncome,
+    totalRevenue: getTotalRevenue(),
+    totalExpenses: getTotalExpenses(),
+    netIncome: getNetIncome(),
     lastUpdated: summary.lastUpdated
   };
 };

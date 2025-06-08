@@ -22,6 +22,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
+    console.error('Component stack:', errorInfo.componentStack);
+    console.error('Error stack:', error.stack);
 
     // Log specific financial page errors for debugging
     if (error.message.includes('LibraryLoader') || error.message.includes('export')) {

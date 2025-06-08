@@ -397,8 +397,13 @@ const Financials: React.FC = () => {
     const [showWarningAlert, setShowWarningAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
 
+  // Debug logging
+  console.log('Financials render - revenues:', revenues?.length || 0, 'expenses:', expenses?.length || 0);
+  console.log('Financial sync data:', { totalRevenue, totalExpenses, netIncome, isUpdating });
+
   // Loading state while libraries are initializing
   if (!revenues && !expenses) {
+    console.log('Financials: No revenue or expense data, showing loading state');
     return (
       <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
         <Box sx={{ textAlign: 'center' }}>
