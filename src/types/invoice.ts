@@ -105,6 +105,11 @@ export interface Invoice {
   submittedAt?: string;
   acknowledgedAt?: string;
   rejectionReason?: string;
+  
+  // Free Zone specific fields
+  isFreeZoneCompany?: boolean;
+  customerLocation?: 'UAE_MAINLAND' | 'DESIGNATED_ZONE' | 'OUTSIDE_UAE' | 'SAME_FREE_ZONE';
+  freeZoneVATNote?: string;
 }
 
 // Phase 2 Invoice Data with compliance fields

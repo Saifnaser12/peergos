@@ -7,6 +7,8 @@ export async function generateInvoiceWithQR(data: {
   date: string;
   customer: string;
   amount: number;
+  freeZoneVATNote?: string;
+  isFreeZoneCompany?: boolean;
 }) {
   const qrContent = `INV:${data.invoiceNumber}|DATE:${data.date}|AED:${data.amount}`;
   const qrDataURL = await QRCode.toDataURL(qrContent);
@@ -26,6 +28,13 @@ export async function generateInvoiceWithQR(data: {
   doc.text(`Customer: ${data.customer}`, 20, 60);
   doc.text(`Amount: AED ${data.amount.toLocaleString()}`, 20, 70);
   
+  // Free Zone VAT Note
+  if (data.freeZoneVATNote) {
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'italic');
+    doc.text(data.freeZoneVATNote, 20, 85);
+  }
+  
   // QR Code with border
   doc.setDrawColor(200, 200, 200);
   doc.rect(145, 15, 50, 50);
@@ -34,6 +43,14 @@ export async function generateInvoiceWithQR(data: {
   // QR Code label
   doc.setFontSize(8);
   doc.text('Scan for verification', 150, 75);
+
+  // Free Zone footer note if applicable
+  if (data.isFreeZoneCompany) {
+    doc.setFontSize(8);
+    doc.setFont(undefined, 'italic');
+    doc.setTextColor(128, 128, 128);
+    doc.text('This entity operates in a UAE Free Zone under FTA regulations', 20, 280);
+  }
 
   doc.save(`invoice_${data.invoiceNumber}.pdf`);
 }

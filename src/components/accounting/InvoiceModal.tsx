@@ -56,7 +56,9 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
     customerContact: {
       phone: '',
       email: ''
-    }
+    },
+    isFreeZoneCompany: false,
+    customerLocation: 'UAE_MAINLAND' // Default value
   });
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -275,7 +277,9 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
       serviceDescription: formData.serviceDescription,
       subtotal: formData.amount,
       vat: formData.vatEnabled ? formData.amount * 0.05 : 0,
-      total: formData.vatEnabled ? formData.amount * 1.05 : formData.amount
+      total: formData.vatEnabled ? formData.amount * 1.05 : formData.amount,
+      isFreeZoneCompany: formData.isFreeZoneCompany,
+      customerLocation: formData.customerLocation
     };
 
     downloadInvoiceXML(invoiceData);
@@ -527,6 +531,53 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
               </div>
             </div>
 
+            {/* Free Zone Company Toggle */}
+            <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center">
+                <BuildingOfficeIcon className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-3" />
+                <div>
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    {t('invoice.modal.isFreeZoneCompany')}
+                  </p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">
+                    {t('invoice.modal.isFreeZoneCompanyHelp')}
+                  </p>
+                </div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.isFreeZoneCompany}
+                  onChange={(e) => handleInputChange('isFreeZoneCompany', e.target.checked)}
+                  className="sr-only"
+                />
+                <div className={`w-11 h-6 rounded-full transition-colors duration-200 ${
+                  formData.isFreeZoneCompany ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+                }`}>
+                  <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200 ${
+                    formData.isFreeZoneCompany ? 'translate-x-5' : 'translate-x-0.5'
+                  } mt-0.5`} />
+                </div>
+              </label>
+            </div>
+
+            {/* Customer Location Dropdown */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('invoice.modal.customerLocation')}
+              </label>
+              <select
+                value={formData.customerLocation}
+                onChange={(e) => handleInputChange('customerLocation', e.target.value)}
+                className="w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              >
+                <option value="UAE_MAINLAND">{t('invoice.modal.uaeMainland')}</option>
+                <option value="DESIGNATED_ZONE">{t('invoice.modal.designatedZone')}</option>
+                <option value="OUTSIDE_UAE">{t('invoice.modal.outsideUAE')}</option>
+                <option value="SAME_FREE_ZONE">{t('invoice.modal.sameFreeZone')}</option>
+              </select>
+            </div>
+
             {/* VAT Toggle */}
             <div className="flex items-center justify-between p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
               <div className="flex items-center">
@@ -718,7 +769,9 @@ const InvoiceModal: React.FC<InvoiceModalProps> = ({
                     customerContact: {
                       phone: '',
                       email: ''
-                    }
+                    },
+                    isFreeZoneCompany: false,
+                    customerLocation: 'UAE_MAINLAND'
                   });
                 }}
                 className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl font-medium transition-colors duration-150"

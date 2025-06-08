@@ -80,7 +80,9 @@ const defaultInvoice: Invoice = {
   },
   items: [],
   createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString()
+  updatedAt: new Date().toISOString(),
+  isFreeZoneCompany: false,
+  customerLocation: 'UAE_MAINLAND'
 };
 
 export const InvoiceForm: React.FC<InvoiceFormProps> = ({
@@ -94,6 +96,21 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
     id: uuidv4()
   });
   const [addItemDialogOpen, setAddItemDialogOpen] = useState(false);
+  const [freeZoneVATNote, setFreeZoneVATNote] = useState<string | null>(null);
+
+  const calculateFreeZoneVAT = (isFreeZoneCompany: boolean, customerLocation: string) => {
+    let vatNote = null;
+
+    if (isFreeZoneCompany) {
+      if (customerLocation === 'OUTSIDE_UAE' || customerLocation === 'DESIGNATED_ZONE') {
+        vatNote = "VAT not applicable – Export from UAE Free Zone (FTA-compliant)";
+      } else if (customerLocation === 'SAME_FREE_ZONE') {
+        vatNote = "Intra-free zone supply – VAT deferred per FTA ruling.";
+      }
+    }
+
+    return { vatNote };
+  };
 
   const handleInputChange = (
     field: keyof Invoice | keyof Party | keyof Address,
@@ -150,7 +167,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   ) => {
     setNewItem(prev => {
       const updated = { ...prev, [field]: value };
-      
+
       // Recalculate amounts
       if (field === 'quantity' || field === 'unitPrice' || field === 'taxRate') {
         const quantity = field === 'quantity' ? +value : prev.quantity;
@@ -159,7 +176,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         const taxableAmount = quantity * unitPrice;
         const taxAmount = taxableAmount * (taxRate / 100);
         const totalAmount = taxableAmount + taxAmount;
-        
+
         return {
           ...updated,
           taxableAmount,
@@ -169,7 +186,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           vatRate: taxRate
         };
       }
-      
+
       return updated;
     });
   };
@@ -179,7 +196,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       const updatedItems = [...prev.items, newItem];
       const amount = updatedItems.reduce((sum, item) => sum + item.totalAmount, 0);
       const vatAmount = updatedItems.reduce((sum, item) => sum + item.taxAmount, 0);
-      
+
       return {
         ...prev,
         items: updatedItems,
@@ -188,7 +205,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         updatedAt: new Date().toISOString()
       };
     });
-    
+
     setNewItem({
       ...emptyInvoiceItem,
       id: uuidv4()
@@ -201,7 +218,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       const updatedItems = prev.items.filter(item => item.id !== itemId);
       const amount = updatedItems.reduce((sum, item) => sum + item.totalAmount, 0);
       const vatAmount = updatedItems.reduce((sum, item) => sum + item.taxAmount, 0);
-      
+
       return {
         ...prev,
         items: updatedItems,
@@ -219,6 +236,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
   return (
     <Box component="form" onSubmit={handleSubmit}>
+      {/* Basic Information */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
@@ -244,6 +262,74 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+
+      {/* Free Zone Settings */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Free Zone Configuration
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                select
+                label="Is this a Free Zone company?"
+                value={invoice.isFreeZoneCompany ? 'true' : 'false'}
+                onChange={(e) => {
+                  const isFreeZone = e.target.value === 'true';
+                  setInvoice(prev => ({ ...prev, isFreeZoneCompany: isFreeZone }));
+
+                  // Recalculate VAT note
+                  const freeZoneVAT = calculateFreeZoneVAT(isFreeZone, invoice.customerLocation || 'UAE_MAINLAND');
+                  setFreeZoneVATNote(freeZoneVAT.vatNote);
+                }}
+                SelectProps={{ native: true }}
+              >
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                select
+                label="Customer Location"
+                value={invoice.customerLocation || 'UAE_MAINLAND'}
+                onChange={(e) => {
+                  const location = e.target.value;
+                  setInvoice(prev => ({ ...prev, customerLocation: location }));
+
+                  // Recalculate VAT note
+                  const freeZoneVAT = calculateFreeZoneVAT(invoice.isFreeZoneCompany || false, location);
+                  setFreeZoneVATNote(freeZoneVAT.vatNote);
+                }}
+                SelectProps={{ native: true }}
+              >
+                <option value="UAE_MAINLAND">UAE Mainland</option>
+                <option value="DESIGNATED_ZONE">Designated Zone</option>
+                <option value="OUTSIDE_UAE">Outside UAE</option>
+                <option value="SAME_FREE_ZONE">Same Free Zone</option>
+              </TextField>
+            </Grid>
+            {freeZoneVATNote && (
+              <Grid item xs={12}>
+                <Box sx={{ 
+                  backgroundColor: 'info.light', 
+                  color: 'info.contrastText', 
+                  p: 2, 
+                  borderRadius: 1,
+                  fontStyle: 'italic'
+                }}>
+                  <Typography variant="body2">
+                    <strong>VAT Treatment:</strong> {freeZoneVATNote}
+                  </Typography>
+                </Box>
+              </Grid>
+            )}
           </Grid>
         </CardContent>
       </Card>
@@ -535,4 +621,4 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </Box>
     </Box>
   );
-}; 
+};
