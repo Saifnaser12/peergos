@@ -34,6 +34,7 @@ import SubmissionHistory from '../components/SubmissionHistory';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import SubmissionPanel from '../components/fta/SubmissionPanel';
 import { ftaService } from '../services/ftaService';
+import { useFinance } from '../context/FinanceContext';
 
 interface VATFormData {
   standardRatedSales: number;
@@ -63,12 +64,13 @@ const VAT: React.FC = () => {
   const theme = useTheme();
   const [darkMode, setDarkMode] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { revenue, expenses, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
 
   const [formData, setFormData] = useState<VATFormData>({
-    standardRatedSales: 0,
+    standardRatedSales: getTotalRevenue(),
     zeroRatedSales: 0,
     exemptSales: 0,
-    purchasesWithVAT: 0,
+    purchasesWithVAT: getTotalExpenses(),
     purchasesWithoutVAT: 0,
     importsGoods: 0,
     localServices: 0,
@@ -433,6 +435,30 @@ const VAT: React.FC = () => {
               <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
                 {t('VAT Calculation Summary')}
               </Typography>
+
+              <Box sx={{ mb: 3, p: 2, bgcolor: 'primary.50', borderRadius: 2 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
+                  Live Financial Data
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2">Total Revenue</Typography>
+                  <Typography variant="body2" className="text-blue-600 font-bold">
+                    AED {getTotalRevenue().toLocaleString()}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2">Total Expenses</Typography>
+                  <Typography variant="body2" className="text-blue-600 font-bold">
+                    AED {getTotalExpenses().toLocaleString()}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>Taxable Income</Typography>
+                  <Typography variant="body2" className="text-blue-600 font-bold">
+                    AED {getNetIncome().toLocaleString()}
+                  </Typography>
+                </Box>
+              </Box>
 
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>

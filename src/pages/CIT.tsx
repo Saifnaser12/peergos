@@ -46,6 +46,7 @@ import TaxAgentSelector from '../components/TaxAgentSelector';
 import SubmissionPanel from '../components/fta/SubmissionPanel';
 import { ftaService } from '../services/ftaService';
 import { useTaxAgent } from '../context/TaxAgentContext';
+import { useFinance } from '../context/FinanceContext';
 
 interface CITFormData {
   revenue: number;
@@ -81,10 +82,11 @@ const CIT: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const { selectedAgent, uploadedCertificate } = useTaxAgent();
+  const { revenue, expenses, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
 
   const [formData, setFormData] = useState<CITFormData>({
-    revenue: 0,
-    expenses: 0,
+    revenue: getTotalRevenue(),
+    expenses: getTotalExpenses(),
     taxAdjustments: 0,
     exemptIncome: 0,
     carriedForwardLosses: 0,
@@ -414,11 +416,16 @@ const CIT: React.FC = () => {
                     value={formData.revenue}
                     onChange={handleInputChange('revenue')}
                     error={!!validationErrors.revenue}
-                    helperText={validationErrors.revenue}
+                    helperText={validationErrors.revenue || `Live data: AED ${getTotalRevenue().toLocaleString()}`}
                     InputProps={{
                       startAdornment: <InputAdornment position="start">AED</InputAdornment>,
                     }}
                   />
+                  <Box sx={{ mt: 1, p: 2, bgcolor: 'primary.50', borderRadius: 1 }}>
+                    <Typography variant="caption" color="primary.main">
+                      Live Financial Data: AED {getTotalRevenue().toLocaleString()} from {revenue.length} transactions
+                    </Typography>
+                  </Box>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
@@ -429,11 +436,16 @@ const CIT: React.FC = () => {
                     value={formData.expenses}
                     onChange={handleInputChange('expenses')}
                     error={!!validationErrors.expenses}
-                    helperText={validationErrors.expenses}
+                    helperText={validationErrors.expenses || `Live data: AED ${getTotalExpenses().toLocaleString()}`}
                     InputProps={{
                       startAdornment: <InputAdornment position="start">AED</InputAdornment>,
                     }}
                   />
+                  <Box sx={{ mt: 1, p: 2, bgcolor: 'primary.50', borderRadius: 1 }}>
+                    <Typography variant="caption" color="primary.main">
+                      Live Financial Data: AED {getTotalExpenses().toLocaleString()} from {expenses.length} transactions
+                    </Typography>
+                  </Box>
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
@@ -641,6 +653,11 @@ const CIT: React.FC = () => {
                 <Typography variant="h6" sx={{ fontWeight: 500 }}>
                   {formatCurrency(citCalculation.taxableIncome)}
                 </Typography>
+                <Box sx={{ mt: 1, p: 1, bgcolor: 'info.50', borderRadius: 1 }}>
+                  <Typography variant="caption" className="text-blue-600 font-bold">
+                    Live Taxable Income: AED {getNetIncome().toLocaleString()}
+                  </Typography>
+                </Box>
               </Box>
 
               <Divider sx={{ my: 2 }} />
