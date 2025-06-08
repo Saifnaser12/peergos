@@ -41,44 +41,84 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback;
-      }
+      // If it's a financial page error, provide specific guidance
+      const isFinancialError = window.location.pathname.includes('/financials');
 
       return (
-        <div className="min-h-[200px] flex items-center justify-center">
-          <div className="text-center p-6 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 max-w-md">
-            <h3 className="text-lg font-medium text-red-800 dark:text-red-200 mb-2">
-              Something went wrong
-            </h3>
-            <p className="text-red-600 dark:text-red-300 mb-4">
-              There was an error loading the application. This is likely a temporary issue.
-            </p>
-            <div className="space-x-2">
-              <button
-                onClick={() => this.setState({ hasError: false, error: null })}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-              >
-                Try again
-              </button>
-              <button
-                onClick={this.handleReload}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-              >
-                Reload page
-              </button>
-            </div>
-            {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="mt-4 text-left">
-                <summary className="cursor-pointer text-red-700 dark:text-red-300 text-sm">
-                  Technical details
-                </summary>
-                <pre className="mt-2 text-xs text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/40 p-2 rounded overflow-auto max-h-32">
-                  {this.state.error.stack}
-                </pre>
-              </details>
-            )}
+        <div style={{ 
+          padding: '40px', 
+          textAlign: 'center',
+          minHeight: '400px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          <h2 style={{ color: '#d32f2f', marginBottom: '16px' }}>
+            {isFinancialError ? 'Financial Page Error' : 
+             (this.props.t?.('error.somethingWentWrong') || 'Something went wrong')}
+          </h2>
+
+          <p style={{ color: '#666', marginBottom: '24px', maxWidth: '500px' }}>
+            {isFinancialError ? 
+             'There was an error loading the financial data. Please try reloading the page.' :
+             (this.props.t?.('error.temporaryIssue') || 
+              'There was an error loading the application. This is likely a temporary issue.')}
+          </p>
+
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button 
+              onClick={() => {
+                this.setState({ hasError: false });
+                if (isFinancialError) {
+                  window.location.href = '/dashboard';
+                }
+              }}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#1976d2',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              {isFinancialError ? 'Go to Dashboard' : 
+               (this.props.t?.('error.tryAgain') || 'Try again')}
+            </button>
+
+            <button 
+              onClick={() => window.location.reload()}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#666',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              {this.props.t?.('error.reloadPage') || 'Reload page'}
+            </button>
           </div>
+
+          <details style={{ marginTop: '24px', textAlign: 'left', maxWidth: '600px' }}>
+            <summary style={{ cursor: 'pointer', color: '#666' }}>
+              {this.props.t?.('error.technicalDetails') || 'Technical details'}
+            </summary>
+            <pre style={{ 
+              backgroundColor: '#f5f5f5', 
+              padding: '12px', 
+              borderRadius: '4px',
+              fontSize: '12px',
+              overflow: 'auto',
+              marginTop: '8px'
+            }}>
+              Error: {this.state.error?.message || 'Unknown error'}
+              {this.state.error?.stack && '\n\nStack:\n' + this.state.error.stack}
+              {this.state.errorInfo?.componentStack && '\n\nComponent Stack:' + this.state.errorInfo.componentStack}
+            </pre>
+          </details>
         </div>
       );
     }

@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useFinance } from '../context/FinanceContext';
 
@@ -9,7 +10,7 @@ interface FinancialSyncData {
 }
 
 export const useFinancialSync = () => {
-  const { getFinancialSummary, subscribeToUpdates, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
+  const finance = useFinance();
   const [isUpdating, setIsUpdating] = useState(false);
   const [summary, setSummary] = useState<FinancialSyncData>({
     totalRevenue: 0,
@@ -19,40 +20,46 @@ export const useFinancialSync = () => {
   });
 
   const updateSummary = useCallback(() => {
+    if (!finance) return;
+    
     setIsUpdating(true);
-
+    
     try {
-      const financialSummary = getFinancialSummary();
+      const totalRevenue = finance.getTotalRevenue();
+      const totalExpenses = finance.getTotalExpenses();
+      const netIncome = finance.getNetIncome();
+      
       setSummary({
-        totalRevenue: financialSummary.totalRevenue,
-        totalExpenses: financialSummary.totalExpenses,
-        netIncome: financialSummary.netIncome,
-        lastUpdated: financialSummary.lastUpdated
+        totalRevenue,
+        totalExpenses,
+        netIncome,
+        lastUpdated: new Date().toISOString()
       });
     } catch (error) {
       console.error('Error updating financial summary:', error);
     } finally {
-      // Brief loading state for visual feedback
       setTimeout(() => setIsUpdating(false), 100);
     }
-  }, [getFinancialSummary]);
+  }, [finance]);
 
   useEffect(() => {
-    // Subscribe to finance updates
-    const unsubscribe = subscribeToUpdates(updateSummary);
+    if (!finance) return;
 
     // Initial load
     updateSummary();
 
+    // Subscribe to updates
+    const unsubscribe = finance.subscribeToUpdates(updateSummary);
+    
     return unsubscribe;
-  }, [subscribeToUpdates, updateSummary]);
+  }, [finance, updateSummary]);
 
   return {
     summary,
     isUpdating,
-    totalRevenue: getTotalRevenue(),
-    totalExpenses: getTotalExpenses(),
-    netIncome: getNetIncome(),
+    totalRevenue: summary.totalRevenue,
+    totalExpenses: summary.totalExpenses,
+    netIncome: summary.netIncome,
     lastUpdated: summary.lastUpdated
   };
 };
