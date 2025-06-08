@@ -294,7 +294,7 @@ const Dashboard: React.FC = () => {
             </h3>
           </div>
           <div className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <button
                 onClick={() => navigate('/vat')}
                 className="flex items-center justify-center px-6 py-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-900 dark:text-white font-medium transition-colors duration-200"
@@ -312,6 +312,12 @@ const Dashboard: React.FC = () => {
                 className="flex items-center justify-center px-6 py-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-900 dark:text-white font-medium transition-colors duration-200"
               >
                 {t('dashboard.actions.viewFinancials')}
+              </button>
+              <button
+                onClick={() => navigate('/free-zone-substance')}
+                className="flex items-center justify-center px-6 py-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-900 dark:text-white font-medium transition-colors duration-200"
+              >
+                {t('dashboard.actions.freeZoneSubstance')}
               </button>
             </div>
           </div>

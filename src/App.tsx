@@ -29,9 +29,9 @@ import QATest from './pages/QATest';
 import BackupManager from './pages/BackupManager'; // Assuming BackupManager.js exists
 import QAChecklist from './components/QAChecklist';
 import WhitelabelPage from './pages/WhitelabelPage';
-import Setup from './pages/Setup';
 import Unauthorized from './pages/Unauthorized';
 import AssistantTest from './pages/AssistantTest'; // Import the AssistantTest component
+import FreeZoneSubstance from './pages/FreeZoneSubstance';
 
 // Context
 import { ThemeProvider as CustomThemeProvider } from './context/ThemeContext';
@@ -82,6 +82,7 @@ const App: React.FC = () => {
                               <Route path="/vat" element={<Layout><VAT /></Layout>} />
                               <Route path="/cit" element={<Layout><CIT /></Layout>} />
                               <Route path="/transfer-pricing" element={<Layout><TransferPricing /></Layout>} />
+                              <Route path="/free-zone-substance" element={<Layout><FreeZoneSubstance /></Layout>} />
                               <Route path="/accounting" element={<Layout><Accounting /></Layout>} />
                               <Route path="/financials" element={<Layout><Financials /></Layout>} />
                               <Route path="/calendar" element={<Layout><Calendar /></Layout>} />

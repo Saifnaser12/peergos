@@ -10,8 +10,9 @@
     "vat": "VAT",
     "cit": "CIT",
     "accounting": "Accounting",
-    "financials": "Financials", 
+    "financials": "Financials",
     "transferPricing": "Transfer Pricing",
+    "freeZoneSubstance": "Free Zone Substance",
     "setup": "Setup",
     "assistant": "Assistant",
     "calendar": "Calendar",
@@ -102,7 +103,8 @@
     "actions": {
       "fileVAT": "File VAT Return",
       "calculateCIT": "Calculate CIT",
-      "viewFinancials": "View Financials"
+      "viewFinancials": "View Financials",
+      "freeZoneSubstance": "Free Zone Substance"
     }
   },
   "fta": {
@@ -115,7 +117,7 @@
     },
     "status": {
       "connected": "Connected",
-      "disconnected": "Disconnected", 
+      "disconnected": "Disconnected",
       "attention": "Needs Attention",
       "loading": "Checking...",
       "loadingDetails": "Loading FTA integration status...",
@@ -303,7 +305,7 @@
     "citReturn": "CIT Return Due",
     "days": {
       "sun": "Sun",
-      "mon": "Mon", 
+      "mon": "Mon",
       "tue": "Tue",
       "wed": "Wed",
       "thu": "Thu",
@@ -419,7 +421,7 @@
     "welcome": "Welcome to Peergos",
     "subtitle": "Your UAE tax assistant",
     "step1": "Upload your TRN and basic company info",
-    "step2": "Add revenue/expenses", 
+    "step2": "Add revenue/expenses",
     "step3": "Connect to FTA (simulation mode available)",
     "step4": "Preview and submit CIT/VAT returns",
     "progress": "setup steps complete",
@@ -579,28 +581,92 @@
     }
   },
   "vat": {
-      "export": {
-        "generateFTAPDF": "Generate FTA PDF",
-        "ftaPdfSuccess": "FTA-style VAT PDF generated successfully",
-        "ftaPdfError": "Error generating FTA PDF"
+    "export": {
+      "generateFTAPDF": "Generate FTA PDF",
+      "ftaPdfSuccess": "FTA-style VAT PDF generated successfully",
+      "ftaPdfError": "Error generating FTA PDF"
+    },
+    "fta": {
+      "submitSuccess": "VAT return submitted successfully",
+      "submitError": "Error submitting VAT return",
+      "submitting": "Submitting..."
+    },
+    "submitReturn": "Submit VAT Return",
+    "preview": {
+      "mode": "Draft Filing Mode",
+      "subtitle": "Preview mode - Data sourced from assistant",
+      "warning": "This is a draft filing simulation. No actual submission will be made to FTA. Review the data and make adjustments as needed."
+    },
+    "designatedZone": {
+      "operating": "Operating in Designated Zone (applies reverse charge on mainland imports)",
+      "mainlandImports": "Designated Zone Mainland Imports",
+      "mainlandImportsPlaceholder": "Imports from mainland UAE subject to reverse charge",
+      "reverseChargeNote": "Reverse charge applies on supplies from mainland UAE",
+      "reverseChargeVAT": "• Reverse Charge VAT (Designated Zone)"
+    }
+  },
+  "freeZone": {
+    "substance": {
+      "title": "Free Zone Economic Substance",
+      "description": "Manage your Free Zone economic substance requirements and documentation to maintain QFZP status and compliance with UAE regulations.",
+      "complianceProgress": "Compliance Progress",
+      "incompleteWarning": "Please complete all substance requirements to maintain your QFZP status and avoid penalties.",
+      "upload": "Upload",
+      "reupload": "Re-upload",
+      "uploadedOn": "Uploaded on",
+      "tabs": {
+        "documentation": "Documentation",
+        "checklist": "Compliance Checklist",
+        "transferPricing": "Transfer Pricing"
       },
-      "fta": {
-        "submitSuccess": "VAT return submitted successfully",
-        "submitError": "Error submitting VAT return",
-        "submitting": "Submitting..."
+      "documentation": {
+        "title": "Required Documentation",
+        "subtitle": "Upload the following documents to demonstrate economic substance in your Free Zone operations."
       },
-      "submitReturn": "Submit VAT Return",
-      "preview": {
-        "mode": "Draft Filing Mode",
-        "subtitle": "Preview mode - Data sourced from assistant",
-        "warning": "This is a draft filing simulation. No actual submission will be made to FTA. Review the data and make adjustments as needed."
+      "officeLease": {
+        "title": "Office Lease Agreement",
+        "description": "Valid lease agreement demonstrating physical office presence in the Free Zone"
       },
-      "designatedZone": {
-        "operating": "Operating in Designated Zone (applies reverse charge on mainland imports)",
-        "mainlandImports": "Designated Zone Mainland Imports",
-        "mainlandImportsPlaceholder": "Imports from mainland UAE subject to reverse charge",
-        "reverseChargeNote": "Reverse charge applies on supplies from mainland UAE",
-        "reverseChargeVAT": "• Reverse Charge VAT (Designated Zone)"
+      "salaryPayrolls": {
+        "title": "Salary & Payroll Records",
+        "description": "Monthly payroll records showing adequate qualified staff"
+      },
+      "staffCounts": {
+        "title": "Staff Count Records",
+        "description": "Detailed staff records including qualifications and roles"
+      },
+      "auditedFinancials": {
+        "title": "Audited Financial Statements",
+        "description": "Latest audited financial statements as required by regulations"
+      },
+      "checklist": {
+        "title": "Economic Substance Checklist",
+        "subtitle": "Confirm that your Free Zone entity meets all economic substance requirements.",
+        "physicalOffice": "Physical Office Presence",
+        "physicalOfficeDesc": "Maintained adequate physical office space in the Free Zone",
+        "adequateStaff": "Adequate Qualified Staff",
+        "adequateStaffDesc": "Employed sufficient number of qualified staff to conduct core activities",
+        "coreActivities": "Core Income Generating Activities",
+        "coreActivitiesDesc": "Conducted core income generating activities in the UAE",
+        "auditedFinancials": "Audited Financial Statements",
+        "auditedFinancialsDesc": "Prepared audited financial statements in accordance with international standards",
+        "transferPricingCompliance": "Transfer Pricing Compliance",
+        "transferPricingComplianceDesc": "Maintained proper transfer pricing documentation for related party transactions"
+      },
+      "transferPricing": {
+        "title": "Transfer Pricing Documentation",
+        "subtitle": "Upload transfer pricing documentation and declarations as required for Free Zone entities.",
+        "warning": "Important Notice",
+        "warningText": "Ensure all transfer pricing documentation complies with UAE guidelines and demonstrates arm's length pricing for transactions with related parties."
+      },
+      "transferPricingDeclaration": {
+        "title": "Transfer Pricing Declaration",
+        "description": "Completed transfer pricing declaration form for related party transactions"
+      },
+      "transferPricingDocs": {
+        "title": "Transfer Pricing Documentation",
+        "description": "Supporting documentation including local file, master file, and economic analysis"
       }
     }
+  }
 }

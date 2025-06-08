@@ -4,6 +4,21 @@ import { Link } from 'react-router-dom';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { useTranslation } from 'react-i18next';
 import { LanguageToggle } from './LanguageToggle';
+import {
+  HomeIcon,
+  DocumentTextIcon,
+  ReceiptPercentIcon,
+  ChartBarIcon,
+  CurrencyDollarIcon,
+  CalendarIcon,
+  UserIcon,
+  Cog6ToothIcon,
+  ArrowRightOnRectangleIcon,
+  ChatBubbleLeftRightIcon,
+  Bars3Icon,
+  XMarkIcon,
+  BuildingOfficeIcon
+} from '@heroicons/react/24/outline';
 
 export const Navbar: React.FC = () => {
   const { t } = useTranslation();
@@ -13,6 +28,11 @@ export const Navbar: React.FC = () => {
       path: '/transfer-pricing',
       label: t('app.navigation.transferPricing'),
       icon: <DescriptionIcon />,
+    },
+    {
+      path: '/free-zone-substance',
+      label: t('app.navigation.freeZoneSubstance'),
+      icon: <BuildingOfficeIcon />,
     },
   ];
 
@@ -39,4 +59,4 @@ export const Navbar: React.FC = () => {
       </Toolbar>
     </AppBar>
   );
-}; 
+};
