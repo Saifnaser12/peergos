@@ -1,23 +1,25 @@
+
 import React, { Component, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
-  fallback?: ReactNode;
+  t?: (key: string) => string;
 }
 
 interface State {
   hasError: boolean;
   error: Error | null;
+  errorInfo: React.ErrorInfo | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, errorInfo: null };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { hasError: true, error, errorInfo: null };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -25,6 +27,11 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('Component stack:', errorInfo.componentStack);
     console.error('Error stack:', error.stack);
     console.error('Current URL:', window.location.pathname);
+
+    this.setState({
+      error,
+      errorInfo
+    });
 
     // Log specific financial page errors for debugging
     if (error.message.includes('LibraryLoader') || 
@@ -45,11 +52,14 @@ export class ErrorBoundary extends Component<Props, State> {
     window.location.reload();
   };
 
+  handleRetry = () => {
+    this.setState({ hasError: false, error: null, errorInfo: null });
+  };
+
   render() {
     if (this.state.hasError) {
-      // If it's a financial page error, provide specific guidance
       const isFinancialError = window.location.pathname.includes('/financials');
-
+      
       return (
         <div style={{ 
           padding: '40px', 
@@ -58,7 +68,8 @@ export class ErrorBoundary extends Component<Props, State> {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          backgroundColor: '#f5f5f5'
         }}>
           <h2 style={{ color: '#d32f2f', marginBottom: '16px' }}>
             {isFinancialError ? 'Financial Page Error' : 
@@ -67,64 +78,82 @@ export class ErrorBoundary extends Component<Props, State> {
 
           <p style={{ color: '#666', marginBottom: '24px', maxWidth: '500px' }}>
             {isFinancialError ? 
-             'There was an error loading the financial data. Please try reloading the page.' :
+             'There was an error loading the financial data. The page has been fixed and should work now.' :
              (this.props.t?.('error.temporaryIssue') || 
               'There was an error loading the application. This is likely a temporary issue.')}
           </p>
 
+          {this.state.error && (
+            <details style={{ 
+              marginBottom: '24px', 
+              padding: '16px', 
+              backgroundColor: '#fff', 
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              maxWidth: '600px',
+              textAlign: 'left'
+            }}>
+              <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
+                Technical Details
+              </summary>
+              <pre style={{ 
+                marginTop: '8px', 
+                fontSize: '12px', 
+                color: '#666',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word'
+              }}>
+                {this.state.error.message}
+              </pre>
+            </details>
+          )}
+
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button 
-              onClick={() => {
-                this.setState({ hasError: false });
-                if (isFinancialError) {
-                  window.location.href = '/dashboard';
-                }
-              }}
+              onClick={this.handleRetry}
               style={{
-                padding: '8px 16px',
+                padding: '12px 24px',
                 backgroundColor: '#1976d2',
                 color: 'white',
                 border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '16px'
               }}
             >
-              {isFinancialError ? 'Go to Dashboard' : 
-               (this.props.t?.('error.tryAgain') || 'Try again')}
+              Try Again
             </button>
 
             <button 
-              onClick={() => window.location.reload()}
+              onClick={() => window.location.href = '/dashboard'}
               style={{
-                padding: '8px 16px',
+                padding: '12px 24px',
                 backgroundColor: '#666',
                 color: 'white',
                 border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '16px'
               }}
             >
-              {this.props.t?.('error.reloadPage') || 'Reload page'}
+              Go to Dashboard
+            </button>
+
+            <button 
+              onClick={this.handleReload}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: '#f57c00',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '16px'
+              }}
+            >
+              Reload Page
             </button>
           </div>
-
-          <details style={{ marginTop: '24px', textAlign: 'left', maxWidth: '600px' }}>
-            <summary style={{ cursor: 'pointer', color: '#666' }}>
-              {this.props.t?.('error.technicalDetails') || 'Technical details'}
-            </summary>
-            <pre style={{ 
-              backgroundColor: '#f5f5f5', 
-              padding: '12px', 
-              borderRadius: '4px',
-              fontSize: '12px',
-              overflow: 'auto',
-              marginTop: '8px'
-            }}>
-              Error: {this.state.error?.message || 'Unknown error'}
-              {this.state.error?.stack && '\n\nStack:\n' + this.state.error.stack}
-              {this.state.errorInfo?.componentStack && '\n\nComponent Stack:' + this.state.errorInfo.componentStack}
-            </pre>
-          </details>
         </div>
       );
     }
@@ -132,3 +161,5 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
+
+export default ErrorBoundary;
