@@ -41,12 +41,21 @@ const Unauthorized: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-400 mb-2">
             {t('unauthorized.message', "You don't have permission to access this page.")}
           </p>
-
-          <p className="text-sm text-gray-500 dark:text-gray-500 mb-8">
-            Current role: <span className="font-medium text-indigo-600 dark:text-indigo-400">
-              {ROLE_LABELS[role]}
-            </span>
+          
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {t('unauthorized.roleMessage', "Your current role does not allow access to this resource.")}
           </p>
+
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-6">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Current role: <span className="font-medium text-indigo-600 dark:text-indigo-400">
+                {ROLE_LABELS[role]}
+              </span>
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              {t('unauthorized.contactAdmin', "Contact your administrator if you believe this is an error.")}
+            </p>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button

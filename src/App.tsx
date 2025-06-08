@@ -87,7 +87,7 @@ function AppContent() {
               <Route index element={<Navigate to="/dashboard" replace />} />
 
               <Route path="dashboard" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "viewer"]}>
+                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "sme_client"]}>
                   <Dashboard />
                 </ProtectedRoute>
               } />
@@ -99,13 +99,13 @@ function AppContent() {
               } />
 
               <Route path="accounting" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
+                <ProtectedRoute rolesAllowed={["admin", "sme_client"]}>
                   <Accounting />
                 </ProtectedRoute>
               } />
 
               <Route path="cit" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
+                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
                   <CIT />
                 </ProtectedRoute>
               } />
@@ -117,7 +117,7 @@ function AppContent() {
               } />
 
               <Route path="transfer-pricing" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "viewer"]}>
+                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
                   <TransferPricing />
                 </ProtectedRoute>
               } />
@@ -128,25 +128,25 @@ function AppContent() {
               } />
 
               <Route path="filing" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
+                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
                   <Filing />
                 </ProtectedRoute>
               } />
 
               <Route path="assistant" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
+                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "sme_client"]}>
                   <Assistant />
                 </ProtectedRoute>
               } />
 
               <Route path="calendar" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "viewer"]}>
+                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "sme_client"]}>
                   <Calendar />
                 </ProtectedRoute>
               } />
 
               <Route path="simple-invoice" element={
-                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
+                <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
                   <SimpleInvoice />
                 </ProtectedRoute>
               } />

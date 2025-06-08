@@ -1,34 +1,33 @@
 
-export type Role = 'admin' | 'accountant' | 'assistant' | 'viewer';
-
 export const ROLES = {
-  ADMIN: 'admin' as const,
-  ACCOUNTANT: 'accountant' as const,
-  ASSISTANT: 'assistant' as const,
-  VIEWER: 'viewer' as const,
+  ADMIN: 'admin',
+  ACCOUNTANT: 'accountant', 
+  ASSISTANT: 'assistant',
+  SME_CLIENT: 'sme_client'
 } as const;
 
-export const ROLE_PERMISSIONS: Record<string, Role[]> = {
-  '/dashboard': ['admin', 'accountant', 'assistant', 'viewer'],
-  '/cit': ['admin', 'accountant', 'assistant'],
-  '/vat': ['admin', 'accountant'],
-  '/financials': ['admin', 'accountant'],
-  '/transfer-pricing': ['admin'],
-  '/assistant': ['admin', 'accountant', 'assistant'],
-  '/setup': ['admin'],
-  '/admin': ['admin'],
-};
+export type Role = typeof ROLES[keyof typeof ROLES];
 
 export const ROLE_LABELS: Record<Role, string> = {
-  admin: 'Administrator',
-  accountant: 'Accountant',
-  assistant: 'Assistant',
-  viewer: 'Viewer',
+  [ROLES.ADMIN]: 'Administrator',
+  [ROLES.ACCOUNTANT]: 'Accountant',
+  [ROLES.ASSISTANT]: 'Assistant',
+  [ROLES.SME_CLIENT]: 'SME Client'
 };
 
-export const ROLE_DESCRIPTIONS: Record<Role, string> = {
-  admin: 'Full access to all features and settings',
-  accountant: 'Access to tax filings, VAT, CIT, and financials',
-  assistant: 'Limited access to CIT and assistant features',
-  viewer: 'Read-only access to dashboard',
+// Define which roles can access which routes
+export const ROLE_PERMISSIONS: Record<string, Role[]> = {
+  '/dashboard': [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.ASSISTANT, ROLES.SME_CLIENT],
+  '/accounting': [ROLES.ADMIN, ROLES.SME_CLIENT],
+  '/cit': [ROLES.ADMIN, ROLES.ACCOUNTANT],
+  '/vat': [ROLES.ADMIN, ROLES.ACCOUNTANT],
+  '/financials': [ROLES.ADMIN, ROLES.ACCOUNTANT],
+  '/transfer-pricing': [ROLES.ADMIN, ROLES.ACCOUNTANT],
+  '/filing': [ROLES.ADMIN, ROLES.ACCOUNTANT],
+  '/assistant': [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.ASSISTANT, ROLES.SME_CLIENT],
+  '/calendar': [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.ASSISTANT, ROLES.SME_CLIENT],
+  '/simple-invoice': [ROLES.ADMIN, ROLES.ACCOUNTANT],
+  '/admin': [ROLES.ADMIN],
+  '/qa-checklist': [ROLES.ADMIN],
+  '/setup': [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.ASSISTANT, ROLES.SME_CLIENT]
 };

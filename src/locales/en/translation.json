@@ -163,5 +163,13 @@
     "error": "Error getting response from assistant. Please check your API key or try again.",
     "exportSuccess": "Chat exported successfully",
     "auditExported": "Audit log exported successfully"
+  },
+  "unauthorized": {
+    "title": "Access Denied",
+    "message": "You don't have permission to access this page.",
+    "roleMessage": "Your current role does not allow access to this resource.",
+    "goBack": "Go Back",
+    "goHome": "Return to Dashboard",
+    "contactAdmin": "Contact your administrator if you believe this is an error."
   }
 }

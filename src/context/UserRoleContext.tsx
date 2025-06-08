@@ -3,6 +3,12 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import type { Role } from '../types/roles';
 import { ROLE_PERMISSIONS, ROLES } from '../types/roles';
 import type { Permission, Resource } from '../config/permissions';
+import { 
+  adminPermissions, 
+  accountantPermissions, 
+  assistantPermissions, 
+  smeClientPermissions 
+} from '../config/permissions';
 
 interface UserRoleContextType {
   role: Role;
@@ -13,7 +19,7 @@ interface UserRoleContextType {
   isAdmin: boolean;
   isAccountant: boolean;
   isAssistant: boolean;
-  isViewer: boolean;
+  isSMEClient: boolean;
 }
 
 const UserRoleContext = createContext<UserRoleContextType | undefined>(undefined);
@@ -43,25 +49,29 @@ export const UserRoleProvider: React.FC<UserRoleProviderProps> = ({ children }) 
   };
 
   const hasPermission = (resource: Resource, permission: Permission): boolean => {
-    // Simple permission check based on role
+    let rolePermissions;
+    
     switch (role) {
       case ROLES.ADMIN:
-        return true; // Admin has all permissions
+        rolePermissions = adminPermissions;
+        break;
       case ROLES.ACCOUNTANT:
-        if (['dashboard', 'filing', 'vat', 'cit', 'financials', 'transfer-pricing', 'assistant'].includes(resource)) {
-          return permission === 'view' || permission === 'edit' || permission === 'create';
-        }
-        return false;
+        rolePermissions = accountantPermissions;
+        break;
       case ROLES.ASSISTANT:
-        if (['dashboard', 'cit', 'assistant'].includes(resource)) {
-          return permission === 'view' || permission === 'create' || permission === 'edit';
-        }
-        return false;
-      case ROLES.VIEWER:
-        return resource === 'dashboard' && permission === 'view';
+        rolePermissions = assistantPermissions;
+        break;
+      case ROLES.SME_CLIENT:
+        rolePermissions = smeClientPermissions;
+        break;
       default:
         return false;
     }
+    
+    const resourcePermissions = rolePermissions[resource];
+    if (!resourcePermissions) return false;
+    
+    return resourcePermissions[permission] === true;
   };
 
   const permissions = Object.keys(ROLE_PERMISSIONS).filter(path => canAccess(path));
@@ -75,7 +85,7 @@ export const UserRoleProvider: React.FC<UserRoleProviderProps> = ({ children }) 
     isAdmin: role === ROLES.ADMIN,
     isAccountant: role === ROLES.ACCOUNTANT,
     isAssistant: role === ROLES.ASSISTANT,
-    isViewer: role === ROLES.VIEWER,
+    isSMEClient: role === ROLES.SME_CLIENT,
   };
 
   return (
