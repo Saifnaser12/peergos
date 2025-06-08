@@ -161,6 +161,43 @@ class FTAPDFExporter {
     return signatureY + 15;
   }
 
+  private addQFZPFooter(): void {
+    // Check if company is a Free Zone QFZP
+    const setupData = localStorage.getItem('setupData');
+    let isQFZP = false;
+    
+    if (setupData) {
+      try {
+        const parsed = JSON.parse(setupData);
+        isQFZP = parsed.isQFZP || false;
+      } catch (error) {
+        console.warn('Error parsing setup data for QFZP footer:', error);
+      }
+    }
+
+    if (isQFZP) {
+      // Add QFZP footer note
+      this.doc.setFontSize(10);
+      this.doc.setFont('helvetica', 'italic');
+      this.doc.setTextColor(128, 128, 128); // Grey color
+      
+      const footerText = this.isRTL
+        ? 'هذا الكيان هو شخص منطقة حرة مؤهل (QFZP) بموجب المادة 18 من المرسوم بقانون اتحادي رقم (47) لسنة 2022.'
+        : 'This entity is a Qualifying Free Zone Person (QFZP) under Article 18 of Federal Decree-Law No. (47) of 2022.';
+      
+      const footerY = this.pageHeight - 15;
+      
+      if (this.isRTL) {
+        this.doc.text(footerText, this.pageWidth - this.margin, footerY, { align: 'right' });
+      } else {
+        this.doc.text(footerText, this.pageWidth - this.margin, footerY, { align: 'right' });
+      }
+      
+      // Reset text color to black
+      this.doc.setTextColor(0, 0, 0);
+    }
+  }
+
   generateCITPDF(companyInfo: CompanyInfo, citData: CITData): jsPDF {
     const title = this.isRTL ? 'إقرار ضريبة الشركات' : 'Corporate Income Tax Return';
     this.addFTAHeader(title);
@@ -208,6 +245,7 @@ class FTAPDFExporter {
     }
 
     this.addDeclarationSection(currentY);
+    this.addQFZPFooter();
 
     return this.doc;
   }
@@ -290,7 +328,46 @@ class FTAPDFExporter {
     pdf.text(vatData.isRefundable ? 'VAT Refundable:' : 'VAT Payable:', margin, yPosition);
     pdf.text(`AED ${vatData.netVAT.toLocaleString()}`, pageWidth - margin - 50, yPosition);
 
+    // Add QFZP footer if applicable
+    this.addQFZPFooterToPDF(pdf);
+
     return pdf;
+  }
+
+  private addQFZPFooterToPDF(pdf: jsPDF): void {
+    // Check if company is a Free Zone QFZP
+    const setupData = localStorage.getItem('setupData');
+    let isQFZP = false;
+    
+    if (setupData) {
+      try {
+        const parsed = JSON.parse(setupData);
+        isQFZP = parsed.isQFZP || false;
+      } catch (error) {
+        console.warn('Error parsing setup data for QFZP footer:', error);
+      }
+    }
+
+    if (isQFZP) {
+      const pageWidth = pdf.internal.pageSize.width;
+      const pageHeight = pdf.internal.pageSize.height;
+      const margin = 20;
+      
+      // Add QFZP footer note
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'italic');
+      pdf.setTextColor(128, 128, 128); // Grey color
+      
+      const footerText = this.isRTL
+        ? 'هذا الكيان هو شخص منطقة حرة مؤهل (QFZP) بموجب المادة 18 من المرسوم بقانون اتحادي رقم (47) لسنة 2022.'
+        : 'This entity is a Qualifying Free Zone Person (QFZP) under Article 18 of Federal Decree-Law No. (47) of 2022.';
+      
+      const footerY = pageHeight - 15;
+      pdf.text(footerText, pageWidth - margin, footerY, { align: 'right' });
+      
+      // Reset text color to black
+      pdf.setTextColor(0, 0, 0);
+    }
   }
 
   generateFinancialsPDF(companyInfo: CompanyInfo, financialData: FinancialData): jsPDF {
@@ -358,6 +435,8 @@ class FTAPDFExporter {
 
     this.doc.text(balanceText, this.pageWidth / 2, currentY + 8, { align: 'center' });
     this.doc.setTextColor(0, 0, 0);
+
+    this.addQFZPFooter();
 
     return this.doc;
   }
