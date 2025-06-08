@@ -181,4 +181,4 @@ export const initializeLibraries = async (): Promise<void> => {
 };
 
 // Default export
-export default libraryLoader;
+export default LibraryLoader;
