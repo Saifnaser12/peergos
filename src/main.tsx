@@ -15,13 +15,16 @@ import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
-import { LibraryLoader } from './utils/libraryLoader';
+import { libraryLoader } from './utils/libraryLoader';
 import './i18n';
 import { AuditProvider } from './context/AuditContext';
 import { AppContextProvider } from './context/AppContext';
 
 // Initialize libraries asynchronously
-LibraryLoader.loadLibraries().catch((error) => {
+Promise.all([
+  libraryLoader.loadJsSHA(),
+  libraryLoader.loadQRCode()
+]).catch((error) => {
   console.warn('Some libraries failed to load:', error);
 });
 
