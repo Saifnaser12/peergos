@@ -1,0 +1,82 @@
+🎯 Purpose: Display real-time financial summaries from Accounting module with export options
+
+```tsx
+import { useFinance } from "@/context/FinanceContext";
+import { exportToPDF, exportToExcel } from "@/utils/exportUtils";
+
+export default function FinancialsPage() {
+  const { revenue, expenses } = useFinance();
+
+  const totalRevenue = revenue.reduce((sum, r) => sum + r.amount, 0);
+  const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const netIncome = totalRevenue - totalExpenses;
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-md">
+      <h1 className="text-2xl font-bold mb-4">Financial Summary</h1>
+
+      <div className="grid grid-cols-3 gap-6 mb-6">
+        <div className="p-4 rounded bg-green-50 shadow-sm">
+          <h2 className="text-lg">Total Revenue</h2>
+          <p className="text-xl font-bold text-green-700">AED {totalRevenue.toLocaleString()}</p>
+        </div>
+        <div className="p-4 rounded bg-red-50 shadow-sm">
+          <h2 className="text-lg">Total Expenses</h2>
+          <p className="text-xl font-bold text-red-600">AED {totalExpenses.toLocaleString()}</p>
+        </div>
+        <div className="p-4 rounded bg-blue-50 shadow-sm">
+          <h2 className="text-lg">Net Income</h2>
+          <p className="text-xl font-bold text-blue-700">AED {netIncome.toLocaleString()}</p>
+        </div>
+      </div>
+
+      <div className="flex gap-4">
+        <button className="btn" onClick={exportToPDF}>Export PDF</button>
+        <button className="btn" onClick={exportToExcel}>Export Excel</button>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### ✅ Prompt P — Export Helpers (PDF & Excel)
+
+📁 File: `src/utils/exportUtils.ts`
+
+````ts
+🎯 Purpose: Allow Financials to export in FTA-compliant formats
+
+```ts
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
+
+export function exportToPDF() {
+  const doc = new jsPDF();
+  autoTable(doc, {
+    head: [["Section", "Amount (AED)"]],
+    body: [
+      ["Total Revenue", "100,000"],
+      ["Total Expenses", "30,000"],
+      ["Net Income", "70,000"]
+    ]
+  });
+  doc.save("financials.pdf");
+}
+
+export function exportToExcel() {
+  const data = [
+    { Section: "Total Revenue", Amount: 100000 },
+    { Section: "Total Expenses", Amount: 30000 },
+    { Section: "Net Income", Amount: 70000 }
+  ];
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Summary");
+  XLSX.writeFile(wb, "financials.xlsx");
+}
+```
+
+📌 Later: Link values dynamically from `useFinance()` when exporting.
