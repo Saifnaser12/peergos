@@ -188,7 +188,20 @@
       "description": "You can select an FTA-approved tax agent to assist with your tax compliance and submissions. This is optional and can be configured later."
     },
     "step5": {
-      "title": "System Integrations (Optional)"
+      "title": "System Integrations (Optional)",
+      "description": "Connect your POS system and accounting software to automatically sync transactions and streamline your bookkeeping. This is optional and can be configured later."
+    },
+    "progress": "Setup Progress",
+    "showAIGuide": "Show AI Guide",
+    "celebrating": "Setting up...",
+    "aiGuide": {
+      "welcome": "Welcome to Peergos — your UAE tax assistant!",
+      "step1": "Let's start by setting up your company details. I'll need your organization name and TRN to ensure FTA compliance.",
+      "step2": "Great! Now let's configure your fiscal year. This determines your CIT filing deadlines.",
+      "step3": "Perfect! Next, I need your business type and address for accurate tax guidance.",
+      "step4": "You're doing great! Tax agent selection is optional but recommended for complex filings.",
+      "step5": "Almost there! System integrations help automate your bookkeeping.",
+      "completion": "🎉 Congratulations! Your Peergos tax system is now fully configured and ready for UAE compliance!"
     }
   },
   "calendar": {

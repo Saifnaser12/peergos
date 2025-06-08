@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
@@ -9,7 +9,10 @@ import {
   IdentificationIcon, 
   CalendarIcon,
   CheckCircleIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  SparklesIcon,
+  ChatBubbleLeftRightIcon,
+  LightBulbIcon
 } from '@heroicons/react/24/outline';
 
 interface SetupData {
@@ -37,6 +40,10 @@ const Setup: React.FC = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
+  const [showAIGuide, setShowAIGuide] = useState(true);
+  const [aiMessage, setAiMessage] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
   const handleInputChange = (field: keyof SetupData, value: string) => {
     setFormData(prev => ({
@@ -46,12 +53,21 @@ const Setup: React.FC = () => {
   };
 
   const handleSubmit = () => {
+    // Mark final step as completed
+    setCompletedSteps(prev => [...prev, currentStep]);
+    
+    // Show confetti celebration
+    setShowConfetti(true);
+    setAiMessage("🎉 Congratulations! Your Peergos tax system is now fully configured and ready for UAE compliance. Welcome to automated tax management!");
+    
     // Save to localStorage or context
     localStorage.setItem('peergos_setup_complete', 'true');
     localStorage.setItem('peergos_organization_data', JSON.stringify(formData));
 
-    // Navigate to dashboard
-    navigate('/dashboard');
+    // Navigate to dashboard after celebration
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 3000);
   };
 
   const canProceed = () => {
@@ -71,6 +87,47 @@ const Setup: React.FC = () => {
     }
   };
 
+  // AI Guidance System
+  const getAIGuidance = (step: number) => {
+    const guidance = {
+      1: "Welcome to Peergos — your UAE tax assistant! 🇦🇪 Let's start by setting up your company details. I'll need your organization name and TRN (Tax Registration Number) to ensure FTA compliance.",
+      2: "Great! Now let's configure your fiscal year. This determines your CIT filing deadlines. Most UAE companies use calendar year (Jan-Dec), but you can customize based on your business needs.",
+      3: "Perfect! Next, I need your business type and address. This helps me provide accurate tax guidance based on UAE regulations and your specific business structure.",
+      4: "You're doing great! 🎯 Tax agent selection is optional but recommended for complex filings. FTA-approved agents can help ensure compliance and represent you during audits.",
+      5: "Almost there! System integrations help automate your bookkeeping. Connect your POS or accounting software to sync transactions automatically. Don't worry - this is optional and can be set up later."
+    };
+    return guidance[step as keyof typeof guidance] || '';
+  };
+
+  const getProgressTips = (step: number) => {
+    const tips = {
+      1: "💡 Tip: Your TRN should be 15 digits starting with '1'. Example: 100000000000003",
+      2: "💡 Tip: CIT filing deadline is 9 months after your fiscal year end",
+      3: "💡 Tip: Free Zone companies may have different tax treatments",
+      4: "💡 Tip: Tax agents charge 0.1-0.5% of revenue for compliance services",
+      5: "💡 Tip: Automated integrations reduce manual data entry by 80%"
+    };
+    return tips[step as keyof typeof tips] || '';
+  };
+
+  // Update AI guidance when step changes
+  useEffect(() => {
+    if (showAIGuide) {
+      setAiMessage(getAIGuidance(currentStep));
+    }
+  }, [currentStep, showAIGuide]);
+
+  // Mark step as completed when user proceeds
+  useEffect(() => {
+    if (canProceed() && currentStep > 1 && !completedSteps.includes(currentStep - 1)) {
+      setCompletedSteps(prev => [...prev, currentStep - 1]);
+    }
+  }, [currentStep, canProceed, completedSteps]);
+
+  const getCompletionPercentage = () => {
+    return Math.round((completedSteps.length / totalSteps) * 100);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -85,7 +142,66 @@ const Setup: React.FC = () => {
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
           {t('setup.subtitle', 'Configure your organization details to get started')}
         </p>
+        
+        {/* Progress Bar */}
+        <div className="mt-4 max-w-xs mx-auto">
+          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-1">
+            <span>{t('setup.progress', 'Setup Progress')}</span>
+            <span>{completedSteps.length}/{totalSteps} {t('common.complete', 'Complete')}</span>
+          </div>
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${getCompletionPercentage()}%` }}
+            ></div>
+          </div>
+        </div>
       </div>
+
+      {/* AI Onboarding Guide Widget */}
+      {showAIGuide && (
+        <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-2xl">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800 shadow-lg">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                  <ChatBubbleLeftRightIcon className="w-5 h-5 text-white" />
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-medium text-gray-900 dark:text-white flex items-center">
+                    <SparklesIcon className="w-4 h-4 mr-1 text-indigo-500" />
+                    AI Setup Assistant
+                  </h4>
+                  <button
+                    onClick={() => setShowAIGuide(false)}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+                <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                  {aiMessage}
+                </p>
+                <div className="mt-3 flex items-center text-xs text-indigo-600 dark:text-indigo-400">
+                  <LightBulbIcon className="w-3 h-3 mr-1" />
+                  {getProgressTips(currentStep)}
+                </div>
+              </div>
+            </div>
+            
+            {/* Confetti Effect */}
+            {showConfetti && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="text-4xl animate-bounce">🎉</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow-xl rounded-lg sm:px-10">
@@ -356,6 +472,19 @@ const Setup: React.FC = () => {
             </div>
           )}
 
+          {/* AI Guide Toggle */}
+          {!showAIGuide && (
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => setShowAIGuide(true)}
+                className="inline-flex items-center px-3 py-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+              >
+                <ChatBubbleLeftRightIcon className="w-4 h-4 mr-1" />
+                {t('setup.showAIGuide', 'Show AI Guide')}
+              </button>
+            </div>
+          )}
+
           {/* Navigation buttons */}
           <div className="mt-8 flex justify-between">
             <button
@@ -388,14 +517,26 @@ const Setup: React.FC = () => {
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={!canProceed()}
-                className={`px-6 py-2 text-sm font-medium rounded-md ${
-                  canProceed()
-                    ? 'bg-green-600 text-white hover:bg-green-700'
+                disabled={!canProceed() || showConfetti}
+                className={`px-6 py-2 text-sm font-medium rounded-md flex items-center ${
+                  showConfetti
+                    ? 'bg-green-500 text-white animate-pulse'
+                    : canProceed()
+                    ? 'bg-green-600 text-white hover:bg-green-700 transform hover:scale-105 transition-all duration-200'
                     : 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed'
                 }`}
               >
-                {t('setup.complete', 'Complete Setup')}
+                {showConfetti ? (
+                  <>
+                    <SparklesIcon className="w-4 h-4 mr-1 animate-spin" />
+                    {t('setup.celebrating', 'Setting up...')}
+                  </>
+                ) : (
+                  <>
+                    <CheckCircleIcon className="w-4 h-4 mr-1" />
+                    {t('setup.complete', 'Complete Setup')}
+                  </>
+                )}
               </button>
             )}
           </div>
