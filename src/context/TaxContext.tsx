@@ -139,4 +139,4 @@ export const calculateCIT = (taxableIncome: number): number => {
     return 0;
   }
   return (taxableIncome - 375000) * 0.09;
-}; 
+};

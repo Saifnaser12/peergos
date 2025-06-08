@@ -14,34 +14,20 @@ from = "/*"
 to = "/index.html"
 
 [workflows]
-runButton = "Dev Server"
+runButton = "Run Development Server"
 
 [[workflows.workflow]]
-name = "Dev Server"
-author = "user"
+name = "Run Development Server"
+author = 43486346
 mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "npm run dev -- --port 3000"
 
-[[workflows.workflow]]
-name = "Build Production"
-author = "user"
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run build"
-
-[[workflows.workflow]]
-name = "Install Dependencies"
-author = "user"
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm install"
+[[ports]]
+localPort = 3000
+externalPort = 3000
 
 [[ports]]
 localPort = 5000

@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
+import {
   PlusIcon,
+  DocumentTextIcon,
+  BanknotesIcon,
+  ReceiptPercentIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   PencilIcon,
   TrashIcon,
-  DocumentIcon,
-  EyeIcon,
-  ArrowUpTrayIcon,
-  CalculatorIcon,
-  ArrowTrendingDownIcon,
-  BanknotesIcon,
-  CheckCircleIcon
+  ArrowDownTrayIcon,
+  BuildingOffice2Icon
 } from '@heroicons/react/24/outline';
+import { Fab, Tooltip } from '@mui/material';
 import RevenueModal from '../components/accounting/RevenueModal';
 import ExpenseModal from '../components/accounting/ExpenseModal';
 import AccountingSummary from '../components/accounting/AccountingSummary';
 import InvoiceModal from '../components/accounting/InvoiceModal';
 import { ArrowTrendingUpIcon as TrendingUpIcon } from '@heroicons/react/24/outline';
 import { useFinance } from '../context/FinanceContext';
+import { useTax } from '../context/TaxContext';
+import { exportToExcel } from '../utils/exportUtils';
+import FreeZoneAdvisor from '../components/FreeZoneAdvisor';
 import { FREE_ZONE_THRESHOLDS } from '../utils/constants';
 
 interface RevenueEntry {
@@ -45,15 +49,16 @@ interface ExpenseEntry {
 
 const Accounting: React.FC = () => {
   const { t } = useTranslation();
-  const { 
-    revenue, 
-    expenses, 
-    addRevenue, 
-    addExpense, 
-    deleteRevenue, 
-    deleteExpense, 
-    getTotalRevenue, 
-    getTotalExpenses, 
+  const { state } = useTax();
+  const {
+    revenue,
+    expenses,
+    addRevenue,
+    addExpense,
+    deleteRevenue,
+    deleteExpense,
+    getTotalRevenue,
+    getTotalExpenses,
     getNetIncome,
     getQualifyingIncome,
     getNonQualifyingIncome,
@@ -69,6 +74,7 @@ const Accounting: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'revenue' | 'expenses'>('revenue');
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [selectedRevenueForInvoice, setSelectedRevenueForInvoice] = useState<RevenueEntry | null>(null);
+  const [freeZoneAdvisorOpen, setFreeZoneAdvisorOpen] = useState(false);
 
   const handleBankUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -196,7 +202,7 @@ const Accounting: React.FC = () => {
         </div>
 
         {/* Summary Cards */}
-        <AccountingSummary 
+        <AccountingSummary
           totalRevenue={totalRevenue}
           totalExpenses={totalExpenses}
           netIncome={netIncome}
@@ -242,28 +248,28 @@ const Accounting: React.FC = () => {
 
                   {/* Non-Qualifying Income */}
                   <div className={`rounded-xl p-4 border ${
-                    deMinimisCheck.isCompliant 
+                    deMinimisCheck.isCompliant
                       ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800'
                       : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
                   }`}>
                     <div className="flex items-center justify-between">
                       <div>
                         <p className={`text-sm font-medium ${
-                          deMinimisCheck.isCompliant 
+                          deMinimisCheck.isCompliant
                             ? 'text-yellow-700 dark:text-yellow-300'
                             : 'text-red-700 dark:text-red-300'
                         }`}>
                           {t('accounting.freeZone.nonQualifyingIncome', 'Non-Qualifying Income')}
                         </p>
                         <p className={`text-2xl font-bold ${
-                          deMinimisCheck.isCompliant 
+                          deMinimisCheck.isCompliant
                             ? 'text-yellow-900 dark:text-yellow-100'
                             : 'text-red-900 dark:text-red-100'
                         }`}>
                           {formatCurrency(nonQualifyingIncome)}
                         </p>
                         <p className={`text-xs mt-1 ${
-                          deMinimisCheck.isCompliant 
+                          deMinimisCheck.isCompliant
                             ? 'text-yellow-600 dark:text-yellow-400'
                             : 'text-red-600 dark:text-red-400'
                         }`}>
@@ -271,12 +277,12 @@ const Accounting: React.FC = () => {
                         </p>
                       </div>
                       <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                        deMinimisCheck.isCompliant 
+                        deMinimisCheck.isCompliant
                           ? 'bg-yellow-100 dark:bg-yellow-800'
                           : 'bg-red-100 dark:bg-red-800'
                       }`}>
                         <svg className={`w-6 h-6 ${
-                          deMinimisCheck.isCompliant 
+                          deMinimisCheck.isCompliant
                             ? 'text-yellow-600 dark:text-yellow-400'
                             : 'text-red-600 dark:text-red-400'
                         }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,39 +294,39 @@ const Accounting: React.FC = () => {
 
                   {/* Compliance Status */}
                   <div className={`rounded-xl p-4 border ${
-                    deMinimisCheck.isCompliant 
+                    deMinimisCheck.isCompliant
                       ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
                       : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
                   }`}>
                     <div className="flex items-center justify-between">
                       <div>
                         <p className={`text-sm font-medium ${
-                          deMinimisCheck.isCompliant 
+                          deMinimisCheck.isCompliant
                             ? 'text-green-700 dark:text-green-300'
                             : 'text-red-700 dark:text-red-300'
                         }`}>
                           {t('accounting.freeZone.complianceStatus', 'QFZP Compliance')}
                         </p>
                         <p className={`text-lg font-bold ${
-                          deMinimisCheck.isCompliant 
+                          deMinimisCheck.isCompliant
                             ? 'text-green-900 dark:text-green-100'
                             : 'text-red-900 dark:text-red-100'
                         }`}>
                           {deMinimisCheck.isCompliant ? t('accounting.freeZone.compliant', 'Compliant') : t('accounting.freeZone.nonCompliant', 'Non-Compliant')}
                         </p>
                         <p className={`text-xs mt-1 ${
-                          deMinimisCheck.isCompliant 
+                          deMinimisCheck.isCompliant
                             ? 'text-green-600 dark:text-green-400'
                             : 'text-red-600 dark:text-red-400'
                         }`}>
-                          {deMinimisCheck.isCompliant 
+                          {deMinimisCheck.isCompliant
                             ? t('accounting.freeZone.withinLimits', 'Within de minimis limits')
                             : t('accounting.freeZone.exceedsLimits', 'Exceeds de minimis thresholds')
                           }
                         </p>
                       </div>
                       <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                        deMinimisCheck.isCompliant 
+                        deMinimisCheck.isCompliant
                           ? 'bg-green-100 dark:bg-green-800'
                           : 'bg-red-100 dark:bg-red-800'
                       }`}>
@@ -729,6 +735,27 @@ const Accounting: React.FC = () => {
             customer: selectedRevenueForInvoice.customer,
             date: selectedRevenueForInvoice.date
           } : null}
+        />
+
+        {/* Free Zone Advisor FAB */}
+        {state.isFreeZone && (
+          <Fab
+            color="success"
+            onClick={() => setFreeZoneAdvisorOpen(true)}
+            className="fixed bottom-6 right-20 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
+            sx={{ zIndex: 1000 }}
+          >
+            <Tooltip title={t('freeZoneAdvisor.openButton', 'Free Zone Tax Advisor')}>
+              <BuildingOffice2Icon className="h-6 w-6 text-white" />
+            </Tooltip>
+          </Fab>
+        )}
+
+        {/* Free Zone Advisor Dialog */}
+        <FreeZoneAdvisor
+          open={freeZoneAdvisorOpen}
+          onClose={() => setFreeZoneAdvisorOpen(false)}
+          context="accounting"
         />
       </div>
     </div>

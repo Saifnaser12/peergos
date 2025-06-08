@@ -23,7 +23,9 @@ import {
   DialogActions,
   FormHelperText,
   InputAdornment,
-  Tooltip
+  Tooltip,
+  Menu,
+  Fab
 } from '@mui/material';
 import {
   Upload as UploadIcon,
@@ -37,6 +39,21 @@ import {
   Delete as DeleteIcon,
   Visibility as VisibilityIcon
 } from '@mui/icons-material';
+import {
+  DocumentTextIcon,
+  ArrowDownTrayIcon,
+  ExclamationTriangleIcon,
+  InformationCircleIcon,
+  CogIcon,
+  CalendarIcon,
+  ChartBarIcon,
+  DocumentArrowDownIcon,
+  ShareIcon,
+  EyeIcon,
+  PencilIcon,
+  TrashIcon,
+  BuildingOffice2Icon
+} from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { TaxCalculator } from '../utils/calculations/tax';
 import { Validator } from '../utils/validation';
@@ -49,6 +66,7 @@ import { ftaService } from '../services/ftaService';
 import { useTaxAgent } from '../context/TaxAgentContext';
 import { useFinance } from '../context/FinanceContext';
 import { useFinancialSync } from '../hooks/useFinancialSync';
+import FreeZoneAdvisor from '../components/FreeZoneAdvisor';
 
 interface CITFormData {
   revenue: number;
@@ -123,6 +141,11 @@ const CIT: React.FC = () => {
   const [showSubmissionModal, setShowSubmissionModal] = useState(false);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [draftSource, setDraftSource] = useState<string | null>(null);
+  const [exportMenuAnchor, setExportMenuAnchor] = useState<null | HTMLElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const [freeZoneAdvisorOpen, setFreeZoneAdvisorOpen] = useState(false);
 
   // Check for preview mode and load draft data
   useEffect(() => {
@@ -1056,7 +1079,34 @@ const CIT: React.FC = () => {
           {alertMessage}
         </Alert>
       </Snackbar>
-    </Box>
+
+        {/* Free Zone Advisor FAB */}
+        {/* Replace `state.isFreeZone` with a condition based on your actual state */}
+        {/* For example: `{isFreeZone}` - assuming you have a state variable called `isFreeZone` */}
+        {/* To make it work, you might want to get the value from TaxContext like `const { state } = useTax();` */}
+        {/* and then put `state.isFreeZone && (` */}
+        {false && (
+          <Fab
+            color="success"
+            onClick={() => setFreeZoneAdvisorOpen(true)}
+            className="fixed bottom-6 right-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
+            sx={{ zIndex: 1000 }}
+          >
+            <Tooltip title={t('freeZoneAdvisor.openButton', 'Free Zone Tax Advisor')}>
+              <BuildingOffice2Icon className="h-6 w-6 text-white" />
+            </Tooltip>
+          </Fab>
+        )}
+
+        {/* Free Zone Advisor Dialog */}
+        {/* Pass other relevant props as needed, e.g., context or initial data */}
+        <FreeZoneAdvisor
+          open={freeZoneAdvisorOpen}
+          onClose={() => setFreeZoneAdvisorOpen(false)}
+          context="cit"
+        />
+      </Box>
+    </div>
   );
 };
 

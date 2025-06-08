@@ -21,6 +21,8 @@ import {
   alpha,
   Chip,
   Snackbar,
+  Fab,
+  Tooltip
 } from '@mui/material';
 import { 
   WbSunny as Sun, 
@@ -32,13 +34,31 @@ import {
   TableChart as TableCells,
   CloudUpload,
 } from '@mui/icons-material';
+import {
+  DocumentTextIcon,
+  ArrowDownTrayIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  InformationCircleIcon,
+  CogIcon,
+  CalendarIcon,
+  ChartBarIcon,
+  DocumentArrowDownIcon,
+  ShareIcon,
+  EyeIcon,
+  PencilIcon,
+  TrashIcon,
+  BuildingOffice2Icon
+} from '@heroicons/react/24/outline';
 import SubmissionHistory from '../components/SubmissionHistory';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import SubmissionPanel from '../components/fta/SubmissionPanel';
 import { ftaService } from '../services/ftaService';
 import { useFinance } from '../context/FinanceContext';
+import { useTax } from '../context/TaxContext';
 import { useFinancialSync } from '../hooks/useFinancialSync';
 import SubmissionModal from '../components/SubmissionModal';
+import FreeZoneAdvisor from '../components/FreeZoneAdvisor';
 
 interface VATFormData {
   standardRatedSales: number;
@@ -66,11 +86,12 @@ interface VATCalculations {
 }
 
 const VAT: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [darkMode, setDarkMode] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { revenue, expenses } = useFinance();
+  const { state } = useTax();
   const { summary, isUpdating, totalRevenue, totalExpenses, netIncome } = useFinancialSync();
 
   const [formData, setFormData] = useState<VATFormData>({
@@ -123,13 +144,13 @@ const VAT: React.FC = () => {
   const calculateVAT = useCallback((): VATCalculations => {
     const outputVAT = formData.standardRatedSales * 0.05;
     let inputVAT = formData.purchasesWithVAT * 0.05;
-    
+
     // Add reverse charge VAT for designated zone imports
     if (formData.isDesignatedZone) {
       const reverseChargeVAT = formData.designatedZoneImports * 0.05;
       inputVAT += reverseChargeVAT;
     }
-    
+
     const netVAT = outputVAT - inputVAT;
 
     return {
@@ -172,9 +193,9 @@ const VAT: React.FC = () => {
   const handleGenerateFTAPDF = async () => {
     try {
       const { FTAPDFExporter } = await import('../utils/ftaPdfExport');
-      
+
       const exporter = new FTAPDFExporter(t, i18n.language === 'ar');
-      
+
       const companyInfo = {
         name: formData.companyName || 'Company Name',
         trn: formData.trn || 'TRN Required',
@@ -271,17 +292,18 @@ const VAT: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [draftSource, setDraftSource] = useState<string | null>(null);
+  const [freeZoneAdvisorOpen, setFreeZoneAdvisorOpen] = useState(false);
 
   // Check for preview mode and load draft data
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
     const source = urlParams.get('source');
-    
+
     if (mode === 'preview') {
       setIsPreviewMode(true);
       setDraftSource(source);
-      
+
       // Load draft data from sessionStorage
       const draftData = sessionStorage.getItem('draftVATFiling');
       if (draftData) {
@@ -341,7 +363,7 @@ const VAT: React.FC = () => {
           label={t('Dark Mode')}
         />
       </Box>
-      
+
       {isPreviewMode && (
         <Alert severity="info" sx={{ mb: 3 }}>
           <Typography variant="body2">
@@ -819,7 +841,29 @@ const VAT: React.FC = () => {
           {alertMessage}
         </Alert>
       </Snackbar>
-    </Box>
+
+        {/* Free Zone Advisor FAB */}
+        {state.isFreeZone && (
+          <Fab
+            color="success"
+            onClick={() => setFreeZoneAdvisorOpen(true)}
+            className="fixed bottom-6 right-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
+            sx={{ zIndex: 1000 }}
+          >
+            <Tooltip title={t('freeZoneAdvisor.openButton', 'Free Zone Tax Advisor')}>
+              <BuildingOffice2Icon className="h-6 w-6 text-white" />
+            </Tooltip>
+          </Fab>
+        )}
+
+        {/* Free Zone Advisor Dialog */}
+        <FreeZoneAdvisor
+          open={freeZoneAdvisorOpen}
+          onClose={() => setFreeZoneAdvisorOpen(false)}
+          context="vat"
+        />
+      </Box>
+    
   );
 };
 

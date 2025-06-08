@@ -605,6 +605,21 @@
       "reverseChargeVAT": "• Reverse Charge VAT (Designated Zone)"
     }
   },
+  "freeZoneAdvisor": {
+    "title": "Free Zone Tax Advisor",
+    "subtitle": "Specialized guidance for Free Zone CIT & VAT compliance",
+    "openButton": "Free Zone Tax Advisor",
+    "welcome": {
+      "freeZone": "Hello! I'm your Free Zone Tax Advisor. I can help with QFZP qualification, Free Zone CIT, VAT compliance, and Designated Zone rules.",
+      "nonFreeZone": "Hello! I see you are not classified as a Free Zone company. I can still provide general Free Zone information, but these provisions may not apply to your situation."
+    },
+    "input": {
+      "placeholder": "Ask about Free Zone CIT, VAT, QFZP qualification, or Designated Zones..."
+    },
+    "suggestions": "Suggested Questions:",
+    "send": "Send",
+    "error": "Error getting response from Free Zone Advisor. Please try again."
+  },
   "freeZone": {
     "substance": {
       "title": "Free Zone Economic Substance",
