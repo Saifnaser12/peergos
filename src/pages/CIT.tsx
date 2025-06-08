@@ -44,6 +44,7 @@ import SubmissionHistory from '../components/SubmissionHistory';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import TaxAgentSelector from '../components/TaxAgentSelector';
 import SubmissionPanel from '../components/fta/SubmissionPanel';
+import SubmissionModal from '../components/SubmissionModal';
 import { ftaService } from '../services/ftaService';
 import { useTaxAgent } from '../context/TaxAgentContext';
 import { useFinance } from '../context/FinanceContext';
@@ -114,6 +115,7 @@ const CIT: React.FC = () => {
   const [isCalculating, setIsCalculating] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [showSubmissionModal, setShowSubmissionModal] = useState(false);
 
   // Calculate CIT based on form data
   const citCalculation = useMemo((): CITCalculation => {
@@ -722,7 +724,7 @@ const CIT: React.FC = () => {
                   fullWidth
                   variant="outlined"
                   color="primary"
-                  onClick={handleSubmitToFTA}
+                  onClick={() => setShowSubmissionModal(true)}
                   disabled={isCalculating || !formData.companyName || !formData.trn}
                   startIcon={<UploadIcon />}
                 >
@@ -807,6 +809,19 @@ const CIT: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Submission Modal */}
+      <SubmissionModal
+        title="Confirm CIT Submission"
+        description="Are you sure you want to submit your Corporate Income Tax return to the FTA? This action cannot be undone and the return will be officially filed."
+        isOpen={showSubmissionModal}
+        isLoading={isCalculating}
+        onClose={() => setShowSubmissionModal(false)}
+        onConfirm={async () => {
+          await handleSubmitToFTA();
+          setShowSubmissionModal(false);
+        }}
+      />
 
       {/* Success/Warning Alerts */}
       <Snackbar

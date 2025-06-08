@@ -35,6 +35,7 @@ import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import SubmissionPanel from '../components/fta/SubmissionPanel';
 import { ftaService } from '../services/ftaService';
 import { useFinance } from '../context/FinanceContext';
+import SubmissionModal from '../components/SubmissionModal';
 
 interface VATFormData {
   standardRatedSales: number;
@@ -134,6 +135,21 @@ const VAT: React.FC = () => {
     }).format(amount);
   };
 
+  const handleSubmitVAT = async () => {
+    setIsSubmitting(true);
+    try {
+      // Simulate VAT submission
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setAlertMessage(t('vat.fta.submitSuccess', 'VAT return submitted successfully'));
+      setShowSuccessAlert(true);
+    } catch (error) {
+      setAlertMessage(t('vat.fta.submitError', 'Error submitting VAT return'));
+      setShowWarningAlert(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleExportPDF = () => {
     console.log('Exporting PDF...');
   };
@@ -195,6 +211,12 @@ const VAT: React.FC = () => {
       },
     },
   };
+
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showWarningAlert, setShowWarningAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [showSubmissionModal, setShowSubmissionModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
@@ -536,13 +558,15 @@ const VAT: React.FC = () => {
 
               <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <Button
-                  variant="contained"
                   fullWidth
-                  size="large"
-                  onClick={handleSubmit}
-                  sx={{ py: 1.5, fontWeight: 600 }}
+                  variant="contained"
+                  color="primary"
+                  startIcon={<CloudUpload />}
+                  sx={{ py: 2 }}
+                  onClick={() => setShowSubmissionModal(true)}
+                  disabled={isSubmitting}
                 >
-                  {t('Submit VAT Return')}
+                  {isSubmitting ? t('vat.fta.submitting', 'Submitting...') : t('vat.submitReturn')}
                 </Button>
 
                 <Button
@@ -588,6 +612,30 @@ const VAT: React.FC = () => {
           />
         </Box>
       )}
+
+      {/* Submission Modal */}
+      <SubmissionModal
+        title="Confirm VAT Submission"
+        description="Are you sure you want to submit your VAT return to the FTA? This action cannot be undone and the return will be officially filed."
+        isOpen={showSubmissionModal}
+        isLoading={isSubmitting}
+        onClose={() => setShowSubmissionModal(false)}
+        onConfirm={async () => {
+          await handleSubmitVAT();
+          setShowSubmissionModal(false);
+        }}
+      />
+
+      {/* Success/Warning Alerts */}
+      <Snackbar
+        open={showSuccessAlert}
+        autoHideDuration={4000}
+        onClose={() => setShowSuccessAlert(false)}
+      >
+        <Alert severity="success" onClose={() => setShowSuccessAlert(false)}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

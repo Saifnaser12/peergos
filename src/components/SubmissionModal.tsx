@@ -1,20 +1,25 @@
+
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 interface SubmissionModalProps {
+  title: string;
+  description?: string;
   isOpen: boolean;
-  isLoading: boolean;
+  isLoading?: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }
 
-const SubmissionModal: React.FC<SubmissionModalProps> = ({
-  isOpen,
-  isLoading,
-  onClose,
-  onConfirm,
-}) => {
+export function SubmissionModal({ 
+  title, 
+  description = "Are you sure you want to submit this return? This cannot be undone.",
+  isOpen, 
+  isLoading = false, 
+  onClose, 
+  onConfirm 
+}: SubmissionModalProps) {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
@@ -48,11 +53,11 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
                   </div>
                   <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                      Submit Tax Report
+                      {title}
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Are you sure you want to submit your tax report to the FTA? This action cannot be undone.
+                        {description}
                       </p>
                     </div>
                   </div>
@@ -77,7 +82,7 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
                         Submitting...
                       </>
                     ) : (
-                      'Confirm Submission'
+                      'Submit'
                     )}
                   </button>
                   <button
@@ -96,6 +101,6 @@ const SubmissionModal: React.FC<SubmissionModalProps> = ({
       </Dialog>
     </Transition.Root>
   );
-};
+}
 
-export default SubmissionModal; 
+export default SubmissionModal;
