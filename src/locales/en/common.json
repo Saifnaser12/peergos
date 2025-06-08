@@ -489,5 +489,23 @@
       "title": "Whitelabel Configuration",
       "subtitle": "Customize branding and appearance for your organization"
     }
+  },
+  "assistantTest": {
+    "title": "AI Assistant Testing Suite",
+    "subtitle": "Comprehensive testing for CIT/VAT use cases",
+    "runAll": "Run All Tests",
+    "running": "Running Tests...",
+    "testPassed": "Test Passed",
+    "testFailed": "Test Failed",
+    "categories": {
+      "contextInjection": "Context Injection",
+      "simulationCommands": "Simulation Commands",
+      "ftaRules": "FTA Rules",
+      "intentDetection": "Intent Detection",
+      "arabicSupport": "Arabic Support",
+      "security": "Security",
+      "performance": "Performance",
+      "knowledgeHandling": "Knowledge Handling"
+    }
   }
 }

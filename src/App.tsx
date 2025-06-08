@@ -31,6 +31,7 @@ import QAChecklist from './components/QAChecklist';
 import WhitelabelPage from './pages/WhitelabelPage';
 import Setup from './pages/Setup';
 import Unauthorized from './pages/Unauthorized';
+import AssistantTest from './pages/AssistantTest'; // Import the AssistantTest component
 
 // Context
 import { ThemeProvider as CustomThemeProvider } from './context/ThemeContext';
@@ -87,6 +88,7 @@ const App: React.FC = () => {
                               <Route path="/assistant" element={<Layout><Assistant /></Layout>} />
                               <Route path="/admin" element={<Layout><Admin /></Layout>} />
                               <Route path="/qa-test" element={<Layout><QATest /></Layout>} />
+                              <Route path="/assistant-test" element={<Layout><AssistantTest /></Layout>} />
                               <Route path="/backup" element={<Layout><BackupManager /></Layout>} />
                               <Route path="/whitelabel" element={<Layout><WhitelabelPage /></Layout>} />
                               <Route path="*" element={<Navigate to="/home" replace />} />
