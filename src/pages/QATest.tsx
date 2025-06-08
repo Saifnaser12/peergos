@@ -29,6 +29,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useUserRole } from '../context/UserRoleContext';
 import { useFinance } from '../context/FinanceContext';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 interface TestResult {
   name: string;
@@ -423,8 +424,8 @@ const QATest: React.FC = () => {
     updateSuiteStatus(suiteIndex, 'running');
 
     // Check if required libraries are available
-    const hasJsSHA = typeof (window as any)?.jsSHA !== 'undefined';
-    const hasQRCode = typeof (window as any)?.QRCode !== 'undefined';
+    const hasJsSHA = typeof (window as any)?.jsSHA !== 'undefined' && (window as any)?.jsSHA !== null;
+    const hasQRCode = typeof (window as any)?.QRCode !== 'undefined' && (window as any)?.QRCode !== null;
 
     const tests = [
       { name: 'Valid TRN format', trn: '100123456700003', shouldPass: true },

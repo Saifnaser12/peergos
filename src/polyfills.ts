@@ -3,21 +3,31 @@ let jsSHA: any = null;
 let QRCode: any = null;
 
 try {
-  jsSHA = require('jssha');
+  // Dynamic import for jsSHA
+  import('jssha').then((module) => {
+    jsSHA = module.default || module;
+    if (typeof window !== 'undefined') {
+      (window as any).jsSHA = jsSHA;
+    }
+  }).catch(() => {
+    // Silent fail - library not available
+  });
 } catch (e) {
-  console.warn('jsSHA not available, cryptographic functions will be disabled');
+  // Silent fail - library not available
 }
 
 try {
-  QRCode = require('qrcode');
+  // Dynamic import for QRCode
+  import('qrcode').then((module) => {
+    QRCode = module.default || module;
+    if (typeof window !== 'undefined') {
+      (window as any).QRCode = QRCode;
+    }
+  }).catch(() => {
+    // Silent fail - library not available
+  });
 } catch (e) {
-  console.warn('QRCode not available, QR code generation will be disabled');
-}
-
-// Make libraries globally available
-if (typeof window !== 'undefined') {
-  (window as any).jsSHA = jsSHA;
-  (window as any).QRCode = QRCode;
+  // Silent fail - library not available
 }
 
 // Critical polyfills that must load before any other scripts
@@ -244,20 +254,3 @@ if (typeof self !== 'undefined') {
 }
 
 export {};
-// Polyfills for browser compatibility
-if (typeof global === 'undefined') {
-  (window as any).global = window;
-}
-
-if (typeof process === 'undefined') {
-  (window as any).process = { env: {} };
-}
-
-if (typeof Buffer === 'undefined') {
-  (window as any).Buffer = {};
-}
-
-// Ensure crypto is available
-if (typeof crypto === 'undefined' && typeof window !== 'undefined') {
-  (window as any).crypto = window.crypto || {};
-}
