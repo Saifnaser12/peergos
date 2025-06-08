@@ -110,6 +110,31 @@
     "subtitle": "AI-powered guidance for UAE tax compliance",
     "welcome": {
       "message": "Hi! I'm your Peergos Tax Assistant. Ask me anything about VAT, CIT, or compliance."
-    }
+    },
+    "input": {
+      "placeholder": "Ask about VAT, CIT, Transfer Pricing, or general tax questions...",
+      "send": "Send"
+    },
+    "export": {
+      "chat": "Export Chat",
+      "auditLog": "Export Audit Log"
+    },
+    "responses": {
+      "greeting": "Hello! I'm your UAE tax assistant. I can help with CIT, VAT, filing deadlines, and FTA compliance. What would you like to know?",
+      "default": "I'm here to help with UAE tax compliance. Please try rephrasing your question.",
+      "apiError": "I'm having trouble connecting to my knowledge base right now. Please try again in a moment, or contact support if the issue persists."
+    },
+    "categories": {
+      "cit": "Corporate Tax",
+      "vat": "VAT",
+      "transferPricing": "Transfer Pricing",
+      "general": "General"
+    },
+    "suggestions": {
+      "title": "Suggested Questions"
+    },
+    "exportSuccess": "Chat exported successfully",
+    "auditExported": "Audit log exported successfully",
+    "error": "Error getting response from assistant. Please check your API key or try again."
   }
 }

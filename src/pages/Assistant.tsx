@@ -23,6 +23,63 @@ interface Message {
   isTyping?: boolean;
 }
 
+interface AuditLog {
+  id: string;
+  userMessage: string;
+  assistantReply: string;
+  timestamp: Date;
+  tokenUsage?: number;
+  responseTime?: number;
+}
+
+// UAE CIT/VAT System Prompt for GPT-4
+const UAE_TAX_SYSTEM_PROMPT = `You are a specialized UAE tax assistant helping SMEs comply with Corporate Income Tax (CIT) and VAT regulations based on Federal Tax Authority (FTA) guidance. Answer in simple, practical language using local deadlines, thresholds, and formats.
+
+**UAE CORPORATE TAX (CIT) KNOWLEDGE:**
+- CIT Rate: 9% on taxable income exceeding AED 375,000
+- Small Business Relief: 0% rate for income up to AED 375,000
+- Tax Period: Financial year (can be calendar year or custom 12 months)
+- Filing Deadline: 9 months after financial year-end
+- Payment Deadline: Same as filing deadline
+- Registration Threshold: AED 1 million revenue (automatic registration required)
+- Minimum Tax: None for qualifying Small Business Relief
+- Tax Groups: Available for UAE resident companies under common control
+- Participation Exemption: Available for qualifying shareholdings
+
+**UAE VAT KNOWLEDGE:**
+- Standard Rate: 5% on most goods and services
+- Zero Rate: 0% on exports, international transport, precious metals
+- Exempt: Financial services, residential property sales, local passenger transport
+- Registration Threshold: AED 375,000 revenue over 12 months
+- Voluntary Registration: Available for businesses below threshold
+- Tax Period: Monthly (large businesses) or Quarterly (small businesses)
+- Filing Deadline: 28 days after end of tax period
+- Payment Deadline: Same as filing deadline
+- Penalties: 5% of tax due (minimum AED 3,000) for late filing
+
+**COMMON FTA REQUIREMENTS:**
+- TRN (Tax Registration Number): Required for all registered taxpayers
+- Economic Substance Regulations: Apply to relevant activities
+- Digital Services Tax: 50% withholding on certain digital services
+- Excise Tax: 100% on tobacco, 50% on carbonated drinks, 100% on energy drinks
+- Transfer Pricing: Documentation required for related party transactions
+
+**SME PRACTICAL GUIDANCE:**
+- Maintain proper books and records for 5 years
+- Issue tax invoices for VAT-registered supplies
+- File nil returns even with no activity
+- Penalties can be significant - seek professional help when unsure
+- FTA offers guidance documents and webinars
+- Consider voluntary disclosure for past errors
+
+**KEY DATES TO REMEMBER:**
+- VAT monthly filing: 28th of following month
+- VAT quarterly filing: 28 days after quarter end
+- CIT filing: 9 months after financial year-end
+- Economic Substance deadline: 6 months after financial year-end
+
+Always provide specific AED amounts, actual deadlines, and reference FTA guidance where applicable. Suggest consulting qualified tax advisors for complex matters.`;
+
 interface SuggestedQuestion {
   id: string;
   question: string;
@@ -39,31 +96,38 @@ const Assistant: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [exportMenuAnchor, setExportMenuAnchor] = useState<null | HTMLElement>(null);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [uaeMode] = useState(true); // Always enabled for UAE compliance
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isRTL = i18n.language === 'ar';
 
-  // OpenAI GPT-4 API integration
+  // OpenAI GPT-4 API integration with UAE CIT/VAT training
   const callOpenAI = async (userMessage: string): Promise<string> => {
+    const startTime = Date.now();
+    
     try {
       // Get user context for more personalized responses
       const citLiability = state.citDue || 0;
       const vatDue = state.vatDue || 0;
       const revenue = state.revenue || 0;
+      const currentYear = new Date().getFullYear();
 
-      const systemPrompt = `You are Peergos Tax Assistant, an AI expert in UAE tax compliance including VAT, Corporate Income Tax (CIT), and Transfer Pricing. 
+      // Enhanced system prompt with user context
+      const contextualSystemPrompt = `${UAE_TAX_SYSTEM_PROMPT}
 
-Current user context:
+**CURRENT USER CONTEXT:**
 - CIT liability: AED ${citLiability.toLocaleString()}
 - VAT due: AED ${vatDue.toLocaleString()}  
-- Revenue: AED ${revenue.toLocaleString()}
+- Total revenue: AED ${revenue.toLocaleString()}
+- Current tax year: ${currentYear}
+- Using Peergos UAE Compliance Platform
 
-Guidelines:
-- Provide accurate, helpful advice on UAE FTA regulations
-- Be conversational and friendly
-- Reference specific UAE tax rates, thresholds, and deadlines
-- Suggest using Peergos features when relevant
-- Always recommend consulting qualified tax advisors for complex matters
-- Keep responses concise but comprehensive`;
+**RESPONSE GUIDELINES:**
+- Provide specific, actionable advice for UAE SMEs
+- Reference the user's current tax position when relevant
+- Suggest Peergos features for compliance management
+- Always recommend professional consultation for complex matters
+- Keep responses clear, practical, and compliant with FTA guidance`;
 
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -74,10 +138,10 @@ Guidelines:
         body: JSON.stringify({
           model: 'gpt-4',
           messages: [
-            { role: 'system', content: systemPrompt },
+            { role: 'system', content: contextualSystemPrompt },
             { role: 'user', content: userMessage }
           ],
-          max_tokens: 500,
+          max_tokens: 600,
           temperature: 0.7
         })
       });
@@ -87,13 +151,44 @@ Guidelines:
       }
 
       const data = await response.json();
-      return data.choices[0]?.message?.content || t('assistant.responses.default', 'I\'m here to help with UAE tax compliance. Please try rephrasing your question.');
+      const assistantReply = data.choices[0]?.message?.content || t('assistant.responses.default', 'I\'m here to help with UAE tax compliance. Please try rephrasing your question.');
+      const responseTime = Date.now() - startTime;
+
+      // Audit logging
+      const auditEntry: AuditLog = {
+        id: Date.now().toString(),
+        userMessage,
+        assistantReply,
+        timestamp: new Date(),
+        tokenUsage: data.usage?.total_tokens || 0,
+        responseTime
+      };
+
+      setAuditLogs(prev => [...prev, auditEntry]);
+      
+      // Log to console for debugging
+      console.log('🤖 Assistant Audit Log:', {
+        userMessage: userMessage.substring(0, 100) + '...',
+        replyLength: assistantReply.length,
+        responseTime: `${responseTime}ms`,
+        tokens: data.usage?.total_tokens || 0
+      });
+
+      return assistantReply;
     } catch (error) {
       console.error('OpenAI API Error:', error);
       
-      // Fallback to basic responses if API fails
+      // Enhanced fallback responses with UAE context
       if (userMessage.toLowerCase().includes('hello') || userMessage.toLowerCase().includes('hi')) {
-        return t('assistant.responses.greeting', 'Hi! I\'m your Peergos Tax Assistant. Ask me anything about VAT, CIT, or compliance in the UAE.');
+        return t('assistant.responses.greeting', 'Hello! I\'m your UAE tax assistant. I can help with CIT, VAT, filing deadlines, and FTA compliance. What would you like to know?');
+      }
+      
+      if (userMessage.toLowerCase().includes('cit') || userMessage.toLowerCase().includes('corporate tax')) {
+        return 'I can help with UAE Corporate Tax! Key facts: 9% rate on income above AED 375,000, Small Business Relief available, filing due 9 months after year-end. What specific CIT question do you have?';
+      }
+      
+      if (userMessage.toLowerCase().includes('vat')) {
+        return 'I can assist with UAE VAT compliance! Key facts: 5% standard rate, AED 375,000 registration threshold, monthly/quarterly filing. What VAT question can I help with?';
       }
       
       return t('assistant.responses.apiError', 'I\'m having trouble connecting to my knowledge base right now. Please try again in a moment, or contact support if the issue persists.');
@@ -103,39 +198,39 @@ Guidelines:
   const suggestedQuestions: SuggestedQuestion[] = [
     {
       id: '1',
-      question: t('assistant.suggestions.taxOwed', 'How much tax do I owe currently?'),
-      category: 'general',
-      answer: 'AI will analyze your current tax position...'
+      question: 'When is my next CIT payment due?',
+      category: 'cit',
+      answer: 'AI will analyze your CIT filing deadline based on your financial year-end...'
     },
     {
       id: '2',
-      question: t('assistant.suggestions.smallBusiness', 'Am I eligible for Small Business Relief in UAE?'),
+      question: 'How do I apply for Small Business Relief?',
       category: 'cit',
-      answer: 'AI will check your eligibility...'
+      answer: 'AI will explain the AED 375,000 threshold and application process...'
     },
     {
       id: '3',
-      question: t('assistant.suggestions.vatRegistration', 'Do I need to register for VAT in UAE?'),
+      question: 'What happens if I miss my VAT return?',
       category: 'vat',
-      answer: 'AI will assess your VAT obligations...'
+      answer: 'AI will explain FTA penalties and remediation steps...'
     },
     {
       id: '4',
-      question: t('assistant.suggestions.citDeadlines', 'When is my CIT return due?'),
-      category: 'cit',
-      answer: 'AI will provide deadline information...'
+      question: 'Do I need to register for VAT with AED 350,000 revenue?',
+      category: 'vat',
+      answer: 'AI will assess your proximity to the AED 375,000 threshold...'
     },
     {
       id: '5',
-      question: t('assistant.suggestions.transferPricingReq', 'Do I need transfer pricing documentation?'),
-      category: 'transferPricing',
-      answer: 'AI will review your requirements...'
+      question: 'How do I get a TRN for my business?',
+      category: 'general',
+      answer: 'AI will guide you through the FTA registration process...'
     },
     {
       id: '6',
-      question: t('assistant.suggestions.complianceChecklist', 'What compliance tasks should I prioritize?'),
-      category: 'general',
-      answer: 'AI will create a personalized checklist...'
+      question: 'What records do I need to keep for CIT compliance?',
+      category: 'cit',
+      answer: 'AI will list the 5-year record-keeping requirements...'
     }
   ];
 
@@ -232,6 +327,28 @@ Guidelines:
     setExportMenuAnchor(null);
   };
 
+  const exportAuditLog = () => {
+    const auditContent = auditLogs.map(log => 
+      `[${log.timestamp.toISOString()}] Tokens: ${log.tokenUsage}, Response Time: ${log.responseTime}ms
+User: ${log.userMessage}
+Assistant: ${log.assistantReply}
+---`
+    ).join('\n\n');
+
+    const blob = new Blob([auditContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `assistant-audit-log-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    setSuccess(t('assistant.auditExported', 'Audit log exported successfully'));
+    setExportMenuAnchor(null);
+  };
+
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'cit': return 'text-blue-600 dark:text-blue-400';
@@ -261,7 +378,17 @@ Guidelines:
               </Box>
             </Box>
 
-            <Box className="flex items-center gap-2">
+            <Box className="flex items-center gap-3">
+              {/* UAE Mode Badge */}
+              {uaeMode && (
+                <Box className="flex items-center gap-2 px-3 py-1 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-full">
+                  <span className="text-lg">🇦🇪</span>
+                  <Typography variant="caption" className="text-green-700 dark:text-green-300 font-medium">
+                    CIT/VAT UAE Mode: Active
+                  </Typography>
+                </Box>
+              )}
+              
               {messages.length > 0 && (
                 <>
                   <IconButton
@@ -432,6 +559,10 @@ Guidelines:
           <MenuItem onClick={exportChat}>
             <DocumentArrowDownIcon className="h-5 w-5 mr-2" />
             {t('assistant.export.chat', 'Export Chat')}
+          </MenuItem>
+          <MenuItem onClick={exportAuditLog}>
+            <DocumentArrowDownIcon className="h-5 w-5 mr-2" />
+            {t('assistant.export.auditLog', 'Export Audit Log')}
           </MenuItem>
         </Menu>
 
