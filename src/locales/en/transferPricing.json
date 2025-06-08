@@ -1,3 +1,4 @@
+
 {
   "title": "Transfer Pricing Disclosure",
   "relatedPartyName": "Related Party Name",
@@ -41,10 +42,8 @@
     "positiveNumber": "Please enter a positive number",
     "fileRequired": "Please upload the required file",
     "maxFileSize": "File size should not exceed 10MB"
-  }
-} 
-{
-  "title": "Transfer Pricing",
+  },
+  
   "subtitle": "Manage related party transactions and transfer pricing compliance",
   "status": "Documentation Status",
   "requiredDocs": "Documents Needed"

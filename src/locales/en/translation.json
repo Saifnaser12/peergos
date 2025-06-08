@@ -1,3 +1,4 @@
+
 {
   "welcome": "Welcome",
   "dashboard": "Dashboard",
@@ -84,6 +85,11 @@
       "asset": "Asset",
       "liability": "Liability",
       "equity": "Equity"
+    },
+    "exportFTAPDF": "Generate FTA PDF",
+    "export": {
+      "ftaPdfSuccess": "FTA-style Financial PDF generated successfully",
+      "ftaPdfError": "Error generating FTA PDF"
     }
   },
   "vat": {
@@ -107,13 +113,6 @@
     "export": {
       "generateFTAPDF": "Generate FTA PDF",
       "ftaPdfSuccess": "FTA-style VAT PDF generated successfully",
-      "ftaPdfError": "Error generating FTA PDF"
-    }
-  },
-  "financials": {
-    "exportFTAPDF": "Generate FTA PDF",
-    "export": {
-      "ftaPdfSuccess": "FTA-style Financial PDF generated successfully",
       "ftaPdfError": "Error generating FTA PDF"
     }
   },
@@ -171,19 +170,5 @@
     "goBack": "Go Back",
     "goHome": "Return to Dashboard",
     "contactAdmin": "Contact your administrator if you believe this is an error."
-  }
-}
-{
-  "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Overview of your tax obligations and key metrics"
-  },
-  "nav": {
-    "dashboard": "Dashboard",
-    "cit": "Corporate Tax",
-    "vat": "VAT",
-    "accounting": "Accounting",
-    "financials": "Financials",
-    "assistant": "Tax Assistant"
   }
 }

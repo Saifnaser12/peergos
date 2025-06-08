@@ -1,3 +1,4 @@
+
 {
   "app": {
     "title": "UAE Tax Compliance System",
@@ -55,7 +56,12 @@
     "approved": "Approved",
     "rejected": "Rejected",
     "draft": "Draft",
-    "submitted": "Submitted"
+    "submitted": "Submitted",
+    "export": "Export",
+    "download": "Download",
+    "search": "Search",
+    "filter": "Filter",
+    "noData": "No data available"
   },
   "dashboard": {
     "title": "Tax Compliance Dashboard",
@@ -299,19 +305,4 @@
     "notFound": "The requested resource was not found.",
     "serverError": "Server error. Please try again later."
   }
-}
-{
-  "loading": "Loading...",
-  "save": "Save",
-  "cancel": "Cancel",
-  "edit": "Edit",
-  "delete": "Delete",
-  "submit": "Submit",
-  "export": "Export",
-  "download": "Download",
-  "search": "Search",
-  "filter": "Filter",
-  "noData": "No data available",
-  "error": "Error",
-  "success": "Success"
 }
