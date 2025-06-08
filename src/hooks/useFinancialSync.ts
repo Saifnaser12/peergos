@@ -25,9 +25,9 @@ export const useFinancialSync = () => {
     setIsUpdating(true);
     
     try {
-      const totalRevenue = finance.getTotalRevenue();
-      const totalExpenses = finance.getTotalExpenses();
-      const netIncome = finance.getNetIncome();
+      const totalRevenue = finance.getTotalRevenue() || 0;
+      const totalExpenses = finance.getTotalExpenses() || 0;
+      const netIncome = finance.getNetIncome() || 0;
       
       setSummary({
         totalRevenue,
@@ -35,6 +35,8 @@ export const useFinancialSync = () => {
         netIncome,
         lastUpdated: new Date().toISOString()
       });
+
+      console.log('Financial sync updated:', { totalRevenue, totalExpenses, netIncome });
     } catch (error) {
       console.error('Error updating financial summary:', error);
     } finally {
@@ -48,10 +50,11 @@ export const useFinancialSync = () => {
     // Initial load
     updateSummary();
 
-    // Subscribe to updates
-    const unsubscribe = finance.subscribeToUpdates(updateSummary);
-    
-    return unsubscribe;
+    // Subscribe to updates if available
+    if (finance.subscribeToUpdates) {
+      const unsubscribe = finance.subscribeToUpdates(updateSummary);
+      return unsubscribe;
+    }
   }, [finance, updateSummary]);
 
   return {
@@ -60,7 +63,8 @@ export const useFinancialSync = () => {
     totalRevenue: summary.totalRevenue,
     totalExpenses: summary.totalExpenses,
     netIncome: summary.netIncome,
-    lastUpdated: summary.lastUpdated
+    lastUpdated: summary.lastUpdated,
+    refreshSummary: updateSummary
   };
 };
 

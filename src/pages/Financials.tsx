@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -6,7 +7,6 @@ import {
   CardContent,
   Grid,
   Paper,
-  Divider,
   CircularProgress,
   Alert,
   Button
@@ -14,50 +14,41 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useFinance } from '../context/FinanceContext';
 
-// Simple financial sync without external dependencies
-const useSimpleFinancialData = () => {
+const Financials: React.FC = () => {
+  const { t } = useTranslation();
   const { revenue, expenses, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      // Simulate loading state
-      const timer = setTimeout(() => {
+    // Simulate loading and check for data
+    const timer = setTimeout(() => {
+      try {
         setIsLoading(false);
-      }, 500);
+        console.log('Financials loaded successfully');
+      } catch (err) {
+        console.error('Error loading financials:', err);
+        setError('Failed to load financial data');
+        setIsLoading(false);
+      }
+    }, 500);
 
-      return () => clearTimeout(timer);
-    } catch (err) {
-      console.error('Error in financial sync:', err);
-      setError('Failed to load financial data');
-      setIsLoading(false);
-    }
+    return () => clearTimeout(timer);
   }, []);
 
-  return {
-    revenue: revenue || [],
-    expenses: expenses || [],
-    totalRevenue: getTotalRevenue() || 0,
-    totalExpenses: getTotalExpenses() || 0,
-    netIncome: getNetIncome() || 0,
-    isLoading,
-    error
-  };
-};
+  // Get current financial data
+  const totalRevenue = getTotalRevenue() || 0;
+  const totalExpenses = getTotalExpenses() || 0;
+  const netIncome = getNetIncome() || 0;
+  const revenueData = revenue || [];
+  const expenseData = expenses || [];
 
-const Financials: React.FC = () => {
-  const { t } = useTranslation();
-  const { revenue, expenses, totalRevenue, totalExpenses, netIncome, isLoading, error } = useSimpleFinancialData();
-
-  console.log('Financials page rendering with data:', {
-    revenueCount: revenue.length,
-    expenseCount: expenses.length,
+  console.log('Financials page data:', {
+    revenueCount: revenueData.length,
+    expenseCount: expenseData.length,
     totalRevenue,
     totalExpenses,
-    netIncome,
-    isLoading,
-    error
+    netIncome
   });
 
   if (error) {
@@ -111,7 +102,7 @@ const Financials: React.FC = () => {
                 AED {totalRevenue.toLocaleString()}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {revenue.length} revenue entries
+                {revenueData.length} revenue entries
               </Typography>
             </CardContent>
           </Card>
@@ -127,7 +118,7 @@ const Financials: React.FC = () => {
                 AED {totalExpenses.toLocaleString()}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {expenses.length} expense entries
+                {expenseData.length} expense entries
               </Typography>
             </CardContent>
           </Card>
@@ -150,26 +141,26 @@ const Financials: React.FC = () => {
         </Grid>
       </Grid>
 
-      {/* Revenue Details */}
+      {/* Revenue and Expense Details */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>
               Recent Revenue
             </Typography>
-            {revenue.length > 0 ? (
-              revenue.slice(0, 5).map((item) => (
-                <Box key={item.id} sx={{ mb: 2, pb: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+            {revenueData.length > 0 ? (
+              revenueData.slice(0, 5).map((item, index) => (
+                <Box key={item.id || index} sx={{ mb: 2, pb: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {item.category}
+                      {item.category || 'Revenue'}
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'success.main', fontWeight: 600 }}>
-                      AED {item.amount.toLocaleString()}
+                      AED {(item.amount || 0).toLocaleString()}
                     </Typography>
                   </Box>
                   <Typography variant="caption" color="text.secondary">
-                    {item.description} • {new Date(item.date).toLocaleDateString()}
+                    {item.description || 'No description'} • {item.date ? new Date(item.date).toLocaleDateString() : 'No date'}
                   </Typography>
                 </Box>
               ))
@@ -184,19 +175,19 @@ const Financials: React.FC = () => {
             <Typography variant="h6" sx={{ mb: 2 }}>
               Recent Expenses
             </Typography>
-            {expenses.length > 0 ? (
-              expenses.slice(0, 5).map((item) => (
-                <Box key={item.id} sx={{ mb: 2, pb: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+            {expenseData.length > 0 ? (
+              expenseData.slice(0, 5).map((item, index) => (
+                <Box key={item.id || index} sx={{ mb: 2, pb: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {item.category}
+                      {item.category || 'Expense'}
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'error.main', fontWeight: 600 }}>
-                      AED {item.amount.toLocaleString()}
+                      AED {(item.amount || 0).toLocaleString()}
                     </Typography>
                   </Box>
                   <Typography variant="caption" color="text.secondary">
-                    {item.description} • {new Date(item.date).toLocaleDateString()}
+                    {item.description || 'No description'} • {item.date ? new Date(item.date).toLocaleDateString() : 'No date'}
                   </Typography>
                 </Box>
               ))
