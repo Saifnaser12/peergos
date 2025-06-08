@@ -1,4 +1,3 @@
-
 {
   "welcome": "Welcome",
   "dashboard": "Dashboard",
@@ -91,7 +90,33 @@
       "ftaPdfSuccess": "FTA-style Financial PDF generated successfully",
       "ftaPdfError": "Error generating FTA PDF",
       "excelSuccess": "Excel file exported successfully",
-      "excelError": "Error exporting Excel file"
+      "excelError": "Error exporting Excel file",
+      "exportData": "Export Data",
+      "downloadExcel": "Download Excel file",
+      "livePL": "Live Profit & Loss Summary",
+      "realTime": "Real-time",
+      "transactions": "transactions",
+      "netProfit": "Net Profit",
+      "margin": "margin",
+      "exportPDF": "Export PDF Report",
+      "exportExcel": "Export Excel",
+      "bookkeeping": "Bookkeeping & Document Management",
+      "recentInvoices": "Recent Scanned Invoices",
+      "invoicesProcessed": "Invoices processed through OCR scanning",
+      "incomeStatement": "Income Statement",
+      "cashFlowStatement": "Cash Flow Statement",
+      "dataEntries": "Data Entries",
+      "editExpense": "Edit Expense",
+      "recordSales": "Record sales and income",
+      "trackCosts": "Track business costs",
+      "exportReports": "Export Reports",
+      "downloadPdf": "Download PDF reports",
+      "export": {
+        "ftaPdfSuccess": "Financial PDF generated successfully",
+        "ftaPdfError": "Error generating PDF",
+        "excelSuccess": "Excel file exported successfully",
+        "excelError": "Error exporting Excel file"
+      }
     }
   },
   "vat": {
