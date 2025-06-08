@@ -116,7 +116,7 @@ function AppContent() {
               } />
               
               <Route path="transfer-pricing" element={
-                <ProtectedRoute rolesAllowed={["admin"]}>
+                <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "viewer"]}>
                   <TransferPricing />
                 </ProtectedRoute>
               } />
