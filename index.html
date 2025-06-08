@@ -4,96 +4,10 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="UAE Tax Filing System - CIT, VAT, and Financial Management" />
+    <meta name="keywords" content="UAE, Tax, CIT, VAT, FTA, Filing, Arabic, English" />
+    <meta name="author" content="Peergos Tax System" />
     <title>Peergos Tax System</title>
-    <script>
-      // Critical polyfills that must load before any other scripts
-      if (typeof globalThis.process === 'undefined') {
-        globalThis.process = {
-          env: {},
-          version: 'v18.0.0',
-          versions: { node: '18.0.0', npm: '9.0.0' },
-          platform: 'browser',
-          arch: 'x64',
-          pid: 1,
-          ppid: 0,
-          title: 'browser',
-          argv: ['node'],
-          cwd: function() { return '/'; },
-          chdir: function() {},
-          nextTick: function(fn) { 
-            var args = Array.prototype.slice.call(arguments, 1);
-            setTimeout(function() { fn.apply(null, args); }, 0);
-          },
-          exit: function() {},
-          kill: function() {},
-          stdout: { 
-            write: function(data) { console.log(data); },
-            isTTY: false 
-          },
-          stderr: { 
-            write: function(data) { console.error(data); },
-            isTTY: false 
-          },
-          stdin: { 
-            read: function() { return null; },
-            isTTY: false 
-          },
-          browser: true,
-          emitWarning: function() {},
-          binding: function() { return {}; },
-          umask: function() { return 0; },
-          hrtime: function() { return [Math.floor(Date.now() / 1000), 0]; },
-          uptime: function() { return Date.now() / 1000; },
-          memoryUsage: function() { return { rss: 0, heapTotal: 0, heapUsed: 0, external: 0 }; },
-          cpuUsage: function() { return { user: 0, system: 0 }; },
-          getuid: function() { return 0; },
-          getgid: function() { return 0; },
-          setuid: function() {},
-          setgid: function() {},
-          on: function() {},
-          off: function() {},
-          once: function() {},
-          emit: function() { return false; },
-          listeners: function() { return []; },
-          removeListener: function() {},
-          removeAllListeners: function() {},
-          setMaxListeners: function() {},
-          getMaxListeners: function() { return 0; }
-        };
-      }
-
-      if (typeof globalThis.global === 'undefined') {
-        globalThis.global = globalThis;
-      }
-
-      if (typeof globalThis.Buffer === 'undefined') {
-        globalThis.Buffer = {
-          from: function(data) { return new Uint8Array(data); },
-          alloc: function(size) { return new Uint8Array(size); },
-          allocUnsafe: function(size) { return new Uint8Array(size); },
-          isBuffer: function() { return false; },
-          byteLength: function(data) { return data.length || 0; },
-          compare: function() { return 0; },
-          concat: function(list) {
-            var totalLength = list.reduce(function(acc, curr) { return acc + curr.length; }, 0);
-            var result = new Uint8Array(totalLength);
-            var offset = 0;
-            for (var i = 0; i < list.length; i++) {
-              result.set(list[i], offset);
-              offset += list[i].length;
-            }
-            return result;
-          }
-        };
-      }
-
-      // Ensure window objects exist
-      if (typeof window !== 'undefined') {
-        window.process = globalThis.process;
-        window.global = globalThis;
-        window.Buffer = globalThis.Buffer;
-      }
-    </script>
   </head>
   <body>
     <div id="root"></div>
