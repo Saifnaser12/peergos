@@ -57,7 +57,7 @@ interface FinanceContextType {
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
 export const FinanceProvider = ({ children }: { children: React.ReactNode }) => {
-  const [revenue, setRevenue] = useState<Revenue[]>([]);
+  const [revenues, setRevenues] = useState<Revenue[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [updateCallbacks, setUpdateCallbacks] = useState<Set<FinanceUpdateCallback>>(new Set());
   const [lastUpdated, setLastUpdated] = useState<string>(new Date().toISOString());
@@ -82,7 +82,7 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
 
     if (savedRevenue) {
       try {
-        setRevenue(JSON.parse(savedRevenue));
+        setRevenues(JSON.parse(savedRevenue));
       } catch (error) {
         console.error('Error loading revenue from localStorage:', error);
       }
@@ -99,9 +99,9 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
 
   // Save to localStorage and trigger updates whenever data changes
   useEffect(() => {
-    localStorage.setItem('peergos-revenue', JSON.stringify(revenue));
+    localStorage.setItem('peergos-revenue', JSON.stringify(revenues));
     triggerUpdates();
-  }, [revenue, triggerUpdates]);
+  }, [revenues, triggerUpdates]);
 
   useEffect(() => {
     localStorage.setItem('peergos-expenses', JSON.stringify(expenses));
@@ -112,7 +112,7 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
 
   const addRevenue = useCallback((r: Omit<Revenue, 'id'>) => {
     const newRevenue = { ...r, id: generateId() };
-    setRevenue(prev => [...prev, newRevenue]);
+    setRevenues(prev => [...prev, newRevenue]);
   }, []);
 
   const addExpense = useCallback((e: Omit<Expense, 'id'>) => {
@@ -121,7 +121,7 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   const updateRevenue = useCallback((id: string, updates: Partial<Revenue>) => {
-    setRevenue(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
+    setRevenues(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
   }, []);
 
   const updateExpense = useCallback((id: string, updates: Partial<Expense>) => {
@@ -129,7 +129,7 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   const deleteRevenue = useCallback((id: string) => {
-    setRevenue(prev => prev.filter(r => r.id !== id));
+    setRevenues(prev => prev.filter(r => r.id !== id));
   }, []);
 
   const deleteExpense = useCallback((id: string) => {
@@ -137,8 +137,8 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   const getTotalRevenue = useCallback(() => {
-    return revenue.reduce((sum, r) => sum + r.amount, 0);
-  }, [revenue]);
+    return revenues.reduce((sum, r) => sum + r.amount, 0);
+  }, [revenues]);
 
   const getTotalExpenses = useCallback(() => {
     return expenses.reduce((sum, e) => sum + e.amount, 0);
@@ -150,16 +150,16 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
 
   // Free Zone Income Analytics
   const getQualifyingIncome = useCallback(() => {
-    return revenue
+    return revenues
       .filter(item => item.freeZoneIncomeType === 'qualifying')
       .reduce((sum, item) => sum + item.amount, 0);
-  }, [revenue]);
+  }, [revenues]);
 
   const getNonQualifyingIncome = useCallback(() => {
-    return revenue
+    return revenues
       .filter(item => item.freeZoneIncomeType === 'non-qualifying')
       .reduce((sum, item) => sum + item.amount, 0);
-  }, [revenue]);
+  }, [revenues]);
 
   const getNonQualifyingPercentage = useCallback(() => {
     const totalRevenue = getTotalRevenue();
@@ -198,15 +198,15 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
       totalRevenue: getTotalRevenue(),
       totalExpenses: getTotalExpenses(),
       netIncome: getNetIncome(),
-      revenueCount: revenue.length,
+      revenueCount: revenues.length,
       expenseCount: expenses.length,
       lastUpdated
     };
-  }, [getTotalRevenue, getTotalExpenses, getNetIncome, revenue.length, expenses.length, lastUpdated]);
+  }, [getTotalRevenue, getTotalExpenses, getNetIncome, revenues.length, expenses.length, lastUpdated]);
 
   return (
     <FinanceContext.Provider value={{ 
-      revenue, 
+      revenue: revenues, 
       expenses, 
       addRevenue, 
       addExpense,

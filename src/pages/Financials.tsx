@@ -280,7 +280,7 @@ const Financials: React.FC = () => {
       totalRevenue,
       totalExpenses,
       netIncome: netProfit,
-      revenues: revenue.map(r => ({
+      revenues: revenues.map(r => ({
         id: r.id,
         amount: r.amount,
         description: r.description,
@@ -305,7 +305,7 @@ const Financials: React.FC = () => {
       totalRevenue,
       totalExpenses,
       netIncome: netProfit,
-      revenues: revenue.map(r => ({
+      revenues: revenues.map(r => ({
         id: r.id,
         amount: r.amount,
         description: r.description,
@@ -871,14 +871,14 @@ const Financials: React.FC = () => {
                       <TableCell align="center">
                         <IconButton 
                           size="small" 
-                          onClick={() =>Financials.handleEditEntry(row)}
+                          onClick={() =>handleEditEntry(row)}
                           sx={{ mr: 1 }}
                         >
                           <EditIcon fontSize="small" />
                         </IconButton>
                         <IconButton 
                           size="small" 
-                          onClick={() => Financials.handleDeleteEntry(row.id)}
+                          onClick={() => handleDeleteEntry(row.id)}
                           color="error"
                         >
                           <DeleteIcon fontSize="small" />
