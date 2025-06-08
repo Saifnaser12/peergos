@@ -2,6 +2,8 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import useI18nHelpers from '../hooks/useI18nHelpers';
 import { useUserRole } from '../context/UserRoleContext';
+import { useTheme } from '../context/ThemeContext';
+import { useWhitelabel } from '../context/WhitelabelContext';
 import {
   HomeIcon,
   DocumentTextIcon,
@@ -24,6 +26,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { t } = useI18nHelpers();
   const location = useLocation();
   const { role } = useUserRole();
+  const { branding, isWhitelabelMode } = useWhitelabel();
+
+  const displayBranding = isWhitelabelMode ? branding : {
+    companyName: 'Peergos Tax',
+    logo: null,
+    primaryColor: '#4F46E5'
+  };
 
   const { canAccess } = useUserRole();
 
@@ -94,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   <span className="text-white font-bold text-sm">P</span>
                 </div>
                 <span className="ml-3 text-xl font-semibold text-gray-900 dark:text-white">
-                  Peergos Tax
+                  {displayBranding.companyName}
                 </span>
               </div>
             </div>
@@ -257,7 +266,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 <span className="text-white font-bold text-sm">P</span>
               </div>
               <span className="ml-3 text-xl font-semibold text-gray-900 dark:text-white">
-                Peergos Tax
+                {displayBranding.companyName}
               </span>
             </div>
             <button

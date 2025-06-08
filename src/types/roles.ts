@@ -29,5 +29,6 @@ export const ROLE_PERMISSIONS: Record<string, Role[]> = {
   '/simple-invoice': [ROLES.ADMIN, ROLES.ACCOUNTANT],
   '/admin': [ROLES.ADMIN],
   '/qa-checklist': [ROLES.ADMIN],
+  '/whitelabel': [ROLES.ADMIN],
   '/setup': [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.ASSISTANT, ROLES.SME_CLIENT]
 };

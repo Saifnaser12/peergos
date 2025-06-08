@@ -9,7 +9,8 @@ import {
   Database as BackupIcon,
   AlertTriangle as AlertIcon,
   CheckCircle as CheckIcon,
-  Clock as ClockIcon
+  Clock as ClockIcon,
+  Palette as SwatchIcon
 } from 'lucide-react';
 import { Assignment as AssignmentIcon } from '@mui/icons-material';
 import TaxAgentSelector from '../components/TaxAgentSelector';
@@ -61,6 +62,24 @@ const Admin: React.FC = () => {
                   </Typography>
                   <Button variant="outlined" fullWidth>
                     Manage Backups
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Whitelabel Configuration Card */}
+              <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => navigate('/whitelabel')}>
+                <CardContent className="p-6">
+                  <div className="flex items-center mb-4">
+                    <SwatchIcon className="text-purple-600 mr-3" sx={{ fontSize: 32 }} />
+                    <Typography variant="h6" className="font-semibold">
+                      Whitelabel Configuration
+                    </Typography>
+                  </div>
+                  <Typography variant="body2" className="text-gray-600 dark:text-gray-400 mb-4">
+                    Customize branding, colors, and appearance for your tenant
+                  </Typography>
+                  <Button variant="outlined" fullWidth>
+                    Configure Branding
                   </Button>
                 </CardContent>
               </Card>

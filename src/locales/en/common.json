@@ -363,7 +363,7 @@
     "confirmPassword": "Confirm Password",
     "signIn": "Sign In",
     "createAccount": "Create Account",
-    "forgotPassword": "Forgot Password?",
+    "forgotPassword?": "Forgot Password?",
     "rememberMe": "Remember Me"
   },
   "trn": {
@@ -430,5 +430,64 @@
     "warning": "This will replace all current data",
     "success": "Operation completed successfully",
     "failed": "Operation failed"
+  },
+  "qa": {
+    "title": "QA Checklist",
+    "subtitle": "Pre-launch validation for system components",
+    "critical": "Critical Items",
+    "optional": "Optional Items",
+    "progress": "Progress",
+    "readyForLaunch": "Ready for Launch",
+    "export": "Export Checklist"
+  },
+  "whitelabel": {
+    "title": "Whitelabel Configuration",
+    "subtitle": "Customize branding and appearance for your tenant",
+    "accessDenied": "Only system administrators can configure whitelabel settings.",
+    "mode": {
+      "title": "Whitelabel Mode",
+      "enabled": "Custom branding is active. Your tenant will use the configured branding.",
+      "disabled": "Using default Peergos branding. Enable to apply custom branding."
+    },
+    "logo": {
+      "title": "Company Logo",
+      "upload": "Upload Logo",
+      "change": "Change Logo",
+      "requirements": "PNG, JPG, or SVG. Maximum 1MB. Recommended size: 200x60px"
+    },
+    "companyName": {
+      "title": "Company Name"
+    },
+    "colors": {
+      "title": "Color Scheme",
+      "primary": "Primary Color",
+      "secondary": "Secondary Color"
+    },
+    "footer": {
+      "title": "Custom Footer Note"
+    },
+    "domain": {
+      "title": "Custom Domain",
+      "note": "Note: Custom domain mapping requires backend configuration and DNS setup. This is a placeholder for now."
+    },
+    "preview": {
+      "title": "Live Preview",
+      "sampleContent": "This is how your branded interface will appear to users.",
+      "domain": "Custom Domain"
+    },
+    "status": {
+      "active": "Whitelabel mode is active",
+      "inactive": "Using default Peergos branding",
+      "activeDescription": "Your custom branding is applied across all pages.",
+      "inactiveDescription": "Enable whitelabel mode to apply your custom branding."
+    },
+    "errors": {
+      "invalidFileType": "Please upload a valid image file (PNG, JPG, SVG).",
+      "fileTooLarge": "File size must be less than 1MB."
+    },
+    "page": {
+      "title": "Whitelabel Configuration",
+      "subtitle": "Customize branding and appearance for your organization"
+    }
   }
 }

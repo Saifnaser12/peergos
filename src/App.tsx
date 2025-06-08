@@ -26,6 +26,10 @@ import Register from './pages/Register';
 import Admin from './pages/Admin';
 import QATest from './pages/QATest';
 import BackupManager from './pages/BackupManager'; // Assuming BackupManager.js exists
+import QAChecklist from './components/QAChecklist';
+import WhitelabelPage from './pages/WhitelabelPage';
+import Setup from './pages/Setup';
+import Unauthorized from './pages/Unauthorized';
 
 // Context
 import { ThemeProvider as CustomThemeProvider } from './context/ThemeContext';
@@ -33,6 +37,7 @@ import { UserRoleProvider } from './context/UserRoleContext';
 import { TaxProvider } from './context/TaxContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { SettingsProvider } from './context/SettingsContext';
+import { WhitelabelProvider } from './context/WhitelabelContext';
 
 const theme = createTheme({
   palette: {
@@ -54,40 +59,43 @@ const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <CustomThemeProvider>
-          <UserRoleProvider>
-            <TaxProvider>
-              <NotificationProvider>
-                <SettingsProvider>
-                  <Router>
-                    <div className="App" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-                      <Suspense fallback={<Spinner />}>
-                        <Routes>
-                          <Route path="/" element={<Navigate to="/home" replace />} />
-                          <Route path="/home" element={<Layout><Home /></Layout>} />
-                          <Route path="/login" element={<Login />} />
-                          <Route path="/register" element={<Register />} />
-                          <Route path="/setup" element={<Setup />} />
-                          <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
-                          <Route path="/filing" element={<Layout><Filing /></Layout>} />
-                          <Route path="/vat" element={<Layout><VAT /></Layout>} />
-                          <Route path="/cit" element={<Layout><CIT /></Layout>} />
-                          <Route path="/transfer-pricing" element={<Layout><TransferPricing /></Layout>} />
-                          <Route path="/accounting" element={<Layout><Accounting /></Layout>} />
-                          <Route path="/financials" element={<Layout><Financials /></Layout>} />
-                          <Route path="/calendar" element={<Layout><Calendar /></Layout>} />
-                          <Route path="/assistant" element={<Layout><Assistant /></Layout>} />
-                          <Route path="/admin" element={<Layout><Admin /></Layout>} />
-                          <Route path="/qa-test" element={<Layout><QATest /></Layout>} />
-                          <Route path="/backup" element={<Layout><BackupManager /></Layout>} />
-                          <Route path="*" element={<Navigate to="/home" replace />} />
-                        </Routes>
-                      </Suspense>
-                    </div>
-                  </Router>
-                </SettingsProvider>
-              </NotificationProvider>
-            </TaxProvider>
-          </UserRoleProvider>
+          <SettingsProvider>
+            <WhitelabelProvider>
+              <UserRoleProvider>
+                <TaxProvider>
+                  <NotificationProvider>
+                    <Router>
+                      <div className="App" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                        <Suspense fallback={<Spinner />}>
+                          <Routes>
+                            <Route path="/" element={<Navigate to="/home" replace />} />
+                            <Route path="/home" element={<Layout><Home /></Layout>} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/setup" element={<Setup />} />
+                            <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
+                            <Route path="/filing" element={<Layout><Filing /></Layout>} />
+                            <Route path="/vat" element={<Layout><VAT /></Layout>} />
+                            <Route path="/cit" element={<Layout><CIT /></Layout>} />
+                            <Route path="/transfer-pricing" element={<Layout><TransferPricing /></Layout>} />
+                            <Route path="/accounting" element={<Layout><Accounting /></Layout>} />
+                            <Route path="/financials" element={<Layout><Financials /></Layout>} />
+                            <Route path="/calendar" element={<Layout><Calendar /></Layout>} />
+                            <Route path="/assistant" element={<Layout><Assistant /></Layout>} />
+                            <Route path="/admin" element={<Layout><Admin /></Layout>} />
+                            <Route path="/qa-test" element={<Layout><QATest /></Layout>} />
+                            <Route path="/backup" element={<Layout><BackupManager /></Layout>} />
+                            <Route path="/whitelabel" element={<Layout><WhitelabelPage /></Layout>} />
+                            <Route path="*" element={<Navigate to="/home" replace />} />
+                          </Routes>
+                        </Suspense>
+                      </div>
+                    </Router>
+                  </NotificationProvider>
+                </TaxProvider>
+              </UserRoleProvider>
+            </WhitelabelProvider>
+          </SettingsProvider>
         </CustomThemeProvider>
       </ThemeProvider>
     </ErrorBoundary>
