@@ -1,4 +1,3 @@
-
 // Import polyfills first before anything else
 import './polyfills';
 

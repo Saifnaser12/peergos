@@ -1,43 +1,62 @@
-// Dynamic library loading utility
-let jsSHALoaded = false;
-let qrCodeLoaded = false;
 
-export const loadJsSHA = async (): Promise<any> => {
-  if (jsSHALoaded && (window as any).jsSHA) {
-    return (window as any).jsSHA;
+export class LibraryLoader {
+  private static loadedLibraries = new Set<string>();
+
+  static async loadScript(src: string, id: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.loadedLibraries.has(id)) {
+        resolve();
+        return;
+      }
+
+      if (document.getElementById(id)) {
+        this.loadedLibraries.add(id);
+        resolve();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = src;
+      script.id = id;
+      script.async = true;
+      
+      script.onload = () => {
+        this.loadedLibraries.add(id);
+        resolve();
+      };
+      
+      script.onerror = () => {
+        reject(new Error(`Failed to load script: ${src}`));
+      };
+
+      document.head.appendChild(script);
+    });
   }
 
-  try {
-    const { default: jsSHA } = await import('jssha');
-    (window as any).jsSHA = jsSHA;
-    jsSHALoaded = true;
-    console.log('jsSHA loaded successfully');
-    return jsSHA;
-  } catch (error) {
-    console.warn('jsSHA not available, cryptographic functions will be disabled');
-    (window as any).jsSHA = {
-      sha256: () => ({ getHash: () => 'mock-hash' })
-    };
-    return (window as any).jsSHA;
-  }
-};
-
-export const loadQRCode = async (): Promise<any> => {
-  if (qrCodeLoaded && (window as any).QRCode) {
-    return (window as any).QRCode;
+  static async loadJsSHA(): Promise<void> {
+    try {
+      await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/jsSHA/3.3.1/sha256.min.js', 'jssha-script');
+      console.log('jsSHA loaded successfully');
+    } catch (error) {
+      console.log('jsSHA not available, cryptographic functions will be disabled');
+    }
   }
 
-  try {
-    const QRCode = await import('qrcode');
-    (window as any).QRCode = QRCode;
-    qrCodeLoaded = true;
-    console.log('QRCode loaded successfully');
-    return QRCode;
-  } catch (error) {
-    console.warn('QRCode not available, QR code generation will be disabled');
-    (window as any).QRCode = {
-      toDataURL: () => Promise.resolve('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==')
-    };
-    return (window as any).QRCode;
+  static async loadQRCode(): Promise<void> {
+    try {
+      await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.4/qrcode.min.js', 'qrcode-script');
+      console.log('QRCode loaded successfully');
+    } catch (error) {
+      console.log('QRCode not available, QR code generation will be disabled');
+    }
   }
-};
+
+  static async loadAllLibraries(): Promise<void> {
+    await Promise.all([
+      this.loadJsSHA(),
+      this.loadQRCode()
+    ]);
+  }
+}
+
+export default LibraryLoader;
