@@ -11,6 +11,7 @@ import Spinner from './components/Spinner';
 
 // Pages
 import Home from './pages/Home';
+import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import Filing from './pages/Filing';
 import VAT from './pages/VAT';
@@ -68,7 +69,7 @@ const App: React.FC = () => {
                       <div className="App" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                         <Suspense fallback={<Spinner />}>
                           <Routes>
-                            <Route path="/" element={<Navigate to="/home" replace />} />
+                            <Route path="/" element={<Landing />} />
                             <Route path="/home" element={<Layout><Home /></Layout>} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
