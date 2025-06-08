@@ -1,6 +1,6 @@
 // Import with error handling for missing dependencies
-let jsSHA: any;
-let QRCode: any;
+let jsSHA: any = null;
+let QRCode: any = null;
 
 try {
   jsSHA = require('jssha');

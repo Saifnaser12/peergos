@@ -36,6 +36,18 @@ import Filing from './pages/Filing';
 import QAChecklist from './components/QAChecklist';
 import QATest from './pages/QATest';
 
+// React Router with future flags to eliminate warnings
+const AppRouter = ({ children }: { children: React.ReactNode }) => (
+  <Router
+    future={{
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    }}
+  >
+    {children}
+  </Router>
+);
+
 // Internal component to handle theme with i18n
 function AppContent() {
   const direction = i18n.language === 'ar' ? 'rtl' : 'ltr';
@@ -67,10 +79,7 @@ function AppContent() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <ErrorBoundary>
-        <Router future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true
-        }}>
+        <AppRouter>
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
@@ -156,7 +165,7 @@ function AppContent() {
               } />
 
               <Route path="unauthorized" element={<Unauthorized />} />
-              
+
               {/* Hidden QA Test Route */}
               <Route path="qa-check" element={
                 <ProtectedRoute rolesAllowed={["admin"]}>
@@ -165,7 +174,7 @@ function AppContent() {
               } />
             </Route>
           </Routes>
-        </Router>
+        </AppRouter>
       </ErrorBoundary>
     </ThemeProvider>
   );

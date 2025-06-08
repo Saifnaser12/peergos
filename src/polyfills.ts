@@ -94,6 +94,21 @@ if (typeof globalThis.process === 'undefined') {
     },
     browser: true,
     emitWarning: function() {},
+  } as any;
+}
+
+// Add crypto polyfill if needed
+if (typeof globalThis.crypto === 'undefined') {
+  globalThis.crypto = {
+    getRandomValues: function(array: any) {
+      for (let i = 0; i < array.length; i++) {
+        array[i] = Math.floor(Math.random() * 256);
+      }
+      return array;
+    },
+    subtle: {} as SubtleCrypto
+  } as Crypto;
+}
     binding: function() { return {}; },
     umask: function() { return 0; },
     hrtime: function() {

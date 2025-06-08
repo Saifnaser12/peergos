@@ -12,12 +12,16 @@ if (typeof globalThis !== 'undefined') {
 }
 
 import React, { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import { LibraryLoader } from './utils/libraryLoader'
 import './i18n'
 import { AuditProvider } from './context/AuditContext'
 import { AppContextProvider } from './context/AppContext'
+
+// Initialize libraries
+LibraryLoader.loadLibraries();
 
 const container = document.getElementById('root')
 if (!container) throw new Error('Root element not found')
