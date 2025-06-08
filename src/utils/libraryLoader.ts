@@ -119,9 +119,10 @@ class LibraryLoader {
   }
 }
 
-// Export the singleton instance and helper functions
+// Create and export the singleton instance
 export const libraryLoader = LibraryLoader.getInstance();
 
+// Export helper functions that use the singleton
 export const loadJsSHA = async (): Promise<any> => {
   return libraryLoader.loadLibrary({
     name: 'jsSHA',
@@ -180,5 +181,5 @@ export const initializeLibraries = async (): Promise<void> => {
   }
 };
 
-// Default export
+// Export the class as default
 export default LibraryLoader;
