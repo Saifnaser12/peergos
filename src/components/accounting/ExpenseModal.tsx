@@ -130,7 +130,17 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
       receiptFileName
     };
 
+    // Save data - this will trigger real-time updates across the app
     onSave(expenseData);
+
+    // Show brief success feedback
+    const event = new CustomEvent('expense-saved', { 
+      detail: { 
+        amount: expenseData.amount,
+        type: editingExpense ? 'updated' : 'added'
+      } 
+    });
+    window.dispatchEvent(event);
   };
 
   const handleInputChange = (field: string, value: string | File | null) => {

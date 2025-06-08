@@ -19,6 +19,8 @@ import {
   FormControlLabel,
   useTheme,
   alpha,
+  Chip,
+  Snackbar,
 } from '@mui/material';
 import { 
   WbSunny as Sun, 
@@ -35,6 +37,7 @@ import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import SubmissionPanel from '../components/fta/SubmissionPanel';
 import { ftaService } from '../services/ftaService';
 import { useFinance } from '../context/FinanceContext';
+import { useFinancialSync } from '../hooks/useFinancialSync';
 import SubmissionModal from '../components/SubmissionModal';
 
 interface VATFormData {
@@ -65,13 +68,14 @@ const VAT: React.FC = () => {
   const theme = useTheme();
   const [darkMode, setDarkMode] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { revenue, expenses, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
+  const { revenue, expenses } = useFinance();
+  const { summary, isUpdating, totalRevenue, totalExpenses, netIncome } = useFinancialSync();
 
   const [formData, setFormData] = useState<VATFormData>({
-    standardRatedSales: getTotalRevenue(),
+    standardRatedSales: totalRevenue,
     zeroRatedSales: 0,
     exemptSales: 0,
-    purchasesWithVAT: getTotalExpenses(),
+    purchasesWithVAT: totalExpenses,
     purchasesWithoutVAT: 0,
     importsGoods: 0,
     localServices: 0,
@@ -87,10 +91,10 @@ const VAT: React.FC = () => {
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
-      standardRatedSales: getTotalRevenue(),
-      purchasesWithVAT: getTotalExpenses()
+      standardRatedSales: totalRevenue,
+      purchasesWithVAT: totalExpenses
     }));
-  }, [getTotalRevenue, getTotalExpenses, revenue, expenses]);
+  }, [totalRevenue, totalExpenses]);
 
   const validateField = useCallback((name: string, value: number): string => {
     if (isNaN(value)) {
@@ -524,26 +528,29 @@ const VAT: React.FC = () => {
 
               <Box sx={{ mb: 3, p: 2, bgcolor: 'success.50', borderRadius: 2, border: '1px solid', borderColor: 'success.200' }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1, color: 'success.main' }}>
-                  ✅ AUTO-SYNC Live Financial Data
+                  {isUpdating ? '🔄 UPDATING Live Financial Data...' : '✅ AUTO-SYNC Live Financial Data'}
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2">Total Revenue ({revenue.length} entries)</Typography>
                   <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main' }}>
-                    AED {getTotalRevenue().toLocaleString()}
+                    AED {totalRevenue.toLocaleString()}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2">Total Expenses ({expenses.length} entries)</Typography>
                   <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main' }}>
-                    AED {getTotalExpenses().toLocaleString()}
+                    AED {totalExpenses.toLocaleString()}
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>Taxable Income</Typography>
                   <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main' }}>
-                    AED {getNetIncome().toLocaleString()}
+                    AED {netIncome.toLocaleString()}
                   </Typography>
                 </Box>
+                <Typography variant="caption" sx={{ color: 'success.600', fontSize: '0.65rem' }}>
+                  Last updated: {new Date(summary.lastUpdated).toLocaleTimeString()}
+                </Typography>
               </Box>
 
               <Box sx={{ mb: 3 }}>

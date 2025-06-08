@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 type Revenue = { 
   id: string;
@@ -18,6 +18,8 @@ type Expense = {
   vendor?: string;
 };
 
+type FinanceUpdateCallback = () => void;
+
 interface FinanceContextType {
   revenue: Revenue[];
   expenses: Expense[];
@@ -30,6 +32,16 @@ interface FinanceContextType {
   getTotalRevenue: () => number;
   getTotalExpenses: () => number;
   getNetIncome: () => number;
+  // New methods for real-time sync
+  subscribeToUpdates: (callback: FinanceUpdateCallback) => () => void;
+  getFinancialSummary: () => {
+    totalRevenue: number;
+    totalExpenses: number;
+    netIncome: number;
+    revenueCount: number;
+    expenseCount: number;
+    lastUpdated: string;
+  };
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
@@ -37,6 +49,21 @@ const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 export const FinanceProvider = ({ children }: { children: React.ReactNode }) => {
   const [revenue, setRevenue] = useState<Revenue[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [updateCallbacks, setUpdateCallbacks] = useState<Set<FinanceUpdateCallback>>(new Set());
+  const [lastUpdated, setLastUpdated] = useState<string>(new Date().toISOString());
+
+  // Trigger all subscribed callbacks when data changes
+  const triggerUpdates = useCallback(() => {
+    const timestamp = new Date().toISOString();
+    setLastUpdated(timestamp);
+    updateCallbacks.forEach(callback => {
+      try {
+        callback();
+      } catch (error) {
+        console.error('Error in finance update callback:', error);
+      }
+    });
+  }, [updateCallbacks]);
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -60,54 +87,80 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
     }
   }, []);
 
-  // Save to localStorage whenever data changes
+  // Save to localStorage and trigger updates whenever data changes
   useEffect(() => {
     localStorage.setItem('peergos-revenue', JSON.stringify(revenue));
-  }, [revenue]);
+    triggerUpdates();
+  }, [revenue, triggerUpdates]);
 
   useEffect(() => {
     localStorage.setItem('peergos-expenses', JSON.stringify(expenses));
-  }, [expenses]);
+    triggerUpdates();
+  }, [expenses, triggerUpdates]);
 
   const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
-  const addRevenue = (r: Omit<Revenue, 'id'>) => {
+  const addRevenue = useCallback((r: Omit<Revenue, 'id'>) => {
     const newRevenue = { ...r, id: generateId() };
     setRevenue(prev => [...prev, newRevenue]);
-  };
+  }, []);
 
-  const addExpense = (e: Omit<Expense, 'id'>) => {
+  const addExpense = useCallback((e: Omit<Expense, 'id'>) => {
     const newExpense = { ...e, id: generateId() };
     setExpenses(prev => [...prev, newExpense]);
-  };
+  }, []);
 
-  const updateRevenue = (id: string, updates: Partial<Revenue>) => {
+  const updateRevenue = useCallback((id: string, updates: Partial<Revenue>) => {
     setRevenue(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
-  };
+  }, []);
 
-  const updateExpense = (id: string, updates: Partial<Expense>) => {
+  const updateExpense = useCallback((id: string, updates: Partial<Expense>) => {
     setExpenses(prev => prev.map(e => e.id === id ? { ...e, ...updates } : e));
-  };
+  }, []);
 
-  const deleteRevenue = (id: string) => {
+  const deleteRevenue = useCallback((id: string) => {
     setRevenue(prev => prev.filter(r => r.id !== id));
-  };
+  }, []);
 
-  const deleteExpense = (id: string) => {
+  const deleteExpense = useCallback((id: string) => {
     setExpenses(prev => prev.filter(e => e.id !== id));
-  };
+  }, []);
 
-  const getTotalRevenue = () => {
+  const getTotalRevenue = useCallback(() => {
     return revenue.reduce((sum, r) => sum + r.amount, 0);
-  };
+  }, [revenue]);
 
-  const getTotalExpenses = () => {
+  const getTotalExpenses = useCallback(() => {
     return expenses.reduce((sum, e) => sum + e.amount, 0);
-  };
+  }, [expenses]);
 
-  const getNetIncome = () => {
+  const getNetIncome = useCallback(() => {
     return getTotalRevenue() - getTotalExpenses();
-  };
+  }, [getTotalRevenue, getTotalExpenses]);
+
+  const subscribeToUpdates = useCallback((callback: FinanceUpdateCallback) => {
+    setUpdateCallbacks(prev => new Set([...prev, callback]));
+    
+    // Return unsubscribe function
+    return () => {
+      setUpdateCallbacks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(callback);
+        return newSet;
+      });
+    };
+  }, []);
+
+  const getFinancialSummary = useCallback(() => {
+    return {
+      totalRevenue: getTotalRevenue(),
+      totalExpenses: getTotalExpenses(),
+      netIncome: getNetIncome(),
+      revenueCount: revenue.length,
+      expenseCount: expenses.length,
+      lastUpdated
+    };
+  }, [getTotalRevenue, getTotalExpenses, getNetIncome, revenue.length, expenses.length, lastUpdated]);
 
   return (
     <FinanceContext.Provider value={{ 
@@ -121,7 +174,9 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
       deleteExpense,
       getTotalRevenue,
       getTotalExpenses,
-      getNetIncome
+      getNetIncome,
+      subscribeToUpdates,
+      getFinancialSummary
     }}>
       {children}
     </FinanceContext.Provider>

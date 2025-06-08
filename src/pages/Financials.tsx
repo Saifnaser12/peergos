@@ -76,6 +76,7 @@ import {
   Cell
 } from 'recharts';
 import { useFinance } from '../context/FinanceContext';
+import { useFinancialSync } from '../hooks/useFinancialSync';
 
 // Types
 interface FinancialEntry {
@@ -127,6 +128,7 @@ const Financials: React.FC = () => {
   const [openExpenseModal, setOpenExpenseModal] = useState(false);
   const [editingEntry, setEditingEntry] = useState<FinancialEntry | null>(null);
   const { revenues, expenses, addRevenue, addExpense } = useFinance();
+  const { summary, isUpdating, totalRevenue, totalExpenses, netIncome } = useFinancialSync();
 
   const [financialData, setFinancialData] = useState<FinancialEntry[]>([
     {
@@ -186,10 +188,8 @@ const Financials: React.FC = () => {
     date: new Date().toISOString().split('T')[0]
   });
 
-  // Calculate totals from live FinanceContext data
-  const totalRevenue = revenues.reduce((sum, item) => sum + item.amount, 0);
-  const totalExpenses = expenses.reduce((sum, item) => sum + item.amount, 0);
-  const netProfit = totalRevenue - totalExpenses;
+  // Use real-time totals from FinanceContext
+  const netProfit = netIncome;
 
   // Calculate summary using live context data + static financial data
   const summary = {
@@ -384,11 +384,21 @@ const Financials: React.FC = () => {
             <Typography variant="h5" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
               {t('financials.livePL', 'Live Profit & Loss Summary')}
             </Typography>
-            <Chip 
-              label={t('financials.realTime', 'Real-time')} 
-              color="success" 
-              sx={{ fontWeight: 600 }}
-            />
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              {isUpdating && (
+                <Chip 
+                  label="🔄 Updating..." 
+                  color="info" 
+                  variant="outlined"
+                  sx={{ fontWeight: 600 }}
+                />
+              )}
+              <Chip 
+                label={t('financials.realTime', 'Real-time')} 
+                color="success" 
+                sx={{ fontWeight: 600 }}
+              />
+            </Box>
           </Box>
 
           <Grid container spacing={4}>

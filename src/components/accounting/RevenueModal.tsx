@@ -114,7 +114,17 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
       invoiceId: formData.invoiceGenerated ? Date.now().toString() : undefined
     };
 
+    // Save data - this will trigger real-time updates across the app
     onSave(revenueData);
+
+    // Show brief success feedback
+    const event = new CustomEvent('revenue-saved', { 
+      detail: { 
+        amount: revenueData.amount,
+        type: editingRevenue ? 'updated' : 'added'
+      } 
+    });
+    window.dispatchEvent(event);
 
     // Show invoice modal if invoice generation was toggled
     if (formData.invoiceGenerated) {

@@ -48,6 +48,7 @@ import SubmissionModal from '../components/SubmissionModal';
 import { ftaService } from '../services/ftaService';
 import { useTaxAgent } from '../context/TaxAgentContext';
 import { useFinance } from '../context/FinanceContext';
+import { useFinancialSync } from '../hooks/useFinancialSync';
 
 interface CITFormData {
   revenue: number;
@@ -83,11 +84,12 @@ const CIT: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const { selectedAgent, uploadedCertificate } = useTaxAgent();
-  const { revenue, expenses, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
+  const { revenue, expenses } = useFinance();
+  const { summary, isUpdating, totalRevenue, totalExpenses, netIncome } = useFinancialSync();
 
   const [formData, setFormData] = useState<CITFormData>({
-    revenue: getTotalRevenue(),
-    expenses: getTotalExpenses(),
+    revenue: totalRevenue,
+    expenses: totalExpenses,
     taxAdjustments: 0,
     exemptIncome: 0,
     carriedForwardLosses: 0,
@@ -102,10 +104,10 @@ const CIT: React.FC = () => {
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
-      revenue: getTotalRevenue(),
-      expenses: getTotalExpenses()
+      revenue: totalRevenue,
+      expenses: totalExpenses
     }));
-  }, [getTotalRevenue, getTotalExpenses, revenue, expenses]);
+  }, [totalRevenue, totalExpenses]);
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -488,7 +490,7 @@ const CIT: React.FC = () => {
                   />
                   <Box sx={{ mt: 1, p: 2, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
                     <Typography variant="caption" color="success.main" sx={{ fontWeight: 600 }}>
-                      ✅ AUTO-SYNC: AED {getTotalRevenue().toLocaleString()} from {revenue.length} transactions
+                      {isUpdating ? '🔄 UPDATING...' : '✅ AUTO-SYNC'}: AED {totalRevenue.toLocaleString()} from {revenue.length} transactions
                     </Typography>
                   </Box>
                 </Grid>
@@ -508,7 +510,7 @@ const CIT: React.FC = () => {
                   />
                   <Box sx={{ mt: 1, p: 2, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
                     <Typography variant="caption" color="success.main" sx={{ fontWeight: 600 }}>
-                      ✅ AUTO-SYNC: AED {getTotalExpenses().toLocaleString()} from {expenses.length} transactions
+                      {isUpdating ? '🔄 UPDATING...' : '✅ AUTO-SYNC'}: AED {totalExpenses.toLocaleString()} from {expenses.length} transactions
                     </Typography>
                   </Box>
                 </Grid>
@@ -720,10 +722,10 @@ const CIT: React.FC = () => {
                 </Typography>
                 <Box sx={{ mt: 1, p: 1, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
                   <Typography variant="caption" sx={{ fontWeight: 600, color: 'success.main' }}>
-                    ✅ AUTO-SYNC Live Taxable Income: AED {getNetIncome().toLocaleString()}
+                    {isUpdating ? '🔄 UPDATING...' : '✅ AUTO-SYNC'} Live Taxable Income: AED {netIncome.toLocaleString()}
                   </Typography>
                   <Typography variant="caption" sx={{ display: 'block', color: 'success.main', fontSize: '0.65rem' }}>
-                    Updates automatically from Accounting module
+                    Updates automatically from Accounting module • Last: {new Date(summary.lastUpdated).toLocaleTimeString()}
                   </Typography>
                 </Box>
               </Box>
