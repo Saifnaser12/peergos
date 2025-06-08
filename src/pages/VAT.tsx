@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
@@ -81,6 +81,15 @@ const VAT: React.FC = () => {
     trn: '',
     taxPeriod: `${new Date().getFullYear()}-Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
   });
+
+  // Auto-update financial data when accounting entries change
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      standardRatedSales: getTotalRevenue(),
+      purchasesWithVAT: getTotalExpenses()
+    }));
+  }, [getTotalRevenue, getTotalExpenses, revenue, expenses]);
 
   const validateField = useCallback((name: string, value: number): string => {
     if (isNaN(value)) {
@@ -436,25 +445,25 @@ const VAT: React.FC = () => {
                 {t('VAT Calculation Summary')}
               </Typography>
 
-              <Box sx={{ mb: 3, p: 2, bgcolor: 'primary.50', borderRadius: 2 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
-                  Live Financial Data
+              <Box sx={{ mb: 3, p: 2, bgcolor: 'success.50', borderRadius: 2, border: '1px solid', borderColor: 'success.200' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1, color: 'success.main' }}>
+                  ✅ AUTO-SYNC Live Financial Data
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body2">Total Revenue</Typography>
-                  <Typography variant="body2" className="text-blue-600 font-bold">
+                  <Typography variant="body2">Total Revenue ({revenue.length} entries)</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main' }}>
                     AED {getTotalRevenue().toLocaleString()}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body2">Total Expenses</Typography>
-                  <Typography variant="body2" className="text-blue-600 font-bold">
+                  <Typography variant="body2">Total Expenses ({expenses.length} entries)</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main' }}>
                     AED {getTotalExpenses().toLocaleString()}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>Taxable Income</Typography>
-                  <Typography variant="body2" className="text-blue-600 font-bold">
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main' }}>
                     AED {getNetIncome().toLocaleString()}
                   </Typography>
                 </Box>

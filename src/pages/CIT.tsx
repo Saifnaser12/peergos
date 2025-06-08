@@ -97,6 +97,15 @@ const CIT: React.FC = () => {
     financialYearEnd: ''
   });
 
+  // Auto-update financial data when accounting entries change
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      revenue: getTotalRevenue(),
+      expenses: getTotalExpenses()
+    }));
+  }, [getTotalRevenue, getTotalExpenses, revenue, expenses]);
+
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
@@ -421,9 +430,9 @@ const CIT: React.FC = () => {
                       startAdornment: <InputAdornment position="start">AED</InputAdornment>,
                     }}
                   />
-                  <Box sx={{ mt: 1, p: 2, bgcolor: 'primary.50', borderRadius: 1 }}>
-                    <Typography variant="caption" color="primary.main">
-                      Live Financial Data: AED {getTotalRevenue().toLocaleString()} from {revenue.length} transactions
+                  <Box sx={{ mt: 1, p: 2, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
+                    <Typography variant="caption" color="success.main" sx={{ fontWeight: 600 }}>
+                      ✅ AUTO-SYNC: AED {getTotalRevenue().toLocaleString()} from {revenue.length} transactions
                     </Typography>
                   </Box>
                 </Grid>
@@ -441,9 +450,9 @@ const CIT: React.FC = () => {
                       startAdornment: <InputAdornment position="start">AED</InputAdornment>,
                     }}
                   />
-                  <Box sx={{ mt: 1, p: 2, bgcolor: 'primary.50', borderRadius: 1 }}>
-                    <Typography variant="caption" color="primary.main">
-                      Live Financial Data: AED {getTotalExpenses().toLocaleString()} from {expenses.length} transactions
+                  <Box sx={{ mt: 1, p: 2, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
+                    <Typography variant="caption" color="success.main" sx={{ fontWeight: 600 }}>
+                      ✅ AUTO-SYNC: AED {getTotalExpenses().toLocaleString()} from {expenses.length} transactions
                     </Typography>
                   </Box>
                 </Grid>
@@ -653,9 +662,12 @@ const CIT: React.FC = () => {
                 <Typography variant="h6" sx={{ fontWeight: 500 }}>
                   {formatCurrency(citCalculation.taxableIncome)}
                 </Typography>
-                <Box sx={{ mt: 1, p: 1, bgcolor: 'info.50', borderRadius: 1 }}>
-                  <Typography variant="caption" className="text-blue-600 font-bold">
-                    Live Taxable Income: AED {getNetIncome().toLocaleString()}
+                <Box sx={{ mt: 1, p: 1, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600, color: 'success.main' }}>
+                    ✅ AUTO-SYNC Live Taxable Income: AED {getNetIncome().toLocaleString()}
+                  </Typography>
+                  <Typography variant="caption" sx={{ display: 'block', color: 'success.main', fontSize: '0.65rem' }}>
+                    Updates automatically from Accounting module
                   </Typography>
                 </Box>
               </Box>
