@@ -1,0 +1,80 @@
+🎯 Purpose: Add UAE Phase 2 e-invoicing compliance fields
+
+```ts
+import jsSHA from "jssha";
+import QRCode from "qrcode";
+
+// Simplified hash generation
+export function generateHash(invoiceXML: string): string {
+  const shaObj = new jsSHA("SHA-256", "TEXT");
+  shaObj.update(invoiceXML);
+  return shaObj.getHash("HEX");
+}
+
+// Simulate a digital signature (replace with real cert later)
+export function fakeDigitalSignature(data: string): string {
+  return btoa(data + "::signed-by-fake-cert");
+}
+
+// Generate QR Code from invoice summary
+export async function generateInvoiceQR(data: {
+  sellerTRN: string;
+  buyerTRN: string;
+  invoiceDate: string;
+  totalAmount: number;
+}) {
+  const content = `${data.sellerTRN}|${data.buyerTRN}|${data.invoiceDate}|${data.totalAmount}`;
+  return await QRCode.toDataURL(content);
+}
+```
+
+✅ Requirements:
+- Generate XML as before
+- Hash + Sign + QR
+- Later: Replace `fakeDigitalSignature()` with real FTA certificate logic
+
+---
+
+### ✅ Prompt N — POS & Bank Integration API Placeholder (Future Ready)
+
+📁 File: `src/services/IntegrationAPI.ts`
+
+````ts
+🎯 Purpose: Setup structure to plug into UAE POS or bank APIs later
+
+```ts
+// Placeholder: Fetch revenue from POS system
+export async function fetchPOSRevenue() {
+  // TODO: Replace with real POS API call (e.g., Vend, Lightspeed)
+  return [
+    { date: "2025-06-01", amount: 1000, source: "POS", reference: "POS-INV-001" },
+  ];
+}
+
+// Placeholder: Import bank CSV
+export function parseBankCSV(csvText: string): { date: string; amount: number; type: "expense" | "revenue"; description: string }[] {
+  const lines = csvText.split("\n").slice(1); // skip header
+  return lines.map(line => {
+    const [date, description, amountStr, type] = line.split(",");
+    return {
+      date,
+      description,
+      amount: parseFloat(amountStr),
+      type: type === "debit" ? "expense" : "revenue"
+    };
+  });
+}
+```
+
+🧠 You can:
+- Trigger POS fetch manually
+- Upload `.csv` and call `parseBankCSV()`
+- Store in FinanceContext for Financials page sync
+
+---
+
+Let me know when you're ready for:
+- Financials page design prompt (Apple-level, smart, linked to Accounting)
+- Arabic labels or digital cert real implementation for e-invoicing
+
+Ready to proceed with Financials?
