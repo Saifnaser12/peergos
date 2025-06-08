@@ -1,207 +1,220 @@
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 
-type Revenue = { 
+// Types
+interface Revenue {
   id: string;
-  amount: number; 
-  description: string; 
+  category: string;
+  amount: number;
   date: string;
-  category?: string;
-  freeZoneIncomeType?: 'qualifying' | 'non-qualifying';
-};
+  description: string;
+  vatAmount?: number;
+}
 
-type Expense = { 
+interface Expense {
   id: string;
-  amount: number; 
-  category: string; 
-  date: string; 
-  description?: string;
+  category: string;
+  amount: number;
+  date: string;
+  description: string;
   vendor?: string;
-};
-
-type FinanceUpdateCallback = () => void;
+  vatAmount?: number;
+}
 
 interface FinanceContextType {
   revenue: Revenue[];
   expenses: Expense[];
-  addRevenue: (r: Omit<Revenue, 'id'>) => void;
-  addExpense: (e: Omit<Expense, 'id'>) => void;
-  updateRevenue: (id: string, r: Partial<Revenue>) => void;
-  updateExpense: (id: string, e: Partial<Expense>) => void;
+  addRevenue: (revenue: Omit<Revenue, 'id'>) => void;
+  addExpense: (expense: Omit<Expense, 'id'>) => void;
+  updateRevenue: (id: string, revenue: Partial<Revenue>) => void;
+  updateExpense: (id: string, expense: Partial<Expense>) => void;
   deleteRevenue: (id: string) => void;
   deleteExpense: (id: string) => void;
   getTotalRevenue: () => number;
   getTotalExpenses: () => number;
   getNetIncome: () => number;
-  subscribeToUpdates: (callback: FinanceUpdateCallback) => () => void;
   getFinancialSummary: () => {
     totalRevenue: number;
     totalExpenses: number;
     netIncome: number;
-    revenueCount: number;
-    expenseCount: number;
     lastUpdated: string;
   };
-  getQualifyingIncome: () => number;
-  getNonQualifyingIncome: () => number;
-  getNonQualifyingPercentage: () => number;
-  checkDeMinimisThreshold: () => {
-    exceedsPercentage: boolean;
-    exceedsAmount: boolean;
-    percentage: number;
-    amount: number;
-    isCompliant: boolean;
-  };
+  subscribeToUpdates: (callback: () => void) => () => void;
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
-export const FinanceProvider = ({ children }: { children: React.ReactNode }) => {
-  const [revenues, setRevenues] = useState<Revenue[]>([]);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [updateCallbacks, setUpdateCallbacks] = useState<Set<FinanceUpdateCallback>>(new Set());
-  const [lastUpdated, setLastUpdated] = useState<string>(new Date().toISOString());
-  const [isInitialized, setIsInitialized] = useState(false);
+// Sample data for demonstration
+const initialRevenue: Revenue[] = [
+  {
+    id: '1',
+    category: 'Product Sales',
+    amount: 125000,
+    date: '2024-01-15',
+    description: 'Q1 Product Sales',
+    vatAmount: 6250
+  },
+  {
+    id: '2',
+    category: 'Services',
+    amount: 75000,
+    date: '2024-01-20',
+    description: 'Consulting Services',
+    vatAmount: 3750
+  }
+];
 
-  // Trigger all subscribed callbacks when data changes
-  const triggerUpdates = useCallback(() => {
-    const timestamp = new Date().toISOString();
-    setLastUpdated(timestamp);
-    
-    // Use setTimeout to prevent infinite loops
-    setTimeout(() => {
-      updateCallbacks.forEach(callback => {
-        try {
-          callback();
-        } catch (error) {
-          console.error('Error in finance update callback:', error);
-        }
-      });
-    }, 0);
+const initialExpenses: Expense[] = [
+  {
+    id: '1',
+    category: 'Salaries',
+    amount: 45000,
+    date: '2024-01-01',
+    description: 'Monthly Salaries',
+    vendor: 'Payroll Department'
+  },
+  {
+    id: '2',
+    category: 'Rent',
+    amount: 12000,
+    date: '2024-01-01',
+    description: 'Office Rent',
+    vendor: 'Property Management Co.',
+    vatAmount: 600
+  }
+];
+
+export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [revenue, setRevenue] = useState<Revenue[]>(initialRevenue);
+  const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
+  const [updateCallbacks, setUpdateCallbacks] = useState<Set<() => void>>(new Set());
+
+  // Notify subscribers of updates
+  const notifyUpdate = useCallback(() => {
+    updateCallbacks.forEach(callback => {
+      try {
+        callback();
+      } catch (error) {
+        console.warn('Error in finance update callback:', error);
+      }
+    });
   }, [updateCallbacks]);
 
-  // Load data from localStorage on mount
-  useEffect(() => {
+  const addRevenue = useCallback((newRevenue: Omit<Revenue, 'id'>) => {
     try {
-      const savedRevenue = localStorage.getItem('peergos-revenue');
-      const savedExpenses = localStorage.getItem('peergos-expenses');
-
-      if (savedRevenue) {
-        const parsedRevenue = JSON.parse(savedRevenue);
-        setRevenues(Array.isArray(parsedRevenue) ? parsedRevenue : []);
-      }
-
-      if (savedExpenses) {
-        const parsedExpenses = JSON.parse(savedExpenses);
-        setExpenses(Array.isArray(parsedExpenses) ? parsedExpenses : []);
-      }
+      const revenue: Revenue = {
+        ...newRevenue,
+        id: Date.now().toString()
+      };
+      setRevenue(prev => [...prev, revenue]);
+      notifyUpdate();
     } catch (error) {
-      console.error('Error loading data from localStorage:', error);
-      setRevenues([]);
-      setExpenses([]);
-    } finally {
-      setIsInitialized(true);
+      console.error('Error adding revenue:', error);
     }
-  }, []);
+  }, [notifyUpdate]);
 
-  // Save to localStorage and trigger updates whenever data changes
-  useEffect(() => {
-    if (isInitialized) {
-      try {
-        localStorage.setItem('peergos-revenue', JSON.stringify(revenues));
-        triggerUpdates();
-      } catch (error) {
-        console.error('Error saving revenue to localStorage:', error);
-      }
+  const addExpense = useCallback((newExpense: Omit<Expense, 'id'>) => {
+    try {
+      const expense: Expense = {
+        ...newExpense,
+        id: Date.now().toString()
+      };
+      setExpenses(prev => [...prev, expense]);
+      notifyUpdate();
+    } catch (error) {
+      console.error('Error adding expense:', error);
     }
-  }, [revenues, triggerUpdates, isInitialized]);
-
-  useEffect(() => {
-    if (isInitialized) {
-      try {
-        localStorage.setItem('peergos-expenses', JSON.stringify(expenses));
-        triggerUpdates();
-      } catch (error) {
-        console.error('Error saving expenses to localStorage:', error);
-      }
-    }
-  }, [expenses, triggerUpdates, isInitialized]);
-
-  const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
-
-  const addRevenue = useCallback((r: Omit<Revenue, 'id'>) => {
-    const newRevenue = { ...r, id: generateId() };
-    setRevenues(prev => [...prev, newRevenue]);
-  }, []);
-
-  const addExpense = useCallback((e: Omit<Expense, 'id'>) => {
-    const newExpense = { ...e, id: generateId() };
-    setExpenses(prev => [...prev, newExpense]);
-  }, []);
+  }, [notifyUpdate]);
 
   const updateRevenue = useCallback((id: string, updates: Partial<Revenue>) => {
-    setRevenues(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
-  }, []);
+    try {
+      setRevenue(prev => prev.map(item => 
+        item.id === id ? { ...item, ...updates } : item
+      ));
+      notifyUpdate();
+    } catch (error) {
+      console.error('Error updating revenue:', error);
+    }
+  }, [notifyUpdate]);
 
   const updateExpense = useCallback((id: string, updates: Partial<Expense>) => {
-    setExpenses(prev => prev.map(e => e.id === id ? { ...e, ...updates } : e));
-  }, []);
+    try {
+      setExpenses(prev => prev.map(item => 
+        item.id === id ? { ...item, ...updates } : item
+      ));
+      notifyUpdate();
+    } catch (error) {
+      console.error('Error updating expense:', error);
+    }
+  }, [notifyUpdate]);
 
   const deleteRevenue = useCallback((id: string) => {
-    setRevenues(prev => prev.filter(r => r.id !== id));
-  }, []);
+    try {
+      setRevenue(prev => prev.filter(item => item.id !== id));
+      notifyUpdate();
+    } catch (error) {
+      console.error('Error deleting revenue:', error);
+    }
+  }, [notifyUpdate]);
 
   const deleteExpense = useCallback((id: string) => {
-    setExpenses(prev => prev.filter(e => e.id !== id));
-  }, []);
+    try {
+      setExpenses(prev => prev.filter(item => item.id !== id));
+      notifyUpdate();
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+    }
+  }, [notifyUpdate]);
 
-  const getTotalRevenue = useCallback(() => {
-    return revenues.reduce((sum, r) => sum + (r.amount || 0), 0);
-  }, [revenues]);
+  const getTotalRevenue = useCallback((): number => {
+    try {
+      return revenue.reduce((sum, item) => sum + (item.amount || 0), 0);
+    } catch (error) {
+      console.error('Error calculating total revenue:', error);
+      return 0;
+    }
+  }, [revenue]);
 
-  const getTotalExpenses = useCallback(() => {
-    return expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+  const getTotalExpenses = useCallback((): number => {
+    try {
+      return expenses.reduce((sum, item) => sum + (item.amount || 0), 0);
+    } catch (error) {
+      console.error('Error calculating total expenses:', error);
+      return 0;
+    }
   }, [expenses]);
 
-  const getNetIncome = useCallback(() => {
-    return getTotalRevenue() - getTotalExpenses();
+  const getNetIncome = useCallback((): number => {
+    try {
+      return getTotalRevenue() - getTotalExpenses();
+    } catch (error) {
+      console.error('Error calculating net income:', error);
+      return 0;
+    }
   }, [getTotalRevenue, getTotalExpenses]);
 
-  // Free Zone Income Analytics
-  const getQualifyingIncome = useCallback(() => {
-    return revenues
-      .filter(item => item.freeZoneIncomeType === 'qualifying')
-      .reduce((sum, item) => sum + (item.amount || 0), 0);
-  }, [revenues]);
+  const getFinancialSummary = useCallback(() => {
+    try {
+      return {
+        totalRevenue: getTotalRevenue(),
+        totalExpenses: getTotalExpenses(),
+        netIncome: getNetIncome(),
+        lastUpdated: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Error getting financial summary:', error);
+      return {
+        totalRevenue: 0,
+        totalExpenses: 0,
+        netIncome: 0,
+        lastUpdated: new Date().toISOString()
+      };
+    }
+  }, [getTotalRevenue, getTotalExpenses, getNetIncome]);
 
-  const getNonQualifyingIncome = useCallback(() => {
-    return revenues
-      .filter(item => item.freeZoneIncomeType === 'non-qualifying')
-      .reduce((sum, item) => sum + (item.amount || 0), 0);
-  }, [revenues]);
-
-  const getNonQualifyingPercentage = useCallback(() => {
-    const totalRevenue = getTotalRevenue();
-    const nonQualifying = getNonQualifyingIncome();
-    return totalRevenue > 0 ? (nonQualifying / totalRevenue) * 100 : 0;
-  }, [getTotalRevenue, getNonQualifyingIncome]);
-
-  const checkDeMinimisThreshold = useCallback(() => {
-    const nonQualifying = getNonQualifyingIncome();
-    const percentage = getNonQualifyingPercentage();
-
-    return {
-      exceedsPercentage: percentage > 5,
-      exceedsAmount: nonQualifying > 5000000,
-      percentage,
-      amount: nonQualifying,
-      isCompliant: percentage <= 5 && nonQualifying <= 5000000
-    };
-  }, [getNonQualifyingIncome, getNonQualifyingPercentage]);
-
-  const subscribeToUpdates = useCallback((callback: FinanceUpdateCallback) => {
+  const subscribeToUpdates = useCallback((callback: () => void) => {
     setUpdateCallbacks(prev => new Set([...prev, callback]));
-
+    
     // Return unsubscribe function
     return () => {
       setUpdateCallbacks(prev => {
@@ -212,54 +225,35 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
     };
   }, []);
 
-  const getFinancialSummary = useCallback(() => {
-    return {
-      totalRevenue: getTotalRevenue(),
-      totalExpenses: getTotalExpenses(),
-      netIncome: getNetIncome(),
-      revenueCount: revenues.length,
-      expenseCount: expenses.length,
-      lastUpdated
-    };
-  }, [getTotalRevenue, getTotalExpenses, getNetIncome, revenues.length, expenses.length, lastUpdated]);
-
-  // Don't render until initialized
-  if (!isInitialized) {
-    return null;
-  }
+  const contextValue: FinanceContextType = {
+    revenue,
+    expenses,
+    addRevenue,
+    addExpense,
+    updateRevenue,
+    updateExpense,
+    deleteRevenue,
+    deleteExpense,
+    getTotalRevenue,
+    getTotalExpenses,
+    getNetIncome,
+    getFinancialSummary,
+    subscribeToUpdates
+  };
 
   return (
-    <FinanceContext.Provider value={{ 
-      revenue: revenues, 
-      expenses, 
-      addRevenue, 
-      addExpense,
-      updateRevenue,
-      updateExpense,
-      deleteRevenue,
-      deleteExpense,
-      getTotalRevenue,
-      getTotalExpenses,
-      getNetIncome,
-      subscribeToUpdates,
-      getFinancialSummary,
-      getQualifyingIncome,
-      getNonQualifyingIncome,
-      getNonQualifyingPercentage,
-      checkDeMinimisThreshold
-    }}>
+    <FinanceContext.Provider value={contextValue}>
       {children}
     </FinanceContext.Provider>
   );
 };
 
-export const useFinance = () => {
-  const ctx = useContext(FinanceContext);
-  if (!ctx) throw new Error("FinanceContext must be used within FinanceProvider");
-  
-  // Add backwards compatibility for revenue vs revenues naming
-  return {
-    ...ctx,
-    revenues: ctx.revenue // Alias for backwards compatibility
-  };
+export const useFinance = (): FinanceContextType => {
+  const context = useContext(FinanceContext);
+  if (context === undefined) {
+    throw new Error('useFinance must be used within a FinanceProvider');
+  }
+  return context;
 };
+
+export type { Revenue, Expense, FinanceContextType };

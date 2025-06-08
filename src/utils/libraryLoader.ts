@@ -1,40 +1,78 @@
 
-let jsSHA: any = null;
-let QRCode: any = null;
+// Library loader utilities
+class LibraryLoader {
+  private jsSHALoaded = false;
+  private qrCodeLoaded = false;
 
-// Initialize libraries
-const initializeLibraries = async () => {
-  try {
-    // Try to load jsSHA
+  async loadJsSHA(): Promise<any> {
+    if (this.jsSHALoaded && window.jsSHA) {
+      return window.jsSHA;
+    }
+
     try {
-      const jssha = await import('jssha');
-      jsSHA = jssha.default || jssha;
+      // Try to load jsSHA from CDN
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/jssha@3.3.1/dist/sha.js';
+      script.async = true;
+      
+      await new Promise((resolve, reject) => {
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+
+      this.jsSHALoaded = true;
       console.log('jsSHA loaded successfully');
+      return window.jsSHA;
     } catch (error) {
-      console.warn('jsSHA not available, cryptographic functions will be disabled');
+      console.log('jsSHA not available, cryptographic functions will be disabled');
+      return null;
     }
-
-    // Try to load QRCode
-    try {
-      const qrcode = await import('qrcode');
-      QRCode = qrcode.default || qrcode;
-      console.log('QRCode loaded successfully');
-    } catch (error) {
-      console.warn('QRCode not available, QR code generation will be disabled');
-    }
-  } catch (error) {
-    console.error('Error initializing libraries:', error);
   }
-};
 
-// Initialize immediately
-initializeLibraries();
+  async loadQRCode(): Promise<any> {
+    if (this.qrCodeLoaded && window.QRCode) {
+      return window.QRCode;
+    }
 
-export const getjsSHA = () => jsSHA;
-export const getQRCode = () => QRCode;
+    try {
+      // Try to load QRCode from CDN
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
+      script.async = true;
+      
+      await new Promise((resolve, reject) => {
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
 
-export default {
-  getjsSHA,
-  getQRCode,
-  isReady: () => Boolean(jsSHA && QRCode)
-};
+      this.qrCodeLoaded = true;
+      console.log('QRCode loaded successfully');
+      return window.QRCode;
+    } catch (error) {
+      console.log('QRCode not available, QR code generation will be disabled');
+      return null;
+    }
+  }
+
+  isJsSHAAvailable(): boolean {
+    return this.jsSHALoaded && !!window.jsSHA;
+  }
+
+  isQRCodeAvailable(): boolean {
+    return this.qrCodeLoaded && !!window.QRCode;
+  }
+}
+
+// Create singleton instance and export it as the default
+export const libraryLoader = new LibraryLoader();
+export default libraryLoader;
+
+// Type declarations for window objects
+declare global {
+  interface Window {
+    jsSHA: any;
+    QRCode: any;
+  }
+}
