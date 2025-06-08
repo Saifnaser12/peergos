@@ -539,7 +539,8 @@
           "domesticConsumption": "Domestic Consumption",
           "localMarketSales": "Local Market Sales"
         }
-      },
+      }
+    },
     "expenses": {
       "rent": "Rent",
       "utilities": "Utilities",
