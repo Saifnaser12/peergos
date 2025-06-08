@@ -33,6 +33,7 @@ import Calendar from './pages/Calendar';
 import Assistant from './pages/Assistant';
 import SimpleInvoice from './pages/SimpleInvoice';
 import Filing from './pages/Filing';
+import QAChecklist from './components/QAChecklist';
 
 // Internal component to handle theme with i18n
 function AppContent() {
@@ -84,67 +85,72 @@ function AppContent() {
             }>
               {/* Nested routes that will render in the Outlet */}
               <Route index element={<Navigate to="/dashboard" replace />} />
-              
+
               <Route path="dashboard" element={
                 <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "viewer"]}>
                   <Dashboard />
                 </ProtectedRoute>
               } />
-              
+
               <Route path="vat" element={
                 <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
                   <VAT />
                 </ProtectedRoute>
               } />
-              
+
               <Route path="accounting" element={
                 <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
                   <Accounting />
                 </ProtectedRoute>
               } />
-              
+
               <Route path="cit" element={
                 <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
                   <CIT />
                 </ProtectedRoute>
               } />
-              
+
               <Route path="financials" element={
                 <ProtectedRoute rolesAllowed={["admin", "accountant"]}>
                   <Financials />
                 </ProtectedRoute>
               } />
-              
+
               <Route path="transfer-pricing" element={
                 <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "viewer"]}>
                   <TransferPricing />
                 </ProtectedRoute>
               } />
-              
+              <Route path="/qa-checklist" element={
+                <ProtectedRoute rolesAllowed={['admin']}>
+                  <QAChecklist />
+                </ProtectedRoute>
+              } />
+
               <Route path="filing" element={
                 <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
                   <Filing />
                 </ProtectedRoute>
               } />
-              
+
               <Route path="assistant" element={
                 <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
                   <Assistant />
                 </ProtectedRoute>
               } />
-              
+
               <Route path="calendar" element={
                 <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant", "viewer"]}>
                   <Calendar />
                 </ProtectedRoute>
               } />
-              
+
               <Route path="simple-invoice" element={
                 <ProtectedRoute rolesAllowed={["admin", "accountant", "assistant"]}>
                   <SimpleInvoice />
                 </ProtectedRoute>
               } />
-              
+
               <Route path="unauthorized" element={<Unauthorized />} />
             </Route>
           </Routes>
