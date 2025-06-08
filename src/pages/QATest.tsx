@@ -121,7 +121,9 @@ const QATest: React.FC = () => {
         { name: 'Invalid TRN format rejected', status: 'pending' },
         { name: 'TRN lookup returns mock data', status: 'pending' },
         { name: 'Network failure handling', status: 'pending' },
-        { name: 'Form validation error display', status: 'pending' }
+        { name: 'Form validation error display', status: 'pending' },
+        { name: 'Cryptographic libraries available', status: 'pending' },
+        { name: 'QR Code generation available', status: 'pending' }
       ]
     }
   ];
@@ -421,6 +423,10 @@ const QATest: React.FC = () => {
   const runTRNTests = async (suiteIndex: number) => {
     updateSuiteStatus(suiteIndex, 'running');
     
+    // Check if required libraries are available
+    const hasJsSHA = typeof (window as any)?.jsSHA !== 'undefined';
+    const hasQRCode = typeof (window as any)?.QRCode !== 'undefined';
+    
     const tests = [
       { name: 'Valid TRN format', trn: '100123456700003', shouldPass: true },
       { name: 'Invalid TRN format', trn: '12345', shouldPass: false },
@@ -457,6 +463,23 @@ const QATest: React.FC = () => {
         });
       }
     }
+
+    // Test cryptographic libraries
+    updateTestResult(suiteIndex, 5, { status: 'running' });
+    await new Promise(resolve => setTimeout(resolve, 300));
+    updateTestResult(suiteIndex, 5, { 
+      status: hasJsSHA ? 'passed' : 'failed',
+      details: hasJsSHA ? 'jsSHA library loaded' : 'jsSHA library missing',
+      duration: 300
+    });
+
+    updateTestResult(suiteIndex, 6, { status: 'running' });
+    await new Promise(resolve => setTimeout(resolve, 300));
+    updateTestResult(suiteIndex, 6, { 
+      status: hasQRCode ? 'passed' : 'failed',
+      details: hasQRCode ? 'QRCode library loaded' : 'QRCode library missing',
+      duration: 300
+    });
     
     updateSuiteStatus(suiteIndex, 'completed');
   };
