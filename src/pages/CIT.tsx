@@ -308,6 +308,45 @@ const CIT: React.FC = () => {
     setShowSuccessAlert(true);
   };
 
+  const handleGenerateFTAPDF = async () => {
+    try {
+      const { FTAPDFExporter } = await import('../utils/ftaPdfExport');
+      
+      const exporter = new FTAPDFExporter(t, i18n.language === 'ar');
+      
+      const companyInfo = {
+        name: formData.companyName || 'Company Name',
+        trn: formData.trn || 'TRN Required',
+        taxPeriod: formData.financialYearEnd || new Date().getFullYear().toString(),
+        submissionDate: new Date().toLocaleDateString()
+      };
+
+      const citData = {
+        revenue: formData.revenue,
+        expenses: formData.expenses,
+        netProfit: citCalculation.netProfit,
+        taxableIncome: citCalculation.taxableIncome,
+        citPayable: citCalculation.citPayable,
+        effectiveRate: citCalculation.effectiveRate,
+        smallBusinessReliefApplied: citCalculation.smallBusinessReliefApplied,
+        taxAdjustments: formData.taxAdjustments,
+        exemptIncome: formData.exemptIncome,
+        carriedForwardLosses: formData.carriedForwardLosses
+      };
+
+      const pdf = exporter.generateCITPDF(companyInfo, citData);
+      const fileName = `CIT_Return_${formData.companyName || 'Company'}_${new Date().getFullYear()}.pdf`;
+      pdf.save(fileName);
+
+      setAlertMessage(t('cit.export.ftaPdfSuccess', 'FTA-style PDF generated successfully'));
+      setShowSuccessAlert(true);
+    } catch (error) {
+      console.error('Error generating FTA PDF:', error);
+      setAlertMessage(t('cit.export.ftaPdfError', 'Error generating FTA PDF'));
+      setShowWarningAlert(true);
+    }
+  };
+
   const handleExportExcel = () => {
     // Simulate Excel export
     const csvContent = `Field,Value\nRevenue,${formData.revenue}\nExpenses,${formData.expenses}\nNet Profit,${citCalculation.netProfit}\nTaxable Income,${citCalculation.taxableIncome}\nCIT Payable,${citCalculation.citPayable}`;
@@ -483,7 +522,7 @@ const CIT: React.FC = () => {
                     value={formData.revenue}
                     onChange={handleInputChange('revenue')}
                     error={!!validationErrors.revenue}
-                    helperText={validationErrors.revenue || `Live data: AED ${getTotalRevenue().toLocaleString()}`}
+                    helperText={validationErrors.revenue || `Live data: AED ${totalRevenue.toLocaleString()}`}
                     InputProps={{
                       startAdornment: <InputAdornment position="start">AED</InputAdornment>,
                     }}
@@ -503,7 +542,7 @@ const CIT: React.FC = () => {
                     value={formData.expenses}
                     onChange={handleInputChange('expenses')}
                     error={!!validationErrors.expenses}
-                    helperText={validationErrors.expenses || `Live data: AED ${getTotalExpenses().toLocaleString()}`}
+                    helperText={validationErrors.expenses || `Live data: AED ${totalExpenses.toLocaleString()}`}
                     InputProps={{
                       startAdornment: <InputAdornment position="start">AED</InputAdornment>,
                     }}
@@ -769,6 +808,21 @@ const CIT: React.FC = () => {
                 <Button
                   fullWidth
                   variant="contained"
+                  startIcon={<ReceiptIcon />}
+                  onClick={handleGenerateFTAPDF}
+                  disabled={isCalculating || !formData.companyName || !formData.trn}
+                  sx={{ 
+                    bgcolor: '#006A4E', 
+                    '&:hover': { bgcolor: '#005A42' },
+                    fontWeight: 600
+                  }}
+                >
+                  {t('cit.export.generateFTAPDF', 'Generate FTA PDF')}
+                </Button>
+
+                <Button
+                  fullWidth
+                  variant="outlined"
                   startIcon={<DownloadIcon />}
                   onClick={() => setShowExportDialog(true)}
                   disabled={isCalculating}

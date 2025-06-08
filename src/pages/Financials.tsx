@@ -27,7 +27,8 @@ import {
   alpha,
   Tabs,
   Tab,
-  LinearProgress
+  LinearProgress,
+  Snackbar
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -128,7 +129,7 @@ const Financials: React.FC = () => {
   const [openExpenseModal, setOpenExpenseModal] = useState(false);
   const [editingEntry, setEditingEntry] = useState<FinancialEntry | null>(null);
   const { revenues, expenses, addRevenue, addExpense } = useFinance();
-  const { summary, isUpdating, totalRevenue, totalExpenses, netIncome } = useFinancialSync();
+  const { summary: syncSummary, isUpdating, totalRevenue, totalExpenses, netIncome } = useFinancialSync();
 
   const [financialData, setFinancialData] = useState<FinancialEntry[]>([
     {
@@ -349,6 +350,11 @@ const Financials: React.FC = () => {
   const navigateToAccountingExpense = () => {
     window.location.href = '/accounting?tab=expenses';
   };
+
+    // Alert state variables
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [showWarningAlert, setShowWarningAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
   return (
     <Box sx={{ p: 3, direction: i18n.language === 'ar' ? 'rtl' : 'ltr' }}>
@@ -1055,6 +1061,27 @@ const Financials: React.FC = () => {
           </Grid>
         </Grid>
       </Box>
+      
+      {/* Success/Warning Alerts */}
+      <Snackbar
+        open={showSuccessAlert}
+        autoHideDuration={4000}
+        onClose={() => setShowSuccessAlert(false)}
+      >
+        <Alert severity="success" onClose={() => setShowSuccessAlert(false)}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={showWarningAlert}
+        autoHideDuration={4000}
+        onClose={() => setShowWarningAlert(false)}
+      >
+        <Alert severity="warning" onClose={() => setShowWarningAlert(false)}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

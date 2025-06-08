@@ -158,6 +158,43 @@ const VAT: React.FC = () => {
     console.log('Exporting PDF...');
   };
 
+  const handleGenerateFTAPDF = async () => {
+    try {
+      const { FTAPDFExporter } = await import('../utils/ftaPdfExport');
+      
+      const exporter = new FTAPDFExporter(t, i18n.language === 'ar');
+      
+      const companyInfo = {
+        name: formData.companyName || 'Company Name',
+        trn: formData.trn || 'TRN Required',
+        taxPeriod: formData.taxPeriod,
+        submissionDate: new Date().toLocaleDateString()
+      };
+
+      const vatData = {
+        standardRatedSales: formData.standardRatedSales,
+        zeroRatedSales: formData.zeroRatedSales,
+        exemptSales: formData.exemptSales,
+        purchasesWithVAT: formData.purchasesWithVAT,
+        outputVAT: calculations.outputVAT,
+        inputVAT: calculations.inputVAT,
+        netVAT: calculations.netVAT,
+        isRefundable: calculations.isRefundable
+      };
+
+      const pdf = exporter.generateVATPDF(companyInfo, vatData);
+      const fileName = `VAT_Return_${formData.companyName || 'Company'}_${formData.taxPeriod}.pdf`;
+      pdf.save(fileName);
+
+      setAlertMessage(t('vat.export.ftaPdfSuccess', 'FTA-style VAT PDF generated successfully'));
+      setShowSuccessAlert(true);
+    } catch (error) {
+      console.error('Error generating FTA PDF:', error);
+      setAlertMessage(t('vat.export.ftaPdfError', 'Error generating FTA PDF'));
+      setShowWarningAlert(true);
+    }
+  };
+
   const handleExportExcel = () => {
     console.log('Exporting Excel...');
   };
@@ -619,6 +656,22 @@ const VAT: React.FC = () => {
               </Grid>
 
               <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  startIcon={<FileText />}
+                  onClick={handleGenerateFTAPDF}
+                  disabled={!formData.companyName || !formData.trn}
+                  sx={{ 
+                    bgcolor: '#006A4E', 
+                    '&:hover': { bgcolor: '#005A42' },
+                    fontWeight: 600,
+                    py: 2
+                  }}
+                >
+                  {t('vat.export.generateFTAPDF', 'Generate FTA PDF')}
+                </Button>
+
                 <Button
                   fullWidth
                   variant="contained"

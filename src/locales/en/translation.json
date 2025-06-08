@@ -103,6 +103,18 @@
     },
     "vatCalculationSummary": {
       "title": "VAT Calculation Summary"
+    },
+    "export": {
+      "generateFTAPDF": "Generate FTA PDF",
+      "ftaPdfSuccess": "FTA-style VAT PDF generated successfully",
+      "ftaPdfError": "Error generating FTA PDF"
+    }
+  },
+  "financials": {
+    "exportFTAPDF": "Generate FTA PDF",
+    "export": {
+      "ftaPdfSuccess": "FTA-style Financial PDF generated successfully",
+      "ftaPdfError": "Error generating FTA PDF"
     }
   },
   "assistant": {
@@ -125,8 +137,16 @@
       "general": "General"
     },
     "export": {
-      "chat": "Export Chat",
-      "auditLog": "Export Audit Log"
+      "button": "Export Reports",
+      "title": "Export CIT Return",
+      "description": "Choose export format for your CIT return",
+      "pdf": "Export as PDF",
+      "excel": "Export as Excel",
+      "pdfSuccess": "PDF exported successfully",
+      "excelSuccess": "Excel exported successfully",
+      "generateFTAPDF": "Generate FTA PDF",
+      "ftaPdfSuccess": "FTA-style PDF generated successfully",
+      "ftaPdfError": "Error generating FTA PDF"
     },
     "responses": {
       "greeting": "Hello! I'm your UAE tax assistant. I can help with CIT, VAT, filing deadlines, and FTA compliance. What would you like to know?",
