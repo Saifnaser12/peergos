@@ -1,104 +1,61 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
+  fallback?: ReactNode;
 }
 
 interface State {
   hasError: boolean;
-  error?: Error;
-  errorInfo?: ErrorInfo;
+  error: Error | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false
-  };
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
 
-  public static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    this.setState({ errorInfo });
-    
-    // Log additional context for debugging
-    console.error('Component stack:', errorInfo.componentStack);
-    console.error('Error boundary state:', this.state);
   }
 
-  private handleReload = () => {
-    window.location.reload();
-  };
-
-  private handleReset = () => {
-    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-  };
-
-  public render() {
+  render() {
     if (this.state.hasError) {
-      return (
-        <div style={{ 
-          padding: '40px', 
-          textAlign: 'center', 
-          fontFamily: 'Arial, sans-serif',
-          maxWidth: '600px',
-          margin: '0 auto'
-        }}>
-          <h2 style={{ color: '#d32f2f', marginBottom: '16px' }}>Something went wrong</h2>
-          <p style={{ marginBottom: '24px', color: '#666' }}>
-            There was an error loading the application. This is likely a temporary issue.
-          </p>
-          
-          <div style={{ marginBottom: '24px' }}>
-            <button 
-              onClick={this.handleReset}
-              style={{
-                padding: '12px 24px',
-                marginRight: '12px',
-                backgroundColor: '#1976d2',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Try again
-            </button>
-            <button 
-              onClick={this.handleReload}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#f5f5f5',
-                color: '#333',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Reload page
-            </button>
-          </div>
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
 
-          {this.state.error && (
-            <details style={{ textAlign: 'left', marginTop: '24px' }}>
-              <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
-                Technical details
-              </summary>
-              <pre style={{ 
-                backgroundColor: '#f5f5f5', 
-                padding: '16px', 
-                borderRadius: '4px',
-                overflow: 'auto',
-                fontSize: '12px',
-                marginTop: '8px'
-              }}>
-                {this.state.error.message}
-                {this.state.error.stack && '\n\nStack trace:\n' + this.state.error.stack}
-              </pre>
-            </details>
-          )}
+      return (
+        <div className="min-h-[200px] flex items-center justify-center">
+          <div className="text-center p-6 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+            <h3 className="text-lg font-medium text-red-800 dark:text-red-200 mb-2">
+              Something went wrong
+            </h3>
+            <p className="text-red-600 dark:text-red-300 mb-4">
+              An error occurred while loading this component.
+            </p>
+            <button
+              onClick={() => this.setState({ hasError: false, error: null })}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+            >
+              Try Again
+            </button>
+            {process.env.NODE_ENV === 'development' && this.state.error && (
+              <details className="mt-4 text-left">
+                <summary className="cursor-pointer text-red-700 dark:text-red-300">
+                  Error Details
+                </summary>
+                <pre className="mt-2 text-xs text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/40 p-2 rounded overflow-auto">
+                  {this.state.error.stack}
+                </pre>
+              </details>
+            )}
+          </div>
         </div>
       );
     }
@@ -106,5 +63,3 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-
-export default ErrorBoundary;
