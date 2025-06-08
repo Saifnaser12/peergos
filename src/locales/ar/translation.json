@@ -87,6 +87,31 @@
   "This VAT return complies with UAE Federal Tax Authority requirements. Ensure all amounts are accurate before submission.": "يتوافق هذا الإقرار مع متطلبات الهيئة الاتحادية للضرائب في دولة الإمارات. تأكد من دقة جميع المبالغ قبل التقديم.",
   "Invalid number format": "تنسيق رقم غير صالح",
   "Amount cannot be negative": "لا يمكن أن يكون المبلغ سالباً",
+  "dashboard": {
+    "title": "لوحة التحكم الضريبية",
+    "subtitle": "نظرة عامة على الالتزامات الضريبية وحالة الامتثال",
+    "actions": {
+      "fileVAT": "تقديم إقرار ضريبة القيمة المضافة",
+      "calculateCIT": "حساب ضريبة الشركات",
+      "viewFinancials": "عرض البيانات المالية"
+    }
+  },
+  "export": {
+    "pdf": "تصدير PDF",
+    "excel": "تصدير Excel"
+  },
+  "accounting": {
+    "revenue": {
+      "add": "إضافة إيراد"
+    },
+    "expense": {
+      "add": "إضافة مصروف"
+    }
+  },
+  "invoice": {
+    "generate": "إنشاء فاتورة",
+    "exportXML": "تصدير XML"
+  },
   "vat": {
     "title": "تقديم إقرار ضريبة القيمة المضافة",
     "subtitle": "قدم إقرار ضريبة القيمة المضافة للإمارات العربية المتحدة",
