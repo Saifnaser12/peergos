@@ -232,5 +232,10 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
 export const useFinance = () => {
   const ctx = useContext(FinanceContext);
   if (!ctx) throw new Error("FinanceContext must be used within FinanceProvider");
-  return ctx;
+  
+  // Add backwards compatibility for revenue vs revenues naming
+  return {
+    ...ctx,
+    revenues: ctx.revenue // Alias for backwards compatibility
+  };
 };

@@ -89,7 +89,9 @@
     "exportFTAPDF": "Generate FTA PDF",
     "export": {
       "ftaPdfSuccess": "FTA-style Financial PDF generated successfully",
-      "ftaPdfError": "Error generating FTA PDF"
+      "ftaPdfError": "Error generating FTA PDF",
+      "excelSuccess": "Excel file exported successfully",
+      "excelError": "Error exporting Excel file"
     }
   },
   "vat": {

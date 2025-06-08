@@ -129,7 +129,7 @@ const Financials: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [openExpenseModal, setOpenExpenseModal] = useState(false);
   const [editingEntry, setEditingEntry] = useState<FinancialEntry | null>(null);
-  const { revenues, expenses, addRevenue, addExpense } = useFinance();
+  const { revenue: revenues, expenses, addRevenue, addExpense } = useFinance();
   const { summary: syncSummary, isUpdating, totalRevenue, totalExpenses, netIncome } = useFinancialSync();
 
   const [financialData, setFinancialData] = useState<FinancialEntry[]>([
@@ -277,53 +277,93 @@ const Financials: React.FC = () => {
   };
 
   const handleExportPDF = (type: 'income' | 'balance' | 'cashflow' | 'comprehensive') => {
-    const exportData = {
-      totalRevenue,
-      totalExpenses,
-      netIncome: netProfit,
-      revenues: revenues.map(r => ({
-        id: r.id,
-        amount: r.amount,
-        description: r.description,
-        date: r.date,
-        category: r.category
-      })),
-      expenses: expenses.map(e => ({
-        id: e.id,
-        amount: e.amount,
-        category: e.category,
-        date: e.date,
-        description: e.description,
-        vendor: e.vendor
-      }))
-    };
+    try {
+      const exportData = {
+        totalRevenue,
+        totalExpenses,
+        netIncome: netProfit,
+        revenues: revenues.map(r => ({
+          id: r.id,
+          amount: r.amount,
+          description: r.description,
+          date: r.date,
+          category: r.category
+        })),
+        expenses: expenses.map(e => ({
+          id: e.id,
+          amount: e.amount,
+          category: e.category,
+          date: e.date,
+          description: e.description,
+          vendor: e.vendor
+        }))
+      };
 
-    exportToPDF(exportData);
+      // Use the actual export function from ftaReportsExport
+      if (type === 'comprehensive') {
+        exportComprehensivePDF(exportData);
+      } else if (type === 'income') {
+        exportIncomeStatementToPDF(exportData);
+      } else if (type === 'balance') {
+        exportBalanceSheetToPDF(exportData);
+      } else if (type === 'cashflow') {
+        exportCashFlowToPDF(exportData);
+      }
+      
+      setAlertMessage(t('financials.export.ftaPdfSuccess', 'Financial PDF generated successfully'));
+      setShowSuccessAlert(true);
+    } catch (error) {
+      console.error('Export PDF error:', error);
+      setAlertMessage(t('financials.export.ftaPdfError', 'Error generating PDF'));
+      setShowWarningAlert(true);
+    }
   };
 
   const handleExportExcel = () => {
-    const exportData = {
-      totalRevenue,
-      totalExpenses,
-      netIncome: netProfit,
-      revenues: revenues.map(r => ({
-        id: r.id,
-        amount: r.amount,
-        description: r.description,
-        date: r.date,
-        category: r.category
-      })),
-      expenses: expenses.map(e => ({
-        id: e.id,
-        amount: e.amount,
-        category: e.category,
-        date: e.date,
-        description: e.description,
-        vendor: e.vendor
-      }))
-    };
+    try {
+      const exportData = {
+        totalRevenue,
+        totalExpenses,
+        netIncome: netProfit,
+        revenues: revenues.map(r => ({
+          id: r.id,
+          amount: r.amount,
+          description: r.description,
+          date: r.date,
+          category: r.category
+        })),
+        expenses: expenses.map(e => ({
+          id: e.id,
+          amount: e.amount,
+          category: e.category,
+          date: e.date,
+          description: e.description,
+          vendor: e.vendor
+        }))
+      };
 
-    exportToExcel(exportData);
+      // Create CSV content for Excel export
+      const csvContent = [
+        ['Type', 'Category', 'Description', 'Amount', 'Date'],
+        ...revenues.map(r => ['Revenue', r.category || 'General', r.description, r.amount, r.date]),
+        ...expenses.map(e => ['Expense', e.category, e.description || '', e.amount, e.date])
+      ].map(row => row.join(',')).join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `financial-data-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      
+      setAlertMessage(t('financials.export.excelSuccess', 'Excel file exported successfully'));
+      setShowSuccessAlert(true);
+    } catch (error) {
+      console.error('Export Excel error:', error);
+      setAlertMessage(t('financials.export.excelError', 'Error exporting Excel file'));
+      setShowWarningAlert(true);
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -356,6 +396,20 @@ const Financials: React.FC = () => {
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const [showWarningAlert, setShowWarningAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
+
+  // Loading state while libraries are initializing
+  if (!revenues && !expenses) {
+    return (
+      <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="h6" gutterBottom>
+            {t('common.loading', 'Loading financial data...')}
+          </Typography>
+          <LinearProgress sx={{ width: 300, mt: 2 }} />
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <ErrorBoundary>
