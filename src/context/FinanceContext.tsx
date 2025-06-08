@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 type Revenue = { 
@@ -32,7 +33,6 @@ interface FinanceContextType {
   getTotalRevenue: () => number;
   getTotalExpenses: () => number;
   getNetIncome: () => number;
-  // New methods for real-time sync
   subscribeToUpdates: (callback: FinanceUpdateCallback) => () => void;
   getFinancialSummary: () => {
     totalRevenue: number;
@@ -61,52 +61,71 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [updateCallbacks, setUpdateCallbacks] = useState<Set<FinanceUpdateCallback>>(new Set());
   const [lastUpdated, setLastUpdated] = useState<string>(new Date().toISOString());
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Trigger all subscribed callbacks when data changes
   const triggerUpdates = useCallback(() => {
     const timestamp = new Date().toISOString();
     setLastUpdated(timestamp);
-    updateCallbacks.forEach(callback => {
-      try {
-        callback();
-      } catch (error) {
-        console.error('Error in finance update callback:', error);
-      }
-    });
+    
+    // Use setTimeout to prevent infinite loops
+    setTimeout(() => {
+      updateCallbacks.forEach(callback => {
+        try {
+          callback();
+        } catch (error) {
+          console.error('Error in finance update callback:', error);
+        }
+      });
+    }, 0);
   }, [updateCallbacks]);
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const savedRevenue = localStorage.getItem('peergos-revenue');
-    const savedExpenses = localStorage.getItem('peergos-expenses');
+    try {
+      const savedRevenue = localStorage.getItem('peergos-revenue');
+      const savedExpenses = localStorage.getItem('peergos-expenses');
 
-    if (savedRevenue) {
-      try {
-        setRevenues(JSON.parse(savedRevenue));
-      } catch (error) {
-        console.error('Error loading revenue from localStorage:', error);
+      if (savedRevenue) {
+        const parsedRevenue = JSON.parse(savedRevenue);
+        setRevenues(Array.isArray(parsedRevenue) ? parsedRevenue : []);
       }
-    }
 
-    if (savedExpenses) {
-      try {
-        setExpenses(JSON.parse(savedExpenses));
-      } catch (error) {
-        console.error('Error loading expenses from localStorage:', error);
+      if (savedExpenses) {
+        const parsedExpenses = JSON.parse(savedExpenses);
+        setExpenses(Array.isArray(parsedExpenses) ? parsedExpenses : []);
       }
+    } catch (error) {
+      console.error('Error loading data from localStorage:', error);
+      setRevenues([]);
+      setExpenses([]);
+    } finally {
+      setIsInitialized(true);
     }
   }, []);
 
   // Save to localStorage and trigger updates whenever data changes
   useEffect(() => {
-    localStorage.setItem('peergos-revenue', JSON.stringify(revenues));
-    triggerUpdates();
-  }, [revenues, triggerUpdates]);
+    if (isInitialized) {
+      try {
+        localStorage.setItem('peergos-revenue', JSON.stringify(revenues));
+        triggerUpdates();
+      } catch (error) {
+        console.error('Error saving revenue to localStorage:', error);
+      }
+    }
+  }, [revenues, triggerUpdates, isInitialized]);
 
   useEffect(() => {
-    localStorage.setItem('peergos-expenses', JSON.stringify(expenses));
-    triggerUpdates();
-  }, [expenses, triggerUpdates]);
+    if (isInitialized) {
+      try {
+        localStorage.setItem('peergos-expenses', JSON.stringify(expenses));
+        triggerUpdates();
+      } catch (error) {
+        console.error('Error saving expenses to localStorage:', error);
+      }
+    }
+  }, [expenses, triggerUpdates, isInitialized]);
 
   const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
@@ -137,11 +156,11 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   const getTotalRevenue = useCallback(() => {
-    return revenues.reduce((sum, r) => sum + r.amount, 0);
+    return revenues.reduce((sum, r) => sum + (r.amount || 0), 0);
   }, [revenues]);
 
   const getTotalExpenses = useCallback(() => {
-    return expenses.reduce((sum, e) => sum + e.amount, 0);
+    return expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
   }, [expenses]);
 
   const getNetIncome = useCallback(() => {
@@ -152,13 +171,13 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
   const getQualifyingIncome = useCallback(() => {
     return revenues
       .filter(item => item.freeZoneIncomeType === 'qualifying')
-      .reduce((sum, item) => sum + item.amount, 0);
+      .reduce((sum, item) => sum + (item.amount || 0), 0);
   }, [revenues]);
 
   const getNonQualifyingIncome = useCallback(() => {
     return revenues
       .filter(item => item.freeZoneIncomeType === 'non-qualifying')
-      .reduce((sum, item) => sum + item.amount, 0);
+      .reduce((sum, item) => sum + (item.amount || 0), 0);
   }, [revenues]);
 
   const getNonQualifyingPercentage = useCallback(() => {
@@ -203,6 +222,11 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
       lastUpdated
     };
   }, [getTotalRevenue, getTotalExpenses, getNetIncome, revenues.length, expenses.length, lastUpdated]);
+
+  // Don't render until initialized
+  if (!isInitialized) {
+    return null;
+  }
 
   return (
     <FinanceContext.Provider value={{ 

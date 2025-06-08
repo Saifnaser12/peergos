@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useFinance } from '../context/FinanceContext';
 
 interface FinancialSyncData {
@@ -9,7 +10,7 @@ interface FinancialSyncData {
 }
 
 export const useFinancialSync = () => {
-  const { getFinancialSummary, subscribeToUpdates, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
+  const finance = useFinance();
   const [isUpdating, setIsUpdating] = useState(false);
   const [summary, setSummary] = useState<FinancialSyncData>({
     totalRevenue: 0,
@@ -18,40 +19,61 @@ export const useFinancialSync = () => {
     lastUpdated: new Date().toISOString()
   });
 
+  // Use ref to prevent infinite re-renders
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const updateSummary = useCallback(() => {
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+
     setIsUpdating(true);
 
-    try {
-      const financialSummary = getFinancialSummary();
-      setSummary({
-        totalRevenue: financialSummary.totalRevenue,
-        totalExpenses: financialSummary.totalExpenses,
-        netIncome: financialSummary.netIncome,
-        lastUpdated: financialSummary.lastUpdated
-      });
-    } catch (error) {
-      console.error('Error updating financial summary:', error);
-    } finally {
-      setIsUpdating(false);
-    }
-  }, [getFinancialSummary]);
+    updateTimeoutRef.current = setTimeout(() => {
+      try {
+        const financialSummary = finance.getFinancialSummary();
+        setSummary({
+          totalRevenue: financialSummary.totalRevenue,
+          totalExpenses: financialSummary.totalExpenses,
+          netIncome: financialSummary.netIncome,
+          lastUpdated: financialSummary.lastUpdated
+        });
+      } catch (error) {
+        console.error('Error updating financial summary:', error);
+        // Set default values on error
+        setSummary({
+          totalRevenue: 0,
+          totalExpenses: 0,
+          netIncome: 0,
+          lastUpdated: new Date().toISOString()
+        });
+      } finally {
+        setIsUpdating(false);
+      }
+    }, 100);
+  }, [finance]);
 
   useEffect(() => {
     // Initial load
     updateSummary();
 
     // Subscribe to real-time updates
-    const unsubscribe = subscribeToUpdates(updateSummary);
+    const unsubscribe = finance.subscribeToUpdates(updateSummary);
 
-    return unsubscribe;
-  }, [updateSummary, subscribeToUpdates]);
+    return () => {
+      unsubscribe();
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
+  }, [updateSummary, finance]);
 
   return {
     summary,
     isUpdating,
-    totalRevenue: getTotalRevenue(),
-    totalExpenses: getTotalExpenses(),
-    netIncome: getNetIncome(),
+    totalRevenue: finance.getTotalRevenue(),
+    totalExpenses: finance.getTotalExpenses(),
+    netIncome: finance.getNetIncome(),
     lastUpdated: summary.lastUpdated
   };
 };

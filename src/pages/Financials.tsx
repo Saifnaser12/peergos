@@ -28,7 +28,8 @@ import {
   Tabs,
   Tab,
   LinearProgress,
-  Snackbar
+  Snackbar,
+  CircularProgress
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -129,8 +130,37 @@ const Financials: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [openExpenseModal, setOpenExpenseModal] = useState(false);
   const [editingEntry, setEditingEntry] = useState<FinancialEntry | null>(null);
-  const { revenue: revenues, expenses, addRevenue, addExpense } = useFinance();
-  const { summary: syncSummary, isUpdating, totalRevenue, totalExpenses, netIncome } = useFinancialSync();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Finance data with error handling
+  const [financeContext, setFinanceContext] = useState<any>(null);
+  const [syncData, setSyncData] = useState<any>(null);
+
+  // Initialize finance context with error handling
+  useEffect(() => {
+    try {
+      const finance = useFinance();
+      setFinanceContext(finance);
+      setIsLoading(false);
+    } catch (err) {
+      console.error('Error initializing finance context:', err);
+      setError('Failed to load financial data');
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Initialize sync data with error handling
+  useEffect(() => {
+    if (financeContext) {
+      try {
+        const sync = useFinancialSync();
+        setSyncData(sync);
+      } catch (err) {
+        console.error('Error initializing financial sync:', err);
+      }
+    }
+  }, [financeContext]);
 
   const [financialData, setFinancialData] = useState<FinancialEntry[]>([
     {
@@ -190,14 +220,19 @@ const Financials: React.FC = () => {
     date: new Date().toISOString().split('T')[0]
   });
 
-  // Use real-time totals from FinanceContext
-  const netProfit = netIncome;
+  // Get data safely with fallbacks
+  const revenues = financeContext?.revenue || [];
+  const expenses = financeContext?.expenses || [];
+  const totalRevenue = syncData?.totalRevenue || financeContext?.getTotalRevenue?.() || 0;
+  const totalExpenses = syncData?.totalExpenses || financeContext?.getTotalExpenses?.() || 0;
+  const netIncome = syncData?.netIncome || financeContext?.getNetIncome?.() || 0;
+  const isUpdating = syncData?.isUpdating || false;
 
   // Calculate summary using live context data + static financial data
   const summary = {
     totalRevenue,
     totalExpenses,
-    netIncome: netProfit,
+    netIncome,
     totalAssets: financialData.filter(item => item.type === 'asset').reduce((sum, item) => sum + item.amount, 0),
     totalLiabilities: financialData.filter(item => item.type === 'liability').reduce((sum, item) => sum + item.amount, 0),
     totalEquity: financialData.filter(item => item.type === 'equity').reduce((sum, item) => sum + item.amount, 0),
@@ -210,12 +245,12 @@ const Financials: React.FC = () => {
 
     // Filter current year data from FinanceContext
     const currentYearRevenue = revenues
-      .filter(item => new Date(item.date).getFullYear() === currentYear)
-      .reduce((sum, item) => sum + item.amount, 0);
+      .filter((item: any) => new Date(item.date).getFullYear() === currentYear)
+      .reduce((sum: number, item: any) => sum + item.amount, 0);
 
     const currentYearExpenses = expenses
-      .filter(item => new Date(item.date).getFullYear() === currentYear)
-      .reduce((sum, item) => sum + item.amount, 0);
+      .filter((item: any) => new Date(item.date).getFullYear() === currentYear)
+      .reduce((sum: number, item: any) => sum + item.amount, 0);
 
     const netIncome = currentYearRevenue - currentYearExpenses;
 
@@ -247,13 +282,15 @@ const Financials: React.FC = () => {
   ];
 
   const handleAddExpense = (expenseData: any) => {
-    addExpense({
-      category: expenseData.category,
-      amount: parseFloat(expenseData.amount),
-      date: expenseData.date,
-      description: expenseData.description,
-      vendor: expenseData.vendor
-    });
+    if (financeContext?.addExpense) {
+      financeContext.addExpense({
+        category: expenseData.category,
+        amount: parseFloat(expenseData.amount),
+        date: expenseData.date,
+        description: expenseData.description,
+        vendor: expenseData.vendor
+      });
+    }
     setOpenExpenseModal(false);
   };
 
@@ -281,15 +318,15 @@ const Financials: React.FC = () => {
       const exportData = {
         totalRevenue,
         totalExpenses,
-        netIncome: netProfit,
-        revenues: revenues.map(r => ({
+        netIncome,
+        revenues: revenues.map((r: any) => ({
           id: r.id,
           amount: r.amount,
           description: r.description,
           date: r.date,
           category: r.category
         })),
-        expenses: expenses.map(e => ({
+        expenses: expenses.map((e: any) => ({
           id: e.id,
           amount: e.amount,
           category: e.category,
@@ -309,7 +346,7 @@ const Financials: React.FC = () => {
       } else if (type === 'cashflow') {
         exportCashFlowToPDF(exportData);
       }
-      
+
       setAlertMessage(t('financials.export.ftaPdfSuccess', 'Financial PDF generated successfully'));
       setShowSuccessAlert(true);
     } catch (error) {
@@ -324,15 +361,15 @@ const Financials: React.FC = () => {
       const exportData = {
         totalRevenue,
         totalExpenses,
-        netIncome: netProfit,
-        revenues: revenues.map(r => ({
+        netIncome,
+        revenues: revenues.map((r: any) => ({
           id: r.id,
           amount: r.amount,
           description: r.description,
           date: r.date,
           category: r.category
         })),
-        expenses: expenses.map(e => ({
+        expenses: expenses.map((e: any) => ({
           id: e.id,
           amount: e.amount,
           category: e.category,
@@ -345,8 +382,8 @@ const Financials: React.FC = () => {
       // Create CSV content for Excel export
       const csvContent = [
         ['Type', 'Category', 'Description', 'Amount', 'Date'],
-        ...revenues.map(r => ['Revenue', r.category || 'General', r.description, r.amount, r.date]),
-        ...expenses.map(e => ['Expense', e.category, e.description || '', e.amount, e.date])
+        ...revenues.map((r: any) => ['Revenue', r.category || 'General', r.description, r.amount, r.date]),
+        ...expenses.map((e: any) => ['Expense', e.category, e.description || '', e.amount, e.date])
       ].map(row => row.join(',')).join('\n');
 
       const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -356,7 +393,7 @@ const Financials: React.FC = () => {
       a.download = `financial-data-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
       window.URL.revokeObjectURL(url);
-      
+
       setAlertMessage(t('financials.export.excelSuccess', 'Excel file exported successfully'));
       setShowSuccessAlert(true);
     } catch (error) {
@@ -392,26 +429,44 @@ const Financials: React.FC = () => {
     window.location.href = '/accounting?tab=expenses';
   };
 
-    // Alert state variables
-    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-    const [showWarningAlert, setShowWarningAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
+  // Alert state variables
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showWarningAlert, setShowWarningAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
-  // Debug logging
-  console.log('Financials render - revenues:', revenues?.length || 0, 'expenses:', expenses?.length || 0);
-  console.log('Financial sync data:', { totalRevenue, totalExpenses, netIncome, isUpdating });
-
-  // Loading state while libraries are initializing
-  if (!revenues && !expenses) {
-    console.log('Financials: No revenue or expense data, showing loading state');
+  // Show loading state
+  if (isLoading) {
     return (
       <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
         <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress sx={{ mb: 2 }} />
           <Typography variant="h6" gutterBottom>
             {t('common.loading', 'Loading financial data...')}
           </Typography>
-          <LinearProgress sx={{ width: 300, mt: 2 }} />
         </Box>
+      </Box>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Alert severity="error" sx={{ maxWidth: 500 }}>
+          <Typography variant="h6" gutterBottom>
+            {t('common.error', 'Error')}
+          </Typography>
+          <Typography variant="body2">
+            {error}
+          </Typography>
+          <Button 
+            variant="contained" 
+            onClick={() => window.location.reload()} 
+            sx={{ mt: 2 }}
+          >
+            {t('common.retry', 'Retry')}
+          </Button>
+        </Alert>
       </Box>
     );
   }
@@ -501,7 +556,7 @@ const Financials: React.FC = () => {
 
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: 'center' }}>
-                  <TrendingUp sx={{ fontSize: 40, color: netProfit >= 0 ? theme.palette.success.main : theme.palette.error.main, mb: 1 }} />
+                  <TrendingUp sx={{ fontSize: 40, color: netIncome >= 0 ? theme.palette.success.main : theme.palette.error.main, mb: 1 }} />
                   <Typography variant="body2" color="text.secondary" gutterBottom>
                     {t('financials.netProfit', 'Net Profit')}
                   </Typography>
@@ -509,13 +564,13 @@ const Financials: React.FC = () => {
                     variant="h4" 
                     sx={{ 
                       fontWeight: 700, 
-                      color: netProfit >= 0 ? theme.palette.success.main : theme.palette.error.main 
+                      color: netIncome >= 0 ? theme.palette.success.main : theme.palette.error.main 
                     }}
                   >
-                    {formatCurrency(netProfit)}
+                    {formatCurrency(netIncome)}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : 0}% {t('financials.margin', 'margin')}
+                    {totalRevenue > 0 ? ((netIncome / totalRevenue) * 100).toFixed(1) : 0}% {t('financials.margin', 'margin')}
                   </Typography>
                 </Box>
               </Grid>
@@ -944,7 +999,7 @@ const Financials: React.FC = () => {
                         <TableCell align="center">
                           <IconButton 
                             size="small" 
-                            onClick={() =>handleEditEntry(row)}
+                            onClick={() => handleEditEntry(row)}
                             sx={{ mr: 1 }}
                           >
                             <EditIcon fontSize="small" />
@@ -983,13 +1038,6 @@ const Financials: React.FC = () => {
           }}
           maxWidth="sm"
           fullWidth
-          fullScreen={window.innerWidth < 600} // Mobile fullscreen
-          PaperProps={{
-            sx: { 
-              borderRadius: window.innerWidth < 600 ? 0 : 3,
-              margin: window.innerWidth < 600 ? 0 : 2
-            }
-          }}
         >
           <DialogTitle sx={{ fontWeight: 600 }}>
             {editingEntry ? t('financials.editExpense', 'Edit Expense') : t('financials.addExpense', 'Add New Expense')}

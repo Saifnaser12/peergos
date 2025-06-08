@@ -1,31 +1,40 @@
-export interface LibraryLoader {
-  loadJsSHA(): Promise<any>;
-  loadQRCode(): Promise<any>;
-}
 
-class DefaultLibraryLoader implements LibraryLoader {
-  async loadJsSHA(): Promise<any> {
+let jsSHA: any = null;
+let QRCode: any = null;
+
+// Initialize libraries
+const initializeLibraries = async () => {
+  try {
+    // Try to load jsSHA
     try {
-      const jsSHA = await import('jssha');
+      const jssha = await import('jssha');
+      jsSHA = jssha.default || jssha;
       console.log('jsSHA loaded successfully');
-      return jsSHA.default || jsSHA;
     } catch (error) {
       console.warn('jsSHA not available, cryptographic functions will be disabled');
-      return null;
     }
-  }
 
-  async loadQRCode(): Promise<any> {
+    // Try to load QRCode
     try {
-      const QRCode = await import('qrcode');
+      const qrcode = await import('qrcode');
+      QRCode = qrcode.default || qrcode;
       console.log('QRCode loaded successfully');
-      return QRCode.default || QRCode;
     } catch (error) {
       console.warn('QRCode not available, QR code generation will be disabled');
-      return null;
     }
+  } catch (error) {
+    console.error('Error initializing libraries:', error);
   }
-}
+};
 
-export const libraryLoader = new DefaultLibraryLoader();
-export default libraryLoader;
+// Initialize immediately
+initializeLibraries();
+
+export const getjsSHA = () => jsSHA;
+export const getQRCode = () => QRCode;
+
+export default {
+  getjsSHA,
+  getQRCode,
+  isReady: () => Boolean(jsSHA && QRCode)
+};
