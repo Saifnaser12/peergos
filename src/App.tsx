@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
@@ -46,6 +45,7 @@ import QATest from './pages/QATest';
 import Landing from './pages/Landing';
 import WhitelabelPage from './pages/WhitelabelPage';
 import FreeZoneSubstance from './pages/FreeZoneSubstance';
+import FinancialsTest from './components/FinancialsTest';
 
 const App: React.FC = () => {
   const theme = createTheme({
@@ -78,7 +78,7 @@ const App: React.FC = () => {
                                       <Route path="/register" element={<Register />} />
                                       <Route path="/landing" element={<Landing />} />
                                       <Route path="/unauthorized" element={<Unauthorized />} />
-                                      
+
                                       {/* Protected routes with layout */}
                                       <Route path="/" element={<Layout />}>
                                         <Route index element={<Navigate to="/dashboard" replace />} />
@@ -109,7 +109,9 @@ const App: React.FC = () => {
                                         } />
                                         <Route path="financials" element={
                                           <ProtectedRoute allowedRoles={['admin', 'accountant', 'assistant']}>
-                                            <Financials />
+                                            <ErrorBoundary>
+                                              <Financials />
+                                            </ErrorBoundary>
                                           </ProtectedRoute>
                                         } />
                                         <Route path="transfer-pricing" element={
@@ -162,6 +164,7 @@ const App: React.FC = () => {
                                             <FreeZoneSubstance />
                                           </ProtectedRoute>
                                         } />
+                                          <Route path="financials-test" element={<FinancialsTest />} />
                                       </Route>
                                     </Routes>
                                   </Router>

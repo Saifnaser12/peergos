@@ -24,13 +24,19 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('Error caught by boundary:', error, errorInfo);
     console.error('Component stack:', errorInfo.componentStack);
     console.error('Error stack:', error.stack);
+    console.error('Current URL:', window.location.pathname);
 
     // Log specific financial page errors for debugging
-    if (error.message.includes('LibraryLoader') || error.message.includes('export')) {
-      console.error('Financial page library error:', {
+    if (error.message.includes('LibraryLoader') || 
+        error.message.includes('export') ||
+        error.message.includes('useFinance') ||
+        window.location.pathname.includes('/financials')) {
+      console.error('Financial page error details:', {
         error: error.message,
         stack: error.stack,
-        componentStack: errorInfo.componentStack
+        componentStack: errorInfo.componentStack,
+        pathname: window.location.pathname,
+        timestamp: new Date().toISOString()
       });
     }
   }

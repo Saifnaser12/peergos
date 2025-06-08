@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 
 // Types
@@ -85,9 +84,13 @@ const initialExpenses: Expense[] = [
 ];
 
 export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  console.log('FinanceProvider initializing...');
+
   const [revenue, setRevenue] = useState<Revenue[]>(initialRevenue);
   const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
   const [updateCallbacks, setUpdateCallbacks] = useState<Set<() => void>>(new Set());
+
+  console.log('Finance data initialized:', { revenue, expenses });
 
   // Notify subscribers of updates
   const notifyUpdate = useCallback(() => {
@@ -214,7 +217,7 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const subscribeToUpdates = useCallback((callback: () => void) => {
     setUpdateCallbacks(prev => new Set([...prev, callback]));
-    
+
     // Return unsubscribe function
     return () => {
       setUpdateCallbacks(prev => {
@@ -240,6 +243,8 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
     getFinancialSummary,
     subscribeToUpdates
   };
+
+  console.log('FinanceContext value:', contextValue);
 
   return (
     <FinanceContext.Provider value={contextValue}>

@@ -76,8 +76,27 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const Financials: React.FC = () => {
+  console.log('Financials component rendering...');
+  
   const { t } = useTranslation();
   const theme = useTheme();
+  
+  // Add error handling for context
+  let financeContext;
+  try {
+    financeContext = useFinance();
+    console.log('Finance context loaded:', financeContext);
+  } catch (error) {
+    console.error('Error loading finance context:', error);
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">
+          Failed to load finance context. Please refresh the page.
+        </Alert>
+      </Box>
+    );
+  }
+
   const { 
     revenue, 
     expenses, 
@@ -88,7 +107,7 @@ const Financials: React.FC = () => {
     addExpense,
     deleteRevenue,
     deleteExpense
-  } = useFinance();
+  } = financeContext;
 
   const [tabValue, setTabValue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
