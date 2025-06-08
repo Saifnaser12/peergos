@@ -1,6 +1,5 @@
-
-import jsSHA from "jssha";
-import QRCode from "qrcode";
+// import jsSHA from 'jssha';
+// import QRCode from 'qrcode';
 
 // Simplified hash generation
 export function generateHash(invoiceXML: string): string {
@@ -48,13 +47,13 @@ export async function processInvoiceForPhase2(
 ): Promise<Phase2InvoiceData> {
   // Generate hash
   const hash = generateHash(invoiceXML);
-  
+
   // Generate digital signature (fake for now)
   const signature = fakeDigitalSignature(hash);
-  
+
   // Generate QR code
   const qrCode = await generateInvoiceQR(invoiceData);
-  
+
   return {
     xml: invoiceXML,
     hash,
@@ -70,27 +69,27 @@ export function validatePhase2Compliance(invoiceData: Phase2InvoiceData): {
   errors: string[];
 } {
   const errors: string[] = [];
-  
+
   if (!invoiceData.hash) {
     errors.push("Missing invoice hash");
   }
-  
+
   if (!invoiceData.signature) {
     errors.push("Missing digital signature");
   }
-  
+
   if (!invoiceData.qrCode) {
     errors.push("Missing QR code");
   }
-  
+
   if (!invoiceData.sellerTRN || invoiceData.sellerTRN.length !== 15) {
     errors.push("Invalid seller TRN");
   }
-  
+
   if (!invoiceData.buyerTRN || invoiceData.buyerTRN.length !== 15) {
     errors.push("Invalid buyer TRN");
   }
-  
+
   return {
     isCompliant: errors.length === 0,
     errors

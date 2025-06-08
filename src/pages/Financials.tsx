@@ -77,6 +77,7 @@ import {
   Cell
 } from 'recharts';
 import { useFinance } from '../context/FinanceContext';
+import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
 // Types
 interface FinancialEntry {
@@ -276,122 +277,53 @@ const Financials: React.FC = () => {
   };
 
   const handleExportPDF = (type: 'income' | 'balance' | 'cashflow' | 'comprehensive') => {
-    const isRTL = i18n.language === 'ar';
-
-    // Combine live data with financial entries
-    const combinedData = [
-      ...financialData,
-      // Convert revenue to financial entries
-      ...revenues.map(item => ({
-        id: item.id,
-        category: item.category || 'Revenue',
-        subcategory: '',
-        amount: item.amount,
-        date: item.date,
-        description: item.description,
-        type: 'revenue' as const
-      })),
-      // Convert expenses to financial entries
-      ...expenses.map(item => ({
-        id: item.id,
-        category: item.category,
-        subcategory: '',
-        amount: item.amount,
-        date: item.date,
-        description: item.description || '',
-        type: 'expense' as const,
-        vendor: item.vendor
-      }))
-    ];
-
     const exportData = {
-      data: combinedData,
-      summary,
-      notes,
-      companyInfo: {
-        name: 'Sample Company LLC',
-        trn: '100123456700003',
-        address: 'Dubai, UAE',
-        period: `${new Date().getFullYear()} Financial Year`
-      }
+      totalRevenue,
+      totalExpenses,
+      netIncome: netProfit,
+      revenues: revenues.map(r => ({
+        id: r.id,
+        amount: r.amount,
+        description: r.description,
+        date: r.date,
+        category: r.category
+      })),
+      expenses: expenses.map(e => ({
+        id: e.id,
+        amount: e.amount,
+        category: e.category,
+        date: e.date,
+        description: e.description,
+        vendor: e.vendor
+      }))
     };
 
-    let doc;
-    let filename;
-    const dateStr = new Date().toISOString().split('T')[0];
-
-    switch (type) {
-      case 'income':
-        doc = exportIncomeStatementToPDF(exportData, t, isRTL);
-        filename = isRTL 
-          ? `بيان_الدخل_${dateStr}.pdf`
-          : `Income_Statement_${dateStr}.pdf`;
-        break;
-      case 'balance':
-        doc = exportBalanceSheetToPDF(exportData, t, isRTL);
-        filename = isRTL 
-          ? `الميزانية_العمومية_${dateStr}.pdf`
-          : `Balance_Sheet_${dateStr}.pdf`;
-        break;
-      case 'cashflow':
-        doc = exportCashFlowToPDF(exportData, t, isRTL);
-        filename = isRTL 
-          ? `بيان_التدفق_النقدي_${dateStr}.pdf`
-          : `Cash_Flow_Statement_${dateStr}.pdf`;
-        break;
-      case 'comprehensive':
-        doc = exportComprehensivePDF(exportData, t, isRTL);
-        filename = isRTL 
-          ? `البيانات_المالية_الشاملة_${dateStr}.pdf`
-          : `Financial_Statements_${dateStr}.pdf`;
-        break;
-    }
-
-    doc.save(filename);
+    exportToPDF(exportData);
   };
 
   const handleExportExcel = () => {
-    const isRTL = i18n.language === 'ar';
-
-    // Combine live data with financial entries
-    const combinedData = [
-      ...financialData,
-      // Convert revenue to financial entries
-      ...revenues.map(item => ({
-        id: item.id,
-        category: item.category || 'Revenue',
-        subcategory: '',
-        amount: item.amount,
-        date: item.date,
-        description: item.description,
-        type: 'revenue' as const
-      })),
-      // Convert expenses to financial entries
-      ...expenses.map(item => ({
-        id: item.id,
-        category: item.category,
-        subcategory: '',
-        amount: item.amount,
-        date: item.date,
-        description: item.description || '',
-        type: 'expense' as const,
-        vendor: item.vendor
-      }))
-    ];
-
     const exportData = {
-      data: combinedData,
-      summary,
-      notes,
-      companyInfo: {
-        name: 'Sample Company LLC',
-        trn: '100123456700003',
-        address: 'Dubai, UAE',
-        period: `${new Date().getFullYear()} Financial Year`
-      }
+      totalRevenue,
+      totalExpenses,
+      netIncome: netProfit,
+      revenues: revenues.map(r => ({
+        id: r.id,
+        amount: r.amount,
+        description: r.description,
+        date: r.date,
+        category: r.category
+      })),
+      expenses: expenses.map(e => ({
+        id: e.id,
+        amount: e.amount,
+        category: e.category,
+        date: e.date,
+        description: e.description,
+        vendor: e.vendor
+      }))
     };
 
-    exportToExcel(exportData, t, isRTL);
+    exportToExcel(exportData);
   };
 
   const formatCurrency = (amount: number) => {
