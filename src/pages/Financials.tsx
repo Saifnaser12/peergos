@@ -9,19 +9,111 @@ import {
   Paper,
   CircularProgress,
   Alert,
-  Button
+  Button,
+  Tabs,
+  Tab,
+  Chip,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  useTheme,
+  alpha
 } from '@mui/material';
+import {
+  TrendingUp as TrendingUpIcon,
+  TrendingDown as TrendingDownIcon,
+  AccountBalance as AccountBalanceIcon,
+  Receipt as ReceiptIcon,
+  Assessment as AssessmentIcon,
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Download as DownloadIcon,
+  PictureAsPdf as PdfIcon,
+  TableChart as ExcelIcon,
+  Note as NoteIcon
+} from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useFinance } from '../context/FinanceContext';
 
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`financial-tabpanel-${index}`}
+      aria-labelledby={`financial-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
 const Financials: React.FC = () => {
   const { t } = useTranslation();
-  const { revenue, expenses, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
+  const theme = useTheme();
+  const { 
+    revenue, 
+    expenses, 
+    getTotalRevenue, 
+    getTotalExpenses, 
+    getNetIncome,
+    addRevenue,
+    addExpense,
+    deleteRevenue,
+    deleteExpense
+  } = useFinance();
+
+  const [tabValue, setTabValue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [dialogType, setDialogType] = useState<'revenue' | 'expense'>('revenue');
+  const [formData, setFormData] = useState({
+    category: '',
+    amount: '',
+    date: new Date().toISOString().split('T')[0],
+    description: ''
+  });
+
+  // Notes state
+  const [notes, setNotes] = useState([
+    {
+      id: '1',
+      title: 'Accounting Policies',
+      content: 'The financial statements are prepared in accordance with International Financial Reporting Standards (IFRS) as adopted by the UAE.',
+      tags: ['IFRS', 'Policies'],
+      lastModified: new Date().toISOString()
+    }
+  ]);
 
   useEffect(() => {
-    // Simulate loading and check for data
     const timer = setTimeout(() => {
       try {
         setIsLoading(false);
@@ -36,20 +128,65 @@ const Financials: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Get current financial data
   const totalRevenue = getTotalRevenue() || 0;
   const totalExpenses = getTotalExpenses() || 0;
   const netIncome = getNetIncome() || 0;
   const revenueData = revenue || [];
   const expenseData = expenses || [];
 
-  console.log('Financials page data:', {
-    revenueCount: revenueData.length,
-    expenseCount: expenseData.length,
-    totalRevenue,
-    totalExpenses,
-    netIncome
-  });
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
+
+  const handleAddTransaction = () => {
+    const amount = parseFloat(formData.amount);
+    if (!formData.category || !amount || !formData.date) return;
+
+    const transaction = {
+      category: formData.category,
+      amount,
+      date: formData.date,
+      description: formData.description || ''
+    };
+
+    if (dialogType === 'revenue') {
+      addRevenue(transaction);
+    } else {
+      addExpense(transaction);
+    }
+
+    setFormData({
+      category: '',
+      amount: '',
+      date: new Date().toISOString().split('T')[0],
+      description: ''
+    });
+    setOpenAddDialog(false);
+  };
+
+  const openAddTransactionDialog = (type: 'revenue' | 'expense') => {
+    setDialogType(type);
+    setOpenAddDialog(true);
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-AE', {
+      style: 'currency',
+      currency: 'AED'
+    }).format(amount);
+  };
+
+  const exportToPDF = () => {
+    console.log('Exporting to PDF...');
+    // Mock PDF export
+    alert('PDF export functionality would be implemented here');
+  };
+
+  const exportToExcel = () => {
+    console.log('Exporting to Excel...');
+    // Mock Excel export
+    alert('Excel export functionality would be implemented here');
+  };
 
   if (error) {
     return (
@@ -78,8 +215,9 @@ const Financials: React.FC = () => {
     );
   }
 
-  return (
-    <Box sx={{ p: 3 }}>
+  // Overview Panel Component
+  const OverviewPanel = () => (
+    <Box>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
@@ -93,13 +231,16 @@ const Financials: React.FC = () => {
       {/* Financial Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={4}>
-          <Card sx={{ height: '100%' }}>
+          <Card sx={{ height: '100%', background: `linear-gradient(135deg, ${alpha(theme.palette.success.main, 0.1)}, ${alpha(theme.palette.success.main, 0.05)})` }}>
             <CardContent>
-              <Typography variant="h6" sx={{ color: 'success.main', mb: 1 }}>
-                Total Revenue
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <TrendingUpIcon sx={{ color: 'success.main', mr: 1 }} />
+                <Typography variant="h6" sx={{ color: 'success.main', fontWeight: 600 }}>
+                  Total Revenue
+                </Typography>
+              </Box>
               <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                AED {totalRevenue.toLocaleString()}
+                {formatCurrency(totalRevenue)}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {revenueData.length} revenue entries
@@ -109,13 +250,16 @@ const Financials: React.FC = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card sx={{ height: '100%' }}>
+          <Card sx={{ height: '100%', background: `linear-gradient(135deg, ${alpha(theme.palette.error.main, 0.1)}, ${alpha(theme.palette.error.main, 0.05)})` }}>
             <CardContent>
-              <Typography variant="h6" sx={{ color: 'error.main', mb: 1 }}>
-                Total Expenses
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <TrendingDownIcon sx={{ color: 'error.main', mr: 1 }} />
+                <Typography variant="h6" sx={{ color: 'error.main', fontWeight: 600 }}>
+                  Total Expenses
+                </Typography>
+              </Box>
               <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                AED {totalExpenses.toLocaleString()}
+                {formatCurrency(totalExpenses)}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {expenseData.length} expense entries
@@ -125,13 +269,16 @@ const Financials: React.FC = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card sx={{ height: '100%' }}>
+          <Card sx={{ height: '100%', background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})` }}>
             <CardContent>
-              <Typography variant="h6" sx={{ color: netIncome >= 0 ? 'success.main' : 'error.main', mb: 1 }}>
-                Net Income
-              </Typography>
-              <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                AED {netIncome.toLocaleString()}
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <AccountBalanceIcon sx={{ color: 'primary.main', mr: 1 }} />
+                <Typography variant="h6" sx={{ color: netIncome >= 0 ? 'success.main' : 'error.main', fontWeight: 600 }}>
+                  Net Income
+                </Typography>
+              </Box>
+              <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: netIncome >= 0 ? 'success.main' : 'error.main' }}>
+                {formatCurrency(netIncome)}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {netIncome >= 0 ? 'Profit' : 'Loss'}
@@ -141,13 +288,69 @@ const Financials: React.FC = () => {
         </Grid>
       </Grid>
 
+      {/* Quick Actions */}
+      <Paper sx={{ p: 3, mb: 4, borderRadius: 3 }}>
+        <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+          Quick Actions
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => openAddTransactionDialog('revenue')}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
+            >
+              Add Revenue
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => openAddTransactionDialog('expense')}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
+            >
+              Add Expense
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<PdfIcon />}
+              onClick={exportToPDF}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
+            >
+              Export PDF
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<ExcelIcon />}
+              onClick={exportToExcel}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48 }}
+            >
+              Export Excel
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
       {/* Revenue and Expense Details */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Recent Revenue
-            </Typography>
+          <Paper sx={{ p: 3, borderRadius: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Recent Revenue
+              </Typography>
+              <Chip label={`${revenueData.length} entries`} color="success" size="small" />
+            </Box>
             {revenueData.length > 0 ? (
               revenueData.slice(0, 5).map((item, index) => (
                 <Box key={item.id || index} sx={{ mb: 2, pb: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
@@ -156,7 +359,7 @@ const Financials: React.FC = () => {
                       {item.category || 'Revenue'}
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'success.main', fontWeight: 600 }}>
-                      AED {(item.amount || 0).toLocaleString()}
+                      {formatCurrency(item.amount || 0)}
                     </Typography>
                   </Box>
                   <Typography variant="caption" color="text.secondary">
@@ -171,10 +374,13 @@ const Financials: React.FC = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Recent Expenses
-            </Typography>
+          <Paper sx={{ p: 3, borderRadius: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Recent Expenses
+              </Typography>
+              <Chip label={`${expenseData.length} entries`} color="error" size="small" />
+            </Box>
             {expenseData.length > 0 ? (
               expenseData.slice(0, 5).map((item, index) => (
                 <Box key={item.id || index} sx={{ mb: 2, pb: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
@@ -183,7 +389,7 @@ const Financials: React.FC = () => {
                       {item.category || 'Expense'}
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'error.main', fontWeight: 600 }}>
-                      AED {(item.amount || 0).toLocaleString()}
+                      {formatCurrency(item.amount || 0)}
                     </Typography>
                   </Box>
                   <Typography variant="caption" color="text.secondary">
@@ -197,12 +403,433 @@ const Financials: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
+    </Box>
+  );
+
+  // Income Statement Component
+  const IncomeStatement = () => {
+    const groupByCategory = (items: any[]) => {
+      return items.reduce((acc, item) => {
+        if (!acc[item.category]) {
+          acc[item.category] = [];
+        }
+        acc[item.category].push(item);
+        return acc;
+      }, {} as Record<string, any[]>);
+    };
+
+    const revenueGroups = groupByCategory(revenueData);
+    const expenseGroups = groupByCategory(expenseData);
+
+    return (
+      <Paper sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: theme.shadows[4] }}>
+        <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: alpha(theme.palette.primary.main, 0.1) }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, textAlign: 'center' }}>
+            Income Statement
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mt: 1 }}>
+            For the period ending {new Date().toLocaleDateString()}
+          </Typography>
+        </Box>
+
+        <TableContainer>
+          <Table>
+            <TableBody>
+              {/* Revenue Section */}
+              <TableRow>
+                <TableCell colSpan={2} sx={{ backgroundColor: alpha(theme.palette.success.main, 0.1) }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.success.main }}>
+                    Revenue
+                  </Typography>
+                </TableCell>
+              </TableRow>
+              {Object.entries(revenueGroups).map(([category, items]) => (
+                <React.Fragment key={category}>
+                  <TableRow>
+                    <TableCell sx={{ pl: 4, fontWeight: 500 }}>{category}</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 500 }}>
+                      {formatCurrency(items.reduce((sum, item) => sum + item.amount, 0))}
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              ))}
+              <TableRow>
+                <TableCell sx={{ fontWeight: 600, borderTop: 2 }}>
+                  Total Revenue
+                </TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600, borderTop: 2, color: theme.palette.success.main }}>
+                  {formatCurrency(totalRevenue)}
+                </TableCell>
+              </TableRow>
+
+              {/* Expenses Section */}
+              <TableRow>
+                <TableCell colSpan={2} sx={{ backgroundColor: alpha(theme.palette.error.main, 0.1), pt: 3 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.error.main }}>
+                    Expenses
+                  </Typography>
+                </TableCell>
+              </TableRow>
+              {Object.entries(expenseGroups).map(([category, items]) => (
+                <React.Fragment key={category}>
+                  <TableRow>
+                    <TableCell sx={{ pl: 4, fontWeight: 500 }}>{category}</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 500 }}>
+                      {formatCurrency(items.reduce((sum, item) => sum + item.amount, 0))}
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              ))}
+              <TableRow>
+                <TableCell sx={{ fontWeight: 600, borderTop: 2 }}>
+                  Total Expenses
+                </TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600, borderTop: 2, color: theme.palette.error.main }}>
+                  {formatCurrency(totalExpenses)}
+                </TableCell>
+              </TableRow>
+
+              {/* Net Income */}
+              <TableRow>
+                <TableCell sx={{ 
+                  fontWeight: 700, 
+                  fontSize: '1.1rem',
+                  borderTop: 3,
+                  borderColor: theme.palette.primary.main,
+                  backgroundColor: alpha(theme.palette.primary.main, 0.05)
+                }}>
+                  Net Income
+                </TableCell>
+                <TableCell align="right" sx={{ 
+                  fontWeight: 700, 
+                  fontSize: '1.1rem',
+                  borderTop: 3,
+                  borderColor: theme.palette.primary.main,
+                  backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                  color: netIncome >= 0 ? theme.palette.success.main : theme.palette.error.main
+                }}>
+                  {formatCurrency(netIncome)}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    );
+  };
+
+  // Balance Sheet Component
+  const BalanceSheet = () => {
+    // Mock balance sheet data
+    const mockAssets = [
+      { id: '1', category: 'Current Assets', subcategory: 'Cash', amount: 50000, description: 'Cash in bank' },
+      { id: '2', category: 'Current Assets', subcategory: 'Accounts Receivable', amount: 25000, description: 'Customer receivables' },
+      { id: '3', category: 'Fixed Assets', subcategory: 'Equipment', amount: 100000, description: 'Office equipment' }
+    ];
+
+    const mockLiabilities = [
+      { id: '1', category: 'Current Liabilities', subcategory: 'Accounts Payable', amount: 15000, description: 'Supplier payables' },
+      { id: '2', category: 'Long-term Liabilities', subcategory: 'Loan', amount: 50000, description: 'Bank loan' }
+    ];
+
+    const mockEquity = [
+      { id: '1', category: 'Owner Equity', subcategory: 'Capital', amount: 75000, description: 'Owner capital' }
+    ];
+
+    const totalAssets = mockAssets.reduce((sum, item) => sum + item.amount, 0);
+    const totalLiabilities = mockLiabilities.reduce((sum, item) => sum + item.amount, 0);
+    const totalEquity = mockEquity.reduce((sum, item) => sum + item.amount, 0) + netIncome;
+    const isBalanced = Math.abs(totalAssets - (totalLiabilities + totalEquity)) < 0.01;
+
+    return (
+      <Paper sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: theme.shadows[4] }}>
+        <Box sx={{ 
+          p: 3, 
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          backgroundColor: alpha(theme.palette.secondary.main, 0.1),
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              Balance Sheet
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              As of {new Date().toLocaleDateString()}
+            </Typography>
+          </Box>
+          <Chip 
+            label={isBalanced ? 'Balanced' : 'Unbalanced'}
+            color={isBalanced ? 'success' : 'error'}
+            sx={{ fontSize: '0.9rem', fontWeight: 600 }}
+          />
+        </Box>
+
+        <Grid container spacing={3} sx={{ p: 3 }}>
+          <Grid item xs={12} md={6}>
+            <TableContainer component={Paper} sx={{ mb: 2, borderRadius: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: alpha(theme.palette.info.main, 0.1) }}>
+                    <TableCell colSpan={2}>
+                      <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.info.main }}>
+                        Assets
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {mockAssets.map(item => (
+                    <TableRow key={item.id}>
+                      <TableCell sx={{ pl: 2 }}>{item.description}</TableCell>
+                      <TableCell align="right">{formatCurrency(item.amount)}</TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600, borderTop: 2, borderColor: theme.palette.info.main }}>
+                      Total Assets
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, borderTop: 2, borderColor: theme.palette.info.main, color: theme.palette.info.main }}>
+                      {formatCurrency(totalAssets)}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <TableContainer component={Paper} sx={{ mb: 2, borderRadius: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: alpha(theme.palette.warning.main, 0.1) }}>
+                    <TableCell colSpan={2}>
+                      <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.warning.main }}>
+                        Liabilities
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {mockLiabilities.map(item => (
+                    <TableRow key={item.id}>
+                      <TableCell sx={{ pl: 2 }}>{item.description}</TableCell>
+                      <TableCell align="right">{formatCurrency(item.amount)}</TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600, borderTop: 2, borderColor: theme.palette.warning.main }}>
+                      Total Liabilities
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, borderTop: 2, borderColor: theme.palette.warning.main, color: theme.palette.warning.main }}>
+                      {formatCurrency(totalLiabilities)}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <TableContainer component={Paper} sx={{ mb: 2, borderRadius: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: alpha(theme.palette.secondary.main, 0.1) }}>
+                    <TableCell colSpan={2}>
+                      <Typography variant="h6" sx={{ fontWeight: 600, color: theme.palette.secondary.main }}>
+                        Equity
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {mockEquity.map(item => (
+                    <TableRow key={item.id}>
+                      <TableCell sx={{ pl: 2 }}>{item.description}</TableCell>
+                      <TableCell align="right">{formatCurrency(item.amount)}</TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow>
+                    <TableCell sx={{ pl: 2, fontWeight: 500 }}>
+                      Retained Earnings
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 500 }}>
+                      {formatCurrency(netIncome)}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600, borderTop: 2, borderColor: theme.palette.secondary.main }}>
+                      Total Equity
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, borderTop: 2, borderColor: theme.palette.secondary.main, color: theme.palette.secondary.main }}>
+                      {formatCurrency(totalEquity)}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        </Grid>
+      </Paper>
+    );
+  };
+
+  // Notes Component
+  const NotesPanel = () => (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <NoteIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Notes to Financial Statements
+          </Typography>
+        </Box>
+      </Box>
+
+      <Grid container spacing={3}>
+        {notes.map((note) => (
+          <Grid item xs={12} md={6} key={note.id}>
+            <Paper
+              sx={{
+                p: 3,
+                borderRadius: 3,
+                border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.8)}, ${alpha(theme.palette.primary.main, 0.02)})`,
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                {note.title}
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.6 }}>
+                {note.content}
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                {note.tags.map((tag) => (
+                  <Chip
+                    key={tag}
+                    label={tag}
+                    size="small"
+                    sx={{
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                      color: theme.palette.primary.main
+                    }}
+                  />
+                ))}
+              </Box>
+              <Typography variant="caption" color="text.secondary">
+                Last modified: {new Date(note.lastModified).toLocaleDateString()}
+              </Typography>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+
+  return (
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={tabValue} onChange={handleTabChange} aria-label="financial tabs">
+          <Tab label="Overview" icon={<AssessmentIcon />} iconPosition="start" />
+          <Tab label="Income Statement" icon={<ReceiptIcon />} iconPosition="start" />
+          <Tab label="Balance Sheet" icon={<AccountBalanceIcon />} iconPosition="start" />
+          <Tab label="Notes" icon={<NoteIcon />} iconPosition="start" />
+        </Tabs>
+      </Box>
+
+      <TabPanel value={tabValue} index={0}>
+        <OverviewPanel />
+      </TabPanel>
+      <TabPanel value={tabValue} index={1}>
+        <IncomeStatement />
+      </TabPanel>
+      <TabPanel value={tabValue} index={2}>
+        <BalanceSheet />
+      </TabPanel>
+      <TabPanel value={tabValue} index={3}>
+        <NotesPanel />
+      </TabPanel>
+
+      {/* Add Transaction Dialog */}
+      <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          Add New {dialogType === 'revenue' ? 'Revenue' : 'Expense'}
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel>Category</InputLabel>
+                  <Select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    label="Category"
+                  >
+                    {dialogType === 'revenue' ? (
+                      <>
+                        <MenuItem value="Product Sales">Product Sales</MenuItem>
+                        <MenuItem value="Services">Services</MenuItem>
+                        <MenuItem value="Consulting">Consulting</MenuItem>
+                        <MenuItem value="Other">Other</MenuItem>
+                      </>
+                    ) : (
+                      <>
+                        <MenuItem value="Salaries">Salaries</MenuItem>
+                        <MenuItem value="Rent">Rent</MenuItem>
+                        <MenuItem value="Utilities">Utilities</MenuItem>
+                        <MenuItem value="Marketing">Marketing</MenuItem>
+                        <MenuItem value="Other">Other</MenuItem>
+                      </>
+                    )}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Amount"
+                  type="number"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Description"
+                  multiline
+                  rows={3}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenAddDialog(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleAddTransaction}>
+            Add {dialogType === 'revenue' ? 'Revenue' : 'Expense'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Status Info */}
       <Box sx={{ mt: 4, p: 2, bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
         <Typography variant="body2" color="text.secondary">
           Last updated: {new Date().toLocaleTimeString()} • 
-          Data synced from accounting module
+          Data synced from accounting module • 
+          Financial data is ready for export
         </Typography>
       </Box>
     </Box>
