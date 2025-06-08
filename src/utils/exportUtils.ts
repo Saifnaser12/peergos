@@ -172,5 +172,65 @@ export function exportToExcel(data?: FinancialData) {
   XLSX.writeFile(wb, filename);
 }
 
+export function exportFTAReturnPDF(data: {
+  revenue: number;
+  expenses: number;
+  taxableIncome: number;
+  taxDue: number;
+}) {
+  const doc = new jsPDF();
+  
+  // Set title with FTA branding
+  doc.setFontSize(20);
+  doc.setTextColor(79, 70, 229); // Primary color
+  doc.text("FTA Corporate Tax Return Summary", 20, 20);
+  
+  // Company info and timestamp
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 35);
+  doc.text("UAE Federal Tax Authority - CIT Return", 20, 45);
+  
+  // FTA compliance note
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text("Prepared in accordance with UAE Corporate Tax Law", 20, 55);
+  doc.setTextColor(0, 0, 0);
+
+  autoTable(doc, {
+    startY: 70,
+    head: [["الفئة", "المبلغ (درهم)"]],
+    body: [
+      ["الإيرادات", `AED ${data.revenue.toLocaleString()}`],
+      ["المصروفات", `AED ${data.expenses.toLocaleString()}`],
+      ["صافي الربح الخاضع للضريبة", `AED ${data.taxableIncome.toLocaleString()}`],
+      ["ضريبة الشركات المستحقة", `AED ${data.taxDue.toLocaleString()}`]
+    ],
+    theme: 'grid',
+    headStyles: { 
+      fillColor: [79, 70, 229],
+      textColor: [255, 255, 255],
+      fontSize: 12,
+      fontStyle: 'bold'
+    },
+    bodyStyles: {
+      fontSize: 11
+    },
+    columnStyles: {
+      0: { halign: 'right', cellWidth: 80 },
+      1: { halign: 'left', cellWidth: 60 }
+    }
+  });
+  
+  // Add footer with FTA compliance
+  const pageHeight = doc.internal.pageSize.height;
+  doc.setFontSize(8);
+  doc.setTextColor(100, 100, 100);
+  doc.text("This document is generated for UAE FTA compliance purposes", 20, pageHeight - 20);
+  doc.text(`Tax Period: ${new Date().getFullYear()}`, 20, pageHeight - 10);
+
+  doc.save("FTA_CIT_Return.pdf");
+}
+
 // Legacy exports for backward compatibility
 export { exportToPDF as exportFinancialsToPDF, exportToExcel as exportFinancialsToExcel };
