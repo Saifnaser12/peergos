@@ -1,4 +1,3 @@
-
 {
   "app": {
     "title": "UAE Tax Compliance System",
@@ -49,7 +48,7 @@
     "back": "Back",
     "confirm": "Confirm",
     "calculate": "Calculate",
-    "recalculate": "Recalculate",
+    "recalculate": "Recalculating...",
     "processing": "Processing...",
     "completed": "Completed",
     "pending": "Pending",
@@ -401,5 +400,35 @@
     "unauthorized": "You are not authorized to perform this action.",
     "notFound": "The requested resource was not found.",
     "serverError": "Server error. Please try again later."
+  },
+  "setup": {
+    "welcome": "Welcome to Peergos",
+    "subtitle": "Your UAE tax assistant",
+    "step1": "Upload your TRN and basic company info",
+    "step2": "Add revenue/expenses", 
+    "step3": "Connect to FTA (simulation mode available)",
+    "step4": "Preview and submit CIT/VAT returns",
+    "progress": "setup steps complete",
+    "complete": "Setup Complete!",
+    "getStarted": "Get Started"
+  },
+  "backup": {
+    "title": "Backup & Recovery",
+    "create": "Create Backup",
+    "restore": "Restore",
+    "export": "Export",
+    "delete": "Delete",
+    "autoBackup": "Auto Backup",
+    "description": "Description",
+    "records": "Records",
+    "size": "Size",
+    "date": "Date",
+    "actions": "Actions",
+    "noBackups": "No backups found",
+    "createFirst": "Create your first backup",
+    "encrypted": "All backups are encrypted",
+    "warning": "This will replace all current data",
+    "success": "Operation completed successfully",
+    "failed": "Operation failed"
   }
 }

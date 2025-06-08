@@ -25,6 +25,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
 import QATest from './pages/QATest';
+import BackupManager from './pages/BackupManager'; // Assuming BackupManager.js exists
 
 // Context
 import { ThemeProvider as CustomThemeProvider } from './context/ThemeContext';
@@ -77,6 +78,7 @@ const App: React.FC = () => {
                           <Route path="/assistant" element={<Layout><Assistant /></Layout>} />
                           <Route path="/admin" element={<Layout><Admin /></Layout>} />
                           <Route path="/qa-test" element={<Layout><QATest /></Layout>} />
+                          <Route path="/backup" element={<Layout><BackupManager /></Layout>} />
                           <Route path="*" element={<Navigate to="/home" replace />} />
                         </Routes>
                       </Suspense>

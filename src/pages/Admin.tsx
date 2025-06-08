@@ -17,6 +17,7 @@ import POSIntegrationToggle from '../components/POSIntegrationToggle';
 import QAChecklist from '../components/QAChecklist';
 import AuditTrailLogger from '../components/AuditTrailLogger';
 import SystemHealthMonitor from '../components/SystemHealthMonitor';
+import BackupManager from '../components/BackupManager';
 
 const Admin: React.FC = () => {
   const navigate = useNavigate();
@@ -42,6 +43,24 @@ const Admin: React.FC = () => {
                   </Typography>
                   <Button variant="outlined" fullWidth>
                     Open Checklist
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Backup & Recovery Card */}
+              <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => navigate('/backup')}>
+                <CardContent className="p-6">
+                  <div className="flex items-center mb-4">
+                    <BackupIcon className="text-blue-600 mr-3" sx={{ fontSize: 32 }} />
+                    <Typography variant="h6" className="font-semibold">
+                      Backup & Recovery
+                    </Typography>
+                  </div>
+                  <Typography variant="body2" className="text-gray-600 dark:text-gray-400 mb-4">
+                    Secure data backup and restore for all user-generated content
+                  </Typography>
+                  <Button variant="outlined" fullWidth>
+                    Manage Backups
                   </Button>
                 </CardContent>
               </Card>
