@@ -12,6 +12,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { useTax } from '../context/TaxContext';
 
+// TODO: Move to environment variables later
+const OPENAI_API_KEY = 'sk-placeholder-your-openai-api-key-here';
+
 interface Message {
   id: string;
   content: string;
@@ -39,97 +42,100 @@ const Assistant: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isRTL = i18n.language === 'ar';
 
-  // Smart responses based on user data and UAE context
-  const getSmartResponse = (question: string): string => {
-    const lowerQuestion = question.toLowerCase();
-
-    // Context-aware responses using actual system data
-    if (lowerQuestion.includes('tax') && lowerQuestion.includes('owe')) {
+  // OpenAI GPT-4 API integration
+  const callOpenAI = async (userMessage: string): Promise<string> => {
+    try {
+      // Get user context for more personalized responses
       const citLiability = state.citDue || 0;
       const vatDue = state.vatDue || 0;
-      const total = citLiability + vatDue;
-
-      if (total > 0) {
-        return t('assistant.responses.taxOwed', {
-          citAmount: citLiability.toLocaleString(),
-          vatAmount: vatDue.toLocaleString(),
-          totalAmount: total.toLocaleString(),
-          defaultValue: `Based on your current filings, you owe AED ${citLiability.toLocaleString()} in Corporate Income Tax and AED ${vatDue.toLocaleString()} in VAT, totaling AED ${total.toLocaleString()}. Please review your CIT and VAT pages for detailed calculations.`
-        });
-      } else {
-        return t('assistant.responses.noTaxOwed', 'Great news! Based on your current data, you have no outstanding tax liabilities. Make sure to file your returns on time to maintain compliance.');
-      }
-    }
-
-    if (lowerQuestion.includes('small business relief')) {
       const revenue = state.revenue || 0;
-      if (revenue <= 3000000) {
-        return t('assistant.responses.smallBusinessEligible', 'You appear eligible for Small Business Relief! Companies with revenue ≤ AED 3 million can elect for 0% CIT rate. You can make this election in your CIT filing page.');
-      } else {
-        return t('assistant.responses.smallBusinessNotEligible', `With revenue of AED ${revenue.toLocaleString()}, you exceed the AED 3 million threshold for Small Business Relief. Your standard CIT rate is 9%.`);
+
+      const systemPrompt = `You are Peergos Tax Assistant, an AI expert in UAE tax compliance including VAT, Corporate Income Tax (CIT), and Transfer Pricing. 
+
+Current user context:
+- CIT liability: AED ${citLiability.toLocaleString()}
+- VAT due: AED ${vatDue.toLocaleString()}  
+- Revenue: AED ${revenue.toLocaleString()}
+
+Guidelines:
+- Provide accurate, helpful advice on UAE FTA regulations
+- Be conversational and friendly
+- Reference specific UAE tax rates, thresholds, and deadlines
+- Suggest using Peergos features when relevant
+- Always recommend consulting qualified tax advisors for complex matters
+- Keep responses concise but comprehensive`;
+
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userMessage }
+          ],
+          max_tokens: 500,
+          temperature: 0.7
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.status}`);
       }
-    }
 
-    if (lowerQuestion.includes('vat') && lowerQuestion.includes('export')) {
-      return t('assistant.responses.vatExport', 'To export your VAT summary, go to the VAT page and click the "Export Returns" button. You can download as PDF or Excel format. The export includes all your VAT periods, input/output tax, and net VAT position.');
+      const data = await response.json();
+      return data.choices[0]?.message?.content || t('assistant.responses.default', 'I\'m here to help with UAE tax compliance. Please try rephrasing your question.');
+    } catch (error) {
+      console.error('OpenAI API Error:', error);
+      
+      // Fallback to basic responses if API fails
+      if (userMessage.toLowerCase().includes('hello') || userMessage.toLowerCase().includes('hi')) {
+        return t('assistant.responses.greeting', 'Hi! I\'m your Peergos Tax Assistant. Ask me anything about VAT, CIT, or compliance in the UAE.');
+      }
+      
+      return t('assistant.responses.apiError', 'I\'m having trouble connecting to my knowledge base right now. Please try again in a moment, or contact support if the issue persists.');
     }
-
-    if (lowerQuestion.includes('exempt income')) {
-      return t('assistant.responses.exemptIncome', 'Under UAE CIT, exempt income includes dividends from UAE resident companies, income from free zone qualifying activities (if elected), and capital gains from disposal of qualifying shareholdings. This must be properly documented in your CIT return.');
-    }
-
-    if (lowerQuestion.includes('transfer pricing')) {
-      return t('assistant.responses.transferPricing', 'UAE transfer pricing rules apply to related party transactions. You need documentation if your group revenue exceeds AED 200 million. Check our Transfer Pricing module to assess your compliance requirements and upload necessary documentation.');
-    }
-
-    if (lowerQuestion.includes('deadline') || lowerQuestion.includes('due date')) {
-      return t('assistant.responses.deadlines', 'UAE tax deadlines: VAT returns are due by 28th of the month following the tax period. CIT returns are due 9 months after financial year-end. Transfer pricing documentation is due with CIT return filing.');
-    }
-
-    if (lowerQuestion.includes('registration') || lowerQuestion.includes('trn')) {
-      return t('assistant.responses.registration', 'VAT registration is mandatory if your taxable turnover exceeds AED 375,000. CIT registration is automatic for UAE mainland companies. You can verify TRN details using our TRN Search feature.');
-    }
-
-    // Default helpful response
-    return t('assistant.responses.default', 'I\'m here to help with UAE tax compliance including VAT, CIT, and Transfer Pricing. I can provide guidance based on UAE FTA regulations and your system data. For specific legal advice, please consult a qualified tax advisor.');
   };
 
   const suggestedQuestions: SuggestedQuestion[] = [
     {
       id: '1',
-      question: t('assistant.suggestions.taxOwed', 'How much tax do I owe?'),
+      question: t('assistant.suggestions.taxOwed', 'How much tax do I owe currently?'),
       category: 'general',
-      answer: 'Based on your current filings...'
+      answer: 'AI will analyze your current tax position...'
     },
     {
       id: '2',
-      question: t('assistant.suggestions.smallBusiness', 'Am I eligible for Small Business Relief?'),
+      question: t('assistant.suggestions.smallBusiness', 'Am I eligible for Small Business Relief in UAE?'),
       category: 'cit',
-      answer: 'Small Business Relief eligibility...'
+      answer: 'AI will check your eligibility...'
     },
     {
       id: '3',
-      question: t('assistant.suggestions.vatExport', 'How to export VAT summary?'),
+      question: t('assistant.suggestions.vatRegistration', 'Do I need to register for VAT in UAE?'),
       category: 'vat',
-      answer: 'To export your VAT summary...'
+      answer: 'AI will assess your VAT obligations...'
     },
     {
       id: '4',
-      question: t('assistant.suggestions.exemptIncome', 'What is exempt income in UAE?'),
+      question: t('assistant.suggestions.citDeadlines', 'When is my CIT return due?'),
       category: 'cit',
-      answer: 'Exempt income under UAE CIT...'
+      answer: 'AI will provide deadline information...'
     },
     {
       id: '5',
       question: t('assistant.suggestions.transferPricingReq', 'Do I need transfer pricing documentation?'),
       category: 'transferPricing',
-      answer: 'Transfer pricing requirements...'
+      answer: 'AI will review your requirements...'
     },
     {
       id: '6',
-      question: t('assistant.suggestions.taxDeadlines', 'What are the tax filing deadlines?'),
+      question: t('assistant.suggestions.complianceChecklist', 'What compliance tasks should I prioritize?'),
       category: 'general',
-      answer: 'UAE tax deadlines...'
+      answer: 'AI will create a personalized checklist...'
     }
   ];
 
@@ -140,6 +146,19 @@ const Assistant: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Add welcome message on component mount
+  useEffect(() => {
+    if (messages.length === 0) {
+      const welcomeMessage: Message = {
+        id: 'welcome',
+        content: t('assistant.welcome.message', 'Hi! I\'m your Peergos Tax Assistant. Ask me anything about VAT, CIT, or compliance.'),
+        type: 'assistant',
+        timestamp: new Date(),
+      };
+      setMessages([welcomeMessage]);
+    }
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -167,10 +186,8 @@ const Assistant: React.FC = () => {
     setMessages(prev => [...prev, typingMessage]);
 
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const response = getSmartResponse(currentInput);
+      // Call OpenAI GPT-4 API
+      const response = await callOpenAI(currentInput);
 
       const assistantMessage: Message = {
         id: (Date.now() + 2).toString(),
@@ -181,7 +198,7 @@ const Assistant: React.FC = () => {
 
       setMessages(prev => prev.filter(msg => !msg.isTyping).concat([assistantMessage]));
     } catch (err) {
-      setError(t('assistant.error', 'Error getting response from assistant'));
+      setError(t('assistant.error', 'Error getting response from assistant. Please check your API key or try again.'));
       setMessages(prev => prev.filter(msg => !msg.isTyping));
     } finally {
       setIsLoading(false);

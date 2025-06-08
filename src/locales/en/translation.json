@@ -22,7 +22,7 @@
   "Exempt Sales": "Exempt Sales",
   "Sales exempt from VAT": "Sales exempt from VAT",
   "Purchases": "Purchases",
-  "Purchases with Recoverable VAT": "Purchases with Recoverable VAT",
+  "Purchases with Recoverable VAT": "Purchases where VAT can be recovered",
   "Business purchases where VAT can be recovered": "Business purchases where VAT can be recovered",
   "Purchases without Recoverable VAT": "Purchases where VAT cannot be recovered",
   "Reverse Charge Mechanism": "Reverse Charge Mechanism",
@@ -103,6 +103,13 @@
     },
     "vatCalculationSummary": {
       "title": "VAT Calculation Summary"
+    }
+  },
+  "assistant": {
+    "title": "Tax Assistant",
+    "subtitle": "AI-powered guidance for UAE tax compliance",
+    "welcome": {
+      "message": "Hi! I'm your Peergos Tax Assistant. Ask me anything about VAT, CIT, or compliance."
     }
   }
 }
