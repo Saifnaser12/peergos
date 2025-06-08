@@ -12,7 +12,7 @@ if (typeof globalThis !== 'undefined') {
 }
 
 import React, { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
+import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { LibraryLoader } from './utils/libraryLoader'

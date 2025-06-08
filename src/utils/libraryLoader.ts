@@ -1,42 +1,33 @@
-
 export class LibraryLoader {
-  private static jsSHA: any = null;
-  private static QRCode: any = null;
-  private static loaded = false;
+  private static libraries: { [key: string]: any } = {};
+  private static loadAttempted = false;
 
-  static async loadLibraries() {
-    if (this.loaded) return;
+  static async loadLibraries(): Promise<void> {
+    if (this.loadAttempted) return;
+    this.loadAttempted = true;
 
     try {
-      const jsSHAModule = await import('jssha');
-      this.jsSHA = jsSHAModule.default || jsSHAModule;
+      // Load jsSHA
+      const jsSHA = await import('jssha');
+      this.libraries.jsSHA = jsSHA.default || jsSHA;
+      if (typeof window !== 'undefined') {
+        (window as any).jsSHA = this.libraries.jsSHA;
+      }
+      console.log('jsSHA loaded successfully');
     } catch (error) {
       console.warn('jsSHA not available, cryptographic functions will be disabled');
     }
 
     try {
-      const QRCodeModule = await import('qrcode');
-      this.QRCode = QRCodeModule.default || QRCodeModule;
+      // Load QRCode
+      const QRCode = await import('qrcode');
+      this.libraries.QRCode = QRCode.default || QRCode;
+      if (typeof window !== 'undefined') {
+        (window as any).QRCode = this.libraries.QRCode;
+      }
+      console.log('QRCode loaded successfully');
     } catch (error) {
       console.warn('QRCode not available, QR code generation will be disabled');
     }
-
-    this.loaded = true;
-  }
-
-  static getJsSHA() {
-    return this.jsSHA;
-  }
-
-  static getQRCode() {
-    return this.QRCode;
-  }
-
-  static isJsSHAAvailable(): boolean {
-    return this.jsSHA !== null;
-  }
-
-  static isQRCodeAvailable(): boolean {
-    return this.QRCode !== null;
   }
 }
