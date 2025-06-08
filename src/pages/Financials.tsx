@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -42,7 +41,6 @@ import {
   TableChart as ExcelIcon,
   Note as NoteIcon
 } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -66,11 +64,10 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const Financials: React.FC = () => {
-  console.log('🚀 Financials component initializing...');
-  
-  const { t } = useTranslation();
+  console.log('🚀 Financials component starting...');
+
   const theme = useTheme();
-  
+
   // State management
   const [tabValue, setTabValue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,7 +81,7 @@ const Financials: React.FC = () => {
     description: ''
   });
 
-  // Sample financial data for demo
+  // Sample financial data
   const [revenueData] = useState([
     {
       id: '1',
@@ -162,25 +159,25 @@ const Financials: React.FC = () => {
   const totalExpenses = expenseData.reduce((sum, item) => sum + (item.amount || 0), 0);
   const netIncome = totalRevenue - totalExpenses;
 
-  console.log('💰 Financial data calculated:', { 
+  console.log('📊 Financial calculations complete:', { 
     totalRevenue: totalRevenue.toLocaleString(), 
     totalExpenses: totalExpenses.toLocaleString(), 
     netIncome: netIncome.toLocaleString() 
   });
 
   useEffect(() => {
-    console.log('⚡ Financials useEffect starting...');
-    
+    console.log('⚡ Initializing Financials page...');
+
     const initializeFinancials = async () => {
       try {
-        // Simulate initialization
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        console.log('✅ Financials initialization completed successfully');
+        // Simulate loading
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        console.log('✅ Financials page loaded successfully');
         setIsLoading(false);
         setError(null);
       } catch (err) {
-        console.error('❌ Error during financials initialization:', err);
+        console.error('❌ Error loading financials:', err);
         setError('Failed to load financial data');
         setIsLoading(false);
       }
@@ -262,6 +259,30 @@ const Financials: React.FC = () => {
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
           Preparing your financial overview
         </Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    console.log('❌ Rendering error state:', error);
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+        <Button 
+          variant="contained" 
+          onClick={() => window.location.reload()}
+          sx={{ mr: 2 }}
+        >
+          Retry
+        </Button>
+        <Button 
+          variant="outlined" 
+          onClick={() => setError(null)}
+        >
+          Continue with Demo Data
+        </Button>
       </Box>
     );
   }
@@ -761,10 +782,153 @@ const Financials: React.FC = () => {
     </Box>
   );
 
-  console.log('🎨 Rendering Financials component with tab:', tabValue);
+  // Main render
+  console.log('🎨 Rendering main Financials component...');
 
   return (
     <Box sx={{ p: 3, backgroundColor: alpha(theme.palette.background.default, 0.5), minHeight: '100vh' }}>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, color: theme.palette.primary.main }}>
+          📊 Financial Overview
+        </Typography>
+        <Typography variant="h6" color="text.secondary">
+          Real-time financial insights and performance metrics
+        </Typography>
+      </Box>
+
+      {/* Financial Summary Cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={4}>
+          <Card sx={{ 
+            height: '100%', 
+            background: `linear-gradient(135deg, ${alpha(theme.palette.success.main, 0.15)}, ${alpha(theme.palette.success.main, 0.05)})`,
+            border: `1px solid ${alpha(theme.palette.success.main, 0.3)}`
+          }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <TrendingUpIcon sx={{ color: 'success.main', mr: 1, fontSize: 28 }} />
+                <Typography variant="h6" sx={{ color: 'success.main', fontWeight: 600 }}>
+                  Total Revenue
+                </Typography>
+              </Box>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: 'success.main' }}>
+                {formatCurrency(totalRevenue)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                📈 {revenueData.length} revenue streams • +12% vs last month
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Card sx={{ 
+            height: '100%', 
+            background: `linear-gradient(135deg, ${alpha(theme.palette.error.main, 0.15)}, ${alpha(theme.palette.error.main, 0.05)})`,
+            border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`
+          }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <TrendingDownIcon sx={{ color: 'error.main', mr: 1, fontSize: 28 }} />
+                <Typography variant="h6" sx={{ color: 'error.main', fontWeight: 600 }}>
+                  Total Expenses
+                </Typography>
+              </Box>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: 'error.main' }}>
+                {formatCurrency(totalExpenses)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                📉 {expenseData.length} expense categories • -5% vs last month
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Card sx={{ 
+            height: '100%', 
+            background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.15)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+            border: `1px solid ${alpha(theme.palette.primary.main, 0.3)}`
+          }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <AccountBalanceIcon sx={{ color: 'primary.main', mr: 1, fontSize: 28 }} />
+                <Typography variant="h6" sx={{ color: netIncome >= 0 ? 'success.main' : 'error.main', fontWeight: 600 }}>
+                  Net Income
+                </Typography>
+              </Box>
+              <Typography variant="h3" sx={{ 
+                fontWeight: 700, 
+                mb: 1, 
+                color: netIncome >= 0 ? 'success.main' : 'error.main' 
+              }}>
+                {formatCurrency(netIncome)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                💰 {((netIncome / totalRevenue) * 100).toFixed(1)}% profit margin • {netIncome >= 0 ? 'Profitable' : 'Loss'}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Quick Actions */}
+      <Paper sx={{ p: 4, mb: 4, borderRadius: 3, border: `1px solid ${theme.palette.divider}` }}>
+        <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+          ⚡ Quick Actions
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => openAddTransactionDialog('revenue')}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48, fontWeight: 600 }}
+              color="success"
+            >
+              Add Revenue
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => openAddTransactionDialog('expense')}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48, fontWeight: 600 }}
+              color="error"
+            >
+              Add Expense
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<PdfIcon />}
+              onClick={exportToPDF}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48, fontWeight: 600 }}
+            >
+              Export PDF
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<ExcelIcon />}
+              onClick={exportToExcel}
+              sx={{ borderRadius: 2, textTransform: 'none', height: 48, fontWeight: 600 }}
+            >
+              Export Excel
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Tabs */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
         <Tabs 
           value={tabValue} 
@@ -780,25 +944,126 @@ const Financials: React.FC = () => {
         </Tabs>
       </Box>
 
+      {/* Tab Content */}
       <TabPanel value={tabValue} index={0}>
-        <OverviewPanel />
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 3, borderRadius: 3, height: '100%' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  💰 Recent Revenue
+                </Typography>
+                <Chip label={`${revenueData.length} entries`} color="success" size="small" />
+              </Box>
+              {revenueData.map((item, index) => (
+                <Box key={item.id} sx={{ mb: 2, pb: 2, borderBottom: index < revenueData.length - 1 ? '1px solid' : 'none', borderColor: 'divider' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                      {item.category}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: 'success.main', fontWeight: 600 }}>
+                      {formatCurrency(item.amount)}
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    {item.description} • {new Date(item.date).toLocaleDateString()}
+                  </Typography>
+                </Box>
+              ))}
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 3, borderRadius: 3, height: '100%' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  💸 Recent Expenses
+                </Typography>
+                <Chip label={`${expenseData.length} entries`} color="error" size="small" />
+              </Box>
+              {expenseData.map((item, index) => (
+                <Box key={item.id} sx={{ mb: 2, pb: 2, borderBottom: index < expenseData.length - 1 ? '1px solid' : 'none', borderColor: 'divider' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                      {item.category}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: 'error.main', fontWeight: 600 }}>
+                      {formatCurrency(item.amount)}
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    {item.description} • {new Date(item.date).toLocaleDateString()}
+                  </Typography>
+                </Box>
+              ))}
+            </Paper>
+          </Grid>
+        </Grid>
       </TabPanel>
+
       <TabPanel value={tabValue} index={1}>
-        <IncomeStatement />
+        <Paper sx={{ p: 4 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, textAlign: 'center' }}>
+            📋 Income Statement
+          </Typography>
+          <TableContainer>
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, fontSize: '1.1rem' }}>Total Revenue</TableCell>
+                  <TableCell align="right" sx={{ color: 'success.main', fontWeight: 600, fontSize: '1.1rem' }}>
+                    {formatCurrency(totalRevenue)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, fontSize: '1.1rem' }}>Total Expenses</TableCell>
+                  <TableCell align="right" sx={{ color: 'error.main', fontWeight: 600, fontSize: '1.1rem' }}>
+                    {formatCurrency(totalExpenses)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 700, fontSize: '1.2rem', borderTop: 2 }}>Net Income</TableCell>
+                  <TableCell align="right" sx={{ 
+                    fontWeight: 700, 
+                    fontSize: '1.2rem',
+                    borderTop: 2,
+                    color: netIncome >= 0 ? 'success.main' : 'error.main'
+                  }}>
+                    {formatCurrency(netIncome)}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
       </TabPanel>
+
       <TabPanel value={tabValue} index={2}>
-        <BalanceSheet />
+        <Paper sx={{ p: 4 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, textAlign: 'center' }}>
+            ⚖️ Balance Sheet
+          </Typography>
+          <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary' }}>
+            Balance sheet data will be displayed here
+          </Typography>
+        </Paper>
       </TabPanel>
+
       <TabPanel value={tabValue} index={3}>
-        <NotesPanel />
+        <Paper sx={{ p: 4 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, textAlign: 'center' }}>
+            📝 Notes to Financial Statements
+          </Typography>
+          <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary' }}>
+            Financial notes and documentation will be displayed here
+          </Typography>
+        </Paper>
       </TabPanel>
 
       {/* Add Transaction Dialog */}
       <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ pb: 1 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            {dialogType === 'revenue' ? '💰 Add New Revenue' : '💸 Add New Expense'}
-          </Typography>
+        <DialogTitle>
+          {dialogType === 'revenue' ? '💰 Add New Revenue' : '💸 Add New Expense'}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
@@ -866,7 +1131,7 @@ const Financials: React.FC = () => {
             </Grid>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 1 }}>
+        <DialogActions sx={{ p: 3 }}>
           <Button onClick={() => setOpenAddDialog(false)} color="inherit">
             Cancel
           </Button>
@@ -890,9 +1155,9 @@ const Financials: React.FC = () => {
         border: `1px solid ${alpha(theme.palette.success.main, 0.3)}` 
       }}>
         <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', color: 'success.main', fontWeight: 500 }}>
-          ✅ Financials Module Successfully Loaded • 
-          💾 Data Updated: {new Date().toLocaleTimeString()} • 
-          🎯 Status: {error ? 'Demo Mode' : 'Live'} • 
+          ✅ Financials Page Loaded Successfully • 
+          💾 Last Updated: {new Date().toLocaleTimeString()} • 
+          🎯 Status: Ready • 
           📊 {revenueData.length + expenseData.length} Total Entries
         </Typography>
       </Box>
