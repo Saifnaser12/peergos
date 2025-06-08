@@ -57,12 +57,7 @@ const App: React.FC = () => {
             <TaxProvider>
               <NotificationProvider>
                 <SettingsProvider>
-                  <Router
-                    future={{
-                      v7_startTransition: true,
-                      v7_relativeSplatPath: true,
-                    }}
-                  >
+                  <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                     <div className="App" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                       <Suspense fallback={<Spinner />}>
                         <Routes>
