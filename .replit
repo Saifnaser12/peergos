@@ -32,7 +32,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm install --legacy-peer-deps"
+args = "killall node 2>/dev/null || true"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
