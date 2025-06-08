@@ -34,6 +34,7 @@ import Assistant from './pages/Assistant';
 import SimpleInvoice from './pages/SimpleInvoice';
 import Filing from './pages/Filing';
 import QAChecklist from './components/QAChecklist';
+import QATest from './pages/QATest';
 
 // Internal component to handle theme with i18n
 function AppContent() {
@@ -152,6 +153,13 @@ function AppContent() {
               } />
 
               <Route path="unauthorized" element={<Unauthorized />} />
+              
+              {/* Hidden QA Test Route */}
+              <Route path="qa-check" element={
+                <ProtectedRoute rolesAllowed={["admin"]}>
+                  <QATest />
+                </ProtectedRoute>
+              } />
             </Route>
           </Routes>
         </Router>
