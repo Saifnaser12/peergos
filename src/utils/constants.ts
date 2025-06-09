@@ -1,3 +1,84 @@
+// Revenue categories with smart suggestions
+export const revenueCategories = [
+  'sales',
+  'services',
+  'consulting',
+  'licensing',
+  'subscription',
+  'commission',
+  'rental',
+  'investment',
+  'other'
+];
+
+// Expense categories  
+export const expenseCategories = [
+  'rent',
+  'utilities',
+  'salaries',
+  'marketing',
+  'supplies',
+  'travel',
+  'meals',
+  'professional-services',
+  'insurance',
+  'depreciation',
+  'interest',
+  'taxes',
+  'other'
+];
+
+// Smart category suggestions with icons and colors
+export const categoryConfig = {
+  revenue: {
+    sales: { icon: '🛒', color: '#10B981', keywords: ['sale', 'product', 'goods', 'retail'] },
+    services: { icon: '🔧', color: '#3B82F6', keywords: ['service', 'support', 'maintenance', 'repair'] },
+    consulting: { icon: '🧾', color: '#8B5CF6', keywords: ['consult', 'advice', 'advisory', 'expert'] },
+    licensing: { icon: '📋', color: '#F59E0B', keywords: ['license', 'royalty', 'patent', 'trademark'] },
+    subscription: { icon: '📱', color: '#06B6D4', keywords: ['subscription', 'recurring', 'monthly', 'annual'] },
+    commission: { icon: '💰', color: '#EF4444', keywords: ['commission', 'referral', 'affiliate', 'broker'] },
+    rental: { icon: '🏢', color: '#84CC16', keywords: ['rent', 'lease', 'property', 'space'] },
+    investment: { icon: '📈', color: '#F97316', keywords: ['investment', 'dividend', 'interest', 'capital'] },
+    other: { icon: '📦', color: '#6B7280', keywords: ['other', 'misc', 'various'] }
+  },
+  expense: {
+    rent: { icon: '🏢', color: '#EF4444', keywords: ['rent', 'lease', 'property', 'office'] },
+    utilities: { icon: '⚡', color: '#F59E0B', keywords: ['utility', 'electric', 'water', 'internet', 'phone'] },
+    salaries: { icon: '👥', color: '#10B981', keywords: ['salary', 'wage', 'payroll', 'staff', 'employee'] },
+    marketing: { icon: '📢', color: '#8B5CF6', keywords: ['marketing', 'advertising', 'promotion', 'campaign'] },
+    supplies: { icon: '📝', color: '#06B6D4', keywords: ['supply', 'stationery', 'materials', 'equipment'] },
+    travel: { icon: '✈️', color: '#3B82F6', keywords: ['travel', 'flight', 'hotel', 'transport', 'trip'] },
+    meals: { icon: '🍽️', color: '#84CC16', keywords: ['meal', 'food', 'restaurant', 'catering', 'lunch'] },
+    'professional-services': { icon: '⚖️', color: '#F97316', keywords: ['legal', 'audit', 'accounting', 'consultant'] },
+    insurance: { icon: '🛡️', color: '#6366F1', keywords: ['insurance', 'coverage', 'policy', 'premium'] },
+    depreciation: { icon: '📉', color: '#64748B', keywords: ['depreciation', 'amortization', 'asset'] },
+    interest: { icon: '🏦', color: '#DC2626', keywords: ['interest', 'bank', 'loan', 'finance'] },
+    taxes: { icon: '🧾', color: '#059669', keywords: ['tax', 'vat', 'corporate', 'government'] },
+    other: { icon: '📦', color: '#6B7280', keywords: ['other', 'misc', 'various', 'general'] }
+  }
+};
+
+// Smart suggestion function
+export const getSuggestions = (input: string, type: 'revenue' | 'expense'): string[] => {
+  if (input.length < 2) return [];
+
+  const config = categoryConfig[type];
+  const suggestions: string[] = [];
+
+  Object.entries(config).forEach(([category, data]) => {
+    const matches = data.keywords.some(keyword => 
+      keyword.toLowerCase().includes(input.toLowerCase()) ||
+      category.toLowerCase().includes(input.toLowerCase())
+    );
+
+    if (matches) {
+      suggestions.push(category);
+    }
+  });
+
+  return suggestions.slice(0, 5); // Limit to 5 suggestions
+};
+
 export const revenueCategories = [
   "Product Sales",
   "Service Income",

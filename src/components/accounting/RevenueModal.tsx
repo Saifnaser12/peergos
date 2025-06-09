@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   XMarkIcon,
@@ -16,8 +16,10 @@ import {
   revenueCategoryTranslations,
   freeZoneIncomeTypes,
   freeZoneIncomeSubcategories,
-  freeZoneIncomeTranslations
+  freeZoneIncomeTranslations,
+  categoryConfig
 } from '../../utils/constants';
+import SmartCategoryInput from '../common/SmartCategoryInput';
 
 interface RevenueEntry {
   id: string;
@@ -62,6 +64,10 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
     isExport: false
   });
 
+  const [lastUsedCategory, setLastUsedCategory] = useState<string>('');
+  const [focusIndex, setFocusIndex] = useState(0);
+  const fieldRefs = useRef<(HTMLInputElement | HTMLSelectElement | null)[]>([]);
+
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -72,6 +78,10 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
   };
 
   useEffect(() => {
+    // Get last used category from localStorage
+    const savedCategory = localStorage.getItem('lastUsedRevenueCategory') || '';
+    setLastUsedCategory(savedCategory);
+
     if (editingRevenue) {
       setFormData({
         date: editingRevenue.date,
@@ -87,11 +97,12 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
         isExport: editingRevenue.isExport || false
       });
     } else {
+      // Smart defaults for new entries
       setFormData({
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split('T')[0], // Today's date
         description: '',
         customer: '',
-        category: '',
+        category: savedCategory, // Last used category
         amount: '',
         invoiceGenerated: false,
         freeZoneIncomeType: '',
@@ -102,7 +113,15 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
       });
     }
     setErrors({});
+    setFocusIndex(0);
   }, [editingRevenue, isOpen]);
+
+  // Focus management for keyboard navigation
+  useEffect(() => {
+    if (isOpen && fieldRefs.current[focusIndex]) {
+      fieldRefs.current[focusIndex]?.focus();
+    }
+  }, [focusIndex, isOpen]);
 
   // Auto-classify income based on activity type
   useEffect(() => {
@@ -150,6 +169,11 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
       return;
     }
 
+    // Save last used category
+    if (formData.category) {
+      localStorage.setItem('lastUsedRevenueCategory', formData.category);
+    }
+
     const revenueData = {
       date: formData.date,
       description: formData.description.trim(),
@@ -180,6 +204,20 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
     // Show invoice modal if invoice generation was toggled
     if (formData.invoiceGenerated) {
       setShowInvoiceModal(true);
+    }
+  };
+
+  // Keyboard navigation handlers
+  const handleKeyDown = (e: React.KeyboardEvent, currentIndex: number) => {
+    if (e.key === 'Tab' && !e.shiftKey) {
+      e.preventDefault();
+      setFocusIndex(prev => Math.min(prev + 1, fieldRefs.current.length - 1));
+    } else if (e.key === 'Tab' && e.shiftKey) {
+      e.preventDefault();
+      setFocusIndex(prev => Math.max(prev - 1, 0));
+    } else if (e.key === 'Enter' && currentIndex === fieldRefs.current.length - 1) {
+      // Submit form when pressing Enter on last field
+      handleSubmit(e as any);
     }
   };
 
@@ -260,27 +298,42 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
             />
           </div>
 
-          {/* Category */}
+          {/* Category with Smart Suggestions */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <TagIcon className="h-4 w-4 inline mr-2" />
               {t('accounting.revenue.form.category')}
+              {lastUsedCategory && !editingRevenue && (
+                <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
+                  (Last: {lastUsedCategory.replace(/-/g, ' ')})
+                </span>
+              )}
             </label>
-            <select
+            <SmartCategoryInput
+              type="revenue"
               value={formData.category}
-              onChange={(e) => handleInputChange('category', e.target.value)}
+              onChange={(value) => handleInputChange('category', value)}
+              placeholder={t('accounting.revenue.form.categoryPlaceholder')}
               className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
                 errors.category ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
               }`}
-            >
-              <option value="">{t('accounting.revenue.form.categoryPlaceholder')}</option>
-              {revenueCategories.map(category => (
-                <option key={category} value={category}>
-                  {t(revenueCategoryTranslations[category] || category)}
-                </option>
-              ))}
-            </select>
+              onKeyDown={(e) => handleKeyDown(e, 2)}
+            />
             {errors.category && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.category}</p>}
+            
+            {/* Show category preview */}
+            {formData.category && categoryConfig.revenue[formData.category as keyof typeof categoryConfig.revenue] && (
+              <div className="mt-2 flex items-center text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-lg mr-2">
+                  {categoryConfig.revenue[formData.category as keyof typeof categoryConfig.revenue].icon}
+                </span>
+                <div
+                  className="w-3 h-3 rounded-full mr-2"
+                  style={{ backgroundColor: categoryConfig.revenue[formData.category as keyof typeof categoryConfig.revenue].color }}
+                ></div>
+                <span className="capitalize">{formData.category.replace(/-/g, ' ')}</span>
+              </div>
+            )}
           </div>
 
           {/* Amount */}

@@ -791,5 +791,16 @@
       "compliance": "How can I ensure QFZP compliance?"
     },
     "disclaimer": "This AI advisor provides general guidance based on UAE tax law. For specific tax advice, please consult a qualified tax professional."
+  },
+  "smartTotals": {
+    "title": "Financial Summary",
+    "revenue": "Revenue",
+    "expenses": "Expenses",
+    "netIncome": "Net Income",
+    "expenseRatio": "Expense Ratio",
+    "profitMargin": "Profit Margin",
+    "anomalyDetected": "Financial Anomaly Detected",
+    "highExpenseRatio": "High expense ratio (>80%)",
+    "lowProfitMargin": "Low profit margin (<10%)"
   }
 }

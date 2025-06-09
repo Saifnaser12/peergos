@@ -17,6 +17,7 @@ import RevenueModal from '../components/accounting/RevenueModal';
 import ExpenseModal from '../components/accounting/ExpenseModal';
 import AccountingSummary from '../components/accounting/AccountingSummary';
 import InvoiceModal from '../components/accounting/InvoiceModal';
+import SmartTotalsPanel from '../components/common/SmartTotalsPanel';
 import { ArrowTrendingUpIcon as TrendingUpIcon } from '@heroicons/react/24/outline';
 import { useFinance } from '../context/FinanceContext';
 import { useTax } from '../context/TaxContext';
@@ -75,6 +76,7 @@ const Accounting: React.FC = () => {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [selectedRevenueForInvoice, setSelectedRevenueForInvoice] = useState<RevenueEntry | null>(null);
   const [freeZoneAdvisorOpen, setFreeZoneAdvisorOpen] = useState(false);
+  const [smartTotalsCollapsed, setSmartTotalsCollapsed] = useState(false);
 
   const handleBankUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -770,6 +772,12 @@ const Accounting: React.FC = () => {
             </Tooltip>
           </Fab>
         )}
+
+        {/* Smart Totals Panel */}
+        <SmartTotalsPanel
+          isCollapsed={smartTotalsCollapsed}
+          onToggle={() => setSmartTotalsCollapsed(!smartTotalsCollapsed)}
+        />
 
         {/* Free Zone Advisor Dialog */}
         <FreeZoneAdvisor

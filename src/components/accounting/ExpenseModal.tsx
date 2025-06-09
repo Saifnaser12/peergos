@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   XMarkIcon,
@@ -10,8 +10,9 @@ import {
   ArrowUpTrayIcon,
   DocumentIcon
 } from '@heroicons/react/24/outline';
-import { expenseCategories, expenseCategoryTranslations } from '../../utils/constants';
+import { expenseCategories, expenseCategoryTranslations, categoryConfig } from '../../utils/constants';
 import { SecureFileStorage } from '../../utils/fileStorage';
+import SmartCategoryInput from '../common/SmartCategoryInput';
 
 
 interface ExpenseEntry {
@@ -52,10 +53,17 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isUploading, setIsUploading] = useState(false);
+  const [lastUsedCategory, setLastUsedCategory] = useState<string>('');
+  const [focusIndex, setFocusIndex] = useState(0);
+  const fieldRefs = useRef<(HTMLInputElement | HTMLSelectElement | null)[]>([]);
 
   // Using imported expense categories
 
   useEffect(() => {
+    // Get last used category from localStorage
+    const savedCategory = localStorage.getItem('lastUsedExpenseCategory') || '';
+    setLastUsedCategory(savedCategory);
+
     if (editingExpense) {
       setFormData({
         date: editingExpense.date,
@@ -66,17 +74,26 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
         receiptFile: null
       });
     } else {
+      // Smart defaults for new entries
       setFormData({
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split('T')[0], // Today's date
         description: '',
         vendor: '',
-        category: '',
+        category: savedCategory, // Last used category
         amount: '',
         receiptFile: null
       });
     }
     setErrors({});
+    setFocusIndex(0);
   }, [editingExpense, isOpen]);
+
+  // Focus management for keyboard navigation
+  useEffect(() => {
+    if (isOpen && fieldRefs.current[focusIndex]) {
+      fieldRefs.current[focusIndex]?.focus();
+    }
+  }, [focusIndex, isOpen]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -158,6 +175,11 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
       ftaCompliant: true // Mark as FTA compliant
     };
 
+    // Save last used category
+    if (formData.category) {
+      localStorage.setItem('lastUsedExpenseCategory', formData.category);
+    }
+
     // Save data - this will trigger real-time updates across the app
     onSave(expenseData);
 
@@ -171,6 +193,20 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
     window.dispatchEvent(event);
 
     setIsUploading(false);
+  };
+
+  // Keyboard navigation handlers
+  const handleKeyDown = (e: React.KeyboardEvent, currentIndex: number) => {
+    if (e.key === 'Tab' && !e.shiftKey) {
+      e.preventDefault();
+      setFocusIndex(prev => Math.min(prev + 1, fieldRefs.current.length - 1));
+    } else if (e.key === 'Tab' && e.shiftKey) {
+      e.preventDefault();
+      setFocusIndex(prev => Math.max(prev - 1, 0));
+    } else if (e.key === 'Enter' && currentIndex === fieldRefs.current.length - 1) {
+      // Submit form when pressing Enter on last field
+      handleSubmit(e as any);
+    }
   };
 
   const handleInputChange = (field: string, value: string | File | null) => {
@@ -274,27 +310,42 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
             {errors.vendor && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.vendor}</p>}
           </div>
 
-          {/* Category */}
+          {/* Category with Smart Suggestions */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <TagIcon className="h-4 w-4 inline mr-2" />
               {t('accounting.expenses.form.category')}
+              {lastUsedCategory && !editingExpense && (
+                <span className="ml-2 text-xs text-red-600 dark:text-red-400">
+                  (Last: {lastUsedCategory.replace(/-/g, ' ')})
+                </span>
+              )}
             </label>
-            <select
+            <SmartCategoryInput
+              type="expense"
               value={formData.category}
-              onChange={(e) => handleInputChange('category', e.target.value)}
+              onChange={(value) => handleInputChange('category', value)}
+              placeholder={t('accounting.expenses.form.categoryPlaceholder')}
               className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
                 errors.category ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
               }`}
-            >
-              <option value="">{t('accounting.expenses.form.categoryPlaceholder')}</option>
-              {expenseCategories.map(category => (
-                <option key={category} value={category}>
-                  {t(expenseCategoryTranslations[category] || category)}
-                </option>
-              ))}
-            </select>
+              onKeyDown={(e) => handleKeyDown(e, 3)}
+            />
             {errors.category && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.category}</p>}
+            
+            {/* Show category preview */}
+            {formData.category && categoryConfig.expense[formData.category as keyof typeof categoryConfig.expense] && (
+              <div className="mt-2 flex items-center text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-lg mr-2">
+                  {categoryConfig.expense[formData.category as keyof typeof categoryConfig.expense].icon}
+                </span>
+                <div
+                  className="w-3 h-3 rounded-full mr-2"
+                  style={{ backgroundColor: categoryConfig.expense[formData.category as keyof typeof categoryConfig.expense].color }}
+                ></div>
+                <span className="capitalize">{formData.category.replace(/-/g, ' ')}</span>
+              </div>
+            )}
           </div>
 
           {/* Amount */}
