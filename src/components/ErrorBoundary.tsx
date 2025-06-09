@@ -1,158 +1,84 @@
-
 import React, { Component, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
-  t?: (key: string) => string;
+  fallback?: ReactNode;
 }
 
 interface State {
   hasError: boolean;
-  error: Error | null;
-  errorInfo: React.ErrorInfo | null;
+  error?: Error;
+  errorInfo?: any;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    this.state = { hasError: false };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error, errorInfo: null };
+    return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
-    console.error('Component stack:', errorInfo.componentStack);
-    console.error('Error stack:', error.stack);
-    console.error('Current URL:', window.location.pathname);
-
-    this.setState({
-      error,
-      errorInfo
-    });
-
-    // Log specific financial page errors for debugging
-    if (error.message.includes('LibraryLoader') || 
-        error.message.includes('export') ||
-        error.message.includes('useFinance') ||
-        window.location.pathname.includes('/financials')) {
-      console.error('Financial page error details:', {
-        error: error.message,
-        stack: error.stack,
-        componentStack: errorInfo.componentStack,
-        pathname: window.location.pathname,
-        timestamp: new Date().toISOString()
-      });
-    }
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.error('Error boundary caught an error:', error, errorInfo);
+    this.setState({ error, errorInfo });
   }
-
-  handleReload = () => {
-    window.location.reload();
-  };
-
-  handleRetry = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
-  };
 
   render() {
     if (this.state.hasError) {
-      const isFinancialError = window.location.pathname.includes('/financials');
-      
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
       return (
-        <div style={{ 
-          padding: '40px', 
-          textAlign: 'center',
-          minHeight: '400px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: '#f5f5f5'
-        }}>
-          <h2 style={{ color: '#d32f2f', marginBottom: '16px' }}>
-            {isFinancialError ? 'Financial Page Error' : 
-             (this.props.t?.('error.somethingWentWrong') || 'Something went wrong')}
-          </h2>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0">
+                <svg className="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-lg font-medium text-gray-900">
+                  Something went wrong
+                </h3>
+              </div>
+            </div>
 
-          <p style={{ color: '#666', marginBottom: '24px', maxWidth: '500px' }}>
-            {isFinancialError ? 
-             'There was an error loading the financial data. The page has been fixed and should work now.' :
-             (this.props.t?.('error.temporaryIssue') || 
-              'There was an error loading the application. This is likely a temporary issue.')}
-          </p>
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">
+                An unexpected error occurred. Please try refreshing the page.
+              </p>
+              {process.env.NODE_ENV === 'development' && this.state.error && (
+                <details className="mt-4">
+                  <summary className="cursor-pointer text-sm font-medium text-gray-700">
+                    Error details (development only)
+                  </summary>
+                  <pre className="mt-2 text-xs bg-gray-100 p-2 rounded overflow-auto">
+                    {this.state.error.toString()}
+                    {this.state.errorInfo?.componentStack}
+                  </pre>
+                </details>
+              )}
+            </div>
 
-          {this.state.error && (
-            <details style={{ 
-              marginBottom: '24px', 
-              padding: '16px', 
-              backgroundColor: '#fff', 
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              maxWidth: '600px',
-              textAlign: 'left'
-            }}>
-              <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
-                Technical Details
-              </summary>
-              <pre style={{ 
-                marginTop: '8px', 
-                fontSize: '12px', 
-                color: '#666',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word'
-              }}>
-                {this.state.error.message}
-              </pre>
-            </details>
-          )}
-
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button 
-              onClick={this.handleRetry}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#1976d2',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '16px'
-              }}
-            >
-              Try Again
-            </button>
-
-            <button 
-              onClick={() => window.location.href = '/dashboard'}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#666',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '16px'
-              }}
-            >
-              Go to Dashboard
-            </button>
-
-            <button 
-              onClick={this.handleReload}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#f57c00',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '16px'
-              }}
-            >
-              Reload Page
-            </button>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => window.location.reload()}
+                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                Refresh Page
+              </button>
+              <button
+                onClick={() => this.setState({ hasError: false, error: undefined, errorInfo: undefined })}
+                className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              >
+                Try Again
+              </button>
+            </div>
           </div>
         </div>
       );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './i18n';
@@ -50,13 +50,30 @@ import QATest from './pages/QATest';
 import Landing from './pages/Landing';
 import WhitelabelPage from './pages/WhitelabelPage';
 import FinancialsTest from './components/FinancialsTest';
+import './index.css';
 
 const App: React.FC = () => {
+  const { i18n, ready } = useTranslation();
+
+  useEffect(() => {
+    // Ensure proper direction is set
+    document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
+
   const theme = createTheme({
     palette: {
       mode: 'light',
     },
   });
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <ErrorBoundary>
