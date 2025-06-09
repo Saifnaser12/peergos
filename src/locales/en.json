@@ -103,7 +103,9 @@
     "liveFinancialsSubtitle": "Real-time data from your accounting entries"
   },
   "accounting": {
-    "title": "Accounting",
+    "title": "Accounting"
+  }
+}",
     "subtitle": "Track your business revenue and expenses",
     "revenue": {
       "title": "Revenue",
