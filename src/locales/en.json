@@ -102,373 +102,6 @@
     "liveFinancials": "Live Financial Summary",
     "liveFinancialsSubtitle": "Real-time data from your accounting entries"
   },
-  "vat": {
-    "title": "VAT Filing",
-    "subtitle": "Manage your VAT returns and compliance",
-    "return": "VAT Return",
-    "filing": "VAT Return Filing",
-    "description": "UAE FTA-compliant VAT return submission",
-    "nextDue": "Next Due Date",
-    "amountDue": "VAT Amount Due",
-    "sales": "Sales",
-    "purchases": "Purchases",
-    "adjustments": "Adjustments",
-    "calculation": "VAT Calculation",
-    "summary": "VAT Calculation Summary",
-    "standardRatedSales": "Standard-rated Sales (5%)",
-    "standardRatedSalesHelp": "Sales subject to 5% VAT rate",
-    "zeroRatedSales": "Zero-rated Sales (0%)",
-    "zeroRatedSalesHelp": "Sales with 0% VAT rate (exports, etc.)",
-    "exemptSales": "Exempt Sales",
-    "exemptSalesHelp": "Sales exempt from VAT",
-    "purchasesRecoverable": "Purchases with Recoverable VAT",
-    "purchasesRecoverableHelp": "Business purchases where VAT can be recovered",
-    "purchasesNonRecoverable": "Purchases without Recoverable VAT",
-    "purchasesNonRecoverableHelp": "Purchases where VAT cannot be recovered",
-    "reverseCharge": "Reverse Charge Mechanism",
-    "importsGoods": "Imports of Goods/Services",
-    "importsGoodsHelp": "Imported goods and services subject to reverse charge",
-    "localServices": "Local Services",
-    "localServicesHelp": "Local services subject to reverse charge",
-    "lateInvoices": "Late Invoices",
-    "lateInvoicesHelp": "VAT adjustments for late invoices",
-    "badDebtRelief": "Bad Debt Relief",
-    "badDebtReliefHelp": "VAT relief for bad debts",
-    "vatCorrections": "VAT Corrections",
-    "vatCorrectionsHelp": "Other VAT corrections and adjustments",
-    "outputVat": "Output VAT",
-    "inputVat": "Input VAT",
-    "vatRefundable": "VAT Refundable",
-    "vatPayable": "VAT Payable",
-    "supportingDocuments": "Supporting Documents",
-    "uploadDocuments": "Upload invoices, receipts, and reports",
-    "fileFormat": "PDF, JPEG, PNG, XLSX - Max 10MB per file",
-    "submitReturn": "Submit VAT Return",
-    "export": {
-      "button": "Export Returns",
-      "pdf": "Export as PDF",
-      "excel": "Export as Excel"
-    },
-    "fta": {
-      "submitToFTA": "Submit to FTA",
-      "compliance": "This VAT return complies with UAE Federal Tax Authority requirements. Ensure all amounts are accurate before submission."
-    },
-    "validation": {
-      "invalidNumber": "Invalid number format",
-      "negativeAmount": "Amount cannot be negative",
-      "required": "This field is required"
-    }
-  },
-  "cit": {
-    "title": "Corporate Tax Filing",
-    "subtitle": "Manage your Corporate Income Tax obligations",
-    "form": {
-      "title": "CIT Return Information",
-      "companyInfo": "Company Information",
-      "companyName": "Company Name",
-      "trn": "Tax Registration Number (TRN)",
-      "financialYearEnd": "Financial Year End Date",
-      "financialData": "Financial Data",
-      "revenue": "Total Revenue",
-      "expenses": "Total Expenses",
-      "taxAdjustments": "Tax Adjustments",
-      "taxAdjustmentsHelp": "Enter positive for additions, negative for deductions",
-      "exemptIncome": "Exempt Income",
-      "carriedForwardLosses": "Carried Forward Losses",
-      "lossesCapHelp": "Maximum 75% of adjusted profit can be offset",
-      "elections": "Tax Elections",
-      "smallBusinessRelief": "Small Business Relief Election",
-      "smallBusinessReliefHelp": "Available for companies with revenue ≤ AED 3 million",
-      "taxGroupElection": "Tax Group Election",
-      "taxGroupElectionHelp": "Elect to be treated as part of a tax group"
-    },
-    "calcul"calculation": {
-    "title": "CIT Calculation"
-  }
-}
-      "calculate": "Calculate",
-      "calculating": "Calculating...",
-      "complete": "Calculation completed successfully",
-      "netProfit": "Net Profit",
-      "allowedLosses": "Allowed Losses (Capped at 75%)",
-      "lossesCapped": "Losses capped at 75% of adjusted profit",
-      "taxableIncome": "Taxable Income",
-      "citPayable": "CIT Payable",
-      "effectiveRate": "Effective Tax Rate",
-      "smallBusinessReliefApplied": "Small Business Relief Applied"
-    },
-    "compliance": {
-      "noCitDue": "No CIT is due for this period",
-      "citDue": "CIT payment is required"
-    },
-    "upload": {
-      "title": "Supporting Documents",
-      "button": "Upload Documents",
-      "uploading": "Uploading...",
-      "uploadedFiles": "Uploaded Files",
-      "success": "Files uploaded successfully",
-      "error": "Error uploading files",
-      "invalidFileType": "Invalid file type. Please upload PDF, Excel, or CSV files only",
-      "fileTooLarge": "File size exceeds 10MB limit"
-    },
-    "export": {
-      "title": "Export Options",
-      "description": "Choose your preferred export format",
-      "button": "Export CIT Return",
-      "pdf": "Export as PDF Report",
-      "excel": "Export as Excel/CSV Data",
-      "pdfSuccess": "PDF exported successfully",
-      "excelSuccess": "Excel file exported successfully"
-    },
-    "fta": {
-      "submitToFTA": "Submit to FTA",
-      "submitting": "Submitting to FTA...",
-      "submitSuccess": "Successfully submitted to FTA! Reference: {{referenceNumber}}",
-      "submitError": "Failed to submit to FTA. Please try again.",
-      "missingInfo": "Please fill in company name and TRN before submitting to FTA.",
-      "missingTaxAgent": "Please select a tax agent and upload their certificate before submitting"
-    }
-  },
-  "transferPricing": {
-    "title": "Transfer Pricing",
-    "subtitle": "Manage related party transactions and transfer pricing compliance",
-    "status": "Documentation Status",
-    "requiredDocs": "Documents Needed",
-    "navigation": {
-      "companyInfo": "Company Information",
-      "relatedParties": "Related Parties",
-      "transactions": "Transactions",
-      "documentation": "Documentation",
-      "summary": "Summary"
-    },
-    "companyInfo": {
-      "title": "Company Information",
-      "companyName": "Company Name",
-      "trn": "Tax Registration Number (TRN)",
-      "industry": "Industry Sector",
-      "revenue": "Annual Revenue (AED)",
-      "employees": "Number of Employees",
-      "financialYear": "Financial Year End"
-    },
-    "relatedParty": {
-      "title": "Related Party Information",
-      "add": "Add Related Party",
-      "edit": "Edit Related Party",
-      "name": "Party Name",
-      "relationship": "Relationship Type",
-      "country": "Country of Residence",
-      "ownership": "Ownership Percentage",
-      "description": "Business Description"
-    },
-    "transactions": {
-      "title": "Related Party Transactions",
-      "add": "Add Transaction",
-      "edit": "Edit Transaction",
-      "type": "Transaction Type",
-      "description": "Transaction Description",
-      "value": "Transaction Value (AED)",
-      "date": "Transaction Date",
-      "currency": "Currency",
-      "method": "Transfer Pricing Method"
-    },
-    "documentation": {
-      "title": "Supporting Documentation",
-      "upload": "Upload Document",
-      "type": "Document Type",
-      "description": "Document Description",
-      "masterFile": "Master File",
-      "localFile": "Local File",
-      "economicAnalysis": "Economic Analysis",
-      "benchmarkingStudy": "Benchmarking Study",
-      "other": "Other Documentation"
-    },
-    "summary": {
-      "title": "Transfer Pricing Summary",
-      "totalTransactions": "Total Transactions",
-      "totalValue": "Total Value (AED)",
-      "complianceScore": "Compliance Score",
-      "riskLevel": "Risk Level",
-      "riskLevels": {
-        "low": "Low Risk",
-        "medium": "Medium Risk",
-        "high": "High Risk"
-      },
-      "documentationStatus": "Documentation Status",
-      "documentedTransactions": "Documented Transactions",
-      "uploadedDocuments": "Uploaded Documents"
-    }
-  },
-  "financials": {
-    "title": "Financial Reports",
-    "subtitle": "Comprehensive financial reporting for UAE tax compliance",
-    "incomeStatement": "Income Statement",
-    "balanceSheet": "Balance Sheet",
-    "cashFlowStatement": "Cash Flow Statement",
-    "notesToFinancials": "Notes to Financial Statements",
-    "revenue": "Revenue",
-    "expenses": "Expenses",
-    "netIncome": "Net Income",
-    "assets": "Assets",
-    "liabilities": "Liabilities",
-    "equity": "Equity",
-    "currentAssets": "Current Assets",
-    "fixedAssets": "Fixed Assets",
-    "currentLiabilities": "Current Liabilities",
-    "longTermLiabilities": "Long Term Liabilities",
-    "retainedEarnings": "Retained Earnings",
-    "totalAssets": "Total Assets",
-    "totalLiabilities": "Total Liabilities",
-    "totalEquity": "Total Equity",
-    "exportControls": "Export Financial Reports",
-    "exportComprehensivePDF": "Comprehensive PDF",
-    "exportExcel": "Export Excel"
-  },
-  "assistant": {
-    "title": "Tax Assistant",
-    "subtitle": "Get instant help with UAE tax regulations and compliance",
-    "placeholder": "Ask me about VAT, Corporate Tax, Transfer Pricing, or any UAE tax question...",
-    "send": "Send",
-    "thinking": "Thinking...",
-    "typing": "Tax Assistant is typing...",
-    "clearChat": "Clear Chat",
-    "exportChat": "Export Chat",
-    "shareWithAccountant": "Share with Accountant",
-    "suggestions": "Suggested Questions",
-    "responses": {
-      "greeting": "Hello! I'm your UAE Tax Assistant. How can I help you today?",
-      "defaultError": "I apologize, but I encountered an error. Please try rephrasing your question."
-    }
-  },
-  "calendar": {
-    "title": "Tax Calendar & Deadlines",
-    "subtitle": "Track your tax filing deadlines and compliance dates",
-    "upcomingDeadlines": "Upcoming Deadlines",
-    "noDeadlines": "No deadlines this month",
-    "noDeadlinesDesc": "All your tax obligations are up to date.",
-    "activeNotifications": "Active Notifications",
-    "vatReturn": "VAT Return Due",
-    "citReturn": "CIT Return Due",
-    "days": {
-      "sun": "Sun",
-      "mon": "Mon",
-      "tue": "Tue",
-      "wed": "Wed",
-      "thu": "Thu",
-      "fri": "Fri",
-      "sat": "Sat"
-    },
-    "priority": {
-      "urgent": "Urgent",
-      "high": "High",
-      "medium": "Medium",
-      "low": "Low"
-    }
-  },
-  "setup": {
-    "title": "System Setup",
-    "subtitle": "Configure your tax compliance system",
-    "welcome": "Welcome to UAE Tax Compliance System",
-    "description": "Let's set up your system for optimal tax compliance",
-    "steps": {
-      "company": "Company Information",
-      "tax": "Tax Configuration",
-      "integrations": "Integrations",
-      "complete": "Complete Setup"
-    },
-    "company": {
-      "title": "Company Information",
-      "companyName": "Company Name",
-      "trn": "Tax Registration Number (TRN)",
-      "industry": "Industry",
-      "address": "Business Address",
-      "phone": "Phone Number",
-      "email": "Email Address"
-    },
-    "complete": "Complete Setup"
-  },
-  "notifications": {
-    "title": "Notifications",
-    "markAllRead": "Mark all as read",
-    "dismiss": "Dismiss",
-    "noNotifications": "No notifications",
-    "allCaughtUp": "You're all caught up!",
-    "justNow": "Just now",
-    "hoursAgo": "{{hours}}h ago",
-    "daysAgo": "{{days}}d ago",
-    "dueToday": "Due today",
-    "daysRemaining": "{{days}} days remaining",
-    "setupIncomplete": "Setup Incomplete",
-    "setupIncompleteDesc": "Complete your system setup to access all features",
-    "completeSetup": "Complete Setup",
-    "missingAgentCert": "Tax Agent Certificate Required",
-    "missingAgentCertDesc": "Upload your tax agent certificate to proceed",
-    "uploadDocument": "Upload Document",
-    "missingBankSlip": "Bank Slip Missing",
-    "missingBankSlipDesc": "Please upload your bank slip for verification"
-  },
-  "language": {
-    "select": "Select Language",
-    "english": "English",
-    "arabic": "العربية"
-  },
-  "currency": {
-    "select": "Select Currency",
-    "aed": "AED - UAE Dirham",
-    "usd": "USD - US Dollar"
-  },
-  "auth": {
-    "login": "Login",
-    "register": "Register",
-    "logout": "Logout",
-    "email": "Email Address",
-    "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "signIn": "Sign In",
-    "createAccount": "Create Account",
-    "forgotPassword": "Forgot Password?",
-    "rememberMe": "Remember Me"
-  },
-  "fta": {
-    "integration": {
-      "title": "FTA Integration",
-      "subtitle": "Tax agent certificate required",
-      "pending": "Pending Setup",
-      "connected": "Connected to FTA",
-      "disconnected": "❌ FTA Disconnected",
-      "syncing": "🔄 Syncing with FTA"
-    },
-    "simulation": {
-      "note": "⚠️ Demo Mode – FTA Simulation Active",
-      "tooltip": "Simulation only - not connected to real FTA"
-    }
-  },
-  "trn": {
-    "lookup": {
-      "title": "TRN Lookup",
-      "subtitle": "Search UAE company by 15-digit TRN",
-      "label": "Enter TRN Number",
-      "helperText": "Enter full TRN to retrieve FTA-registered company details",
-      "search": "Search Company",
-      "placeholder": "Enter TRN (e.g., 100123456700003)",
-      "searching": "Searching...",
-      "description": "Search for UAE-registered companies using their Tax Registration Number",
-      "invalidFormat": "Please enter a valid 15-digit TRN",
-      "notFound": "No company found with this TRN",
-      "error": "Error searching for TRN",
-      "businessType": "Business Type",
-      "emirate": "Emirate",
-      "registrationDate": "Registration Date",
-      "lastFiling": "Last Filing",
-      "complianceStatus": "Compliance Status",
-      "nonCompliantWarning": "This company has compliance issues. Please verify before proceeding.",
-      "suspendedWarning": "This TRN is currently suspended by FTA."
-    }
-  },
-  "validation": {
-    "companyNameTooShort": "Company name must be at least 2 characters",
-    "amountNegative": "Amount cannot be negative",
-    "smallBusinessReliefNotEligible": "Small Business Relief is only available for companies with revenue ≤ AED 3 million"
-  },
   "accounting": {
     "title": "Accounting",
     "subtitle": "Track your business revenue and expenses",
@@ -498,7 +131,18 @@
         "generateInvoiceHelp": "Automatically create an invoice for this revenue entry",
         "save": "Save Revenue",
         "cancel": "Cancel",
-        "update": "Update Revenue"
+        "update": "Update Revenue",
+        "category": "Category",
+        "categoryPlaceholder": "Select revenue category"
+      },
+      "categories": {
+        "productSales": "Product Sales",
+        "serviceIncome": "Service Income",
+        "rentalIncome": "Rental Income",
+        "consultingFees": "Consulting Fees",
+        "commissionIncome": "Commission Income",
+        "interestIncome": "Interest Income",
+        "otherRevenue": "Other Revenue"
       },
       "actions": {
         "edit": "Edit",
@@ -541,12 +185,20 @@
         "update": "Update Expense"
       },
       "categories": {
+        "costOfGoodsSold": "Cost of Goods Sold",
+        "salariesAndWages": "Salaries and Wages",
         "rent": "Rent",
-        "salaries": "Salaries",
-        "supplies": "Supplies",
         "utilities": "Utilities",
-        "marketing": "Marketing",
-        "other": "Other"
+        "marketingAndAdvertising": "Marketing and Advertising",
+        "softwareSubscriptions": "Software Subscriptions",
+        "professionalServices": "Professional Services",
+        "officeSupplies": "Office Supplies",
+        "bankCharges": "Bank Charges",
+        "insurance": "Insurance",
+        "travelAndMeals": "Travel and Meals",
+        "depreciation": "Depreciation",
+        "vatPaid": "VAT Paid",
+        "otherExpenses": "Other Expenses"
       },
       "actions": {
         "edit": "Edit",
@@ -591,231 +243,8 @@
       "includeVAT": "Include VAT (5%)",
       "includeVATHelp": "Add 5% VAT to the invoice total",
       "summary": "Invoice Summary",
-      "generatePDF": "Generate PDF Invoice",
-      "modal": {
-        "title": "Generate UAE FTA-Compliant Invoice",
-        "invoiceInfo": "Invoice Information",
-        "invoiceNumber": "Invoice Number",
-        "issueDate": "Issue Date",
-        "dueDate": "Due Date",
-        "supplierInfo": "Supplier Information",
-        "supplierName": "Supplier Name", 
-        "supplierTRN": "Supplier TRN",
-        "customerInfo": "Customer Information",
-        "customerName": "Customer Name",
-        "customerNamePlaceholder": "Enter customer name or 'Client'",
-        "customerTRN": "Customer TRN (Optional)",
-        "customerTRNPlaceholder": "15-digit TRN (optional)",
-        "street": "Street Address",
-        "city": "City",
-        "invoiceDetails": "Invoice Details",
-        "serviceDescription": "Service Description",
-        "serviceDescriptionPlaceholder": "Describe the services provided",
-        "amount": "Amount (AED)",
-        "vatToggle": "Apply UAE VAT (5%)",
-        "vatToggleHelp": "UAE VAT will be applied per FTA guidelines",
-        "amountSummary": "Amount Summary",
-        "subtotal": "Subtotal",
-        "vat": "VAT (5%)",
-        "totalAmount": "Total Amount",
-        "cancel": "Cancel",
-        "generate": "Generate Invoice",
-        "generating": "Generating FTA-Compliant Invoice...",
-        "generationSuccess": "Invoice Generated Successfully!",
-        "generationSuccessDesc": "Your UAE FTA-compliant invoice has been generated and is ready for download.",
-        "ftaCompliant": "✅ UAE FTA Compliant",
-        "ftaCompliantDesc": "Meets UAE Federal Tax Authority e-invoicing standards",
-        "downloadPDF": "📄 Generate PDF Invoice",
-        "downloadJSON": "📊 Download e-Invoice JSON",
-        "previewXML": "🔍 Preview XML (Beta)",
-        "ftaJsonPreview": "FTA E-Invoice JSON Preview",
-        "xmlPreview": "Peppol XML Preview",
-        "generateAnother": "Generate Another",
-        "done": "Done",
-        "vatNote": "* VAT applied as per UAE FTA guidelines"
-      },
-      "validation": {
-        "customerNameRequired": "Customer name is required",
-        "dueDateRequired": "Due date is required", 
-        "descriptionRequired": "Service description is required",
-        "amountRequired": "Amount is required",
-        "amountPositive": "Amount must be greater than 0",
-        "invalidTRN": "TRN must be exactly 15 digits",
-        "addressRequired": "Address is required",
-        "cityRequired": "City is required"
-      },
-      "error": {
-        "generationFailed": "Failed to generate invoice. Please try again.",
-        "invalidData": "Please check your input data and try again."
-      }
+      "generatePDF": "Generate PDF Invoice"
     },
-    "messages": {
-      "deleteConfirm": "Are you sure you want to delete this entry?",
-      "saveSuccess": "Entry saved successfully",
-      "deleteSuccess": "Entry deleted successfully",
-      "error": "An error occurred. Please try again."
-    }
-  },
-  "categories": {
-    "revenue": {
-      "productSales": "Product Sales",
-      "serviceIncome": "Service Income",
-      "rentalIncome": "Rental Income",
-      "interestIncome": "Interest Income",
-      "consulting": "Consulting Income",
-      "other": "Other Revenue"
-    },
-    "expenses": {
-      "rent": "Rent",
-      "utilities": "Utilities",
-      "salaries": "Salaries",
-      "marketing": "Marketing",
-      "travel": "Travel",
-      "supplies": "Supplies",
-      "software": "Software & Subscriptions",
-      "professional": "Professional Fees",
-      "taxes": "Government Taxes",
-      "other": "Other Expenses"
-    }
-  },
-  "errors": {
-    "general": "An error occurred. Please try again.",
-    "network": "Network error. Please check your connection.",
-    "validation": "Please check your input and try again.",
-    "unauthorized": "You are not authorized to perform this action.",
-    "notFound": "The requested resource was not found.",
-    "serverError": "Server error. Please try again later."
-  },
-  "financials": {
-    "title": "Financial Reports",
-    "subtitle": "Simplified financial management for non-accountants",
-    "yearlySummary": "Financial Summary",
-    "totalRevenue": "Total Revenue",
-    "totalExpenses": "Total Expenses", 
-    "netIncome": "Net Income",
-    "profitMargin": "Profit Margin",
-    "balanceSheet": "Balance Sheet",
-    "assets": "Assets",
-    "liabilities": "Liabilities", 
-    "equity": "Equity",
-    "profitLoss": "Profit & Loss",
-    "revenueVsExpenses": "Revenue vs Expenses",
-    "quickActions": "Quick Actions",
-    "addRevenue": "Add Revenue",
-    "addExpense": "Add Expense",
-    "recordSales": "Record sales and income",
-    "trackCosts": "Track business costs",
-    "exportReports": "Export Reports", 
-    "downloadPdf": "Download PDF reports",
-    "exportData": "Export Data",
-    "downloadExcel": "Download Excel file",
-    "exportPDF": "Export PDF",
-    "exportExcel": "Export Excel",
-    "incomeStatement": "Income Statement",
-    "cashFlowStatement": "Cash Flow Statement",
-    "dataEntries": "Data Entries",
-    "editExpense": "Edit Expense",
-    "bookkeeping": "Bookkeeping & Document Management",
-    "recentInvoices": "Recent Scanned Invoices",
-    "invoicesProcessed": "Invoices processed through OCR scanning",
-    "revenue": "Revenue",
-    "expenses": "Expenses",
-    "balanced": "Balanced",
-    "unbalanced": "Unbalanced",
-    "asOf": "As of",
-    "total": "Total",
-    "retainedEarnings": "Retained Earnings",
-    "totalLiabilitiesEquity": "Total Liabilities + Equity",
-    "imbalanceWarning": "Warning: Balance Sheet is not balanced. Assets must equal Liabilities + Equity.",
-    "difference": "Difference"
-  },
-  "accounting": {
-    "revenue": {
-      "form": {
-        "category": "Category",
-        "categoryPlaceholder": "Select revenue category"
-      },
-      "categories": {
-        "productSales": "Product Sales",
-        "serviceIncome": "Service Income",
-        "rentalIncome": "Rental Income",
-        "consultingFees": "Consulting Fees",
-        "commissionIncome": "Commission Income",
-        "interestIncome": "Interest Income",
-        "otherRevenue": "Other Revenue"
-      }
-    },
-    "expenses": {
-      "categories": {
-        "costOfGoodsSold": "Cost of Goods Sold",
-        "salariesAndWages": "Salaries and Wages",
-        "rent": "Rent",
-        "utilities": "Utilities",
-        "marketingAndAdvertising": "Marketing and Advertising",
-        "softwareSubscriptions": "Software Subscriptions",
-        "professionalServices": "Professional Services",
-        "officeSupplies": "Office Supplies",
-        "bankCharges": "Bank Charges",
-        "insurance": "Insurance",
-        "travelAndMeals": "Travel and Meals",
-        "depreciation": "Depreciation",
-        "vatPaid": "VAT Paid",
-        "otherExpenses": "Other Expenses"
-      }
-    }
-  },
-  "errors": {
-    "general": "An error occurred. Please try again.",
-    "network": "Network error. Please check your connection.",
-    "validation": "Please check your input and try again.",
-    "unauthorized": "You are not authorized to perform this action.",
-    "notFound": "The requested resource was not found.",
-    "serverError": "Server error. Please try again later."
-  },
-  "financials": {
-    "title": "Financial Reports",
-    "subtitle": "Simplified financial management for non-accountants",
-    "yearlySummary": "Financial Summary",
-    "totalRevenue": "Total Revenue",
-    "totalExpenses": "Total Expenses", 
-    "netIncome": "Net Income",
-    "profitMargin": "Profit Margin",
-    "balanceSheet": "Balance Sheet",
-    "assets": "Assets",
-    "liabilities": "Liabilities", 
-    "equity": "Equity",
-    "profitLoss": "Profit & Loss",
-    "revenueVsExpenses": "Revenue vs Expenses",
-    "quickActions": "Quick Actions",
-    "addRevenue": "Add Revenue",
-    "addExpense": "Add Expense",
-    "recordSales": "Record sales and income",
-    "trackCosts": "Track business costs",
-    "exportReports": "Export Reports", 
-    "downloadPdf": "Download PDF reports",
-    "exportData": "Export Data",
-    "downloadExcel": "Download Excel file",
-    "exportPDF": "Export PDF",
-    "exportExcel": "Export Excel",
-    "incomeStatement": "Income Statement",
-    "cashFlowStatement": "Cash Flow Statement",
-    "dataEntries": "Data Entries",
-    "editExpense": "Edit Expense",
-    "bookkeeping": "Bookkeeping & Document Management",
-    "recentInvoices": "Recent Scanned Invoices",
-    "invoicesProcessed": "Invoices processed through OCR scanning",
-    "revenue": "Revenue",
-    "expenses": "Expenses",
-    "balanced": "Balanced",
-    "unbalanced": "Unbalanced",
-    "asOf": "As of",
-    "total": "Total",
-    "retainedEarnings": "Retained Earnings",
-    "totalLiabilitiesEquity": "Total Liabilities + Equity",
-    "imbalanceWarning": "Warning: Balance Sheet is not balanced. Assets must equal Liabilities + Equity.",
-    "difference": "Difference"
-  },
-  "accounting": {
     "messages": {
       "deleteConfirm": "Are you sure you want to delete this entry?",
       "saveSuccess": "Entry saved successfully",
@@ -824,26 +253,39 @@
       "createInvoice": "Create Invoice",
       "invoiceCreated": "Invoice created successfully!",
       "invoiceError": "Error creating invoice",
-    "comingSoon": "Coming Soon",
-    "available": "Available",
-    "posIntegration": {
-      "title": "POS Integration",
-      "description": "Connect your Point-of-Sale system to auto-import daily revenue transactions and eliminate manual data entry.",
-      "feature1": "Automatic revenue sync",
-      "feature2": "Real-time transaction import",
-      "feature3": "Support for UAE POS systems",
-      "connectButton": "Connect POS System"
-    },
-    "bankImport": {
-      "title": "Bank Statement Import",
-      "description": "Upload CSV files from your bank to automatically match expenses and simplify reconciliation process.",
-      "feature1": "Support for UAE banks (CBD, FAB, ENBD)",
-      "feature2": "Automatic expense matching",
-      "feature3": "CSV format validation",
-      "uploadButton": "Upload Bank CSV",
-      "uploadSuccess": "CSV uploaded successfully! Bank reconciliation feature coming soon.",
-      "invalidFile": "Please select a valid CSV file."
+      "comingSoon": "Coming Soon",
+      "available": "Available",
+      "posIntegration": {
+        "title": "POS Integration",
+        "description": "Connect your Point-of-Sale system to auto-import daily revenue transactions and eliminate manual data entry.",
+        "feature1": "Automatic revenue sync",
+        "feature2": "Real-time transaction import",
+        "feature3": "Support for UAE POS systems",
+        "connectButton": "Connect POS System"
+      },
+      "bankImport": {
+        "title": "Bank Statement Import",
+        "description": "Upload CSV files from your bank to automatically match expenses and simplify reconciliation process.",
+        "feature1": "Support for UAE banks (CBD, FAB, ENBD)",
+        "feature2": "Automatic expense matching",
+        "feature3": "CSV format validation",
+        "uploadButton": "Upload Bank CSV",
+        "uploadSuccess": "CSV uploaded successfully! Bank reconciliation feature coming soon.",
+        "invalidFile": "Please select a valid CSV file."
+      }
     }
-    }
+  },
+  "validation": {
+    "companyNameTooShort": "Company name must be at least 2 characters",
+    "amountNegative": "Amount cannot be negative",
+    "smallBusinessReliefNotEligible": "Small Business Relief is only available for companies with revenue ≤ AED 3 million"
+  },
+  "errors": {
+    "general": "An error occurred. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "validation": "Please check your input and try again.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "notFound": "The requested resource was not found.",
+    "serverError": "Server error. Please try again later."
   }
 }
