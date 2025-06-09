@@ -1,18 +1,40 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import './i18n';
+import { ThemeProvider } from './context/ThemeContext';
+import { TaxProvider } from './context/TaxProvider';
+import { UserRoleProvider } from './context/UserRoleContext';
+import { InvoiceProvider } from './context/InvoiceProvider';
+import { NotificationProvider } from './context/NotificationContext';
+import { TransferPricingProvider } from './context/TransferPricingProvider';
+import ErrorBoundary from './components/ErrorBoundary';
+import AppLayout from './components/AppLayout';
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
+import Filing from './pages/Filing';
+import Accounting from './pages/Accounting';
+import VAT from './pages/VAT';
+import CIT from './pages/CIT';
+import TransferPricing from './pages/TransferPricing';
+import Financials from './pages/Financials';
+import Setup from './pages/Setup';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Admin from './pages/Admin';
+import Calendar from './pages/Calendar';
+import SimpleInvoice from './pages/SimpleInvoice';
+import Assistant from './pages/Assistant';
+import FreeZoneSubstance from './pages/FreeZoneSubstance';
+import Unauthorized from './pages/Unauthorized';
+import ProtectedRoute from './components/ProtectedRoute';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme } from '@mui/material/styles';
 
 // Context Providers
-import { ThemeProvider } from './context/ThemeContext';
 import { FinanceProvider } from './context/FinanceContext';
-import { UserRoleProvider } from './context/UserRoleContext';
-import { NotificationProvider } from './context/NotificationContext';
-import { TransferPricingProvider } from './context/TransferPricingContext';
-import { TaxProvider } from './context/TaxContext';
 import { TaxAgentProvider } from './context/TaxAgentContext';
-import { InvoiceProvider } from './context/InvoiceContext';
 import { POSIntegrationProvider } from './context/POSIntegrationContext';
 import { RelatedPartyProvider } from './context/RelatedPartyContext';
 import { SettingsProvider } from './context/SettingsContext';
@@ -21,30 +43,12 @@ import { WhitelabelProvider } from './context/WhitelabelContext';
 
 // Components
 import Layout from './components/Layout';
-import ErrorBoundary from './components/ErrorBoundary';
-import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
-import Dashboard from './pages/Dashboard';
-import Accounting from './pages/Accounting';
-import VAT from './pages/VAT';
-import CIT from './pages/CIT';
-import Filing from './pages/Filing';
-import Financials from './pages/Financials';
-import TransferPricing from './pages/TransferPricing';
-import SimpleInvoice from './pages/SimpleInvoice';
-import Assistant from './pages/Assistant';
-import Admin from './pages/Admin';
-import Calendar from './pages/Calendar';
-import Setup from './pages/Setup';
-import Unauthorized from './pages/Unauthorized';
-import Login from './pages/Login';
-import Register from './pages/Register';
 import AssistantTest from './pages/AssistantTest';
 import QATest from './pages/QATest';
 import Landing from './pages/Landing';
 import WhitelabelPage from './pages/WhitelabelPage';
-import FreeZoneSubstance from './pages/FreeZoneSubstance';
 import FinancialsTest from './components/FinancialsTest';
 
 const App: React.FC = () => {

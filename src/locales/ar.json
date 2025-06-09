@@ -1,130 +1,39 @@
+
 {
-  "common": {
-    "loading": "جاري التحميل...",
-    "save": "حفظ",
-    "cancel": "إلغاء",
-    "edit": "تعديل",
-    "delete": "حذف",
-    "submit": "إرسال",
-    "export": "تصدير",
-    "download": "تحميل",
-    "search": "بحث",
-    "filter": "فلترة",
-    "noData": "لا توجد بيانات متاحة",
-    "error": "خطأ",
-    "success": "نجح",
-    "accept": "قبول",
-    "reject": "رفض",
-    "complete": "مكتمل",
-    "view": "عرض",
-    "upload": "رفع",
-    "select": "اختيار",
-    "remove": "إزالة",
-    "add": "إضافة",
-    "continue": "متابعة",
-    "back": "رجوع",
-    "next": "التالي",
-    "previous": "السابق",
-    "close": "إغلاق",
-    "open": "فتح",
-    "confirm": "تأكيد",
-    "calculate": "حساب",
-    "recalculate": "إعادة حساب",
-    "processing": "جاري المعالجة...",
-    "completed": "مكتمل",
-    "pending": "معلق",
-    "approved": "موافق عليه",
-    "rejected": "مرفوض",
-    "draft": "مسودة",
-    "submitted": "مرسل"
-  },
-  "nav": {
-    "dashboard": "لوحة التحكم",
-    "cit": "ضريبة الشركات",
-    "vat": "ضريبة القيمة المضافة",
-    "accounting": "المحاسبة",
-    "financials": "التقارير المالية",
-    "transferPricing": "تسعير التحويل",
-    "assistant": "المساعد الضريبي",
-    "setup": "الإعداد",
-    "filing": "التسجيل",
-    "trnSearch": "البحث عن الرقم الضريبي",
-    "systemOnline": "النظام متصل",
-    "calendar": "التقويم الضريبي",
-    "admin": "الإدارة",
-    "logout": "تسجيل خروج",
-    "profile": "الملف الشخصي",
-    "settings": "الإعدادات"
-  },
-  "dashboard": {
-    "title": "لوحة التحكم",
-    "subtitle": "نظرة عامة على التزاماتك الضريبية والمؤشرات الرئيسية",
-    "description": "راقب امتثالك الضريبي والمقاييس المالية",
-    "askAssistant": "اسأل المساعد الضريبي",
-    "quickActions": "إجراءات سريعة",
-    "ftaIntegration": "تكامل هيئة الضرائب",
-    "trnLookup": "البحث عن الرقم الضريبي",
-    "totalRevenue": "إجمالي الإيرادات",
-    "totalExpenses": "إجمالي المصروفات",
-    "netIncome": "صافي الدخل",
-    "taxDue": "الضريبة المستحقة",
-    "transactions": "المعاملات",
-    "yearToDate": "من بداية العام حتى تاريخه",
-    "vatAndCit": "ضريبة القيمة المضافة + ضريبة الشركات",
-    "recentActivity": "النشاط الأخير",
-    "upcomingDeadlines": "المواعيد النهائية القادمة",
-    "complianceStatus": "حالة الامتثال",
-    "cit": {
-      "title": "ضريبة الشركات المستحقة",
-      "subtitle": "موعد الاستحقاق: 2024-03-31"
-    },
-    "vat": {
-      "title": "التزام ضريبة القيمة المضافة",
-      "subtitle": "التالي: 2024-02-28"
-    },
-    "financials": {
-      "title": "صافي الدخل (هذا العام)",
-      "subtitle": "بناءً على البيانات المالية المرسلة"
-    },
-    "transferPricing": {
-      "title": "تسعير التحويل",
-      "subtitle": "75% مكتمل • 3 مستندات مطلوبة"
-    },
-    "posIntegration": {
-      "disabled": "تكامل نقاط البيع معطل",
-      "enableHint": "قم بالتفعيل في الإعداد لربط أنظمة نقاط البيع"
-    },
-    "actions": {
-      "fileVAT": "تقديم إقرار ضريبة القيمة المضافة",
-      "calculateCIT": "حساب ضريبة الشركات",
-      "viewFinancials": "عرض التقارير المالية"
-    },
-    "liveFinancials": "ملخص مالي مباشر",
-    "liveFinancialsSubtitle": "بيانات في الوقت الفعلي من قيودك المحاسبية"
-  },
-  "accounting": {
-    "title": "المحاسبة",
-    "subtitle": "تتبع إيرادات ومصروفات عملك",
-    "revenue": {
-      "title": "الإيرادات",
-      "addButton": "إضافة إيراد"
-    },
-    "expenses": {
-      "title": "المصروفات",
-      "addButton": "إضافة مصروف"
-    }
-  },
-  "validation": {
-    "companyNameTooShort": "يجب أن يكون اسم الشركة على الأقل حرفين",
-    "amountNegative": "لا يمكن أن يكون المبلغ سالباً",
-    "smallBusinessReliefNotEligible": "إعفاء الأعمال الصغيرة متاح فقط للشركات ذات الإيرادات ≤ 3 مليون درهم"
-  },
-  "errors": {
-    "general": "حدث خطأ. يرجى المحاولة مرة أخرى.",
-    "network": "خطأ في الشبكة. يرجى التحقق من اتصالك.",
-    "validation": "يرجى التحقق من إدخالك والمحاولة مرة أخرى.",
-    "unauthorized": "غير مخول لك تنفيذ هذا الإجراء.",
-    "notFound": "لم يتم العثور على المورد المطلوب.",
-    "serverError": "خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً."
-  }
+  "welcome": "مرحباً",
+  "dashboard": "لوحة التحكم",
+  "accounting": "المحاسبة",
+  "filing": "التقديم",
+  "vat": "ضريبة القيمة المضافة",
+  "cit": "ضريبة الشركات",
+  "transferPricing": "تسعير التحويل",
+  "financials": "البيانات المالية",
+  "setup": "الإعداد",
+  "admin": "الإدارة",
+  "calendar": "التقويم",
+  "assistant": "المساعد",
+  "login": "تسجيل الدخول",
+  "register": "التسجيل",
+  "logout": "تسجيل الخروج",
+  "home": "الرئيسية",
+  "unauthorized": "غير مخول",
+  "freeZoneSubstance": "جوهر المنطقة الحرة",
+  "simpleInvoice": "فاتورة بسيطة",
+  "language": "اللغة",
+  "theme": "المظهر",
+  "dark": "داكن",
+  "light": "فاتح",
+  "settings": "الإعدادات",
+  "profile": "الملف الشخصي",
+  "notifications": "الإشعارات",
+  "help": "المساعدة",
+  "support": "الدعم",
+  "documentation": "الوثائق",
+  "about": "حول",
+  "version": "الإصدار",
+  "copyright": "حقوق الطبع والنشر",
+  "allRightsReserved": "جميع الحقوق محفوظة",
+  "privacyPolicy": "سياسة الخصوصية",
+  "termsOfService": "شروط الخدمة",
+  "contactUs": "اتصل بنا"
 }
