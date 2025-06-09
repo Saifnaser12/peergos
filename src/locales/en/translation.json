@@ -227,8 +227,12 @@
         "amountPlaceholder": "0.00",
         "generateInvoice": "Generate Invoice",
         "generateInvoiceHelp": "Create an FTA-compliant invoice for this revenue",
-        "freeZoneClassification": "Free Zone Income Classification",
-        "incomeType": "Income Type",
+        "freeZoneClassification": "Free Zone Income Cl"classification": "Classification",
+        "incomeType": "Income Type"
+      }
+    }
+  }
+},
         "selectIncomeType": "Select Income Type",
         "subcategory": "Subcategory",
         "selectSubcategory": "Select Subcategory",

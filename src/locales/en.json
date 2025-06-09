@@ -182,8 +182,10 @@
       "taxGroupElection": "Tax Group Election",
       "taxGroupElectionHelp": "Elect to be treated as part of a tax group"
     },
-    "calculation": {
-      "title": "CIT Calculation",
+    "calcul"calculation": {
+    "title": "CIT Calculation"
+  }
+}
       "calculate": "Calculate",
       "calculating": "Calculating...",
       "complete": "Calculation completed successfully",

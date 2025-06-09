@@ -181,7 +181,8 @@
       "generateFTAPDF": "إنشاء ملف PDF للهيئة",
       "ftaPdfSuccess": "تم إنشاء ملف PDF بتنسيق الهيئة بنجاح",
       "ftaPdfError": "خطأ في إنشاء ملف PDF للهيئة"
-    }
+    },
+    "requiredDocs": "المستندات المطلوبة"
   },
   "unauthorized": {
     "title": "تم رفض الوصول",

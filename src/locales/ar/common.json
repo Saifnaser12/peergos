@@ -154,7 +154,8 @@
       },
       "form": {
         "title": "إضافة إدخال إيراد",
-        "editTitle": "تحرير إدخال الإيراد",
+        "edit"editTitle": "تحرير إدخال الإيراد"
+}
         "date": "التاريخ",
         "datePlaceholder": "اختر التاريخ",
         "description": "الوصف",

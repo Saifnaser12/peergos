@@ -132,7 +132,8 @@
     "localServices": "الخدمات المحلية",
     "localServicesHelp": "الخدمات المحلية الخاضعة للرسم العكسي",
     "lateInvoices": "الفواتير المتأخرة",
-    "lateInvoicesHelp": "تعديلات ضريبة القيمة المضافة للفواتير المتأخرة",
+    "lateInvoicesHelp": "تع"vatAdjustments": "تعديلات ضريبة القيمة المضافة"
+} للفواتير المتأخرة",
     "badDebtRelief": "إعفاء الديون المعدومة",
     "badDebtReliefHelp": "إعفاء ضريبة القيمة المضافة للديون المعدومة",
     "vatCorrections": "تصحيحات ضريبة القيمة المضافة",
