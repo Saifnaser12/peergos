@@ -1,4 +1,32 @@
 import i18n from '../i18n';
+// Safe translation function that never throws
+export const safeTranslate = (key, options) => {
+    try {
+        const translation = i18n.t(key, options);
+        // If translation equals the key, it means it wasn't found
+        if (translation === key) {
+            console.warn(`Missing translation for key: ${key}`);
+            // Return a readable version of the key
+            const keyParts = key.split('.');
+            const lastPart = keyParts[keyParts.length - 1];
+            return lastPart
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/^./, str => str.toUpperCase())
+                .trim();
+        }
+        return translation;
+    }
+    catch (error) {
+        console.error(`Translation error for key: ${key}`, error);
+        // Return a readable version of the key as fallback
+        const keyParts = key.split('.');
+        const lastPart = keyParts[keyParts.length - 1];
+        return lastPart
+            .replace(/([A-Z])/g, ' $1')
+            .replace(/^./, str => str.toUpperCase())
+            .trim();
+    }
+};
 // Get all translation keys from the translation objects
 export const getAllTranslationKeys = (obj, prefix = '') => {
     let keys = [];
@@ -44,34 +72,6 @@ export const verifyComponentTranslations = (keys) => {
         }
     });
     return { missing, existing };
-};
-// Safe translation function that never throws
-export const safeTranslate = (key, options) => {
-    try {
-        const translation = i18n.t(key, options);
-        // If translation equals the key, it means it wasn't found
-        if (translation === key) {
-            console.warn(`Missing translation for key: ${key}`);
-            // Return a readable version of the key
-            const keyParts = key.split('.');
-            const lastPart = keyParts[keyParts.length - 1];
-            return lastPart
-                .replace(/([A-Z])/g, ' $1')
-                .replace(/^./, str => str.toUpperCase())
-                .trim();
-        }
-        return translation;
-    }
-    catch (error) {
-        console.error(`Translation error for key: ${key}`, error);
-        // Return a readable version of the key as fallback
-        const keyParts = key.split('.');
-        const lastPart = keyParts[keyParts.length - 1];
-        return lastPart
-            .replace(/([A-Z])/g, ' $1')
-            .replace(/^./, str => str.toUpperCase())
-            .trim();
-    }
 };
 // Validate translation structure
 export const validateTranslationStructure = (translations) => {

@@ -40,6 +40,18 @@ export const useI18nHelpers = () => {
         }).format(amount);
     };
     const formatDate = (date) => {
+        return new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-AE' : 'en-AE').format(date);
+    };
+    return {
+        t: safeT,
+        isRTL,
+        formatNumber,
+        formatCurrency,
+        formatDate,
+        currentLanguage: i18n.language,
+        changeLanguage: i18n.changeLanguage
+    };
+    const formatDate = (date) => {
         const dateObj = typeof date === 'string' ? new Date(date) : date;
         return new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-AE' : 'en-AE', {
             year: 'numeric',
