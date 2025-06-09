@@ -7,7 +7,8 @@ import {
   UserIcon,
   BanknotesIcon,
   DocumentIcon,
-  TagIcon
+  TagIcon,
+  InformationCircleIcon
 } from '@heroicons/react/24/outline';
 import InvoiceModal from './InvoiceModal';
 import { 
@@ -27,6 +28,9 @@ interface RevenueEntry {
   invoiceGenerated: boolean;
   invoiceId?: string;
   createdAt: string;
+  incomeClassification?: string;
+  activityType?: string;
+  isExport?: boolean;
 }
 
 interface RevenueModalProps {
@@ -52,7 +56,10 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
     amount: '',
     invoiceGenerated: false,
     freeZoneIncomeType: '',
-    freeZoneSubcategory: ''
+    freeZoneSubcategory: '',
+    incomeClassification: 'non-qualifying',
+    activityType: '',
+    isExport: false
   });
 
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -74,7 +81,10 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
         amount: editingRevenue.amount.toString(),
         invoiceGenerated: editingRevenue.invoiceGenerated,
         freeZoneIncomeType: editingRevenue.freeZoneIncomeType || '',
-        freeZoneSubcategory: editingRevenue.freeZoneSubcategory || ''
+        freeZoneSubcategory: editingRevenue.freeZoneSubcategory || '',
+        incomeClassification: editingRevenue.incomeClassification || 'non-qualifying',
+        activityType: editingRevenue.activityType || '',
+        isExport: editingRevenue.isExport || false
       });
     } else {
       setFormData({
@@ -85,11 +95,30 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
         amount: '',
         invoiceGenerated: false,
         freeZoneIncomeType: '',
-        freeZoneSubcategory: ''
+        freeZoneSubcategory: '',
+        incomeClassification: 'non-qualifying',
+        activityType: '',
+        isExport: false
       });
     }
     setErrors({});
   }, [editingRevenue, isOpen]);
+
+  // Auto-classify income based on activity type
+  useEffect(() => {
+    let classification = 'non-qualifying';
+
+    if (formData.isExport || 
+        formData.activityType === 'export-services' ||
+        formData.activityType === 'intra-zone-trade' ||
+        formData.activityType === 'qualifying-activities') {
+      classification = 'qualifying';
+    }
+
+    if (formData.incomeClassification !== classification) {
+      setFormData(prev => ({ ...prev, incomeClassification: classification }));
+    }
+  }, [formData.activityType, formData.isExport]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -130,7 +159,10 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
       invoiceGenerated: formData.invoiceGenerated,
       invoiceId: formData.invoiceGenerated ? Date.now().toString() : undefined,
       freeZoneIncomeType: formData.freeZoneIncomeType || undefined,
-      freeZoneSubcategory: formData.freeZoneSubcategory || undefined
+      freeZoneSubcategory: formData.freeZoneSubcategory || undefined,
+      incomeClassification: formData.incomeClassification,
+      activityType: formData.activityType,
+      isExport: formData.isExport
     };
 
     // Save data - this will trigger real-time updates across the app
@@ -271,7 +303,7 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
             {errors.amount && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount}</p>}
           </div>
 
-          {/* Free Zone Income Classification */}
+          {/* FTA Income Classification Section */}
           <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
             <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-200 flex items-center">
               <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -279,7 +311,7 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
               </svg>
               {t('accounting.revenue.form.freeZoneClassification', 'Free Zone Income Classification')}
             </h4>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('accounting.revenue.form.incomeType', 'Income Type')}
@@ -363,6 +395,38 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
                 } mt-0.5`} />
               </div>
             </label>
+          </div>
+
+          {/* New FTA Income Classification fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Activity Type */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('accounting.revenue.form.activityType', 'Activity Type')}
+              </label>
+              <select
+                value={formData.activityType}
+                onChange={(e) => handleInputChange('activityType', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-150"
+              >
+                <option value="">{t('accounting.revenue.form.selectActivityType', 'Select Activity Type')}</option>
+                <option value="export-services">{t('accounting.revenue.form.exportServices', 'Export Services')}</option>
+                <option value="other">{t('accounting.revenue.form.other', 'Other')}</option>
+              </select>
+            </div>
+
+            {/* Is Export */}
+            <div>
+              <label className="inline-flex items-center">
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-5 w-5 text-blue-600"
+                  checked={formData.isExport}
+                  onChange={(e) => handleInputChange('isExport', e.target.checked)}
+                />
+                <span className="ml-2 text-gray-700 dark:text-gray-300">{t('accounting.revenue.form.isExport', 'Is Export')}</span>
+              </label>
+            </div>
           </div>
 
           {/* Buttons */}

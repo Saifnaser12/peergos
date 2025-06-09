@@ -82,6 +82,56 @@ export const taxCategoryMapping = {
   "Other Expenses": { vatApplicable: true, reverseCharge: false }
 };
 
+// FTA Income Classification per Article 18 & Cabinet Decision No. 55
+export const FTA_INCOME_CLASSIFICATION = {
+  QUALIFYING_ACTIVITIES: {
+    'export-services': {
+      name: 'Export of Goods/Services',
+      description: 'Export transactions outside UAE mainland',
+      citRate: 0,
+      autoClassify: true
+    },
+    'intra-zone-trade': {
+      name: 'Intra-Free Zone Trade',
+      description: 'Trade between Free Zone entities',
+      citRate: 0,
+      autoClassify: true
+    },
+    'qualifying-activities': {
+      name: 'Other Qualifying Activities',
+      description: 'Per FTA qualifying activities list',
+      citRate: 0,
+      autoClassify: true
+    }
+  },
+  NON_QUALIFYING_ACTIVITIES: {
+    'mainland-sales': {
+      name: 'Mainland/Domestic Sales',
+      description: 'Sales to UAE mainland market',
+      citRate: 9,
+      autoClassify: true
+    },
+    'local-consumption': {
+      name: 'Local Consumption',
+      description: 'Goods/services consumed in UAE',
+      citRate: 9,
+      autoClassify: true
+    },
+    'other-income': {
+      name: 'Other Income',
+      description: 'Non-qualifying business income',
+      citRate: 9,
+      autoClassify: false
+    }
+  }
+};
+
+// De Minimis Thresholds per Cabinet Decision No. 55
+export const DE_MINIMIS_THRESHOLDS = {
+  PERCENTAGE_LIMIT: 5, // 5% of total income
+  AMOUNT_LIMIT: 5000000, // AED 5 million
+};
+
 // Free Zone Income Classification
 export const freeZoneIncomeTypes = [
   'qualifying',

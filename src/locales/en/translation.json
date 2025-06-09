@@ -117,7 +117,39 @@
         "excelSuccess": "Excel file exported successfully",
         "excelError": "Error exporting Excel file"
       }
-    }
+    },
+    "revenue": {
+        "title": "Revenue Entries",
+        "addButton": "Add Revenue",
+        "noData": "No revenue entries found",
+        "noDataDescription": "Start by adding your first revenue entry to track income.",
+        "ftaClassification": {
+          "title": "FTA Income Classification",
+          "activityType": "Activity Type",
+          "selectActivity": "Select Activity Type",
+          "qualifyingActivities": "Qualifying Activities (0% CIT)",
+          "nonQualifyingActivities": "Non-Qualifying Activities (9% CIT)",
+          "exportServices": "Export of Goods/Services",
+          "intraZoneTrade": "Intra-Zone Trade",
+          "mainlandSales": "Mainland/Domestic Sales",
+          "localConsumption": "Local Consumption",
+          "otherIncome": "Other Income",
+          "isExport": "Export Transaction",
+          "classification": "Classification",
+          "qualifying": "✓ Qualifying Income (0% CIT)",
+          "nonQualifying": "✗ Non-Qualifying Income (9% CIT)",
+          "qualifyingDesc": "Eligible for 0% CIT rate under QFZP provisions",
+          "nonQualifyingDesc": "Subject to standard 9% CIT rate above AED 375,000"
+        },
+        "table": {
+          "date": "Date",
+          "description": "Description",
+          "customer": "Customer",
+          "ftaClassification": "FTA Classification",
+          "amount": "Amount",
+          "actions": "Actions"
+        },
+      },
   },
   "vat": {
     "title": "VAT Return Filing",

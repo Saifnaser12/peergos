@@ -444,6 +444,9 @@ const Accounting: React.FC = () => {
                           {t('accounting.revenue.table.customer')}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          {t('accounting.revenue.table.ftaClassification', 'FTA Classification')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           {t('accounting.revenue.table.amount')}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -462,6 +465,23 @@ const Accounting: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                             {revenueItem.category || '-'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              revenueItem.incomeClassification === 'qualifying' || revenueItem.isExport
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                            }`}>
+                              {revenueItem.incomeClassification === 'qualifying' || revenueItem.isExport
+                                ? '✓ Qualifying'
+                                : '✗ Non-Qualifying'
+                              }
+                            </span>
+                            {revenueItem.activityType && (
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                {revenueItem.activityType.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              </div>
+                            )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600 dark:text-green-400">
                             {formatCurrency(revenueItem.amount)}
