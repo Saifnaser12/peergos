@@ -380,8 +380,5 @@ const CIT = () => {
                     setShowSubmissionModal(false);
                 } }), _jsx(Snackbar, { open: showSuccessAlert, autoHideDuration: 4000, onClose: () => setShowSuccessAlert(false), children: _jsx(Alert, { severity: "success", onClose: () => setShowSuccessAlert(false), children: alertMessage }) }), _jsx(Snackbar, { open: showWarningAlert, autoHideDuration: 4000, onClose: () => setShowWarningAlert(false), children: _jsx(Alert, { severity: "warning", onClose: () => setShowWarningAlert(false), children: alertMessage }) }), false && (_jsx(Fab, { color: "success", onClick: () => setFreeZoneAdvisorOpen(true), className: "fixed bottom-6 right-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700", sx: { zIndex: 1000 }, children: _jsx(Tooltip, { title: t('freeZoneAdvisor.openButton', 'Free Zone Tax Advisor'), children: _jsx(BuildingOffice2Icon, { className: "h-6 w-6 text-white" }) }) })), _jsx(FreeZoneAdvisor, { open: freeZoneAdvisorOpen, onClose: () => setFreeZoneAdvisorOpen(false), context: "cit" })] }));
 };
-div >
-;
-;
-;
+
 export default CIT;
