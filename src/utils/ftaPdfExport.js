@@ -124,6 +124,38 @@ class FTAPDFExporter {
         this.doc.text(this.isRTL ? 'التوقيع والتاريخ' : 'Signature & Date', this.margin, signatureY + 5);
         return signatureY + 15;
     }
+    addQFZPFooter() {
+        // Check if company is a Free Zone QFZP
+        const setupData = localStorage.getItem('setupData');
+        let isQFZP = false;
+        if (setupData) {
+            try {
+                const parsed = JSON.parse(setupData);
+                isQFZP = parsed.isQFZP || false;
+            }
+            catch (error) {
+                console.warn('Error parsing setup data for QFZP footer:', error);
+            }
+        }
+        if (isQFZP) {
+            // Add QFZP footer note
+            this.doc.setFontSize(10);
+            this.doc.setFont('helvetica', 'italic');
+            this.doc.setTextColor(128, 128, 128); // Grey color
+            const footerText = this.isRTL
+                ? 'هذا الكيان هو شخص منطقة حرة مؤهل (QFZP) بموجب المادة 18 من المرسوم بقانون اتحادي رقم (47) لسنة 2022.'
+                : 'This entity is a Qualifying Free Zone Person (QFZP) under Article 18 of Federal Decree-Law No. (47) of 2022.';
+            const footerY = this.pageHeight - 15;
+            if (this.isRTL) {
+                this.doc.text(footerText, this.pageWidth - this.margin, footerY, { align: 'right' });
+            }
+            else {
+                this.doc.text(footerText, this.pageWidth - this.margin, footerY, { align: 'right' });
+            }
+            // Reset text color to black
+            this.doc.setTextColor(0, 0, 0);
+        }
+    }
     generateCITPDF(companyInfo, citData) {
         const title = this.isRTL ? 'إقرار ضريبة الشركات' : 'Corporate Income Tax Return';
         this.addFTAHeader(title);
@@ -164,53 +196,111 @@ class FTAPDFExporter {
             currentY += 20;
         }
         this.addDeclarationSection(currentY);
+        this.addQFZPFooter();
         return this.doc;
     }
     generateVATPDF(companyInfo, vatData) {
-        const title = this.isRTL ? 'إقرار ضريبة القيمة المضافة' : 'Value Added Tax Return';
-        this.addFTAHeader(title);
-        let currentY = 45;
-        currentY = this.addCompanySection(companyInfo, currentY);
-        // VAT Calculation Section
-        this.doc.setFontSize(12);
-        this.doc.setFont('helvetica', 'bold');
-        const calcTitle = this.isRTL ? 'حساب ضريبة القيمة المضافة' : 'VAT Calculation';
-        this.doc.text(calcTitle, this.margin, currentY);
-        const tableData = [
-            [this.isRTL ? 'المبيعات الخاضعة للمعدل المعياري (5%)' : 'Standard-rated Sales (5%)', this.formatCurrency(vatData.standardRatedSales)],
-            [this.isRTL ? 'المبيعات بمعدل صفر' : 'Zero-rated Sales', this.formatCurrency(vatData.zeroRatedSales)],
-            [this.isRTL ? 'المبيعات المعفاة' : 'Exempt Sales', this.formatCurrency(vatData.exemptSales)],
-            [this.isRTL ? 'المشتريات مع ضريبة قابلة للاسترداد' : 'Purchases with Recoverable VAT', this.formatCurrency(vatData.purchasesWithVAT)],
-            ['', ''],
-            [this.isRTL ? 'ضريبة المخرجات' : 'Output VAT', this.formatCurrency(vatData.outputVAT)],
-            [this.isRTL ? 'ضريبة المدخلات' : 'Input VAT', this.formatCurrency(vatData.inputVAT)],
-            [this.isRTL ? 'صافي ضريبة القيمة المضافة' : 'Net VAT', this.formatCurrency(vatData.netVAT)]
+        const pdf = new jsPDF();
+        const pageWidth = pdf.internal.pageSize.width;
+        const margin = 20;
+        let yPosition = margin;
+        // Header
+        pdf.setFontSize(20);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('VAT Return', pageWidth / 2, yPosition, { align: 'center' });
+        yPosition += 20;
+        // Company Information
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(`Company: ${companyInfo.name}`, margin, yPosition);
+        yPosition += 10;
+        pdf.text(`TRN: ${companyInfo.trn}`, margin, yPosition);
+        yPosition += 10;
+        pdf.text(`Tax Period: ${companyInfo.taxPeriod}`, margin, yPosition);
+        yPosition += 20;
+        // VAT Summary
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('VAT Summary', margin, yPosition);
+        yPosition += 15;
+        pdf.setFont('helvetica', 'normal');
+        const summaryData = [
+            ['Standard-rated Sales', `AED ${vatData.standardRatedSales.toLocaleString()}`],
+            ['Zero-rated Sales', `AED ${vatData.zeroRatedSales.toLocaleString()}`],
+            ['Exempt Sales', `AED ${vatData.exemptSales.toLocaleString()}`],
+            ['Purchases with VAT', `AED ${vatData.purchasesWithVAT.toLocaleString()}`],
+            ['Output VAT', `AED ${vatData.outputVAT.toLocaleString()}`],
+            ['Input VAT', `AED ${vatData.inputVAT.toLocaleString()}`]
         ];
-        this.doc.autoTable({
-            startY: currentY + 5,
-            head: [[this.isRTL ? 'البيان' : 'Description', this.isRTL ? 'المبلغ' : 'Amount']],
-            body: tableData,
-            styles: { fontSize: 10, cellPadding: 3 },
-            headStyles: { fillColor: [0, 85, 164], textColor: 255 },
-            alternateRowStyles: { fillColor: [245, 245, 245] },
-            margin: { left: this.margin, right: this.margin }
+        summaryData.forEach(([label, value]) => {
+            pdf.text(label, margin, yPosition);
+            pdf.text(value, pageWidth - margin - 50, yPosition);
+            yPosition += 10;
         });
-        currentY = this.doc.lastAutoTable.finalY + 10;
-        // Refund/Payment Notice
-        const statusColor = vatData.isRefundable ? [34, 197, 94] : [239, 68, 68];
-        this.doc.setFillColor(statusColor[0], statusColor[1], statusColor[2]);
-        this.doc.rect(this.margin, currentY, this.pageWidth - 2 * this.margin, 15, 'F');
-        this.doc.setFontSize(12);
-        this.doc.setTextColor(255, 255, 255);
-        this.doc.setFont('helvetica', 'bold');
-        const statusText = vatData.isRefundable
-            ? (this.isRTL ? 'مبلغ قابل للاسترداد' : 'REFUND DUE')
-            : (this.isRTL ? 'مبلغ مستحق الدفع' : 'AMOUNT PAYABLE');
-        this.doc.text(statusText, this.pageWidth / 2, currentY + 8, { align: 'center' });
-        this.doc.setTextColor(0, 0, 0);
-        currentY += 20;
-        this.addDeclarationSection(currentY);
-        return this.doc;
+        // Designated Zone Reverse Charge Section
+        if (vatData.isDesignatedZone && vatData.designatedZoneImports > 0) {
+            yPosition += 10;
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('Reverse Charge Summary - Designated Zone', margin, yPosition);
+            yPosition += 15;
+            pdf.setFont('helvetica', 'normal');
+            const reverseChargeVAT = vatData.designatedZoneImports * 0.05;
+            const reverseChargeData = [
+                ['Mainland Imports to Designated Zone', `AED ${vatData.designatedZoneImports.toLocaleString()}`],
+                ['Reverse Charge VAT Applied', `AED ${reverseChargeVAT.toLocaleString()}`],
+                ['Note', 'VAT on mainland supplies reverse-charged under UAE VAT Law']
+            ];
+            reverseChargeData.forEach(([label, value]) => {
+                pdf.text(label, margin, yPosition);
+                if (label !== 'Note') {
+                    pdf.text(value, pageWidth - margin - 50, yPosition);
+                }
+                else {
+                    pdf.setFontSize(10);
+                    pdf.text(value, margin, yPosition + 5);
+                    pdf.setFontSize(12);
+                    yPosition += 5;
+                }
+                yPosition += 10;
+            });
+            yPosition += 10;
+        }
+        // Final VAT Due
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(vatData.isRefundable ? 'VAT Refundable:' : 'VAT Payable:', margin, yPosition);
+        pdf.text(`AED ${vatData.netVAT.toLocaleString()}`, pageWidth - margin - 50, yPosition);
+        // Add QFZP footer if applicable
+        this.addQFZPFooterToPDF(pdf);
+        return pdf;
+    }
+    addQFZPFooterToPDF(pdf) {
+        // Check if company is a Free Zone QFZP
+        const setupData = localStorage.getItem('setupData');
+        let isQFZP = false;
+        if (setupData) {
+            try {
+                const parsed = JSON.parse(setupData);
+                isQFZP = parsed.isQFZP || false;
+            }
+            catch (error) {
+                console.warn('Error parsing setup data for QFZP footer:', error);
+            }
+        }
+        if (isQFZP) {
+            const pageWidth = pdf.internal.pageSize.width;
+            const pageHeight = pdf.internal.pageSize.height;
+            const margin = 20;
+            // Add QFZP footer note
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'italic');
+            pdf.setTextColor(128, 128, 128); // Grey color
+            const footerText = this.isRTL
+                ? 'هذا الكيان هو شخص منطقة حرة مؤهل (QFZP) بموجب المادة 18 من المرسوم بقانون اتحادي رقم (47) لسنة 2022.'
+                : 'This entity is a Qualifying Free Zone Person (QFZP) under Article 18 of Federal Decree-Law No. (47) of 2022.';
+            const footerY = pageHeight - 15;
+            pdf.text(footerText, pageWidth - margin, footerY, { align: 'right' });
+            // Reset text color to black
+            pdf.setTextColor(0, 0, 0);
+        }
     }
     generateFinancialsPDF(companyInfo, financialData) {
         const title = this.isRTL ? 'البيانات المالية' : 'Financial Statements';
@@ -266,6 +356,7 @@ class FTAPDFExporter {
             : (this.isRTL ? 'الميزانية غير متوازنة' : 'BALANCE SHEET NOT BALANCED');
         this.doc.text(balanceText, this.pageWidth / 2, currentY + 8, { align: 'center' });
         this.doc.setTextColor(0, 0, 0);
+        this.addQFZPFooter();
         return this.doc;
     }
 }

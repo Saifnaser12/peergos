@@ -232,17 +232,38 @@ const Assistant = () => {
         }
         catch (error) {
             console.error('OpenAI API Error:', error);
-            // Enhanced fallback responses with UAE context
-            if (userMessage.toLowerCase().includes('hello') || userMessage.toLowerCase().includes('hi')) {
-                return t('assistant.responses.greeting', 'Hello! I\'m your UAE tax assistant. I can help with CIT, VAT, filing deadlines, and FTA compliance. What would you like to know?');
+            // Enhanced fallback responses with UAE context and Arabic support
+            const isArabic = i18n.language === 'ar';
+            const lowerMsg = userMessage.toLowerCase();
+            // Arabic greetings
+            if (lowerMsg.includes('مرحبا') || lowerMsg.includes('أهلا') || lowerMsg.includes('السلام') ||
+                lowerMsg.includes('hello') || lowerMsg.includes('hi')) {
+                return isArabic
+                    ? 'مرحباً! أنا مساعدك الضريبي للإمارات. يمكنني المساعدة في ضريبة الشركات، ضريبة القيمة المضافة، والامتثال لهيئة الضرائب. ماذا تريد أن تعرف؟'
+                    : t('assistant.responses.greeting', 'Hello! I\'m your UAE tax assistant. I can help with CIT, VAT, filing deadlines, and FTA compliance. What would you like to know?');
             }
-            if (userMessage.toLowerCase().includes('cit') || userMessage.toLowerCase().includes('corporate tax')) {
-                return 'I can help with UAE Corporate Tax! Key facts: 9% rate on income above AED 375,000, Small Business Relief available, filing due 9 months after year-end. What specific CIT question do you have?';
+            // CIT questions
+            if (lowerMsg.includes('ضريبة الشركات') || lowerMsg.includes('cit') || lowerMsg.includes('corporate tax')) {
+                return isArabic
+                    ? 'يمكنني المساعدة في ضريبة الشركات الإماراتية! الحقائق الأساسية: معدل 9% على الدخل أعلى من 375,000 درهم، إعفاء الأعمال الصغيرة متاح، الإيداع مستحق خلال 9 أشهر من نهاية السنة المالية. ما هو سؤالك المحدد؟'
+                    : 'I can help with UAE Corporate Tax! Key facts: 9% rate on income above AED 375,000, Small Business Relief available, filing due 9 months after year-end. What specific CIT question do you have?';
             }
-            if (userMessage.toLowerCase().includes('vat')) {
-                return 'I can assist with UAE VAT compliance! Key facts: 5% standard rate, AED 375,000 registration threshold, monthly/quarterly filing. What VAT question can I help with?';
+            // VAT questions
+            if (lowerMsg.includes('ضريبة القيمة المضافة') || lowerMsg.includes('vat')) {
+                return isArabic
+                    ? 'يمكنني المساعدة في الامتثال لضريبة القيمة المضافة الإماراتية! الحقائق الأساسية: معدل 5% قياسي، حد التسجيل 375,000 درهم، إيداع شهري/ربع سنوي. ما هو سؤالك حول ضريبة القيمة المضافة؟'
+                    : 'I can assist with UAE VAT compliance! Key facts: 5% standard rate, AED 375,000 registration threshold, monthly/quarterly filing. What VAT question can I help with?';
             }
-            return t('assistant.responses.apiError', 'I\'m having trouble connecting to my knowledge base right now. Please try again in a moment, or contact support if the issue persists.');
+            // Security - detect potential injection attempts
+            if (lowerMsg.includes('drop table') || lowerMsg.includes('select *') ||
+                lowerMsg.includes('<script') || lowerMsg.includes('javascript:')) {
+                return isArabic
+                    ? 'يمكنني فقط المساعدة في أسئلة الامتثال الضريبي للإمارات. يرجى السؤال عن ضريبة الشركات أو ضريبة القيمة المضافة أو متطلبات الإيداع.'
+                    : 'I can only help with UAE tax compliance questions. Please ask about CIT, VAT, or filing requirements.';
+            }
+            return isArabic
+                ? 'أعتذر، أواجه مشكلة في الاتصال بقاعدة المعرفة الخاصة بي الآن. يرجى المحاولة مرة أخرى لاحقاً أو الاتصال بالدعم إذا استمرت المشكلة.'
+                : t('assistant.responses.apiError', 'I\'m having trouble connecting to my knowledge base right now. Please try again in a moment, or contact support if the issue persists.');
         }
     };
     const suggestedQuestions = [
