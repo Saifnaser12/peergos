@@ -197,9 +197,8 @@
       "title": "System Integrations (Optional)",
       "description": "Connect your POS system and accounting software to automatically sync transactions and streamline your bookkeeping. This is optional and can be configured later."
     },
-    "progress""setupProgress": "Setup Progress",
-  "showAIGuide": "Show AI Guide"
-}ide",
+    "setupProgress": "Setup Progress",
+    "showAIGuide": "Show AI Guide",
     "celebrating": "Setting up...",
     "aiGuide": {
       "welcome": "Welcome to Peergos — your UAE tax assistant!",

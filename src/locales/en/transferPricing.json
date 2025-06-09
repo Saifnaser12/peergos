@@ -45,6 +45,7 @@
   },
   
   "subtitle": "Manage related party transactions and transfer pricing compliance",
-  "status": "Documentatio"complianceStatus": "Compliance Status",
+  "status": "Documentation Status",
+  "complianceStatus": "Compliance Status",
   "requiredDocs": "Documents Needed"
 }

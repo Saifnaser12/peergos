@@ -227,12 +227,9 @@
         "amountPlaceholder": "0.00",
         "generateInvoice": "Generate Invoice",
         "generateInvoiceHelp": "Create an FTA-compliant invoice for this revenue",
-        "freeZoneClassification": "Free Zone Income Cl"classification": "Classification",
-        "incomeType": "Income Type"
-      }
-    }
-  }
-},
+        "freeZoneClassification": "Free Zone Income Classification",
+        "classification": "Classification",
+        "incomeType": "Income Type",
         "selectIncomeType": "Select Income Type",
         "subcategory": "Subcategory",
         "selectSubcategory": "Select Subcategory",
@@ -812,7 +809,7 @@
       "title": "Category Identification Documents",
       "businessLicense": "Business License",
       "businessLicenseDesc": "Official business license from relevant authority",
-      "trnLetter": "TRN Registration Letter", 
+      "trnLetter": "TRN Registration Letter",
       "trnLetterDesc": "Tax registration number certificate from FTA",
       "qfzpDeclaration": "QFZP Declaration (Free Zone Only)",
       "qfzpDeclarationDesc": "Qualifying Free Zone Person status declaration",
