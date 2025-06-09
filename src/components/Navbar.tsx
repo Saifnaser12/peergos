@@ -122,11 +122,11 @@ const Navbar: React.FC = () => {
             <div className="hidden md:flex items-center">
               <button
                 onClick={() => setCurrency(currency === 'AED' ? 'USD' : 'AED')}
-                className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                className="flex items-center px-3 py-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                 aria-label={t('currency.select')}
               >
-                <CurrencyDollarIcon className="h-5 w-5" />
-                <span className="sr-only">{currency}</span>
+                <span className="text-lg mr-1">{currency === 'AED' ? '🇦🇪' : '🇺🇸'}</span>
+                <span className="text-sm font-medium">{currency}</span>
               </button>
             </div>
 
@@ -220,7 +220,7 @@ const Navbar: React.FC = () => {
                 onClick={() => setCurrency(currency === 'AED' ? 'USD' : 'AED')}
                 className="flex items-center px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300"
               >
-                <CurrencyDollarIcon className="h-5 w-5 mr-2" />
+                <span className="text-lg mr-2">{currency === 'AED' ? '🇦🇪' : '🇺🇸'}</span>
                 {currency}
               </button>
             </div>
