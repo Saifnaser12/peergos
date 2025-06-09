@@ -48,7 +48,8 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
     vendor: '',
     category: '',
     amount: '',
-    receiptFile: null as File | null
+    receiptFile: null as File | null,
+    isRelatedPartyTransaction: false
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -71,7 +72,8 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
         vendor: editingExpense.vendor,
         category: editingExpense.category,
         amount: editingExpense.amount.toString(),
-        receiptFile: null
+        receiptFile: null,
+        isRelatedPartyTransaction: editingExpense.isRelatedPartyTransaction || false
       });
     } else {
       // Smart defaults for new entries
@@ -81,7 +83,8 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
         vendor: '',
         category: savedCategory, // Last used category
         amount: '',
-        receiptFile: null
+        receiptFile: null,
+        isRelatedPartyTransaction: false
       });
     }
     setErrors({});
@@ -172,7 +175,8 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
       receiptUrl,
       receiptFileName,
       receiptFileId, // Store file ID for secure retrieval
-      ftaCompliant: true // Mark as FTA compliant
+      ftaCompliant: true, // Mark as FTA compliant
+      isRelatedPartyTransaction: formData.isRelatedPartyTransaction
     };
 
     // Save last used category
@@ -332,7 +336,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
               onKeyDown={(e) => handleKeyDown(e, 3)}
             />
             {errors.category && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.category}</p>}
-            
+
             {/* Show category preview */}
             {formData.category && categoryConfig.expense[formData.category as keyof typeof categoryConfig.expense] && (
               <div className="mt-2 flex items-center text-sm text-gray-600 dark:text-gray-400">
@@ -349,6 +353,7 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
           </div>
 
           {/* Amount */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <BanknotesIcon className="h-4 w-4 inline mr-2" />
@@ -367,6 +372,19 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
             />
             {errors.amount && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount}</p>}
           </div>
+
+          <div className="flex items-center space-x-3">
+            <input
+              type="checkbox"
+              id="relatedPartyExpense"
+              checked={formData.isRelatedPartyTransaction || false}
+              onChange={(e) => handleInputChange('isRelatedPartyTransaction', e.target.checked)}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label htmlFor="relatedPartyExpense" className="text-sm text-gray-700 dark:text-gray-300">
+              {t('accounting.expenses.relatedPartyTransaction', 'Related Party Transaction')}
+            </label>
+          </div></div>
 
           {/* Receipt Upload - FTA Required */}
           <div>

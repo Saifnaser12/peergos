@@ -1,4 +1,3 @@
-
 {
   "common": {
     "loading": "Loading...",
@@ -802,5 +801,32 @@
     "anomalyDetected": "Financial Anomaly Detected",
     "highExpenseRatio": "High expense ratio (>80%)",
     "lowProfitMargin": "Low profit margin (<10%)"
+  },
+  "setup": {
+    "documents": {
+      "title": "Category Identification Documents",
+      "businessLicense": "Business License",
+      "businessLicenseDesc": "Official business license from relevant authority",
+      "trnLetter": "TRN Registration Letter", 
+      "trnLetterDesc": "Tax registration number certificate from FTA",
+      "qfzpDeclaration": "QFZP Declaration (Free Zone Only)",
+      "qfzpDeclarationDesc": "Qualifying Free Zone Person status declaration",
+      "ftaAuditReady": "FTA Audit Ready",
+      "uploadError": "Upload failed. Please try again.",
+      "securityNote": "Secure Document Storage",
+      "securityDescription": "All documents are encrypted and stored securely with FTA audit trail compliance. Documents are organized by company and financial year for easy retrieval during audits."
+    }
+  },
+  "banking": {
+    "integration": {
+      "title": "Bank Integration",
+      "connectBank": "Connect Bank Account",
+      "uploadStatement": "Upload Bank Statement",
+      "autoReconcile": "Auto-Reconcile Transactions",
+      "reconciliationSummary": "Reconciliation Summary",
+      "connectionStatus": "Connection Status",
+      "lastSync": "Last Sync",
+      "supportedBanks": "Supported Banks"
+    }
   }
 }

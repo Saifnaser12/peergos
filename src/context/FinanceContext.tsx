@@ -22,6 +22,7 @@ interface Expense {
   description: string;
   vendor?: string;
   vatAmount?: number;
+  isRelatedPartyTransaction?: boolean;
 }
 
 interface FinancialSummary {

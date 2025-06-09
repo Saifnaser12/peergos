@@ -61,7 +61,8 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
     freeZoneSubcategory: '',
     incomeClassification: 'non-qualifying',
     activityType: '',
-    isExport: false
+    isExport: false,
+    isRelatedPartyTransaction: false
   });
 
   const [lastUsedCategory, setLastUsedCategory] = useState<string>('');
@@ -94,7 +95,8 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
         freeZoneSubcategory: editingRevenue.freeZoneSubcategory || '',
         incomeClassification: editingRevenue.incomeClassification || 'non-qualifying',
         activityType: editingRevenue.activityType || '',
-        isExport: editingRevenue.isExport || false
+        isExport: editingRevenue.isExport || false,
+        isRelatedPartyTransaction: editingRevenue.isRelatedPartyTransaction || false
       });
     } else {
       // Smart defaults for new entries
@@ -109,7 +111,8 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
         freeZoneSubcategory: '',
         incomeClassification: 'non-qualifying',
         activityType: '',
-        isExport: false
+        isExport: false,
+        isRelatedPartyTransaction: false
       });
     }
     setErrors({});
@@ -186,7 +189,8 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
       freeZoneSubcategory: formData.freeZoneSubcategory || undefined,
       incomeClassification: formData.incomeClassification,
       activityType: formData.activityType,
-      isExport: formData.isExport
+      isExport: formData.isExport,
+      isRelatedPartyTransaction: formData.isRelatedPartyTransaction
     };
 
     // Save data - this will trigger real-time updates across the app
@@ -320,7 +324,7 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
               onKeyDown={(e) => handleKeyDown(e, 2)}
             />
             {errors.category && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.category}</p>}
-            
+
             {/* Show category preview */}
             {formData.category && categoryConfig.revenue[formData.category as keyof typeof categoryConfig.revenue] && (
               <div className="mt-2 flex items-center text-sm text-gray-600 dark:text-gray-400">
@@ -480,6 +484,20 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
                 <span className="ml-2 text-gray-700 dark:text-gray-300">{t('accounting.revenue.form.isExport', 'Is Export')}</span>
               </label>
             </div>
+          </div>
+
+          {/* Related Party Transaction Checkbox */}
+          <div className="flex items-center space-x-3">
+            <input
+              type="checkbox"
+              id="relatedPartyTransaction"
+              checked={formData.isRelatedPartyTransaction || false}
+              onChange={(e) => handleInputChange('isRelatedPartyTransaction', e.target.checked)}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label htmlFor="relatedPartyTransaction" className="text-sm text-gray-700 dark:text-gray-300">
+              {t('accounting.revenue.relatedPartyTransaction', 'Related Party Transaction')}
+            </label>
           </div>
 
           {/* Buttons */}
