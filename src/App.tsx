@@ -5,7 +5,6 @@ import './i18n';
 import { ThemeProvider } from './context/ThemeContext';
 import { TaxProvider } from './context/TaxProvider';
 import { UserRoleProvider } from './context/UserRoleContext';
-import { InvoiceProvider } from './context/InvoiceProvider';
 import { NotificationProvider } from './context/NotificationContext';
 import { TransferPricingProvider } from './context/TransferPricingProvider';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -39,7 +38,7 @@ import { POSIntegrationProvider } from './context/POSIntegrationContext';
 import { RelatedPartyProvider } from './context/RelatedPartyContext';
 import { SettingsProvider } from './context/SettingsContext';
 import { BalanceSheetProvider } from './context/BalanceSheetContext';
-import { WhitelabelProvider } from './context/WhitelabelContext';
+import { WhitelabelProvider } from './context/WhitelabelProvider';
 
 // Components
 import Layout from './components/Layout';
@@ -88,7 +87,6 @@ const App: React.FC = () => {
                     <POSIntegrationProvider>
                       <FinanceProvider>
                         <TaxProvider>
-                          <InvoiceProvider>
                             <TransferPricingProvider>
                               <RelatedPartyProvider>
                                 <BalanceSheetProvider>
@@ -192,7 +190,6 @@ const App: React.FC = () => {
                                 </BalanceSheetProvider>
                               </RelatedPartyProvider>
                             </TransferPricingProvider>
-                          </InvoiceProvider>
                         </TaxProvider>
                       </FinanceProvider>
                     </POSIntegrationProvider>
