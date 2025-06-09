@@ -1,4 +1,3 @@
-
 export interface BankTransaction {
   id: string;
   date: string;
@@ -55,7 +54,7 @@ export class BankIntegrationService {
   static async connectBank(bankId: string, credentials: any): Promise<BankIntegrationConfig> {
     // Simulate API connection delay
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     // Mock successful connection
     return {
       bankId,
@@ -77,7 +76,7 @@ export class BankIntegrationService {
   ): Promise<BankTransaction[]> {
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     // Generate mock transactions
     const mockTransactions: BankTransaction[] = [
       {

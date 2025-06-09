@@ -194,4 +194,5 @@ const CategoryDocumentUploader: React.FC<CategoryDocumentUploaderProps> = ({
   );
 };
 
+export { CategoryDocumentUploader };
 export default CategoryDocumentUploader;

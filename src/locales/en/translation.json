@@ -829,5 +829,13 @@
       "lastSync": "Last Sync",
       "supportedBanks": "Supported Banks"
     }
+  },
+  "company": {
+    "taxCategory": "Tax Category",
+    "citExempt": "CIT Exempt",
+    "vatRegistered": "VAT Registered",
+    "freeZone": "Free Zone",
+    "mainland": "Mainland",
+    "qfzpEligible": "QFZP Eligible"
   }
 }
