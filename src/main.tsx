@@ -4,7 +4,7 @@ import './polyfills';
 // Ensure critical globals are available
 if (typeof globalThis !== 'undefined') {
   if (typeof globalThis.process === 'undefined') {
-    globalThis.process = { env: {} };
+    globalThis.process = { env: {} } as any;
   }
   if (typeof globalThis.global === 'undefined') {
     globalThis.global = globalThis;
