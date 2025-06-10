@@ -8,8 +8,6 @@ import { UserRoleProvider } from './context/UserRoleContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { TransferPricingProvider } from './context/TransferPricingProvider';
 import ErrorBoundary from './components/ErrorBoundary';
-import AppLayout from './components/AppLayout';
-import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Filing from './pages/Filing';
 import Accounting from './pages/Accounting';

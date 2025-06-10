@@ -3,10 +3,24 @@ import { useAudit } from '../context/AuditContext';
 import { useUserRole } from '../context/UserRoleContext';
 import { ClockIcon, TrashIcon } from '@heroicons/react/24/outline';
 
+import { useAuditContext } from '../context/AuditContext';
+import { useUserRole } from '../context/UserRoleContext';
+import { TrashIcon } from '@heroicons/react/24/outline';
+import { useState } from 'react';
+
 const AuditLogViewer: React.FC = () => {
-  const { getRecentEntries, clearLog } = useAudit();
+  const { auditLogs } = useAuditContext();
   const { role } = useUserRole();
   const [limit, setLimit] = useState(50);
+
+  const getRecentEntries = (limit: number) => {
+    return auditLogs.slice(-limit).reverse();
+  };
+
+  const clearLog = () => {
+    // Implementation would clear the audit logs
+    console.log('Clearing audit logs...');
+  };
 
   if (role !== 'Admin') {
     return null;
