@@ -639,9 +639,16 @@ const VAT: React.FC = () => {
         <Grid item xs={12} lg={4}>
           <Card sx={{ borderRadius: 3, boxShadow: theme.shadows[3] }}>
             <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-                {t('VAT Calculation Summary')}
-              </Typography>
+              <Box className="flex items-center gap-4 mb-4">
+                <img 
+                  src="/images/peergos_slide_6.png" 
+                  alt="VAT Compliance"
+                  className="w-16 h-16 object-cover rounded-lg opacity-80"
+                />
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+                  {t('VAT Calculation Summary')}
+                </Typography>
+              </Box>
 
               <Box sx={{ mb: 3, p: 2, bgcolor: 'success.50', borderRadius: 2, border: '1px solid', borderColor: 'success.200' }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1, color: 'success.main' }}>
@@ -863,7 +870,7 @@ const VAT: React.FC = () => {
           context="vat"
         />
       </Box>
-    
+
   );
 };
 

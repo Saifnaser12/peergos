@@ -869,7 +869,7 @@ const CIT: React.FC = () => {
 
                       <Grid item xs={12} md={6}>
                         <Box sx={{ p: 2, bgcolor: 'orange.50', borderRadius: 1, border: '1px solid', borderColor: 'orange.200' }}>
-                          <Typography variant="subtitle2" sx={{ color: 'orange.main', fontWeight: 600, mb: 1 }}>
+                          <Typography variant="subtitle2" sx={{ color: 'orange.main', fontWeight 600, mb: 1 }}>
                             {t('cit.freeZone.nonQualifyingIncome', 'Non-Qualifying Income')} (9% CIT)
                           </Typography>
                           <Typography variant="h6" sx={{ color: 'orange.main', fontWeight: 700 }}>

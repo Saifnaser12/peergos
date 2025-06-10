@@ -195,7 +195,7 @@ const Assistant: React.FC = () => {
     if (!message.filingIntent) return;
 
     const { type, extractedData } = message.filingIntent;
-    
+
     // Store draft data in sessionStorage for preview pages
     const draftData = {
       source: 'assistant',
@@ -232,7 +232,7 @@ const Assistant: React.FC = () => {
   // OpenAI GPT-4 API integration with UAE CIT/VAT training
   const callOpenAI = async (userMessage: string): Promise<string> => {
     const startTime = Date.now();
-    
+
     try {
       // Get user context for more personalized responses
       const citLiability = state.citDue || 0;
@@ -293,7 +293,7 @@ const Assistant: React.FC = () => {
       };
 
       setAuditLogs(prev => [...prev, auditEntry]);
-      
+
       // Log to console for debugging
       console.log('🤖 Assistant Audit Log:', {
         userMessage: userMessage.substring(0, 100) + '...',
@@ -305,11 +305,11 @@ const Assistant: React.FC = () => {
       return assistantReply;
     } catch (error) {
       console.error('OpenAI API Error:', error);
-      
+
       // Enhanced fallback responses with UAE context and Arabic support
       const isArabic = i18n.language === 'ar';
       const lowerMsg = userMessage.toLowerCase();
-      
+
       // Arabic greetings
       if (lowerMsg.includes('مرحبا') || lowerMsg.includes('أهلا') || lowerMsg.includes('السلام') || 
           lowerMsg.includes('hello') || lowerMsg.includes('hi')) {
@@ -317,21 +317,21 @@ const Assistant: React.FC = () => {
           ? 'مرحباً! أنا مساعدك الضريبي للإمارات. يمكنني المساعدة في ضريبة الشركات، ضريبة القيمة المضافة، والامتثال لهيئة الضرائب. ماذا تريد أن تعرف؟'
           : t('assistant.responses.greeting', 'Hello! I\'m your UAE tax assistant. I can help with CIT, VAT, filing deadlines, and FTA compliance. What would you like to know?');
       }
-      
+
       // CIT questions
       if (lowerMsg.includes('ضريبة الشركات') || lowerMsg.includes('cit') || lowerMsg.includes('corporate tax')) {
         return isArabic
           ? 'يمكنني المساعدة في ضريبة الشركات الإماراتية! الحقائق الأساسية: معدل 9% على الدخل أعلى من 375,000 درهم، إعفاء الأعمال الصغيرة متاح، الإيداع مستحق خلال 9 أشهر من نهاية السنة المالية. ما هو سؤالك المحدد؟'
           : 'I can help with UAE Corporate Tax! Key facts: 9% rate on income above AED 375,000, Small Business Relief available, filing due 9 months after year-end. What specific CIT question do you have?';
       }
-      
+
       // VAT questions
       if (lowerMsg.includes('ضريبة القيمة المضافة') || lowerMsg.includes('vat')) {
         return isArabic
           ? 'يمكنني المساعدة في الامتثال لضريبة القيمة المضافة الإماراتية! الحقائق الأساسية: معدل 5% قياسي، حد التسجيل 375,000 درهم، إيداع شهري/ربع سنوي. ما هو سؤالك حول ضريبة القيمة المضافة؟'
           : 'I can assist with UAE VAT compliance! Key facts: 5% standard rate, AED 375,000 registration threshold, monthly/quarterly filing. What VAT question can I help with?';
       }
-      
+
       // Security - detect potential injection attempts
       if (lowerMsg.includes('drop table') || lowerMsg.includes('select *') || 
           lowerMsg.includes('<script') || lowerMsg.includes('javascript:')) {
@@ -339,7 +339,7 @@ const Assistant: React.FC = () => {
           ? 'يمكنني فقط المساعدة في أسئلة الامتثال الضريبي للإمارات. يرجى السؤال عن ضريبة الشركات أو ضريبة القيمة المضافة أو متطلبات الإيداع.'
           : 'I can only help with UAE tax compliance questions. Please ask about CIT, VAT, or filing requirements.';
       }
-      
+
       return isArabic
         ? 'أعتذر، أواجه مشكلة في الاتصال بقاعدة المعرفة الخاصة بي الآن. يرجى المحاولة مرة أخرى لاحقاً أو الاتصال بالدعم إذا استمرت المشكلة.'
         : t('assistant.responses.apiError', 'I\'m having trouble connecting to my knowledge base right now. Please try again in a moment, or contact support if the issue persists.');
@@ -543,7 +543,7 @@ Assistant: ${log.assistantReply}
                   </Typography>
                 </Box>
               )}
-              
+
               {messages.length > 0 && (
                 <>
                   <IconButton
@@ -567,7 +567,14 @@ Assistant: ${log.assistantReply}
         {/* Chat Interface */}
         <Paper className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
           {/* Messages Area */}
-          <Box className="h-[500px] overflow-y-auto p-6 space-y-4">
+          <Box className="h-[500px] overflow-y-auto p-6 space-y-4 relative">
+            <div className="absolute bottom-4 right-4 opacity-20 hidden lg:block">
+              <img 
+                src="/images/peergos_slide_15.png" 
+                alt="AI Assistant"
+                className="w-20 h-20 object-cover rounded-full"
+              />
+            </div>
             {messages.length === 0 ? (
               <Box className="flex items-center justify-center h-full text-center">
                 <Box>
@@ -606,7 +613,7 @@ Assistant: ${log.assistantReply}
                         <Typography variant="body1" className="whitespace-pre-wrap">
                           {message.content}
                         </Typography>
-                        
+
                         {/* Draft Filing Intent Detection */}
                         {message.filingIntent && message.filingIntent.confidence > 0.7 && (
                           <Box className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -638,7 +645,7 @@ Assistant: ${log.assistantReply}
                             </Button>
                           </Box>
                         )}
-                        
+
                         <Typography 
                           variant="caption" 
                           className={`block mt-2 ${

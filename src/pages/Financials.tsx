@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
@@ -125,7 +124,7 @@ const Financials: React.FC = () => {
   const theme = useTheme();
   const { t } = useTranslation();
   const finance = useFinance();
-  
+
   // State management
   const [tabValue, setTabValue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -259,19 +258,19 @@ const Financials: React.FC = () => {
     const revenue = financialEntries
       .filter(entry => entry.type === 'revenue')
       .reduce((sum, entry) => sum + entry.amount, 0);
-    
+
     const expenses = financialEntries
       .filter(entry => entry.type === 'expense')
       .reduce((sum, entry) => sum + entry.amount, 0);
-    
+
     const assets = financialEntries
       .filter(entry => entry.type === 'asset')
       .reduce((sum, entry) => sum + entry.amount, 0);
-    
+
     const liabilities = financialEntries
       .filter(entry => entry.type === 'liability')
       .reduce((sum, entry) => sum + entry.amount, 0);
-    
+
     const equity = financialEntries
       .filter(entry => entry.type === 'equity')
       .reduce((sum, entry) => sum + entry.amount, 0);
@@ -279,14 +278,14 @@ const Financials: React.FC = () => {
     const vatCollected = financialEntries
       .filter(entry => entry.type === 'revenue')
       .reduce((sum, entry) => sum + (entry.vatAmount || 0), 0);
-    
+
     const vatPaid = financialEntries
       .filter(entry => entry.type === 'expense')
       .reduce((sum, entry) => sum + (entry.vatAmount || 0), 0);
 
     const netIncome = revenue - expenses;
     const isBalanced = Math.abs(assets - (liabilities + equity + netIncome)) < 0.01;
-    
+
     const avgComplianceScore = financialEntries.length > 0
       ? financialEntries.reduce((sum, entry) => sum + (entry.complianceScore || 0), 0) / financialEntries.length
       : 0;
@@ -312,7 +311,7 @@ const Financials: React.FC = () => {
     const updateRealTimeData = () => {
       const summary = calculateSummary();
       setRealTimeData(summary);
-      
+
       // Check compliance alerts
       const alerts: string[] = [];
       if (!summary.isBalanced) {
@@ -324,13 +323,13 @@ const Financials: React.FC = () => {
       if (summary.vatCollected - summary.vatPaid < 0) {
         alerts.push('VAT refund situation detected - verify calculations');
       }
-      
+
       setComplianceAlerts(alerts);
     };
 
     updateRealTimeData();
     const interval = setInterval(updateRealTimeData, 30000); // Update every 30 seconds
-    
+
     return () => clearInterval(interval);
   }, [financialEntries]);
 
@@ -341,19 +340,19 @@ const Financials: React.FC = () => {
     const initializeFinancials = async () => {
       try {
         setIsLoading(true);
-        
+
         // Initialize libraries
         await libraryLoader.loadJsSHA();
         await libraryLoader.loadQRCode();
         await libraryLoader.loadPDFLib();
-        
+
         // Simulate loading time
         await new Promise(resolve => setTimeout(resolve, 1500));
-        
+
         console.log('✅ Advanced Financials page loaded successfully');
         setIsLoading(false);
         setError(null);
-        
+
         showNotification('Financial dashboard loaded successfully', 'success');
       } catch (err) {
         console.error('❌ Error loading financials:', err);
@@ -453,7 +452,7 @@ const Financials: React.FC = () => {
   const exportToPDF = async () => {
     console.log('📄 Exporting to PDF...');
     setExportProgress(0);
-    
+
     try {
       const progressInterval = setInterval(() => {
         setExportProgress(prev => Math.min(prev + 10, 90));
@@ -461,10 +460,10 @@ const Financials: React.FC = () => {
 
       // Simulate export process
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       clearInterval(progressInterval);
       setExportProgress(100);
-      
+
       setTimeout(() => setExportProgress(0), 2000);
       showNotification('PDF exported successfully', 'success');
     } catch (error) {
@@ -476,7 +475,7 @@ const Financials: React.FC = () => {
   const exportToExcel = async () => {
     console.log('📊 Exporting to Excel...');
     setExportProgress(0);
-    
+
     try {
       const progressInterval = setInterval(() => {
         setExportProgress(prev => Math.min(prev + 15, 90));
@@ -484,10 +483,10 @@ const Financials: React.FC = () => {
 
       // Simulate export process
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       clearInterval(progressInterval);
       setExportProgress(100);
-      
+
       setTimeout(() => setExportProgress(0), 2000);
       showNotification('Excel exported successfully', 'success');
     } catch (error) {
@@ -500,12 +499,12 @@ const Financials: React.FC = () => {
   const handleSync = async () => {
     console.log('🔄 Syncing financial data...');
     setSyncStatus('syncing');
-    
+
     try {
       await syncData(financialEntries);
       setSyncStatus('success');
       showNotification('Data synced successfully', 'success');
-      
+
       setTimeout(() => setSyncStatus('idle'), 3000);
     } catch (error) {
       setSyncStatus('error');
@@ -519,7 +518,7 @@ const Financials: React.FC = () => {
     if (files) {
       console.log('📁 Uploading files:', files);
       showNotification(`Uploading ${files.length} file(s)...`, 'info');
-      
+
       // Simulate file processing
       setTimeout(() => {
         showNotification('Files processed successfully', 'success');
@@ -581,7 +580,7 @@ const Financials: React.FC = () => {
               Real-time financial insights with UAE compliance monitoring
             </Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             <Chip 
               icon={isConnected ? <CheckIcon /> : <ErrorIcon />}
@@ -874,7 +873,7 @@ const Financials: React.FC = () => {
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, textAlign: 'center' }}>
             📊 Financial Overview Dashboard
           </Typography>
-          
+
           {/* Real-time Summary */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} md={6}>
@@ -891,6 +890,7 @@ const Financials: React.FC = () => {
                   <Typography variant="body1">Services:</Typography>
                   <Typography variant="body1" sx={{ fontWeight: 600 }}>{formatCurrency(85000)}</Typography>
                 </Box>
+                ```python
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body1">Licensing:</Typography>
                   <Typography variant="body1" sx={{ fontWeight: 600 }}>{formatCurrency(25000)}</Typography>
@@ -1071,7 +1071,7 @@ const Financials: React.FC = () => {
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, textAlign: 'center' }}>
             ⚖️ Balance Sheet (Real-time)
           </Typography>
-          
+
           {!realTimeData?.isBalanced && (
             <Alert severity="warning" sx={{ mb: 3 }}>
               ⚠️ Balance Sheet is not balanced. Assets must equal Liabilities + Equity.
@@ -1107,7 +1107,7 @@ const Financials: React.FC = () => {
                   {formatCurrency(realTimeData?.totalLiabilities || 0)}
                 </Typography>
               </Box>
-              
+
               <Box sx={{ p: 3, bgcolor: alpha(theme.palette.success.main, 0.1), borderRadius: 2 }}>
                 <Typography variant="body1" sx={{ mb: 1 }}>Equity</Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -1162,7 +1162,7 @@ const Financials: React.FC = () => {
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, textAlign: 'center' }}>
             📈 Advanced Financial Analytics
           </Typography>
-          
+
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Box sx={{ p: 3, bgcolor: alpha(theme.palette.primary.main, 0.1), borderRadius: 2 }}>
@@ -1186,7 +1186,7 @@ const Financials: React.FC = () => {
                 </Box>
               </Box>
             </Grid>
-            
+
             <Grid item xs={12} md={6}>
               <Box sx={{ p: 3, bgcolor: alpha(theme.palette.success.main, 0.1), borderRadius: 2 }}>
                 <Typography variant="h6" sx={{ color: 'success.main', mb: 2 }}>
@@ -1214,7 +1214,7 @@ const Financials: React.FC = () => {
                 </Box>
               </Box>
             </Grid>
-            
+
             <Grid item xs={12}>
               <Box sx={{ p: 3, bgcolor: alpha(theme.palette.info.main, 0.1), borderRadius: 2 }}>
                 <Typography variant="h6" sx={{ color: 'info.main', mb: 2 }}>
@@ -1238,7 +1238,7 @@ const Financials: React.FC = () => {
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, textAlign: 'center' }}>
             📁 Data Management & Entry System
           </Typography>
-          
+
           {/* Financial Entries Table */}
           <TableContainer component={Paper} sx={{ mb: 3 }}>
             <Table>
@@ -1335,7 +1335,7 @@ const Financials: React.FC = () => {
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, textAlign: 'center' }}>
             🔧 System Settings & Integration
           </Typography>
-          
+
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Box sx={{ p: 3, bgcolor: alpha(theme.palette.primary.main, 0.1), borderRadius: 2 }}>
@@ -1362,7 +1362,7 @@ const Financials: React.FC = () => {
                 </Box>
               </Box>
             </Grid>
-            
+
             <Grid item xs={12} md={6}>
               <Box sx={{ p: 3, bgcolor: alpha(theme.palette.info.main, 0.1), borderRadius: 2 }}>
                 <Typography variant="h6" sx={{ color: 'info.main', mb: 2 }}>
@@ -1384,7 +1384,7 @@ const Financials: React.FC = () => {
                 </Box>
               </Box>
             </Grid>
-            
+
             <Grid item xs={12}>
               <Box sx={{ p: 3, bgcolor: alpha(theme.palette.warning.main, 0.1), borderRadius: 2 }}>
                 <Typography variant="h6" sx={{ color: 'warning.main', mb: 2 }}>
