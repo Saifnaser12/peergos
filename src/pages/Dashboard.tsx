@@ -199,8 +199,7 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                  <ArrowTrendingUpIcon className="w-5 h-5 mr-2 text-green-500" />
-                  {t('dashboard.liveFinancials', 'Live Financial Summary')}
+                  📊 {t('dashboard.liveFinancials', 'Live Financial Summary')}
                   {isUpdating && (
                     <div className="ml-2 w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                   )}
@@ -209,15 +208,20 @@ const Dashboard: React.FC = () => {
                   {t('dashboard.liveFinancialsSubtitle', 'Real-time data from your accounting entries')}
                 </p>
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Last updated: {new Date(summary.lastUpdated).toLocaleTimeString()}
+              <div className="text-xs text-gray-500 dark:text-gray-400 text-right">
+                Last updated at {new Date(summary.lastUpdated).toLocaleTimeString()}
               </div>
             </div>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
-                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 relative">
+                  <div className="absolute top-2 right-2">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200">
+                      📈 Revenue
+                    </span>
+                  </div>
                   <CurrencyDollarIcon className="w-8 h-8 text-green-600 dark:text-green-400 mx-auto mb-2" />
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     {t('financials.totalRevenue', 'Total Revenue')}
@@ -228,7 +232,12 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
               <div className="text-center">
-                <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+                <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 relative">
+                  <div className="absolute top-2 right-2">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200">
+                      📉 Expenses
+                    </span>
+                  </div>
                   <ReceiptPercentIcon className="w-8 h-8 text-red-600 dark:text-red-400 mx-auto mb-2" />
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     {t('financials.totalExpenses', 'Total Expenses')}
@@ -239,7 +248,16 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
               <div className="text-center">
-                <div className={`${netIncome >= 0 ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-orange-50 dark:bg-orange-900/20'} rounded-lg p-4`}>
+                <div className={`${netIncome >= 0 ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-orange-50 dark:bg-orange-900/20'} rounded-lg p-4 relative`}>
+                  <div className="absolute top-2 right-2">
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      netIncome >= 0 
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200' 
+                        : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'
+                    }`}>
+                      {netIncome >= 0 ? '✅ Profit' : '⚠️ Loss'}
+                    </span>
+                  </div>
                   <ChartBarIcon className={`w-8 h-8 ${netIncome >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'} mx-auto mb-2`} />
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     {t('financials.netIncome', 'Net Income')}
@@ -276,11 +294,6 @@ const Dashboard: React.FC = () => {
                   {t('fta.integration.subtitle')}
                 </p>
               </div>
-              <img 
-                src="/images/peergos_slide_3.jpeg" 
-                alt="FTA Integration Status" 
-                className="w-16 h-16 object-contain rounded-lg opacity-80"
-              />
             </div>
             <div className="space-y-2 mb-4">
               <div className="flex items-center justify-between text-sm">
@@ -293,7 +306,7 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="px-3 py-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                 <p className="text-xs text-yellow-800 dark:text-yellow-200">
-                  <strong>Status:</strong> Demo Mode – Simulation Active
+                  <strong>⚠️ Status:</strong> Demo Mode – Simulation Active
                 </p>
               </div>
             </div>
@@ -304,37 +317,61 @@ const Dashboard: React.FC = () => {
             />
           </div>
 
-          {/* FTA Alerts Card */}
+          {/* FTA Alerts Card - NEW */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-red-200 dark:border-red-700 p-6">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 flex items-center">
-                🚨 FTA Alerts
+                📣 FTA Alerts
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Compliance notifications
+                System setup notifications
               </p>
             </div>
             <div className="space-y-3">
-              <div className="flex items-start space-x-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                <span className="text-red-500">❗</span>
-                <div>
-                  <p className="text-sm font-medium text-red-800 dark:text-red-200">Bank slip not uploaded</p>
-                  <p className="text-xs text-red-600 dark:text-red-300">Required for VAT filing</p>
+              <div className="flex items-start justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg group">
+                <div className="flex items-start space-x-3">
+                  <span className="text-red-500">❗</span>
+                  <div>
+                    <p className="text-sm font-medium text-red-800 dark:text-red-200">TRN not entered</p>
+                    <p className="text-xs text-red-600 dark:text-red-300">Required for tax submissions</p>
+                  </div>
                 </div>
+                <button 
+                  className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 text-xs"
+                  onClick={() => {/* Handle dismiss */}}
+                >
+                  ✕
+                </button>
               </div>
-              <div className="flex items-start space-x-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                <span className="text-yellow-500">⚠️</span>
-                <div>
-                  <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">TRN verification pending</p>
-                  <p className="text-xs text-yellow-600 dark:text-yellow-300">Verify in 48 hours</p>
+              <div className="flex items-start justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg group">
+                <div className="flex items-start space-x-3">
+                  <span className="text-yellow-500">❗</span>
+                  <div>
+                    <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Bank slip missing</p>
+                    <p className="text-xs text-yellow-600 dark:text-yellow-300">Upload payment confirmation</p>
+                  </div>
                 </div>
+                <button 
+                  className="opacity-0 group-hover:opacity-100 text-yellow-400 hover:text-yellow-600 text-xs"
+                  onClick={() => {/* Handle dismiss */}}
+                >
+                  ✕
+                </button>
               </div>
-              <div className="flex items-start space-x-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                <span className="text-orange-500">🔧</span>
-                <div>
-                  <p className="text-sm font-medium text-orange-800 dark:text-orange-200">Setup incomplete</p>
-                  <p className="text-xs text-orange-600 dark:text-orange-300">Complete agent setup</p>
+              <div className="flex items-start justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg group">
+                <div className="flex items-start space-x-3">
+                  <span className="text-orange-500">❗</span>
+                  <div>
+                    <p className="text-sm font-medium text-orange-800 dark:text-orange-200">Setup incomplete</p>
+                    <p className="text-xs text-orange-600 dark:text-orange-300">Complete initial configuration</p>
+                  </div>
                 </div>
+                <button 
+                  className="opacity-0 group-hover:opacity-100 text-orange-400 hover:text-orange-600 text-xs"
+                  onClick={() => {/* Handle dismiss */}}
+                >
+                  ✕
+                </button>
               </div>
             </div>
           </div>
