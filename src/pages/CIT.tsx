@@ -107,7 +107,7 @@ const CIT: React.FC = () => {
   const { selectedAgent, uploadedCertificate } = useTaxAgent();
   const { revenue, expenses, checkDeMinimisThreshold } = useFinance();
   const { summary, isUpdating, totalRevenue, totalExpenses, netIncome } = useFinancialSync();
-  
+
   // Get de minimis compliance check
   const deMinimisCheck = checkDeMinimisThreshold();
 
@@ -479,6 +479,7 @@ const CIT: React.FC = () => {
   };
 
   return (
+    <>
     <Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
@@ -1138,7 +1139,7 @@ const CIT: React.FC = () => {
           context="cit"
         />
       </Box>
-    </div>
+    </>
   );
 };
 

@@ -79,32 +79,7 @@ export const getSuggestions = (input: string, type: 'revenue' | 'expense'): stri
   return suggestions.slice(0, 5); // Limit to 5 suggestions
 };
 
-export const revenueCategories = [
-  "Product Sales",
-  "Service Income",
-  "Rental Income",
-  "Consulting Fees",
-  "Commission Income",
-  "Interest Income",
-  "Other Revenue"
-];
 
-export const expenseCategories = [
-  "Cost of Goods Sold",
-  "Salaries and Wages",
-  "Rent",
-  "Utilities",
-  "Marketing and Advertising",
-  "Software Subscriptions",
-  "Professional Services",
-  "Office Supplies",
-  "Bank Charges",
-  "Insurance",
-  "Travel and Meals",
-  "Depreciation",
-  "VAT Paid",
-  "Other Expenses"
-];
 
 // Translation keys for revenue categories
 export const revenueCategoryTranslations = {
