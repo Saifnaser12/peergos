@@ -1,0 +1,48 @@
+✅ Replit Assistant Prompt: Global Visual Integration of Peergos Deck Images
+🖼️ Objective: Use the uploaded images from the Peergos presentation to enhance visual consistency and branding across all pages in the system.
+📂 Folder: /public/images/
+(Ensure these images are uploaded here before continuing)
+
+🔧 Instructions:
+Image Usage Rules:
+Use each image in 1–2 appropriate locations only to avoid clutter
+Use img tags or set them as CSS backgrounds (with light overlays if needed for text legibility)
+Optimize for responsiveness (e.g., max-width: 100%, object-fit: cover)
+📄 Apply Images to the Following Pages:
+🏠 Dashboard
+
+Add peergos_slide_0.jpeg as a banner image at the top (hero section or sidebar)
+Use peergos_slide_5.jpeg inside the FTA Integration card
+📘 Accounting
+
+Add peergos_slide_3.jpeg as a side illustration next to the “Add Revenue/Expense” sections
+Optional: Add subtle watermark background using peergos_slide_4.jpeg
+📄 VAT Filing
+
+Add peergos_slide_6.jpeg above the “VAT Calculation Summary” to visually represent compliance
+Use peergos_slide_8.jpeg as background for “Supporting Documents” upload box
+🏛️ Corporate Tax
+
+Add peergos_slide_9.jpeg above the “Tax Elections” section
+Use peergos_slide_10.jpeg in the “Supporting Documents” sidebar
+📊 Financials
+
+Use peergos_slide_11.jpeg behind the Revenue & Expense Analytics section (as background)
+Add peergos_slide_12.jpeg beside the “Balance Sheet” widget (right-side alignment)
+📑 Transfer Pricing
+
+Use peergos_slide_13.jpeg as a light sidebar illustration beside the “Master File / Local File / CbC Upload” form
+📨 Filing
+
+Use peergos_slide_14.jpeg as the full-width background behind the checklist section
+🤖 Tax Assistant
+
+Add peergos_slide_15.jpeg as a small floating illustration beside the chat area (AI assistant bot visual)
+📆 Tax Calendar
+
+Use peergos_slide_16.jpeg as background or header for the calendar widget
+Add peergos_slide_17.jpeg below “Upcoming Deadlines” for visual emphasis
+✏️ Implementation Notes:
+You can rename or alias the images in code if needed
+All pages should remain fully responsive
+If any image is too intrusive, reduce opacity or apply a color overlay with CSS
