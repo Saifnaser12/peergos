@@ -841,7 +841,7 @@ const CIT: React.FC = () => {
 
                 <Box sx={{ mt: 1, p: 2, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
                   <Typography variant="caption" color="success.main" sx={{ fontWeight: 600 }}>
-                    {isUpdating ? '🔄 UPDATING...' : '✅ AUTO-SYNC'} Live Taxable Income: AED {netIncome.toLocaleString()}
+                    {isUpdating ? '🔄 UPDATING...' : '✅ AUTO-SYNC'}: Live Taxable Income: AED {netIncome.toLocaleString()}
                   </Typography>
                   <Typography variant="caption" sx={{ display: 'block', color: 'success.main', fontSize: '0.65rem' }}>
                     Updates automatically from Accounting module • Last: {new Date(summary.lastUpdated).toLocaleTimeString()}
@@ -869,7 +869,7 @@ const CIT: React.FC = () => {
                           </Typography>
                           <ul style={{ margin: 0, paddingLeft: '1rem', fontSize: '0.7rem', color: 'green.600' }}>
                             <li>Export of goods/services outside UAE</li>
-                            <li>Intra<previous_generation>-Free Zone trade</li>
+                            <li>Intra-Free Zone trade</li>
                             <li>Qualifying activities per FTA list</li>
                           </ul>
                         </Box>
