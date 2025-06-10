@@ -75,6 +75,21 @@ export const useBackup = () => {
     }
   };
 
+  const createSystemBackup = async (description: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const backupId = await backupService.createBackup(description);
+      await loadBackups();
+      return backupId;
+    } catch (err) {
+      setError('Failed to create system backup');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadBackups();
   }, []);
@@ -88,6 +103,7 @@ export const useBackup = () => {
     exportBackup,
     deleteBackup,
     scheduleAutoBackup,
+    createSystemBackup,
     refreshBackups: loadBackups
   };
 };
