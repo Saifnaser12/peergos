@@ -102,8 +102,9 @@
     },
     "actions": {
       "fileVAT": "File VAT Return",
-      "calculateCIT": "Calculate CIT",
+      "calculateCIT": "Calculate CIT", 
       "viewFinancials": "View Financials",
+      "uploadCertificate": "Upload Agent Certificate",
       "freeZoneSubstance": "Free Zone Substance"
     }
   },
@@ -114,6 +115,12 @@
       "pending": "Setup required to connect to FTA",
       "connected": "Connected to FTA",
       "disconnected": "Disconnected from FTA"
+    },
+    "alerts": {
+      "title": "FTA Alerts",
+      "bankSlipMissing": "Bank slip not uploaded",
+      "trnMissing": "TRN verification pending", 
+      "setupIncomplete": "Setup incomplete"
     },
     "status": {
       "connected": "Connected",
