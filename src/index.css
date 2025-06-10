@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+/* UAE Peergos Theme Colors */
+:root {
+  --peergos-navy: #0D1B2A;
+  --peergos-green: #198754;
+  --peergos-yellow: #FFC107;
+  --peergos-red: #DC3545;
+}
+
+.peergos-navy { background-color: var(--peergos-navy); }
+.peergos-green { background-color: var(--peergos-green); }
+.peergos-yellow { background-color: var(--peergos-yellow); }
+.peergos-red { background-color: var(--peergos-red); }
+
+.text-peergos-navy { color: var(--peergos-navy); }
+.text-peergos-green { color: var(--peergos-green); }
+.text-peergos-yellow { color: var(--peergos-yellow); }
+.text-peergos-red { color: var(--peergos-red); }
+
+.border-peergos-navy { border-color: var(--peergos-navy); }
+.border-peergos-green { border-color: var(--peergos-green); }
+.border-peergos-yellow { border-color: var(--peergos-yellow); }
+.border-peergos-red { border-color: var(--peergos-red); }
+
 * {
   box-sizing: border-box;
 }
