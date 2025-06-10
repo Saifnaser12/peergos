@@ -79,8 +79,6 @@ export const getSuggestions = (input: string, type: 'revenue' | 'expense'): stri
   return suggestions.slice(0, 5); // Limit to 5 suggestions
 };
 
-
-
 // Translation keys for revenue categories
 export const revenueCategoryTranslations = {
   "Product Sales": "accounting.revenue.categories.productSales",

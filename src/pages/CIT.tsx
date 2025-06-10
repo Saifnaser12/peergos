@@ -768,8 +768,7 @@ const CIT: React.FC = () => {
                     />
                   ))}
                 </Box>
-              )}
-            </CardContent>
+              </CardContent>
           </Card>
         </Grid>
 
@@ -870,7 +869,7 @@ const CIT: React.FC = () => {
                           </Typography>
                           <ul style={{ margin: 0, paddingLeft: '1rem', fontSize: '0.7rem', color: 'green.600' }}>
                             <li>Export of goods/services outside UAE</li>
-                            <li>Intra-Free Zone trade</li>
+                            <li>Intra<previous_generation>-Free Zone trade</li>
                             <li>Qualifying activities per FTA list</li>
                           </ul>
                         </Box>
