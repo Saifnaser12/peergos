@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   XMarkIcon,
@@ -10,9 +10,7 @@ import {
   ArrowUpTrayIcon,
   DocumentIcon
 } from '@heroicons/react/24/outline';
-import { expenseCategories, expenseCategoryTranslations, categoryConfig } from '../../utils/constants';
-import { SecureFileStorage } from '../../utils/fileStorage';
-import SmartCategoryInput from '../common/SmartCategoryInput';
+import { expenseCategories, expenseCategoryTranslations } from '../../utils/constants';
 
 
 interface ExpenseEntry {
@@ -48,23 +46,14 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
     vendor: '',
     category: '',
     amount: '',
-    receiptFile: null as File | null,
-    isRelatedPartyTransaction: false
+    receiptFile: null as File | null
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isUploading, setIsUploading] = useState(false);
-  const [lastUsedCategory, setLastUsedCategory] = useState<string>('');
-  const [focusIndex, setFocusIndex] = useState(0);
-  const fieldRefs = useRef<(HTMLInputElement | HTMLSelectElement | null)[]>([]);
 
   // Using imported expense categories
 
   useEffect(() => {
-    // Get last used category from localStorage
-    const savedCategory = localStorage.getItem('lastUsedExpenseCategory') || '';
-    setLastUsedCategory(savedCategory);
-
     if (editingExpense) {
       setFormData({
         date: editingExpense.date,
@@ -72,31 +61,20 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
         vendor: editingExpense.vendor,
         category: editingExpense.category,
         amount: editingExpense.amount.toString(),
-        receiptFile: null,
-        isRelatedPartyTransaction: editingExpense.isRelatedPartyTransaction || false
+        receiptFile: null
       });
     } else {
-      // Smart defaults for new entries
       setFormData({
-        date: new Date().toISOString().split('T')[0], // Today's date
+        date: new Date().toISOString().split('T')[0],
         description: '',
         vendor: '',
-        category: savedCategory, // Last used category
+        category: '',
         amount: '',
-        receiptFile: null,
-        isRelatedPartyTransaction: false
+        receiptFile: null
       });
     }
     setErrors({});
-    setFocusIndex(0);
   }, [editingExpense, isOpen]);
-
-  // Focus management for keyboard navigation
-  useEffect(() => {
-    if (isOpen && fieldRefs.current[focusIndex]) {
-      fieldRefs.current[focusIndex]?.focus();
-    }
-  }, [focusIndex, isOpen]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -121,48 +99,24 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
       newErrors.amount = 'Amount must be greater than 0';
     }
 
-    // FTA compliance: Mandatory receipt/invoice upload
-    if (!formData.receiptFile && !editingExpense?.receiptUrl) {
-      newErrors.receiptFile = 'FTA-compliant documentation is mandatory for recorded expenses';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
-    setIsUploading(true);
-
     let receiptUrl = editingExpense?.receiptUrl;
     let receiptFileName = editingExpense?.receiptFileName;
-    let receiptFileId = editingExpense?.receiptFileId;
 
-    // Handle FTA-compliant file storage
+    // Handle file upload (simulate with localStorage for demo)
     if (formData.receiptFile) {
-      try {
-        const currentYear = new Date().getFullYear().toString();
-        const storedFile = await SecureFileStorage.storeExpenseReceipt({
-          companyId: 'default-company', // In production, get from context
-          financialYear: currentYear,
-          category: formData.category,
-          fileName: formData.receiptFile.name,
-          file: formData.receiptFile
-        });
-
-        receiptUrl = `stored://${storedFile.id}`;
-        receiptFileName = storedFile.originalName;
-        receiptFileId = storedFile.id;
-      } catch (error) {
-        setErrors(prev => ({ ...prev, receiptFile: 'Failed to upload file securely. Please try again.' }));
-        setIsUploading(false);
-        return;
-      }
+      receiptUrl = URL.createObjectURL(formData.receiptFile);
+      receiptFileName = formData.receiptFile.name;
     }
 
     const expenseData = {
@@ -173,16 +127,8 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
       category: formData.category,
       amount: parseFloat(formData.amount),
       receiptUrl,
-      receiptFileName,
-      receiptFileId, // Store file ID for secure retrieval
-      ftaCompliant: true, // Mark as FTA compliant
-      isRelatedPartyTransaction: formData.isRelatedPartyTransaction
+      receiptFileName
     };
-
-    // Save last used category
-    if (formData.category) {
-      localStorage.setItem('lastUsedExpenseCategory', formData.category);
-    }
 
     // Save data - this will trigger real-time updates across the app
     onSave(expenseData);
@@ -195,22 +141,6 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
       } 
     });
     window.dispatchEvent(event);
-
-    setIsUploading(false);
-  };
-
-  // Keyboard navigation handlers
-  const handleKeyDown = (e: React.KeyboardEvent, currentIndex: number) => {
-    if (e.key === 'Tab' && !e.shiftKey) {
-      e.preventDefault();
-      setFocusIndex(prev => Math.min(prev + 1, fieldRefs.current.length - 1));
-    } else if (e.key === 'Tab' && e.shiftKey) {
-      e.preventDefault();
-      setFocusIndex(prev => Math.max(prev - 1, 0));
-    } else if (e.key === 'Enter' && currentIndex === fieldRefs.current.length - 1) {
-      // Submit form when pressing Enter on last field
-      handleSubmit(e as any);
-    }
   };
 
   const handleInputChange = (field: string, value: string | File | null) => {
@@ -223,10 +153,10 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type - FTA accepts PDF, JPEG, PNG
+      // Validate file type
       const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
       if (!allowedTypes.includes(file.type)) {
-        setErrors(prev => ({ ...prev, receiptFile: 'Invalid file type. FTA requires PDF, JPEG, or PNG files only' }));
+        setErrors(prev => ({ ...prev, receiptFile: 'Invalid file type. Please upload PDF or JPG files only' }));
         return;
       }
 
@@ -314,46 +244,30 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
             {errors.vendor && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.vendor}</p>}
           </div>
 
-          {/* Category with Smart Suggestions */}
+          {/* Category */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <TagIcon className="h-4 w-4 inline mr-2" />
               {t('accounting.expenses.form.category')}
-              {lastUsedCategory && !editingExpense && (
-                <span className="ml-2 text-xs text-red-600 dark:text-red-400">
-                  (Last: {lastUsedCategory.replace(/-/g, ' ')})
-                </span>
-              )}
             </label>
-            <SmartCategoryInput
-              type="expense"
+            <select
               value={formData.category}
-              onChange={(value) => handleInputChange('category', value)}
-              placeholder={t('accounting.expenses.form.categoryPlaceholder')}
+              onChange={(e) => handleInputChange('category', e.target.value)}
               className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
                 errors.category ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
               }`}
-              onKeyDown={(e) => handleKeyDown(e, 3)}
-            />
+            >
+              <option value="">{t('accounting.expenses.form.categoryPlaceholder')}</option>
+              {expenseCategories.map(category => (
+                <option key={category} value={category}>
+                  {t(expenseCategoryTranslations[category] || category)}
+                </option>
+              ))}
+            </select>
             {errors.category && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.category}</p>}
-
-            {/* Show category preview */}
-            {formData.category && categoryConfig.expense[formData.category as keyof typeof categoryConfig.expense] && (
-              <div className="mt-2 flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <span className="text-lg mr-2">
-                  {categoryConfig.expense[formData.category as keyof typeof categoryConfig.expense].icon}
-                </span>
-                <div
-                  className="w-3 h-3 rounded-full mr-2"
-                  style={{ backgroundColor: categoryConfig.expense[formData.category as keyof typeof categoryConfig.expense].color }}
-                ></div>
-                <span className="capitalize">{formData.category.replace(/-/g, ' ')}</span>
-              </div>
-            )}
           </div>
 
           {/* Amount */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <BanknotesIcon className="h-4 w-4 inline mr-2" />
@@ -373,33 +287,13 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
             {errors.amount && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount}</p>}
           </div>
 
-          <div className="flex items-center space-x-3">
-            <input
-              type="checkbox"
-              id="relatedPartyExpense"
-              checked={formData.isRelatedPartyTransaction || false}
-              onChange={(e) => handleInputChange('isRelatedPartyTransaction', e.target.checked)}
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-            />
-            <label htmlFor="relatedPartyExpense" className="text-sm text-gray-700 dark:text-gray-300">
-              {t('accounting.expenses.relatedPartyTransaction', 'Related Party Transaction')}
-            </label>
-          </div></div>
-
-          {/* Receipt Upload - FTA Required */}
+          {/* Receipt Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <DocumentIcon className="h-4 w-4 inline mr-2" />
-              {t('accounting.expenses.form.receipt')} 
-              <span className="text-red-500 ml-1">*</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400 block mt-1">
-                Attach Tax Invoice or Proof of Expense (FTA Required)
-              </span>
+              {t('accounting.expenses.form.receipt')}
             </label>
-            <div className={`border-2 border-dashed rounded-xl p-4 transition-colors duration-150 ${
-              errors.receiptFile ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/10' : 
-              'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-            }`}>
+            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 hover:border-gray-400 dark:hover:border-gray-500 transition-colors duration-150">
               <input
                 type="file"
                 onChange={handleFileChange}
@@ -411,18 +305,13 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
                 htmlFor="receipt-upload"
                 className="flex flex-col items-center justify-center cursor-pointer"
               >
-                <ArrowUpTrayIcon className={`h-8 w-8 mb-2 ${
-                  errors.receiptFile ? 'text-red-400 dark:text-red-500' : 'text-gray-400 dark:text-gray-500'
-                }`} />
-                <span className="text-sm text-gray-600 dark:text-gray-400 text-center font-medium">
+                <ArrowUpTrayIcon className="h-8 w-8 text-gray-400 dark:text-gray-500 mb-2" />
+                <span className="text-sm text-gray-600 dark:text-gray-400 text-center">
                   {formData.receiptFile ? formData.receiptFile.name : 
-                   editingExpense?.receiptFileName || 'Upload Tax Invoice or Proof of Expense'}
+                   editingExpense?.receiptFileName || 'Click to upload receipt'}
                 </span>
-                <span className="text-xs text-gray-500 dark:text-gray-500 mt-1 text-center">
-                  PDF, JPEG, PNG files only (Max 10MB)
-                </span>
-                <span className="text-xs text-red-600 dark:text-red-400 mt-1 font-medium">
-                  Required for FTA compliance
+                <span className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                  {t('accounting.expenses.form.receiptHelp')}
                 </span>
               </label>
             </div>
@@ -440,20 +329,9 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
             </button>
             <button
               type="submit"
-              disabled={isUploading}
-              className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors duration-150 shadow-sm hover:shadow-md flex items-center justify-center"
+              className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors duration-150 shadow-sm hover:shadow-md"
             >
-              {isUploading ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Uploading...
-                </>
-              ) : (
-                editingExpense ? t('accounting.expenses.form.update') : t('accounting.expenses.form.save')
-              )}
+              {editingExpense ? t('accounting.expenses.form.update') : t('accounting.expenses.form.save')}
             </button>
           </div>
         </form>

@@ -1,26 +1,31 @@
+
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Import translation files
-import enTranslation from './locales/en/translation.json';
-import arTranslation from './locales/ar/translation.json';
+// Import main translation files
+import enTranslations from './locales/en.json';
+import arTranslations from './locales/ar.json';
+
+// Import additional namespace files
 import enCommon from './locales/en/common.json';
-import arCommon from './locales/ar/common.json';
+import enTranslation from './locales/en/translation.json';
 import enTransferPricing from './locales/en/transferPricing.json';
+
+import arCommon from './locales/ar/common.json';
+import arTranslation from './locales/ar/translation.json';
 import arTransferPricing from './locales/ar/transferPricing.json';
-import enMain from './locales/en.json';
-import arMain from './locales/ar.json';
 
 const resources = {
   en: {
-    translation: { ...enTranslation, ...enMain },
+    translation: enTranslations,
     common: enCommon,
+    specific: enTranslation,
     transferPricing: enTransferPricing
   },
   ar: {
-    translation: { ...arTranslation, ...arMain },
+    translation: arTranslations,
     common: arCommon,
+    specific: arTranslation,
     transferPricing: arTransferPricing
   }
 };
@@ -29,7 +34,6 @@ const resources = {
 const savedLanguage = localStorage.getItem('language') || 'en';
 
 i18n
-  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
@@ -37,20 +41,22 @@ i18n
     fallbackLng: 'en',
     debug: false,
     
-    ns: ['translation', 'common', 'transferPricing'],
+    // Use 'translation' as default namespace
     defaultNS: 'translation',
-    
+    ns: ['translation', 'common', 'specific', 'transferPricing'],
+
     interpolation: {
-      escapeValue: false
+      escapeValue: false,
     },
-    
+
     react: {
-      useSuspense: false
+      useSuspense: false,
     },
-    
+
     // Better handling of missing translations
     parseMissingKeyHandler: (key: string) => {
       console.warn(`Missing translation key: ${key}`);
+      // Return a more readable version of the key
       const keyParts = key.split('.');
       const lastPart = keyParts[keyParts.length - 1];
       return lastPart
@@ -58,18 +64,26 @@ i18n
         .replace(/^./, str => str.toUpperCase())
         .trim();
     },
-    
+
+    // Always return something readable
     returnEmptyString: false,
     returnNull: false,
+    returnObjects: false,
+
+    // Additional options for better handling
+    saveMissing: false,
+    updateMissing: false,
+
+    // Enable key separator
     keySeparator: '.',
-    nsSeparator: false
+    nsSeparator: false,
   });
 
 // Set initial document direction
 document.documentElement.dir = savedLanguage === 'ar' ? 'rtl' : 'ltr';
 document.documentElement.lang = savedLanguage;
 
-// Listen for language changes
+// Listen for language changes to update document direction
 i18n.on('languageChanged', (lng: string) => {
   document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
   document.documentElement.lang = lng;
@@ -77,3 +91,4 @@ i18n.on('languageChanged', (lng: string) => {
 });
 
 export default i18n;
+export { useTranslation } from 'react-i18next';

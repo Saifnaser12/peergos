@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 
 // Types
@@ -9,9 +10,6 @@ interface Revenue {
   description: string;
   customer?: string;
   vatAmount?: number;
-  incomeClassification?: 'qualifying' | 'non-qualifying';
-  activityType?: string;
-  isExport?: boolean;
 }
 
 interface Expense {
@@ -22,7 +20,6 @@ interface Expense {
   description: string;
   vendor?: string;
   vatAmount?: number;
-  isRelatedPartyTransaction?: boolean;
 }
 
 interface FinancialSummary {
@@ -45,8 +42,6 @@ interface FinanceContextType {
   getTotalRevenue: () => number;
   getTotalExpenses: () => number;
   getNetIncome: () => number;
-    getQualifyingIncome: () => number;
-  getNonQualifyingIncome: () => number;
   getFinancialSummary: () => FinancialSummary;
   subscribeToUpdates: (callback: () => void) => () => void;
   isConnected: boolean;
@@ -63,10 +58,7 @@ const initialRevenue: Revenue[] = [
     date: '2024-01-15',
     description: 'Q1 Product Sales Revenue',
     customer: 'ABC Corp',
-    vatAmount: 7500,
-    incomeClassification: 'qualifying',
-    activityType: 'export-services',
-    isExport: true
+    vatAmount: 7500
   },
   {
     id: '2',
@@ -75,8 +67,7 @@ const initialRevenue: Revenue[] = [
     date: '2024-01-20',
     description: 'Consulting and Professional Services',
     customer: 'XYZ Ltd',
-    vatAmount: 4250,
-    incomeClassification: 'non-qualifying'
+    vatAmount: 4250
   },
   {
     id: '3',
@@ -84,9 +75,7 @@ const initialRevenue: Revenue[] = [
     amount: 25000,
     date: '2024-01-25',
     description: 'Software Licensing Revenue',
-    vatAmount: 1250,
-    incomeClassification: 'qualifying',
-    activityType: 'intra-zone-trade'
+    vatAmount: 1250
   }
 ];
 
@@ -223,26 +212,6 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
     return net;
   }, [getTotalRevenue, getTotalExpenses]);
 
-  const getQualifyingIncome = useCallback((): number => {
-    return revenue
-      .filter(entry => entry.incomeClassification === 'qualifying' || 
-                      entry.isExport === true ||
-                      entry.activityType === 'export-services' ||
-                      entry.activityType === 'intra-zone-trade' ||
-                      entry.activityType === 'qualifying-activities')
-      .reduce((sum, entry) => sum + entry.amount, 0);
-  }, [revenue]);
-
-  const getNonQualifyingIncome = useCallback((): number => {
-    return revenue
-      .filter(entry => entry.incomeClassification === 'non-qualifying' ||
-                      (!entry.incomeClassification && !entry.isExport &&
-                       entry.activityType !== 'export-services' &&
-                       entry.activityType !== 'intra-zone-trade' &&
-                       entry.activityType !== 'qualifying-activities'))
-      .reduce((sum, entry) => sum + entry.amount, 0);
-  }, [revenue]);
-
   const getFinancialSummary = useCallback((): FinancialSummary => {
     const summary = {
       totalRevenue: getTotalRevenue(),
@@ -258,7 +227,7 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
   const subscribeToUpdates = useCallback((callback: () => void) => {
     console.log('🔔 New subscriber added to finance updates');
     setUpdateCallbacks(prev => new Set([...prev, callback]));
-
+    
     return () => {
       console.log('🔕 Subscriber removed from finance updates');
       setUpdateCallbacks(prev => {
@@ -281,8 +250,6 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
     getTotalRevenue,
     getTotalExpenses,
     getNetIncome,
-    getQualifyingIncome,
-    getNonQualifyingIncome,
     getFinancialSummary,
     subscribeToUpdates,
     isConnected

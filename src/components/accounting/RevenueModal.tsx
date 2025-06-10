@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   XMarkIcon,
@@ -7,8 +7,7 @@ import {
   UserIcon,
   BanknotesIcon,
   DocumentIcon,
-  TagIcon,
-  InformationCircleIcon
+  TagIcon
 } from '@heroicons/react/24/outline';
 import InvoiceModal from './InvoiceModal';
 import { 
@@ -16,10 +15,8 @@ import {
   revenueCategoryTranslations,
   freeZoneIncomeTypes,
   freeZoneIncomeSubcategories,
-  freeZoneIncomeTranslations,
-  categoryConfig
+  freeZoneIncomeTranslations
 } from '../../utils/constants';
-import SmartCategoryInput from '../common/SmartCategoryInput';
 
 interface RevenueEntry {
   id: string;
@@ -30,9 +27,6 @@ interface RevenueEntry {
   invoiceGenerated: boolean;
   invoiceId?: string;
   createdAt: string;
-  incomeClassification?: string;
-  activityType?: string;
-  isExport?: boolean;
 }
 
 interface RevenueModalProps {
@@ -58,16 +52,8 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
     amount: '',
     invoiceGenerated: false,
     freeZoneIncomeType: '',
-    freeZoneSubcategory: '',
-    incomeClassification: 'non-qualifying',
-    activityType: '',
-    isExport: false,
-    isRelatedPartyTransaction: false
+    freeZoneSubcategory: ''
   });
-
-  const [lastUsedCategory, setLastUsedCategory] = useState<string>('');
-  const [focusIndex, setFocusIndex] = useState(0);
-  const fieldRefs = useRef<(HTMLInputElement | HTMLSelectElement | null)[]>([]);
 
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
@@ -79,10 +65,6 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
   };
 
   useEffect(() => {
-    // Get last used category from localStorage
-    const savedCategory = localStorage.getItem('lastUsedRevenueCategory') || '';
-    setLastUsedCategory(savedCategory);
-
     if (editingRevenue) {
       setFormData({
         date: editingRevenue.date,
@@ -92,55 +74,22 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
         amount: editingRevenue.amount.toString(),
         invoiceGenerated: editingRevenue.invoiceGenerated,
         freeZoneIncomeType: editingRevenue.freeZoneIncomeType || '',
-        freeZoneSubcategory: editingRevenue.freeZoneSubcategory || '',
-        incomeClassification: editingRevenue.incomeClassification || 'non-qualifying',
-        activityType: editingRevenue.activityType || '',
-        isExport: editingRevenue.isExport || false,
-        isRelatedPartyTransaction: editingRevenue.isRelatedPartyTransaction || false
+        freeZoneSubcategory: editingRevenue.freeZoneSubcategory || ''
       });
     } else {
-      // Smart defaults for new entries
       setFormData({
-        date: new Date().toISOString().split('T')[0], // Today's date
+        date: new Date().toISOString().split('T')[0],
         description: '',
         customer: '',
-        category: savedCategory, // Last used category
+        category: '',
         amount: '',
         invoiceGenerated: false,
         freeZoneIncomeType: '',
-        freeZoneSubcategory: '',
-        incomeClassification: 'non-qualifying',
-        activityType: '',
-        isExport: false,
-        isRelatedPartyTransaction: false
+        freeZoneSubcategory: ''
       });
     }
     setErrors({});
-    setFocusIndex(0);
   }, [editingRevenue, isOpen]);
-
-  // Focus management for keyboard navigation
-  useEffect(() => {
-    if (isOpen && fieldRefs.current[focusIndex]) {
-      fieldRefs.current[focusIndex]?.focus();
-    }
-  }, [focusIndex, isOpen]);
-
-  // Auto-classify income based on activity type
-  useEffect(() => {
-    let classification = 'non-qualifying';
-
-    if (formData.isExport || 
-        formData.activityType === 'export-services' ||
-        formData.activityType === 'intra-zone-trade' ||
-        formData.activityType === 'qualifying-activities') {
-      classification = 'qualifying';
-    }
-
-    if (formData.incomeClassification !== classification) {
-      setFormData(prev => ({ ...prev, incomeClassification: classification }));
-    }
-  }, [formData.activityType, formData.isExport]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -172,11 +121,6 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
       return;
     }
 
-    // Save last used category
-    if (formData.category) {
-      localStorage.setItem('lastUsedRevenueCategory', formData.category);
-    }
-
     const revenueData = {
       date: formData.date,
       description: formData.description.trim(),
@@ -186,11 +130,7 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
       invoiceGenerated: formData.invoiceGenerated,
       invoiceId: formData.invoiceGenerated ? Date.now().toString() : undefined,
       freeZoneIncomeType: formData.freeZoneIncomeType || undefined,
-      freeZoneSubcategory: formData.freeZoneSubcategory || undefined,
-      incomeClassification: formData.incomeClassification,
-      activityType: formData.activityType,
-      isExport: formData.isExport,
-      isRelatedPartyTransaction: formData.isRelatedPartyTransaction
+      freeZoneSubcategory: formData.freeZoneSubcategory || undefined
     };
 
     // Save data - this will trigger real-time updates across the app
@@ -208,20 +148,6 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
     // Show invoice modal if invoice generation was toggled
     if (formData.invoiceGenerated) {
       setShowInvoiceModal(true);
-    }
-  };
-
-  // Keyboard navigation handlers
-  const handleKeyDown = (e: React.KeyboardEvent, currentIndex: number) => {
-    if (e.key === 'Tab' && !e.shiftKey) {
-      e.preventDefault();
-      setFocusIndex(prev => Math.min(prev + 1, fieldRefs.current.length - 1));
-    } else if (e.key === 'Tab' && e.shiftKey) {
-      e.preventDefault();
-      setFocusIndex(prev => Math.max(prev - 1, 0));
-    } else if (e.key === 'Enter' && currentIndex === fieldRefs.current.length - 1) {
-      // Submit form when pressing Enter on last field
-      handleSubmit(e as any);
     }
   };
 
@@ -302,42 +228,27 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
             />
           </div>
 
-          {/* Category with Smart Suggestions */}
+          {/* Category */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <TagIcon className="h-4 w-4 inline mr-2" />
               {t('accounting.revenue.form.category')}
-              {lastUsedCategory && !editingRevenue && (
-                <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
-                  (Last: {lastUsedCategory.replace(/-/g, ' ')})
-                </span>
-              )}
             </label>
-            <SmartCategoryInput
-              type="revenue"
+            <select
               value={formData.category}
-              onChange={(value) => handleInputChange('category', value)}
-              placeholder={t('accounting.revenue.form.categoryPlaceholder')}
+              onChange={(e) => handleInputChange('category', e.target.value)}
               className={`w-full px-3 py-2 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-150 ${
                 errors.category ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
               }`}
-              onKeyDown={(e) => handleKeyDown(e, 2)}
-            />
+            >
+              <option value="">{t('accounting.revenue.form.categoryPlaceholder')}</option>
+              {revenueCategories.map(category => (
+                <option key={category} value={category}>
+                  {t(revenueCategoryTranslations[category] || category)}
+                </option>
+              ))}
+            </select>
             {errors.category && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.category}</p>}
-
-            {/* Show category preview */}
-            {formData.category && categoryConfig.revenue[formData.category as keyof typeof categoryConfig.revenue] && (
-              <div className="mt-2 flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <span className="text-lg mr-2">
-                  {categoryConfig.revenue[formData.category as keyof typeof categoryConfig.revenue].icon}
-                </span>
-                <div
-                  className="w-3 h-3 rounded-full mr-2"
-                  style={{ backgroundColor: categoryConfig.revenue[formData.category as keyof typeof categoryConfig.revenue].color }}
-                ></div>
-                <span className="capitalize">{formData.category.replace(/-/g, ' ')}</span>
-              </div>
-            )}
           </div>
 
           {/* Amount */}
@@ -360,7 +271,7 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
             {errors.amount && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.amount}</p>}
           </div>
 
-          {/* FTA Income Classification Section */}
+          {/* Free Zone Income Classification */}
           <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
             <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-200 flex items-center">
               <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -368,7 +279,7 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
               </svg>
               {t('accounting.revenue.form.freeZoneClassification', 'Free Zone Income Classification')}
             </h4>
-
+            
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('accounting.revenue.form.incomeType', 'Income Type')}
@@ -451,52 +362,6 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
                   formData.invoiceGenerated ? 'translate-x-5' : 'translate-x-0.5'
                 } mt-0.5`} />
               </div>
-            </label>
-          </div>
-
-          {/* New FTA Income Classification fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Activity Type */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('accounting.revenue.form.activityType', 'Activity Type')}
-              </label>
-              <select
-                value={formData.activityType}
-                onChange={(e) => handleInputChange('activityType', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-150"
-              >
-                <option value="">{t('accounting.revenue.form.selectActivityType', 'Select Activity Type')}</option>
-                <option value="export-services">{t('accounting.revenue.form.exportServices', 'Export Services')}</option>
-                <option value="other">{t('accounting.revenue.form.other', 'Other')}</option>
-              </select>
-            </div>
-
-            {/* Is Export */}
-            <div>
-              <label className="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  className="form-checkbox h-5 w-5 text-blue-600"
-                  checked={formData.isExport}
-                  onChange={(e) => handleInputChange('isExport', e.target.checked)}
-                />
-                <span className="ml-2 text-gray-700 dark:text-gray-300">{t('accounting.revenue.form.isExport', 'Is Export')}</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Related Party Transaction Checkbox */}
-          <div className="flex items-center space-x-3">
-            <input
-              type="checkbox"
-              id="relatedPartyTransaction"
-              checked={formData.isRelatedPartyTransaction || false}
-              onChange={(e) => handleInputChange('isRelatedPartyTransaction', e.target.checked)}
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-            />
-            <label htmlFor="relatedPartyTransaction" className="text-sm text-gray-700 dark:text-gray-300">
-              {t('accounting.revenue.relatedPartyTransaction', 'Related Party Transaction')}
             </label>
           </div>
 

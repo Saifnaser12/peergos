@@ -197,7 +197,7 @@
       "title": "System Integrations (Optional)",
       "description": "Connect your POS system and accounting software to automatically sync transactions and streamline your bookkeeping. This is optional and can be configured later."
     },
-    "setupProgress": "Setup Progress",
+    "progress": "Setup Progress",
     "showAIGuide": "Show AI Guide",
     "celebrating": "Setting up...",
     "aiGuide": {

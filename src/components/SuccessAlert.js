@@ -1,0 +1,6 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
+const SuccessAlert = ({ message, referenceNumber, onClose }) => {
+    return (_jsx("div", { className: "rounded-md bg-green-50 p-4", children: _jsxs("div", { className: "flex", children: [_jsx("div", { className: "flex-shrink-0", children: _jsx(CheckCircleIcon, { className: "h-5 w-5 text-green-400", "aria-hidden": "true" }) }), _jsxs("div", { className: "ml-3", children: [_jsx("p", { className: "text-sm font-medium text-green-800", children: message }), _jsxs("p", { className: "mt-2 text-sm text-green-700", children: ["Reference Number: ", _jsx("span", { className: "font-mono font-medium", children: referenceNumber })] })] }), _jsx("div", { className: "ml-auto pl-3", children: _jsx("div", { className: "-mx-1.5 -my-1.5", children: _jsxs("button", { type: "button", className: "inline-flex rounded-md bg-green-50 p-1.5 text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50", onClick: onClose, children: [_jsx("span", { className: "sr-only", children: "Dismiss" }), _jsx(XMarkIcon, { className: "h-5 w-5", "aria-hidden": "true" })] }) }) })] }) }));
+};
+export default SuccessAlert;

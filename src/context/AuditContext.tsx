@@ -1,19 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-interface AuditEntry {
-  id: string;
-  timestamp: string;
-  userId: string;
-  action: string;
-  details: string;
-}
-
 interface AuditContextType {
-  auditLogs: AuditEntry[];
-  addAuditLog: (log: Omit<AuditEntry, 'id' | 'timestamp'>) => void;
+  auditLogs: any[];
+  addAuditLog: (log: any) => void;
 }
 
-export const AuditContext = createContext<AuditContextType | undefined>(undefined);
+const AuditContext = createContext<AuditContextType | undefined>(undefined);
 
 export const useAuditContext = () => {
   const context = useContext(AuditContext);
@@ -30,13 +22,8 @@ interface AuditProviderProps {
 export const AuditProvider: React.FC<AuditProviderProps> = ({ children }) => {
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
-  const addAuditLog = (log: Omit<AuditEntry, 'id' | 'timestamp'>) => {
-    const newEntry: AuditEntry = {
-      ...log,
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: new Date().toISOString(),
-    };
-    setAuditLogs(prev => [...prev, newEntry]);
+  const addAuditLog = (log: any) => {
+    setAuditLogs(prev => [...prev, { ...log, timestamp: new Date() }]);
   };
 
   const value = {

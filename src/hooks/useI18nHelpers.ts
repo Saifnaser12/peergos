@@ -6,7 +6,7 @@ export const useI18nHelpers = () => {
   const { t, i18n } = useTranslation();
 
   const safeT = useMemo(() => {
-    return (key: string, options?: any): string => {
+    return (key: string, options?: any) => {
       try {
         const translation = t(key, options);
         
@@ -32,7 +32,7 @@ export const useI18nHelpers = () => {
 
   const isRTL = i18n.language === 'ar';
   
-  const formatNumber = (num: number): string => {
+  const formatNumber = (num: number) => {
     return new Intl.NumberFormat(i18n.language === 'ar' ? 'ar-AE' : 'en-AE', {
       style: 'decimal',
       minimumFractionDigits: 0,
@@ -40,25 +40,11 @@ export const useI18nHelpers = () => {
     }).format(num);
   };
 
-  const formatCurrency = (amount: number, currency = 'AED'): string => {
+  const formatCurrency = (amount: number, currency = 'AED') => {
     return new Intl.NumberFormat(i18n.language === 'ar' ? 'ar-AE' : 'en-AE', {
       style: 'currency',
       currency,
     }).format(amount);
-  };
-
-  const formatDate = (date: Date): string => {
-    return new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-AE' : 'en-AE').format(date);
-  };
-
-  return {
-    t: safeT,
-    isRTL,
-    formatNumber,
-    formatCurrency,
-    formatDate,
-    currentLanguage: i18n.language,
-    changeLanguage: i18n.changeLanguage
   };
 
   const formatDate = (date: Date | string) => {

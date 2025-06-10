@@ -105,11 +105,8 @@ const CIT: React.FC = () => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const { selectedAgent, uploadedCertificate } = useTaxAgent();
-  const { revenue, expenses, checkDeMinimisThreshold } = useFinance();
+  const { revenue, expenses } = useFinance();
   const { summary, isUpdating, totalRevenue, totalExpenses, netIncome } = useFinancialSync();
-
-  // Get de minimis compliance check
-  const deMinimisCheck = checkDeMinimisThreshold();
 
   const [formData, setFormData] = useState<CITFormData>({
     revenue: totalRevenue,
@@ -479,7 +476,6 @@ const CIT: React.FC = () => {
   };
 
   return (
-    <>
     <Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
@@ -768,7 +764,8 @@ const CIT: React.FC = () => {
                     />
                   ))}
                 </Box>
-              </CardContent>
+              )}
+            </CardContent>
           </Card>
         </Grid>
 
@@ -841,18 +838,18 @@ const CIT: React.FC = () => {
 
                 <Box sx={{ mt: 1, p: 2, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
                   <Typography variant="caption" color="success.main" sx={{ fontWeight: 600 }}>
-                    {isUpdating ? '🔄 UPDATING...' : '✅ AUTO-SYNC'}: Live Taxable Income: AED {netIncome.toLocaleString()}
+                    {isUpdating ? '🔄 UPDATING...' : '✅ AUTO-SYNC'} Live Taxable Income: AED {netIncome.toLocaleString()}
                   </Typography>
                   <Typography variant="caption" sx={{ display: 'block', color: 'success.main', fontSize: '0.65rem' }}>
                     Updates automatically from Accounting module • Last: {new Date(summary.lastUpdated).toLocaleTimeString()}
                   </Typography>
                 </Box>
 
-                {/* FTA Income Classification Breakdown */}
+                {/* Free Zone Income Split Display */}
                 {citCalculation.isQFZP && (
                   <Box sx={{ mt: 2, p: 3, bgcolor: 'blue.50', borderRadius: 2, border: '1px solid', borderColor: 'blue.200' }}>
                     <Typography variant="h6" sx={{ mb: 2, color: 'blue.main', fontWeight: 600 }}>
-                      🏢 {t('cit.freeZone.incomeBreakdown', 'FTA Income Classification (Article 18)')}
+                      🏢 {t('cit.freeZone.incomeBreakdown', 'Free Zone Income Breakdown')}
                     </Typography>
 
                     <Grid container spacing={2}>
@@ -864,14 +861,9 @@ const CIT: React.FC = () => {
                           <Typography variant="h6" sx={{ color: 'green.main', fontWeight: 700 }}>
                             AED {citCalculation.qualifyingIncome?.toLocaleString() || 0}
                           </Typography>
-                          <Typography variant="caption" sx={{ color: 'green.600', fontSize: '0.75rem', display: 'block', mb: 1 }}>
-                            Per Article 18 & Cabinet Decision No. 55:
+                          <Typography variant="caption" sx={{ color: 'green.600', fontSize: '0.75rem' }}>
+                            {t('cit.freeZone.qualifyingDescription', 'Exports, intra-zone trade, qualifying activities')}
                           </Typography>
-                          <ul style={{ margin: 0, paddingLeft: '1rem', fontSize: '0.7rem', color: 'green.600' }}>
-                            <li>Export of goods/services outside UAE</li>
-                            <li>Intra-Free Zone trade</li>
-                            <li>Qualifying activities per FTA list</li>
-                          </ul>
                         </Box>
                       </Grid>
 
@@ -883,40 +875,16 @@ const CIT: React.FC = () => {
                           <Typography variant="h6" sx={{ color: 'orange.main', fontWeight: 700 }}>
                             AED {citCalculation.nonQualifyingIncome?.toLocaleString() || 0}
                           </Typography>
-                          <Typography variant="caption" sx={{ color: 'orange.600', fontSize: '0.75rem', display: 'block', mb: 1 }}>
-                            Standard CIT treatment:
+                          <Typography variant="caption" sx={{ color: 'orange.600', fontSize: '0.75rem' }}>
+                            {t('cit.freeZone.nonQualifyingDescription', 'Mainland sales, domestic consumption')}
                           </Typography>
-                          <ul style={{ margin: 0, paddingLeft: '1rem', fontSize: '0.7rem', color: 'orange.600' }}>
-                            <li>Mainland/domestic sales</li>
-                            <li>Local consumption in UAE</li>
-                            <li>Non-qualifying business income</li>
-                          </ul>
                         </Box>
                       </Grid>
                     </Grid>
 
-                    {/* De Minimis Status */}
-                    <Box sx={{ mt: 2, p: 2, bgcolor: deMinimisCheck.isCompliant ? 'green.100' : 'red.100', borderRadius: 1 }}>
-                      <Typography variant="caption" sx={{ 
-                        color: deMinimisCheck.isCompliant ? 'green.main' : 'red.main', 
-                        fontWeight: 600, 
-                        fontSize: '0.8rem',
-                        display: 'block'
-                      }}>
-                        📊 De Minimis Threshold: {deMinimisCheck.isCompliant ? '✅ Compliant' : '❌ Exceeded'}
-                      </Typography>
-                      <Typography variant="caption" sx={{ 
-                        color: deMinimisCheck.isCompliant ? 'green.600' : 'red.600', 
-                        fontSize: '0.7rem' 
-                      }}>
-                        Non-qualifying: {deMinimisCheck.percentage.toFixed(1)}% of total (limit: 5%) | 
-                        AED {deMinimisCheck.amount.toLocaleString()} (limit: AED 5M)
-                      </Typography>
-                    </Box>
-
                     <Box sx={{ mt: 2, p: 2, bgcolor: 'blue.100', borderRadius: 1 }}>
                       <Typography variant="caption" sx={{ color: 'blue.main', fontWeight: 600, fontSize: '0.8rem' }}>
-                        📄 {t('cit.freeZone.footnote', 'Classification per UAE Corporate Tax Law Article 18 & Cabinet Decision No. 55 of 2023')}
+                        📄 {t('cit.freeZone.footnote', 'Includes QFZP income at 0% per FTA regulations')}
                       </Typography>
                     </Box>
                   </Box>
@@ -1138,7 +1106,7 @@ const CIT: React.FC = () => {
           context="cit"
         />
       </Box>
-    </>
+    </div>
   );
 };
 

@@ -1,83 +1,29 @@
-// Revenue categories with smart suggestions
 export const revenueCategories = [
-  'sales',
-  'services',
-  'consulting',
-  'licensing',
-  'subscription',
-  'commission',
-  'rental',
-  'investment',
-  'other'
+  "Product Sales",
+  "Service Income",
+  "Rental Income",
+  "Consulting Fees",
+  "Commission Income",
+  "Interest Income",
+  "Other Revenue"
 ];
 
-// Expense categories  
 export const expenseCategories = [
-  'rent',
-  'utilities',
-  'salaries',
-  'marketing',
-  'supplies',
-  'travel',
-  'meals',
-  'professional-services',
-  'insurance',
-  'depreciation',
-  'interest',
-  'taxes',
-  'other'
+  "Cost of Goods Sold",
+  "Salaries and Wages",
+  "Rent",
+  "Utilities",
+  "Marketing and Advertising",
+  "Software Subscriptions",
+  "Professional Services",
+  "Office Supplies",
+  "Bank Charges",
+  "Insurance",
+  "Travel and Meals",
+  "Depreciation",
+  "VAT Paid",
+  "Other Expenses"
 ];
-
-// Smart category suggestions with icons and colors
-export const categoryConfig = {
-  revenue: {
-    sales: { icon: '🛒', color: '#10B981', keywords: ['sale', 'product', 'goods', 'retail'] },
-    services: { icon: '🔧', color: '#3B82F6', keywords: ['service', 'support', 'maintenance', 'repair'] },
-    consulting: { icon: '🧾', color: '#8B5CF6', keywords: ['consult', 'advice', 'advisory', 'expert'] },
-    licensing: { icon: '📋', color: '#F59E0B', keywords: ['license', 'royalty', 'patent', 'trademark'] },
-    subscription: { icon: '📱', color: '#06B6D4', keywords: ['subscription', 'recurring', 'monthly', 'annual'] },
-    commission: { icon: '💰', color: '#EF4444', keywords: ['commission', 'referral', 'affiliate', 'broker'] },
-    rental: { icon: '🏢', color: '#84CC16', keywords: ['rent', 'lease', 'property', 'space'] },
-    investment: { icon: '📈', color: '#F97316', keywords: ['investment', 'dividend', 'interest', 'capital'] },
-    other: { icon: '📦', color: '#6B7280', keywords: ['other', 'misc', 'various'] }
-  },
-  expense: {
-    rent: { icon: '🏢', color: '#EF4444', keywords: ['rent', 'lease', 'property', 'office'] },
-    utilities: { icon: '⚡', color: '#F59E0B', keywords: ['utility', 'electric', 'water', 'internet', 'phone'] },
-    salaries: { icon: '👥', color: '#10B981', keywords: ['salary', 'wage', 'payroll', 'staff', 'employee'] },
-    marketing: { icon: '📢', color: '#8B5CF6', keywords: ['marketing', 'advertising', 'promotion', 'campaign'] },
-    supplies: { icon: '📝', color: '#06B6D4', keywords: ['supply', 'stationery', 'materials', 'equipment'] },
-    travel: { icon: '✈️', color: '#3B82F6', keywords: ['travel', 'flight', 'hotel', 'transport', 'trip'] },
-    meals: { icon: '🍽️', color: '#84CC16', keywords: ['meal', 'food', 'restaurant', 'catering', 'lunch'] },
-    'professional-services': { icon: '⚖️', color: '#F97316', keywords: ['legal', 'audit', 'accounting', 'consultant'] },
-    insurance: { icon: '🛡️', color: '#6366F1', keywords: ['insurance', 'coverage', 'policy', 'premium'] },
-    depreciation: { icon: '📉', color: '#64748B', keywords: ['depreciation', 'amortization', 'asset'] },
-    interest: { icon: '🏦', color: '#DC2626', keywords: ['interest', 'bank', 'loan', 'finance'] },
-    taxes: { icon: '🧾', color: '#059669', keywords: ['tax', 'vat', 'corporate', 'government'] },
-    other: { icon: '📦', color: '#6B7280', keywords: ['other', 'misc', 'various', 'general'] }
-  }
-};
-
-// Smart suggestion function
-export const getSuggestions = (input: string, type: 'revenue' | 'expense'): string[] => {
-  if (input.length < 2) return [];
-
-  const config = categoryConfig[type];
-  const suggestions: string[] = [];
-
-  Object.entries(config).forEach(([category, data]) => {
-    const matches = data.keywords.some(keyword => 
-      keyword.toLowerCase().includes(input.toLowerCase()) ||
-      category.toLowerCase().includes(input.toLowerCase())
-    );
-
-    if (matches) {
-      suggestions.push(category);
-    }
-  });
-
-  return suggestions.slice(0, 5); // Limit to 5 suggestions
-};
 
 // Translation keys for revenue categories
 export const revenueCategoryTranslations = {
@@ -134,56 +80,6 @@ export const taxCategoryMapping = {
   "Depreciation": { vatApplicable: false, reverseCharge: false }, // Accounting entry, no VAT
   "VAT Paid": { vatApplicable: false, reverseCharge: false }, // VAT payment itself
   "Other Expenses": { vatApplicable: true, reverseCharge: false }
-};
-
-// FTA Income Classification per Article 18 & Cabinet Decision No. 55
-export const FTA_INCOME_CLASSIFICATION = {
-  QUALIFYING_ACTIVITIES: {
-    'export-services': {
-      name: 'Export of Goods/Services',
-      description: 'Export transactions outside UAE mainland',
-      citRate: 0,
-      autoClassify: true
-    },
-    'intra-zone-trade': {
-      name: 'Intra-Free Zone Trade',
-      description: 'Trade between Free Zone entities',
-      citRate: 0,
-      autoClassify: true
-    },
-    'qualifying-activities': {
-      name: 'Other Qualifying Activities',
-      description: 'Per FTA qualifying activities list',
-      citRate: 0,
-      autoClassify: true
-    }
-  },
-  NON_QUALIFYING_ACTIVITIES: {
-    'mainland-sales': {
-      name: 'Mainland/Domestic Sales',
-      description: 'Sales to UAE mainland market',
-      citRate: 9,
-      autoClassify: true
-    },
-    'local-consumption': {
-      name: 'Local Consumption',
-      description: 'Goods/services consumed in UAE',
-      citRate: 9,
-      autoClassify: true
-    },
-    'other-income': {
-      name: 'Other Income',
-      description: 'Non-qualifying business income',
-      citRate: 9,
-      autoClassify: false
-    }
-  }
-};
-
-// De Minimis Thresholds per Cabinet Decision No. 55
-export const DE_MINIMIS_THRESHOLDS = {
-  PERCENTAGE_LIMIT: 5, // 5% of total income
-  AMOUNT_LIMIT: 5000000, // AED 5 million
 };
 
 // Free Zone Income Classification
