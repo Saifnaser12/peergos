@@ -178,48 +178,36 @@
     "admin": "Admin"
   },
   "setup": {
-    "title": "Setup Your Tax System",
-    "subtitle": "Configure your organization details to get started",
+    "title": "SME Setup & Compliance Assessment",
+    "subtitle": "Complete your business setup and compliance requirements",
+    "completed": "Setup Complete",
+    "incomplete": "Setup Incomplete",
+    "completeSetup": "Complete Setup",
     "step1": {
-      "title": "Organization Information",
+      "title": "Business Information",
       "orgName": "Organization Name",
       "trn": "Tax Registration Number (TRN)"
     },
     "step2": {
-      "title": "Fiscal Year Configuration",
-      "startDate": "Fiscal Year Start Date",
-      "endDate": "Fiscal Year End Date"
+      "title": "Tax Category Classification"
     },
     "step3": {
-      "title": "Business Details",
-      "businessType": "Business Type",
-      "address": "Business Address",
-      "freeZone": "I operate in a UAE Free Zone",
-      "freeZoneName": "Free Zone Name",
-      "freeZoneAddress": "Free Zone Registered Address",
-      "employees": "Number of Employees",
-      "operatingExpenses": "Annual Operating Expenses in Free Zone (AED)"
+      "title": "Compliance Requirements"
     },
     "step4": {
-      "title": "Tax Agent Selection (Optional)",
-      "description": "You can select an FTA-approved tax agent to assist with your tax compliance and submissions. This is optional and can be configured later."
+      "title": "Document Upload"
     },
     "step5": {
-      "title": "System Integrations (Optional)",
-      "description": "Connect your POS system and accounting software to automatically sync transactions and streamline your bookkeeping. This is optional and can be configured later."
+      "title": "Review & Submit"
     },
-    "progress": "Setup Progress",
-    "showAIGuide": "Show AI Guide",
-    "celebrating": "Setting up...",
-    "aiGuide": {
-      "welcome": "Welcome to Peergos — your UAE tax assistant!",
-      "step1": "Let's start by setting up your company details. I'll need your organization name and TRN to ensure FTA compliance.",
-      "step2": "Great! Now let's configure your fiscal year. This determines your CIT filing deadlines.",
-      "step3": "Perfect! Next, I need your business type and address for accurate tax guidance.",
-      "step4": "You're doing great! Tax agent selection is optional but recommended for complex filings.",
-      "step5": "Almost there! System integrations help automate your bookkeeping.",
-      "completion": "🎉 Congratulations! Your Peergos tax system is now fully configured and ready for UAE compliance!"
-    }
+    "welcome": "Welcome to Peergos",
+    "step1Old": "Upload your TRN and basic company info",
+    "step2Old": "Add revenue/expenses",
+    "step3Old": "Connect to FTA (simulation mode available)",
+    "step4Old": "Preview and submit CIT/VAT returns",
+    "progress": "setup steps complete",
+    "complete": "Setup Complete!",
+    "getStarted": "Get Started"
   },
   "compliance": {
     "center": {
@@ -427,30 +415,6 @@
     "unauthorized": "You are not authorized to perform this action.",
     "notFound": "The requested resource was not found.",
     "serverError": "Server error. Please try again later."
-  },
-  "setup": {
-    "title": "SME Setup & Compliance Assessment",
-    "subtitle": "Complete your business setup and compliance requirements",
-    "completed": "Setup Complete",
-    "incomplete": "Setup Incomplete",
-    "completeSetup": "Complete Setup",
-    "step1": {
-      "title": "Business Information",
-      "orgName": "Organization Name",
-      "trn": "Tax Registration Number (TRN)"
-    },
-    "step2": {
-      "title": "Tax Category Classification"
-    },
-    "step3": {
-      "title": "Compliance Requirements"
-    },
-    "step4": {
-      "title": "Document Upload"
-    },
-    "step5": {
-      "title": "Review & Submit"
-    }
   },
   "backup": {
     "title": "Backup & Recovery",
