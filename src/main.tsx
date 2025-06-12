@@ -20,13 +20,9 @@ import './i18n';
 import { AuditProvider } from './context/AuditContext';
 import { AppContextProvider } from './context/AppContext';
 
-// Initialize libraries asynchronously
-Promise.all([
-  libraryLoader.loadJsSHA(),
-  libraryLoader.loadQRCode()
-]).catch((error) => {
-  console.warn('Some libraries failed to load:', error);
-});
+// Initialize libraries asynchronously (non-blocking)
+libraryLoader.loadJsSHA().catch(console.warn);
+libraryLoader.loadQRCode().catch(console.warn);
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root element not found');
