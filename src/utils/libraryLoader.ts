@@ -133,11 +133,16 @@ class LibraryLoader {
   async loadQRCode(): Promise<any> {
     return this.loadLibrary({
       name: 'QRCode',
-      url: 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js',
+      url: 'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js',
       globalName: 'QRCode',
       fallback: () => {
         console.warn('QRCode not available, QR code generation will be disabled');
-        return null;
+        // Return a mock QRCode object for graceful degradation
+        return {
+          toCanvas: () => Promise.resolve(),
+          toDataURL: () => Promise.resolve('data:image/png;base64,'),
+          toString: () => Promise.resolve('')
+        };
       }
     });
   }
