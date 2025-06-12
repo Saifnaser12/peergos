@@ -133,7 +133,7 @@ class LibraryLoader {
   async loadQRCode(): Promise<any> {
     return this.loadLibrary({
       name: 'QRCode',
-      url: 'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js',
+      url: 'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js',
       globalName: 'QRCode',
       fallback: () => {
         console.warn('QRCode not available, QR code generation will be disabled');

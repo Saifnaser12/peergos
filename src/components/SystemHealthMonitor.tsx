@@ -319,4 +319,4 @@ const SystemHealthMonitor: React.FC<SystemHealthMonitorProps> = ({ variant = 'fu
   );
 };
 
-export default SystemHealthMonitor;nitor;
+export default SystemHealthMonitor;
