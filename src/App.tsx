@@ -59,10 +59,11 @@ const App: React.FC = () => {
   React.useEffect(() => {
     try {
       const setupComplete = localStorage.getItem('peergos_setup_complete') === 'true';
-      console.log('Setup status check:', setupComplete);
+      console.log('🔍 Setup status check:', setupComplete);
+      console.log('📝 Raw localStorage value:', localStorage.getItem('peergos_setup_complete'));
       setIsSetupComplete(setupComplete);
     } catch (error) {
-      console.error('Error checking setup status:', error);
+      console.error('❌ Error checking setup status:', error);
       setIsSetupComplete(false);
     }
   }, []);
@@ -103,6 +104,9 @@ const App: React.FC = () => {
                                       <Route path="/register" element={<Register />} />
                                       <Route path="/landing" element={<Landing />} />
                                       <Route path="/unauthorized" element={<Unauthorized />} />
+
+                                      {/* Setup route - outside layout for fresh users */}
+                                      <Route path="/setup" element={<Setup />} />
 
                                       {/* Protected routes with layout */}
                                       <Route path="/" element={<Layout />}>
@@ -168,7 +172,6 @@ const App: React.FC = () => {
                                             <Calendar />
                                           </ProtectedRoute>
                                         } />
-                                        <Route path="setup" element={<Setup />} />
                                         <Route path="assistant-test" element={
                                           <ProtectedRoute allowedRoles={['admin']}>
                                             <AssistantTest />
