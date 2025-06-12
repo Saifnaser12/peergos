@@ -429,15 +429,28 @@
     "serverError": "Server error. Please try again later."
   },
   "setup": {
-    "welcome": "Welcome to Peergos",
-    "subtitle": "Your UAE tax assistant",
-    "step1": "Upload your TRN and basic company info",
-    "step2": "Add revenue/expenses",
-    "step3": "Connect to FTA (simulation mode available)",
-    "step4": "Preview and submit CIT/VAT returns",
-    "progress": "setup steps complete",
-    "complete": "Setup Complete!",
-    "getStarted": "Get Started"
+    "title": "SME Setup & Compliance Assessment",
+    "subtitle": "Complete your business setup and compliance requirements",
+    "completed": "Setup Complete",
+    "incomplete": "Setup Incomplete",
+    "completeSetup": "Complete Setup",
+    "step1": {
+      "title": "Business Information",
+      "orgName": "Organization Name",
+      "trn": "Tax Registration Number (TRN)"
+    },
+    "step2": {
+      "title": "Tax Category Classification"
+    },
+    "step3": {
+      "title": "Compliance Requirements"
+    },
+    "step4": {
+      "title": "Document Upload"
+    },
+    "step5": {
+      "title": "Review & Submit"
+    }
   },
   "backup": {
     "title": "Backup & Recovery",
