@@ -23,6 +23,11 @@ import { useTax } from '../context/TaxContext';
 import { exportToExcel } from '../utils/exportUtils';
 import FreeZoneAdvisor from '../components/FreeZoneAdvisor';
 import { FREE_ZONE_THRESHOLDS } from '../utils/constants';
+import {
+  CheckCircleIcon,
+  CalculatorIcon,
+  DocumentIcon
+} from '@heroicons/react/24/outline';
 
 interface RevenueEntry {
   id: string;
@@ -376,7 +381,41 @@ const Accounting: React.FC = () => {
               </div>
             </div>
           </div>
-        )}
+
+          {/* Automated Features Section */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                🤖 Automated Bookkeeping Features
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Streamlined accounting automation and compliance tools
+              </p>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button className="flex flex-col items-center p-4 bg-blue-50 hover:bg-blue-100 border border-blue-200 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:border-blue-700 rounded-lg transition-colors duration-200">
+                  <span className="text-2xl mb-2">📄</span>
+                  <span className="text-sm font-medium text-blue-800 dark:text-blue-200">VAT Invoice Generation</span>
+                  <span className="text-xs text-blue-600 dark:text-blue-300 mt-1">Automated & FTA-compliant</span>
+                </button>
+                <button className="flex flex-col items-center p-4 bg-green-50 hover:bg-green-100 border border-green-200 dark:bg-green-900/20 dark:hover:bg-green-900/30 dark:border-green-700 rounded-lg transition-colors duration-200">
+                  <span className="text-2xl mb-2">🏦</span>
+                  <span className="text-sm font-medium text-green-800 dark:text-green-200">Bank Reconciliation</span>
+                  <span className="text-xs text-green-600 dark:text-green-300 mt-1">Link payments & receipts</span>
+                </button>
+                <button className="flex flex-col items-center p-4 bg-purple-50 hover:bg-purple-100 border border-purple-200 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 dark:border-purple-700 rounded-lg transition-colors duration-200">
+                  <span className="text-2xl mb-2">📊</span>
+                  <span className="text-sm font-medium text-purple-800 dark:text-purple-200">Financial Statements</span>
+                  <span className="text-xs text-purple-600 dark:text-purple-300 mt-1">FTA-standardized reports</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* Revenue Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"></div>
 
         {/* Tab Navigation */}
         <div className="mb-8">

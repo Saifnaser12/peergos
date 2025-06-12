@@ -31,6 +31,11 @@ interface SetupData {
     qualifying: number;
     nonQualifying: number;
   };
+  smeCategory: string;
+  citExemption: boolean;
+  vatRegistration: string;
+  relatedPartyTracking: boolean;
+  bankIntegration: boolean;
 }
 
 const Setup: React.FC = () => {
@@ -53,7 +58,12 @@ const Setup: React.FC = () => {
     freeZoneIncome: {
       qualifying: 0,
       nonQualifying: 0
-    }
+    },
+    smeCategory: '',
+    citExemption: false,
+    vatRegistration: '',
+    relatedPartyTracking: false,
+    bankIntegration: false
   });
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -112,11 +122,7 @@ const Setup: React.FC = () => {
       case 2:
         return formData.fiscalYearStart && formData.fiscalYearEnd;
       case 3:
-        const basicDetailsValid = formData.businessType && formData.address;
-        if (formData.isFreeZone) {
-          return basicDetailsValid && formData.freeZoneName && formData.freeZoneAddress;
-        }
-        return basicDetailsValid;
+        return formData.businessType && formData.address && formData.smeCategory;
       case 4:
         return true; // Tax agent selection is optional
       case 5:
@@ -387,6 +393,23 @@ const Setup: React.FC = () => {
                   className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   placeholder="Enter your business address"
                 />
+              </div>
+
+              {/* SME Category Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  SME Category
+                </label>
+                <select
+                  value={formData.smeCategory}
+                  onChange={(e) => handleInputChange('smeCategory', e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                >
+                  <option value="">Select SME Category</option>
+                  <option value="micro">Micro</option>
+                  <option value="small">Small</option>
+                  <option value="medium">Medium</option>
+                </select>
               </div>
 
               {/* Free Zone Section */}

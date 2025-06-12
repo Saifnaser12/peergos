@@ -9,6 +9,7 @@ import TRNLookup from '../components/TRNLookup';
 import POSIntegrationStatus from '../components/POSIntegrationStatus';
 import FTAComplianceCenter from '../components/FTAComplianceCenter';
 import RealTimeTaxCalculator from '../components/RealTimeTaxCalculator';
+import SmartReminders from '../components/SmartReminders';
 import {
   DocumentTextIcon,
   ReceiptPercentIcon,
@@ -279,6 +280,11 @@ const Dashboard: React.FC = () => {
         {/* Real-Time Tax Calculator */}
         <div className="mb-8">
           <RealTimeTaxCalculator />
+        </div>
+
+        {/* Smart Reminders & Insights */}
+        <div className="mb-8">
+          <SmartReminders />
         </div>
 
         {/* Main Content Grid */}
