@@ -4,6 +4,7 @@ run = "npm run dev"
 
 [nix]
 channel = "stable-24_05"
+packages = ["killall"]
 
 [deployment]
 build = ["npm", "run", "build"]
@@ -32,7 +33,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "killall node 2>/dev/null || true"
+args = "pkill -f \"npm.*dev\" 2>/dev/null || true"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
@@ -158,3 +159,11 @@ externalPort = 3001
 [[ports]]
 localPort = 5003
 externalPort = 3002
+
+[[ports]]
+localPort = 5004
+externalPort = 3003
+
+[[ports]]
+localPort = 5005
+externalPort = 4200
