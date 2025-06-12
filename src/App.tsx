@@ -103,10 +103,10 @@ const App: React.FC = () => {
                                       {/* Protected routes with layout */}
                                       <Route path="/" element={<Layout />}>
                                         <Route index element={
-                                          isSetupComplete ? 
-                                            <Navigate to="/dashboard" replace /> : 
-                                            <Navigate to="/setup" replace />
-                                        } />
+                          isSetupComplete === true ? 
+                            <Navigate to="/dashboard" replace /> : 
+                            <Navigate to="/setup" replace />
+                        } />
                                         <Route path="dashboard" element={
                                           <ProtectedRoute allowedRoles={['admin', 'accountant', 'assistant', 'sme_client']}>
                                             <Dashboard />
