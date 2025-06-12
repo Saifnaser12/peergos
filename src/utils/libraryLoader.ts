@@ -1,4 +1,3 @@
-
 // Library Loader Utility
 // Handles dynamic loading of external libraries with fallbacks
 
@@ -52,7 +51,7 @@ class LibraryLoader {
     } catch (error) {
       console.warn(`Failed to load ${name}:`, error);
       this.loadingPromises.delete(name);
-      
+
       // Try fallback
       if (fallback) {
         try {
@@ -63,7 +62,7 @@ class LibraryLoader {
           console.warn(`Fallback failed for ${name}:`, fallbackError);
         }
       }
-      
+
       this.loadedLibraries.set(name, { 
         library: null, 
         loaded: false, 
@@ -167,6 +166,34 @@ class LibraryLoader {
 export const libraryLoader = LibraryLoader.getInstance();
 
 // Export helper functions that use the singleton
+// Export helper functions that use the singleton
+export const loadLibrary = async (url: string, globalName: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    if (typeof window !== 'undefined' && (window as any)[globalName]) {
+      console.log(`✅ ${globalName} already loaded`);
+      resolve((window as any)[globalName]);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = url;
+    script.onload = () => {
+      if ((window as any)[globalName]) {
+        console.log(`✅ ${globalName} loaded successfully from ${url}`);
+        resolve((window as any)[globalName]);
+      } else {
+        console.error(`❌ ${globalName} not found after loading ${url}`);
+        reject(new Error(`${globalName} not found after loading ${url}`));
+      }
+    };
+    script.onerror = (error) => {
+      console.error(`❌ Failed to load ${globalName} from ${url}:`, error);
+      reject(new Error(`Failed to load ${url}`));
+    };
+    document.head.appendChild(script);
+  });
+};
+
 export const loadJsSHA = async (): Promise<any> => {
   return libraryLoader.loadJsSHA();
 };
@@ -181,7 +208,7 @@ export const loadPDFLib = async (): Promise<any> => {
 
 export const initializeLibraries = async (): Promise<void> => {
   console.log('🔧 Initializing external libraries...');
-  
+
   try {
     await Promise.allSettled([
       loadJsSHA(),

@@ -52,17 +52,21 @@ export function measurePerformance() {
     const monitor = PerformanceMonitor.getInstance();
 
     descriptor.value = function (...args: unknown[]): unknown {
-      const result = monitor.measure(() => originalMethod.apply(this, args));
+    const start = performance.now();
+    const result = originalMethod.apply(this, args);
 
-      // Handle both synchronous and asynchronous functions
-      if (result && typeof result === 'object' && 'then' in result) {
-        return (result as Promise<unknown>).finally(() => {
-          monitor.log(`${target.constructor.name}.${propertyKey}`, performance.now());
-        });
-      }
+    // Handle both synchronous and asynchronous functions
+    if (result && typeof result === 'object' && 'then' in result) {
+      return (result as Promise<unknown>).finally(() => {
+        const duration = performance.now() - start;
+        monitor.log(`${target.constructor.name}.${propertyKey}`, duration);
+      });
+    }
 
-      return result;
-    };
+    const duration = performance.now() - start;
+    monitor.log(`${target.constructor.name}.${propertyKey}`, duration);
+    return result;
+  };
 
     return descriptor;
   };
@@ -74,7 +78,7 @@ export function withPerformanceTracking<P extends object>(
 ): FunctionComponent<P> {
   const componentName = WrappedComponent.displayName || WrappedComponent.name;
   const monitor = PerformanceMonitor.getInstance();
-  
+
   const WithPerformance: FunctionComponent<P> = (props) => {
     React.useEffect(() => {
       monitor.measureOperation(`${componentName}.mount`, () => {});
@@ -112,4 +116,4 @@ export const measureAsyncPerformance = async <T>(
     Performance.log(`${operation} (error)`, duration);
     throw error;
   }
-}; 
+};
