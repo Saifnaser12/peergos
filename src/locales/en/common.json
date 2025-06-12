@@ -7,19 +7,16 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "setup": "Setup",
+    "accounting": "Accounting", 
     "vat": "VAT",
     "cit": "CIT",
-    "accounting": "Accounting",
     "financials": "Financials",
     "transferPricing": "Transfer Pricing",
-    "freeZoneSubstance": "Free Zone Substance",
-    "setup": "Setup",
+    "filing": "Filing",
     "assistant": "Assistant",
     "calendar": "Calendar",
-    "admin": "Administration",
-    "logout": "Logout",
-    "profile": "Profile",
-    "settings": "Settings"
+    "admin": "Admin"
   },
   "common": {
     "appTitle": "UAE Tax Compliance",
@@ -168,6 +165,7 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "setup": "Setup",
     "accounting": "Accounting", 
     "vat": "VAT",
     "cit": "Corporate Income Tax",

@@ -110,164 +110,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
             {/* Navigation */}
             <nav className="mt-8 flex-1 space-y-1 px-2">
-            {canAccessRoute('/dashboard') && (
-              <NavLink
-                to="/dashboard"
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
-                  }`
-                }
-              >
-                <HomeIcon className="w-5 h-5 mr-3" />
-                {t('nav.dashboard')}
-              </NavLink>
-            )}
-            {canAccessRoute('/accounting') && (
-              <NavLink
-                to="/accounting"
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
-                  }`
-                }
-              >
-                <CurrencyDollarIcon className="w-5 h-5 mr-3" />
-                {t('nav.accounting')}
-              </NavLink>
-            )}
-
-            {canAccessRoute('/vat') && (
-              <NavLink
-                to="/vat"
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
-                  }`
-                }
-              >
-                <ReceiptPercentIcon className="w-5 h-5 mr-3" />
-                {t('nav.vat')}
-              </NavLink>
-            )}
-
-            {canAccessRoute('/cit') && (
-              <NavLink
-                to="/cit"
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
-                  }`
-                }
-              >
-                <CalculatorIcon className="w-5 h-5 mr-3" />
-                {t('nav.cit')}
-              </NavLink>
-            )}
-
-            {canAccessRoute('/financials') && (
-              <NavLink
-                to="/financials"
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
-                  }`
-                }
-              >
-                <ChartBarIcon className="w-5 h-5 mr-3" />
-                {t('nav.financials')}
-              </NavLink>
-            )}
-
-            {canAccessRoute('/transfer-pricing') && (
-              <NavLink
-                to="/transfer-pricing"
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
-                  }`
-                }
-              >
-                <DocumentTextIcon className="w-5 h-5 mr-3" />
-                {t('nav.transferPricing')}
-              </NavLink>
-            )}
-
-            {canAccessRoute('/filing') && (
-              <NavLink
-                to="/filing"
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
-                  }`
-                }
-              >
-                <DocumentTextIcon className="w-5 h-5 mr-3" />
-                {t('nav.filing')}
-              </NavLink>
-            )}
-
-            {canAccessRoute('/assistant') && (
-              <NavLink
-                to="/assistant"
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
-                  }`
-                }
-              >
-                <ChatBubbleLeftRightIcon className="w-5 h-5 mr-3" />
-                {t('nav.assistant')}
-              </NavLink>
-            )}
-
-            {canAccessRoute('/calendar') && (
-              <NavLink
-                to="/calendar"
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
-                  }`
-                }
-              >
-                <CalendarDaysIcon className="w-5 h-5 mr-3" />
-                {t('nav.calendar')}
-              </NavLink>
-            )}
-
-            {canAccessRoute('/setup') && (
-              <NavLink
-                to="/setup"
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
-                  }`
-                }
-              >
-                <Cog6ToothIcon className="w-5 h-5 mr-3" />
-                {t('nav.setup')}
-              </NavLink>
-            )}
+              {filteredNavItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                        isActive
+                          ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700'
+                      }`
+                    }
+                  >
+                    <Icon className="w-5 h-5 mr-3" />
+                    {item.name}
+                  </NavLink>
+                );
+              })}
             </nav>
           </div>
         </div>

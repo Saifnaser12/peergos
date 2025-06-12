@@ -36,12 +36,12 @@ const drawerWidth = 240;
 
 const navigationItems = [
   { text: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
+  { text: 'Setup', path: '/setup', icon: <SetupIcon /> },
   { text: 'VAT', path: '/vat', icon: <VATIcon /> },
   { text: 'CIT', path: '/cit', icon: <CITIcon /> },
   { text: 'Financials', path: '/financials', icon: <FinancialsIcon /> },
   { text: 'Transfer Pricing', path: '/transfer-pricing', icon: <TransferPricingIcon /> },
   { text: 'Filing', path: '/filing', icon: <FilingIcon /> },
-  { text: 'Setup', path: '/setup', icon: <SetupIcon /> },
   { text: 'Assistant', path: '/assistant', icon: <AssistantIcon /> },
 ];
 

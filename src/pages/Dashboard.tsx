@@ -27,7 +27,8 @@ import {
   Cog6ToothIcon,
   ArrowRightIcon,
   BuildingOfficeIcon,
-  ArrowTrendingUpIcon
+  ArrowTrendingUpIcon,
+  ReceiptPercentIcon
 } from '@heroicons/react/24/outline';
 
 const Dashboard: React.FC = () => {
