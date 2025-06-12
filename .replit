@@ -49,11 +49,7 @@ args = "sleep 1"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "nohup npm run dev > /dev/null 2>&1 &"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "echo \"Dev server started successfully!\""
+args = "npm run dev"
 
 [[workflows.workflow]]
 name = "SME Setup & Compliance Assessment"
