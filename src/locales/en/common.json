@@ -202,7 +202,7 @@
     },
     "welcome": "Welcome to Peergos",
     "step1Old": "Upload your TRN and basic company info",
-    "step2Old": "Add revenue/expenses",
+    "step2Old": "Add revenue/expenses", 
     "step3Old": "Connect to FTA (simulation mode available)",
     "step4Old": "Preview and submit CIT/VAT returns",
     "progress": "setup steps complete",
