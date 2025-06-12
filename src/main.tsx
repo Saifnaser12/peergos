@@ -21,8 +21,16 @@ import { AuditProvider } from './context/AuditContext';
 import { AppContextProvider } from './context/AppContext';
 
 // Initialize libraries asynchronously (non-blocking)
-libraryLoader.loadJsSHA().catch(console.warn);
-libraryLoader.loadQRCode().catch(console.warn);
+Promise.allSettled([
+  libraryLoader.loadJsSHA(),
+  libraryLoader.loadQRCode()
+]).then(results => {
+  results.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      console.warn(`Library ${index === 0 ? 'jsSHA' : 'QRCode'} failed to load:`, result.reason);
+    }
+  });
+}).catch(console.warn);
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root element not found');
