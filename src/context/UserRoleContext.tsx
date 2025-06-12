@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import type { Role } from '../types/roles';
 import { ROLE_PERMISSIONS, ROLES } from '../types/roles';
@@ -39,18 +38,25 @@ interface UserRoleProviderProps {
 export const UserRoleProvider: React.FC<UserRoleProviderProps> = ({ children }) => {
   // Default role for demo - in production this would come from authentication
   const [role, setRole] = useState<Role>(ROLES.ADMIN);
-  
+
   const canAccess = (path: string): boolean => {
     const allowedRoles = ROLE_PERMISSIONS[path];
     if (!allowedRoles) {
       return role === ROLES.ADMIN; // Default to admin only for undefined routes
     }
+
+    // Special handling for setup page - always accessible during onboarding
+    if (path === '/setup') {
+      const setupComplete = localStorage.getItem('peergos_setup_complete') === 'true';
+      if (!setupComplete) return true; // Allow access during setup
+    }
+
     return allowedRoles.includes(role);
   };
 
   const hasPermission = (resource: Resource, permission: Permission): boolean => {
     let rolePermissions;
-    
+
     switch (role) {
       case ROLES.ADMIN:
         rolePermissions = adminPermissions;
@@ -67,10 +73,10 @@ export const UserRoleProvider: React.FC<UserRoleProviderProps> = ({ children }) 
       default:
         return false;
     }
-    
+
     const resourcePermissions = rolePermissions[resource];
     if (!resourcePermissions) return false;
-    
+
     return resourcePermissions[permission] === true;
   };
 

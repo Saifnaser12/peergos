@@ -79,6 +79,13 @@ const App: React.FC = () => {
                                       <Route path="/landing" element={<Landing />} />
                                       <Route path="/unauthorized" element={<Unauthorized />} />
 
+                                      {/* Setup Route - Outside AppLayout for fresh setup experience */}
+                                      <Route path="/setup" element={
+                                        <ProtectedRoute allowedRoles={['admin', 'accountant', 'sme_client']}>
+                                          <Setup />
+                                        </ProtectedRoute>
+                                      } />
+
                                       {/* Protected routes with layout */}
                                       <Route path="/" element={<Layout />}>
                                         <Route index element={<Navigate to="/dashboard" replace />} />
@@ -139,11 +146,6 @@ const App: React.FC = () => {
                                             <Calendar />
                                           </ProtectedRoute>
                                         } />
-                                        <Route path="setup" element={
-                                          <ProtectedRoute allowedRoles={['admin', 'accountant', 'sme_client']}>
-                                            <Setup />
-                                          </ProtectedRoute>
-                                        } />
                                         <Route path="assistant-test" element={
                                           <ProtectedRoute allowedRoles={['admin']}>
                                             <AssistantTest />
@@ -164,7 +166,7 @@ const App: React.FC = () => {
                                             <FreeZoneSubstance />
                                           </ProtectedRoute>
                                         } />
-                                          <Route path="financials-test" element={<FinancialsTest />} />
+                                        <Route path="financials-test" element={<FinancialsTest />} />
                                       </Route>
                                     </Routes>
                                   </Router>
