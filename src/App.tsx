@@ -11,7 +11,7 @@ import { UserRoleProvider } from './context/UserRoleContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { TransferPricingProvider } from './context/TransferPricingContext';
 import { TaxProvider } from './context/TaxContext';
-import { TaxAgentProvider } from './context/TaxAgentContext';
+import { TaxAgentProvider } from './context/TaxAgentProvider';
 import { InvoiceProvider } from './context/InvoiceContext';
 import { POSIntegrationProvider } from './context/POSIntegrationContext';
 import { RelatedPartyProvider } from './context/RelatedPartyContext';
@@ -140,7 +140,7 @@ const App: React.FC = () => {
                                           </ProtectedRoute>
                                         } />
                                         <Route path="setup" element={
-                                          <ProtectedRoute allowedRoles={['admin', 'accountant']}>
+                                          <ProtectedRoute allowedRoles={['admin', 'accountant', 'sme_client']}>
                                             <Setup />
                                           </ProtectedRoute>
                                         } />
