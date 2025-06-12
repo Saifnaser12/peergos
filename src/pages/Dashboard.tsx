@@ -10,11 +10,21 @@ import POSIntegrationStatus from '../components/POSIntegrationStatus';
 import FTAComplianceCenter from '../components/FTAComplianceCenter';
 import RealTimeTaxCalculator from '../components/RealTimeTaxCalculator';
 import SmartReminders from '../components/SmartReminders';
+import { useUserRole } from '../context/UserRoleContext';
+import { useNotification } from '../context/NotificationContext';
+import { useTheme } from '../context/ThemeContext';
 import {
-  DocumentTextIcon,
-  ReceiptPercentIcon,
   ChartBarIcon,
+  DocumentTextIcon,
+  BanknotesIcon,
+  ClockIcon,
+  ExclamationTriangleIcon,
+  CheckCircleIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  CalendarIcon,
   CurrencyDollarIcon,
+  Cog6ToothIcon,
   ArrowRightIcon,
   BuildingOfficeIcon,
   ArrowTrendingUpIcon
@@ -22,7 +32,14 @@ import {
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
+  const { role } = useUserRole();
+  const { notifications } = useNotification();
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
+
+  // Check if setup is incomplete
+  const setupIncomplete = !localStorage.getItem('peergos_setup_complete');
+
   const { citData, vatData } = useTax();
   const { revenue, expenses } = useFinance();
   const { summary, isUpdating, totalRevenue, totalExpenses, netIncome } = useFinancialSync();
@@ -334,6 +351,23 @@ const Dashboard: React.FC = () => {
               </p>
             </div>
             <div className="space-y-3">
+             {setupIncomplete && (
+                <div className="flex items-start justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg group">
+                  <div className="flex items-start space-x-3">
+                    <span className="text-orange-500">❗</span>
+                    <div>
+                      <p className="text-sm font-medium text-orange-800 dark:text-orange-200">Setup incomplete</p>
+                      <p className="text-xs text-orange-600 dark:text-orange-300">Complete initial configuration</p>
+                    </div>
+                  </div>
+                  <button
+                    className="opacity-0 group-hover:opacity-100 text-orange-400 hover:text-orange-600 text-xs"
+                    onClick={() => navigate('/setup')}
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
               <div className="flex items-start justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg group">
                 <div className="flex items-start space-x-3">
                   <span className="text-red-500">❗</span>
@@ -359,21 +393,6 @@ const Dashboard: React.FC = () => {
                 </div>
                 <button 
                   className="opacity-0 group-hover:opacity-100 text-yellow-400 hover:text-yellow-600 text-xs"
-                  onClick={() => {/* Handle dismiss */}}
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="flex items-start justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg group">
-                <div className="flex items-start space-x-3">
-                  <span className="text-orange-500">❗</span>
-                  <div>
-                    <p className="text-sm font-medium text-orange-800 dark:text-orange-200">Setup incomplete</p>
-                    <p className="text-xs text-orange-600 dark:text-orange-300">Complete initial configuration</p>
-                  </div>
-                </div>
-                <button 
-                  className="opacity-0 group-hover:opacity-100 text-orange-400 hover:text-orange-600 text-xs"
                   onClick={() => {/* Handle dismiss */}}
                 >
                   ✕

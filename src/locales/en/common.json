@@ -166,6 +166,19 @@
     "completeSetup": "Complete Setup",
     "uploadDocument": "Upload Document"
   },
+  "nav": {
+    "dashboard": "Dashboard",
+    "accounting": "Accounting", 
+    "vat": "VAT",
+    "cit": "Corporate Income Tax",
+    "financials": "Financials",
+    "transferPricing": "Transfer Pricing",
+    "filing": "Filing",
+    "assistant": "Assistant",
+    "calendar": "Calendar",
+    "setup": "Setup",
+    "admin": "Admin"
+  },
   "setup": {
     "title": "Setup Your Tax System",
     "subtitle": "Configure your organization details to get started",
