@@ -54,26 +54,18 @@ const App: React.FC = () => {
     },
   });
 
-  const [isSetupComplete, setIsSetupComplete] = React.useState<boolean | null>(null);
+  const [isSetupComplete, setIsSetupComplete] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     try {
       const setupComplete = localStorage.getItem('peergos_setup_complete') === 'true';
+      console.log('Setup status check:', setupComplete);
       setIsSetupComplete(setupComplete);
     } catch (error) {
       console.error('Error checking setup status:', error);
       setIsSetupComplete(false);
     }
   }, []);
-
-  // Show loading while checking setup status
-  if (isSetupComplete === null) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    );
-  }
 
   return (
     <ErrorBoundary>
@@ -103,7 +95,7 @@ const App: React.FC = () => {
                                       {/* Protected routes with layout */}
                                       <Route path="/" element={<Layout />}>
                                         <Route index element={
-                          isSetupComplete === true ? 
+                          isSetupComplete ? 
                             <Navigate to="/dashboard" replace /> : 
                             <Navigate to="/setup" replace />
                         } />
