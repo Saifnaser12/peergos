@@ -105,7 +105,7 @@ const App: React.FC = () => {
                                       <Route path="/landing" element={<Landing />} />
                                       <Route path="/unauthorized" element={<Unauthorized />} />
 
-                                      {/* Setup route - outside layout for fresh users */}
+                                      {/* Setup route - accessible to all users */}
                                       <Route path="/setup" element={<Setup />} />
 
                                       {/* Protected routes with layout */}

@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       icon: HomeIcon,
     },
     {
-      name: t('nav.setup'),
+      name: t('nav.setup', 'Setup'),
       path: '/setup',
       icon: Cog6ToothIcon,
     },
@@ -90,11 +90,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   ];
 
   const filteredNavItems = navigationItems.filter(item => {
-    // Setup page should always be visible for initial configuration
-    if (item.path === '/setup') {
+    // Always show Setup and Dashboard
+    if (item.path === '/setup' || item.path === '/dashboard') {
       return true;
     }
-    // All other pages require proper access permissions
+    // Other pages require proper access permissions
     return canAccess(item.path);
   });
 

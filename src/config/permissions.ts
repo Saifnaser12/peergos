@@ -84,7 +84,9 @@ export const ROUTE_PERMISSIONS: Record<string, UserRole[]> = {
 
 export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
   admin: ['*'], // Admin can access everything
-  accountant: ['/dashboard', '/setup', '/vat', '/cit', '/financials', '/filing', '/assistant', '/accounting'],
+  accountant: ['/dashboard', '/setup', '/vat', '/cit', '/financials', '/filing', '/assistant', '/accounting', '/transfer-pricing', '/calendar'],
+  assistant: ['/dashboard', '/setup', '/vat', '/cit', '/financials', '/filing', '/assistant', '/accounting', '/calendar'],
+  sme_client: ['/dashboard', '/setup', '/vat', '/financials', '/assistant', '/accounting', '/calendar'],
   client: ['/dashboard', '/setup', '/vat', '/financials', '/assistant'],
   auditor: ['/dashboard', '/setup', '/vat', '/cit', '/financials', '/filing', '/assistant']
 };
