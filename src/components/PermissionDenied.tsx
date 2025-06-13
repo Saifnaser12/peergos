@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useUserRole } from '../context/UserRoleContext';
 import { XCircleIcon } from '@heroicons/react/24/outline';
@@ -8,7 +9,7 @@ interface PermissionDeniedProps {
 
 const PermissionDenied: React.FC<PermissionDeniedProps> = ({ customMessage }) => {
   const { role } = useUserRole();
-
+  
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -19,14 +20,14 @@ const PermissionDenied: React.FC<PermissionDeniedProps> = ({ customMessage }) =>
               Access Denied
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              {customMessage || `You don't have permission to access this resource.`}
+              {customMessage || "You don't have permission to access this resource."}
             </p>
             <p className="mt-1 text-center text-sm text-gray-500">
               Current role: {role}
             </p>
             <div className="mt-6">
-              <a
-                href="/"
+              <a 
+                href="/" 
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Return to Dashboard
@@ -39,4 +40,4 @@ const PermissionDenied: React.FC<PermissionDeniedProps> = ({ customMessage }) =>
   );
 };
 
-export default PermissionDenied; 
+export default PermissionDenied;

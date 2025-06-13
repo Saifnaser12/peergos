@@ -1,26 +1,5 @@
-
-import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  Paper,
-  Checkbox,
-  FormControlLabel,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  LinearProgress,
-  Chip,
-  Button,
-  Alert,
-  Divider
-} from '@mui/material';
-import {
-  ExpandMore as ExpandMoreIcon,
-  CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-  Assignment as AssignmentIcon
-} from '@mui/icons-material';
+import React, { useState } from 'react';
+import { Box, Typography, Paper, Checkbox, FormControlLabel, Button, Alert } from '@mui/material';
 
 interface QAItem {
   id: string;
@@ -39,20 +18,12 @@ interface QASection {
 const QAChecklist: React.FC = () => {
   const [sections, setSections] = useState<QASection[]>([
     {
-      id: 'access-control',
-      title: '🔐 Role-Based Access Control',
-      description: 'Verify proper role restrictions for all sensitive pages',
+      id: 'auth-security',
+      title: '🔐 Authentication & Security',
+      description: 'Verify user authentication and authorization systems',
       items: [
-        { id: 'cit-admin', label: 'Admin role can access CIT page', checked: false, critical: true },
-        { id: 'cit-accountant', label: 'Accountant role can access CIT page', checked: false, critical: true },
-        { id: 'cit-assistant-blocked', label: 'Assistant role cannot access CIT page', checked: false, critical: true },
-        { id: 'cit-viewer-blocked', label: 'Viewer role cannot access CIT page', checked: false, critical: true },
-        { id: 'vat-admin', label: 'Admin role can access VAT page', checked: false, critical: true },
-        { id: 'vat-accountant', label: 'Accountant role can access VAT page', checked: false, critical: true },
-        { id: 'vat-assistant-blocked', label: 'Assistant role cannot access VAT page', checked: false, critical: true },
-        { id: 'vat-viewer-blocked', label: 'Viewer role cannot access VAT page', checked: false, critical: true },
-        { id: 'financials-all-access', label: 'All roles can access Financials with proper restrictions', checked: false, critical: true },
-        { id: 'transfer-pricing-all', label: 'All roles can access Transfer Pricing', checked: false, critical: false },
+        { id: 'login-required', label: 'Login required for protected pages', checked: false, critical: true },
+        { id: 'role-permissions', label: 'Role-based permissions enforced correctly', checked: false, critical: true },
         { id: 'unauthorized-redirect', label: 'Unauthorized users redirected to /unauthorized', checked: false, critical: true }
       ]
     },
@@ -75,9 +46,7 @@ const QAChecklist: React.FC = () => {
       items: [
         { id: 'theme-toggle', label: 'Theme toggle button visible and functional', checked: false, critical: false },
         { id: 'dark-mode', label: 'Dark mode applies consistently across all pages', checked: false, critical: false },
-        { id: 'light-mode', label: 'Light mode applies consistently across all pages', checked: false, critical: false },
-        { id: 'theme-persistence', label: 'Theme preference persists across sessions', checked: false, critical: false },
-        { id: 'text-readability', label: 'All text remains readable in both modes', checked: false, critical: true }
+        { id: 'light-mode', label: 'Light mode applies consistently across all pages', checked: false, critical: false }
       ]
     },
     {
@@ -210,7 +179,6 @@ const QAChecklist: React.FC = () => {
         <Paper elevation={2} className="p-6 mb-6">
           <Box className="flex items-center justify-between mb-4">
             <Box className="flex items-center gap-3">
-              <AssignmentIcon className="text-blue-600" sx={{ fontSize: 32 }} />
               <Typography variant="h4" className="font-bold text-gray-900 dark:text-white">
                 QA Launch Checklist
               </Typography>
@@ -229,97 +197,43 @@ const QAChecklist: React.FC = () => {
           </Typography>
 
           {/* Progress Overview */}
-          <Box className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <Box>
-              <Typography variant="body2" className="mb-2 font-medium">
-                Overall Progress: {Math.round(getTotalProgress())}%
-              </Typography>
-              <LinearProgress 
-                variant="determinate" 
-                value={getTotalProgress()} 
-                className="h-2 rounded"
-              />
-            </Box>
-            <Box>
-              <Typography variant="body2" className="mb-2 font-medium">
-                Critical Items: {Math.round(getCriticalProgress())}%
-              </Typography>
-              <LinearProgress 
-                variant="determinate" 
-                value={getCriticalProgress()} 
-                color={getCriticalProgress() === 100 ? "success" : "error"}
-                className="h-2 rounded"
-              />
-            </Box>
-          </Box>
-
-          {/* Launch Status */}
-          <Alert 
-            severity={isReadyForLaunch() ? "success" : "warning"} 
-            icon={isReadyForLaunch() ? <CheckCircleIcon /> : <WarningIcon />}
-          >
-            {isReadyForLaunch() 
-              ? "✅ Ready for Launch! All critical items completed."
-              : "⚠️ Not ready for launch. Complete all critical items first."
-            }
+          <Alert severity="info">
+            Complete all critical items before launching to production. Export this report for sign-off documentation.
           </Alert>
+          <Button 
+            variant="contained" 
+            onClick={exportChecklist}
+            className="mt-3"
+          >
+            Export QA Report
+          </Button>
         </Paper>
 
         {/* QA Sections */}
         {sections.map((section, index) => (
-          <Accordion key={section.id} defaultExpanded={index === 0}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box className="flex items-center justify-between w-full mr-4">
-                <Box>
-                  <Typography variant="h6" className="font-semibold">
-                    {section.title}
-                  </Typography>
-                  <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
-                    {section.description}
-                  </Typography>
-                </Box>
-                <Box className="flex items-center gap-2">
-                  <Chip 
-                    label={`${Math.round(getSectionProgress(section))}%`}
-                    color={getSectionProgress(section) === 100 ? "success" : "default"}
-                    size="small"
+          <Paper key={section.id} elevation={2} className="mb-4 p-4">
+            <Typography variant="h6" className="mb-2">{section.title}</Typography>
+            <Typography variant="body2" className="mb-3 text-gray-600">{section.description}</Typography>
+
+            {section.items.map((item) => (
+              <FormControlLabel
+                key={item.id}
+                control={
+                  <Checkbox
+                    checked={item.checked}
+                    onChange={() => handleItemCheck(section.id, item.id)}
+                    color={item.critical ? 'error' : 'primary'}
                   />
-                </Box>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box className="space-y-2">
-                {section.items.map((item) => (
-                  <Box key={item.id} className="flex items-center justify-between">
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={item.checked}
-                          onChange={() => handleItemCheck(section.id, item.id)}
-                          color="primary"
-                        />
-                      }
-                      label={
-                        <Box className="flex items-center gap-2">
-                          <Typography variant="body2">
-                            {item.label}
-                          </Typography>
-                          {item.critical && (
-                            <Chip 
-                              label="Critical" 
-                              size="small" 
-                              color="error" 
-                              variant="outlined"
-                            />
-                          )}
-                        </Box>
-                      }
-                    />
-                  </Box>
-                ))}
-              </Box>
-            </AccordionDetails>
-          </Accordion>
+                }
+                label={
+                  <span className={item.critical ? 'font-semibold text-red-600' : ''}>
+                    {item.label} {item.critical && '(Critical)'}
+                  </span>
+                }
+                className="block mb-2"
+              />
+            ))}
+          </Paper>
         ))}
 
         {/* Footer */}
