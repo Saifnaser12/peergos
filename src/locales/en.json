@@ -50,7 +50,12 @@
     "assistant": "Assistant",
     "setup": "Setup",
     "admin": "Admin",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "systemOnline": "System Online",
+    "trnSearch": "TRN Search",
+    "logout": "Logout",
+    "profile": "Profile",
+    "settings": "Settings"
   },
   "dashboard": {
     "title": "Dashboard",

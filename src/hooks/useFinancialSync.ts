@@ -64,13 +64,17 @@ export const useFinancialSync = (options: FinancialSyncOptions = {}) => {
   useEffect(() => {
     if (!autoSync || !syncStatus.isConnected) return;
 
+    console.log('🔄 Setting up auto-sync interval');
     const interval = setInterval(() => {
       console.log('🔄 Auto-sync triggered');
       performSync();
     }, syncInterval);
 
-    return () => clearInterval(interval);
-  }, [autoSync, syncInterval, syncStatus.isConnected]);
+    return () => {
+      console.log('🔄 Clearing auto-sync interval');
+      clearInterval(interval);
+    };
+  }, [autoSync, syncInterval, syncStatus.isConnected, performSync]);
 
   const performSync = useCallback(async () => {
     setSyncStatus(prev => ({

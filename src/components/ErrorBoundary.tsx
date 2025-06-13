@@ -1,9 +1,8 @@
-
 import React, { Component, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
-  t?: (key: string) => string;
+  t?: (key: string, fallback?: string) => string;
 }
 
 interface State {
@@ -12,7 +11,7 @@ interface State {
   errorInfo: React.ErrorInfo | null;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false, error: null, errorInfo: null };
@@ -59,7 +58,7 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       const isFinancialError = window.location.pathname.includes('/financials');
-      
+
       return (
         <div style={{ 
           padding: '40px', 
