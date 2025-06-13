@@ -201,15 +201,16 @@
   "nav": {
     "dashboard": "Dashboard",
     "setup": "Setup",
+    "accounting": "Accounting",
     "vat": "VAT",
     "cit": "Corporate Tax",
     "financials": "Financials",
     "transferPricing": "Transfer Pricing",
     "filing": "Filing",
     "assistant": "Tax Assistant",
+    "calendar": "Tax Calendar",
     "admin": "Admin",
-    "accounting": "Accounting",
-    "calendar": "Tax Calendar"
+    "simple-invoice": "Simple Invoice"
   },
   "setup": {
     "title": "Setup Your Tax System",

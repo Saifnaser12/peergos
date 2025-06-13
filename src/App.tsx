@@ -105,9 +105,6 @@ const App: React.FC = () => {
                                       <Route path="/landing" element={<Landing />} />
                                       <Route path="/unauthorized" element={<Unauthorized />} />
 
-                                      {/* Setup route - accessible to all users */}
-                                      <Route path="/setup" element={<Setup />} />
-
                                       {/* Protected routes with layout */}
                                       <Route path="/" element={<Layout />}>
                                         <Route index element={
@@ -115,7 +112,8 @@ const App: React.FC = () => {
                             <Navigate to="/dashboard" replace /> : 
                             <Navigate to="/setup" replace />
                         } />
-                                        <Route path="dashboard" element={
+                        <Route path="setup" element={<Setup />} />
+                        <Route path="dashboard" element={
                                           <ProtectedRoute allowedRoles={['admin', 'accountant', 'assistant', 'sme_client']}>
                                             <Dashboard />
                                           </ProtectedRoute>

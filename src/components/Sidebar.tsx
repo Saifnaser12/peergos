@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       icon: HomeIcon,
     },
     {
-      name: t('nav.setup', 'Setup'),
+      name: t('nav.setup') || 'Setup',
       path: '/setup',
       icon: Cog6ToothIcon,
     },
@@ -90,12 +90,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   ];
 
   const filteredNavItems = navigationItems.filter(item => {
-    // Always show Setup and Dashboard
+    // Always show Setup and Dashboard - no permission checks
     if (item.path === '/setup' || item.path === '/dashboard') {
       return true;
     }
-    // Other pages require proper access permissions
-    return canAccess(item.path);
+    // For all other pages, check permissions
+    try {
+      return canAccess && canAccess(item.path);
+    } catch (error) {
+      console.warn(`Permission check failed for ${item.path}:`, error);
+      return false;
+    }
   });
 
   const isActive = (path: string) => location.pathname === path;
