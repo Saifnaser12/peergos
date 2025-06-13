@@ -233,46 +233,48 @@ const FTAComplianceCenter: React.FC<FTAComplianceCenterProps> = ({ trn, revenue 
         </div>
 
         {/* Quick Actions */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          
+        <div className="mt-6 space-y-4">
           <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-blue-500">🤖</span>
-                    <div>
-                      <p className="text-sm font-medium text-blue-800 dark:text-blue-200">Automated Filings</p>
-                      <p className="text-xs text-blue-600 dark:text-blue-300">CIT & VAT auto-submission enabled</p>
-                    </div>
-                  </div>
-                  <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 rounded-full">
-                    Active
-                  </span>
+            <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+              <div className="flex items-center space-x-3">
+                <span className="text-blue-500">🤖</span>
+                <div>
+                  <p className="text-sm font-medium text-blue-800 dark:text-blue-200">Automated Filings</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-300">CIT & VAT auto-submission enabled</p>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-purple-500">💳</span>
-                    <div>
-                      <p className="text-sm font-medium text-purple-800 dark:text-purple-200">FTA Payment Gateway</p>
-                      <p className="text-xs text-purple-600 dark:text-purple-300">Integrated payment processing</p>
-                    </div>
-                  </div>
-                  <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 rounded-full">
-                    Connected
-                  </span>
+              </div>
+              <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 rounded-full">
+                Active
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+              <div className="flex items-center space-x-3">
+                <span className="text-purple-500">💳</span>
+                <div>
+                  <p className="text-sm font-medium text-purple-800 dark:text-purple-200">FTA Payment Gateway</p>
+                  <p className="text-xs text-purple-600 dark:text-purple-300">Integrated payment processing</p>
                 </div>
-                <div className="flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-            <CheckCircleIcon className="w-4 h-4 mr-2" />
-            Schedule Compliance Review
+              </div>
+              <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 rounded-full">
+                Connected
+              </span>
+            </div>
           </div>
-          <button className="flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            <DocumentTextIcon className="w-4 h-4 mr-2" />
-            Download Compliance Report
-          </button>
           
-          <button className="flex items-center justify-center px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-            <CurrencyDollarIcon className="w-4 h-4 mr-2" />
-            View Tax Calendar
-          </button>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button className="flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+              <CheckCircleIcon className="w-4 h-4 mr-2" />
+              Schedule Compliance Review
+            </button>
+            <button className="flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <DocumentTextIcon className="w-4 h-4 mr-2" />
+              Download Compliance Report
+            </button>
+            <button className="flex items-center justify-center px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+              <CurrencyDollarIcon className="w-4 h-4 mr-2" />
+              View Tax Calendar
+            </button>
+          </div>
         </div>
       </div>
     </div>

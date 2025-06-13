@@ -122,17 +122,14 @@ const RealTimeTaxCalculator: React.FC = () => {
         <div className="p-6">
           
           <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <span className="text-yellow-600">⭐</span>
-            <span className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Tax Agent-Approved Rates</span>
+            <div className="flex items-center space-x-2 mb-2">
+              <span className="text-yellow-600">⭐</span>
+              <span className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Tax Agent-Approved Rates</span>
+            </div>
+            <p className="text-xs text-yellow-700 dark:text-yellow-300">
+              All calculations use FTA-certified tax agent approved rates and methodologies for maximum accuracy and compliance.
+            </p>
           </div>
-          <p className="text-xs text-yellow-700 dark:text-yellow-300">
-            All calculations use FTA-certified tax agent approved rates and methodologies for maximum accuracy and compliance.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700"></div>
           
 
           {/* Tax Summary Cards */}
