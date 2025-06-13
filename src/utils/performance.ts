@@ -53,19 +53,26 @@ export function measurePerformance() {
 
     descriptor.value = function (...args: unknown[]): unknown {
     const start = performance.now();
-    const result = originalMethod.apply(this, args);
+    
+    try {
+      const result = originalMethod.apply(this, args);
 
-    // Handle both synchronous and asynchronous functions
-    if (result && typeof result === 'object' && 'then' in result) {
-      return (result as Promise<unknown>).finally(() => {
-        const duration = performance.now() - start;
-        monitor.log(`${target.constructor.name}.${propertyKey}`, duration);
-      });
+      // Handle both synchronous and asynchronous functions
+      if (result && typeof result === 'object' && 'then' in result) {
+        return (result as Promise<unknown>).finally(() => {
+          const duration = performance.now() - start;
+          monitor.log(`${target.constructor.name}.${propertyKey}`, duration);
+        });
+      }
+
+      const duration = performance.now() - start;
+      monitor.log(`${target.constructor.name}.${propertyKey}`, duration);
+      return result;
+    } catch (error) {
+      const duration = performance.now() - start;
+      monitor.log(`${target.constructor.name}.${propertyKey} (error)`, duration);
+      throw error;
     }
-
-    const duration = performance.now() - start;
-    monitor.log(`${target.constructor.name}.${propertyKey}`, duration);
-    return result;
   };
 
     return descriptor;

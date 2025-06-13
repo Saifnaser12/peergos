@@ -33,23 +33,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "killall node 2>/dev/null || true"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pkill -f \"vite\" 2>/dev/null || true"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pkill -f \"npm.*dev\" 2>/dev/null || true"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "sleep 1"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev"
+args = "npm run dev -- --host 0.0.0.0 --port 5000"
 
 [[workflows.workflow]]
 name = "SME Setup & Compliance Assessment"

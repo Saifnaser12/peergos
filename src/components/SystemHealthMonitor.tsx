@@ -124,11 +124,27 @@ const SystemHealthMonitor: React.FC<SystemHealthMonitorProps> = ({ variant = 'fu
   };
 
   useEffect(() => {
-    checkSystemHealth();
+    let mounted = true;
+    
+    const performHealthCheck = async () => {
+      if (mounted) {
+        try {
+          await checkSystemHealth();
+        } catch (error) {
+          console.error('Health check failed:', error);
+        }
+      }
+    };
+    
+    performHealthCheck();
     
     // Set up auto-refresh every 5 minutes
-    const interval = setInterval(checkSystemHealth, 5 * 60 * 1000);
-    return () => clearInterval(interval);
+    const interval = setInterval(performHealthCheck, 5 * 60 * 1000);
+    
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const getStatusIcon = (status: string) => {
