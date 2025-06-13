@@ -171,8 +171,7 @@ class LibraryLoader {
 export const libraryLoader = LibraryLoader.getInstance();
 
 // Export helper functions that use the singleton
-// Export helper functions that use the singleton
-export const loadLibrary = async (url: string, globalName: string): Promise<any> => {
+export const loadLibraryFromUrl = async (url: string, globalName: string): Promise<any> => {
   return new Promise((resolve, reject) => {
     if (typeof window !== 'undefined' && (window as any)[globalName]) {
       console.log(`✅ ${globalName} already loaded`);

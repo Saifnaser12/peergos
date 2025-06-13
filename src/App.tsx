@@ -34,6 +34,8 @@ import Financials from './pages/Financials';
 import TransferPricing from './pages/TransferPricing';
 import SimpleInvoice from './pages/SimpleInvoice';
 import Assistant from './pages/Assistant';
+import Calendar from './pages/Calendar';
+import TaxWizard from './pages/TaxWizard';
 import Admin from './pages/Admin';
 import Calendar from './pages/Calendar';
 import Setup from './pages/Setup';
@@ -46,7 +48,7 @@ import Landing from './pages/Landing';
 import WhitelabelPage from './pages/WhitelabelPage';
 import FreeZoneSubstance from './pages/FreeZoneSubstance';
 import FinancialsTest from './components/FinancialsTest';
-import TaxWizard from './pages/TaxWizard';
+
 
 const App: React.FC = () => {
   const theme = createTheme({
@@ -161,6 +163,11 @@ const App: React.FC = () => {
                                             <Assistant />
                                           </ProtectedRoute>
                                         } />
+                                        <Route path="calendar" element={
+                                          <ProtectedRoute allowedRoles={['admin', 'accountant', 'assistant', 'sme_client']}>
+                                            <Calendar />
+                                          </ProtectedRoute>
+                                        } />
                                           <Route path="tax-wizard" element={
                                             <ProtectedRoute allowedRoles={['admin', 'accountant', 'assistant', 'sme_client']}>
                                               <TaxWizard />
@@ -169,11 +176,6 @@ const App: React.FC = () => {
                                         <Route path="admin" element={
                                           <ProtectedRoute allowedRoles={['admin']}>
                                             <Admin />
-                                          </ProtectedRoute>
-                                        } />
-                                        <Route path="calendar" element={
-                                          <ProtectedRoute allowedRoles={['admin', 'accountant', 'assistant', 'sme_client']}>
-                                            <Calendar />
                                           </ProtectedRoute>
                                         } />
                                         <Route path="assistant-test" element={

@@ -17,6 +17,106 @@ interface WizardStep {
   estimatedTime: string;
 }
 
+// Step Components
+const BusinessInfoStep: React.FC<any> = ({ onNext, onPrev }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {t('taxWizard.businessInfo.companyName', 'Company Name')}
+          </label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder={t('taxWizard.businessInfo.companyNamePlaceholder', 'Enter your company name')}
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {t('taxWizard.businessInfo.trn', 'Tax Registration Number')}
+          </label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="100123456700003"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const IncomeReviewStep: React.FC<any> = ({ onNext, onPrev }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-6">
+      <p className="text-gray-600 dark:text-gray-400">
+        {t('taxWizard.incomeReview.description', 'Review your income sources for the tax period')}
+      </p>
+      <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {t('taxWizard.incomeReview.placeholder', 'Income review form will be implemented here')}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const ExpenseDeductionsStep: React.FC<any> = ({ onNext, onPrev }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-6">
+      <p className="text-gray-600 dark:text-gray-400">
+        {t('taxWizard.expenseDeductions.description', 'Review and maximize your allowable deductions')}
+      </p>
+      <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {t('taxWizard.expenseDeductions.placeholder', 'Expense deductions form will be implemented here')}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const TaxCalculationsStep: React.FC<any> = ({ onNext, onPrev }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-6">
+      <p className="text-gray-600 dark:text-gray-400">
+        {t('taxWizard.taxCalculations.description', 'Review your calculated tax liability')}
+      </p>
+      <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {t('taxWizard.taxCalculations.placeholder', 'Tax calculations display will be implemented here')}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const ReviewSubmitStep: React.FC<any> = ({ onNext, onPrev }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-6">
+      <p className="text-gray-600 dark:text-gray-400">
+        {t('taxWizard.reviewSubmit.description', 'Final review before submitting to FTA')}
+      </p>
+      <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {t('taxWizard.reviewSubmit.placeholder', 'Review and submit form will be implemented here')}
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const TaxWizard: React.FC = () => {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
@@ -169,106 +269,6 @@ const TaxWizard: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-};
-
-// Step Components
-const BusinessInfoStep: React.FC<any> = ({ onNext, onPrev }) => {
-  const { t } = useTranslation();
-  
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {t('taxWizard.businessInfo.companyName', 'Company Name')}
-          </label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder={t('taxWizard.businessInfo.companyNamePlaceholder', 'Enter your company name')}
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {t('taxWizard.businessInfo.trn', 'Tax Registration Number')}
-          </label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="100123456700003"
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const IncomeReviewStep: React.FC<any> = ({ onNext, onPrev }) => {
-  const { t } = useTranslation();
-  
-  return (
-    <div className="space-y-6">
-      <p className="text-gray-600 dark:text-gray-400">
-        {t('taxWizard.incomeReview.description', 'Review your income sources for the tax period')}
-      </p>
-      <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {t('taxWizard.incomeReview.placeholder', 'Income review form will be implemented here')}
-        </p>
-      </div>
-    </div>
-  );
-};
-
-const ExpenseDeductionsStep: React.FC<any> = ({ onNext, onPrev }) => {
-  const { t } = useTranslation();
-  
-  return (
-    <div className="space-y-6">
-      <p className="text-gray-600 dark:text-gray-400">
-        {t('taxWizard.expenseDeductions.description', 'Review and maximize your allowable deductions')}
-      </p>
-      <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {t('taxWizard.expenseDeductions.placeholder', 'Expense deductions form will be implemented here')}
-        </p>
-      </div>
-    </div>
-  );
-};
-
-const TaxCalculationsStep: React.FC<any> = ({ onNext, onPrev }) => {
-  const { t } = useTranslation();
-  
-  return (
-    <div className="space-y-6">
-      <p className="text-gray-600 dark:text-gray-400">
-        {t('taxWizard.taxCalculations.description', 'Review your calculated tax liability')}
-      </p>
-      <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {t('taxWizard.taxCalculations.placeholder', 'Tax calculations display will be implemented here')}
-        </p>
-      </div>
-    </div>
-  );
-};
-
-const ReviewSubmitStep: React.FC<any> = ({ onNext, onPrev }) => {
-  const { t } = useTranslation();
-  
-  return (
-    <div className="space-y-6">
-      <p className="text-gray-600 dark:text-gray-400">
-        {t('taxWizard.reviewSubmit.description', 'Final review before submitting to FTA')}
-      </p>
-      <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {t('taxWizard.reviewSubmit.placeholder', 'Review and submit form will be implemented here')}
-        </p>
       </div>
     </div>
   );
