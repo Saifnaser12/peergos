@@ -77,6 +77,7 @@ import {
   TrashIcon,
   BuildingOffice2Icon
 } from '@heroicons/react/24/outline';
+import { alpha, useTheme, InputAdornment, Snackbar } from '@mui/material';
 import SubmissionHistory from '../components/SubmissionHistory';
 import FTAIntegrationStatus from '../components/FTAIntegrationStatus';
 import SubmissionPanel from '../components/fta/SubmissionPanel';
@@ -1061,262 +1062,287 @@ const VAT: React.FC = () => {
         {/* Form Section */}
         <Grid item xs={12} lg={8}>
           <Paper sx={{ p: 3, borderRadius: 3, boxShadow: theme.shadows[2] }}>
-            {/* Company Information */}
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-              {t('Company Information')}
-            </Typography>
-            <Grid container spacing={3} sx={{ mb: 4 }}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label={t('Company Name')}
-                  placeholder={t('Enter company name')}
-                  value={formData.companyName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
-                  {...inputFieldProps}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label={t('Tax Registration Number (TRN)')}
-                  placeholder="100123456700003"
-                  value={formData.trn}
-                  onChange={(e) => setFormData(prev => ({ ...prev, trn: e.target.value }))}
-                  {...inputFieldProps}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label={t('Tax Period')}
-                  placeholder="2024-Q1"
-                  value={formData.taxPeriod}
-                  onChange={(e) => setFormData(prev => ({ ...prev, taxPeriod: e.target.value }))}
-                  {...inputFieldProps}
-                />
-              </Grid>
-            </Grid>
-
-            <Divider sx={{ my: 4 }} />
-
-            {/* Designated Zone Section */}
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-              {t('Designated Zone Information')}
-            </Typography>
-            <Grid container spacing={3} sx={{ mb: 4 }}>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.isDesignatedZone}
-                      onChange={(e) => setFormData(prev => ({ 
-                        ...prev, 
-                        isDesignatedZone: e.target.checked,
-                        designatedZoneImports: e.target.checked ? prev.designatedZoneImports : 0
-                      }))}
-                      color="primary"
+            {/* Company Information Section */}
+            <Card sx={{ mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main' }}>
+                  🏢 {t('Company Information')}
+                </Typography>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label={t('Company Name')}
+                      placeholder={t('Enter company name')}
+                      value={formData.companyName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
+                      {...inputFieldProps}
                     />
-                  }
-                  label={t('Operating in Designated Zone (applies reverse charge on mainland imports)')}
-                  sx={{ mb: 2 }}
-                />
-              </Grid>
-            </Grid>
-
-            <Divider sx={{ my: 4 }} />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label={t('Tax Registration Number (TRN)')}
+                      placeholder="100123456700003"
+                      value={formData.trn}
+                      onChange={(e) => setFormData(prev => ({ ...prev, trn: e.target.value }))}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label={t('Tax Period')}
+                      placeholder="2024-Q1"
+                      value={formData.taxPeriod}
+                      onChange={(e) => setFormData(prev => ({ ...prev, taxPeriod: e.target.value }))}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
 
             {/* Sales Section */}
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-              {t('Sales')}
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label={t('Standard-rated Sales (5%)')}
-                  placeholder={t('Sales subject to 5% VAT rate')}
-                  value={formData.standardRatedSales || ''}
-                  onChange={handleInputChange('standardRatedSales')}
-                  error={!!errors.standardRatedSales}
-                  helperText={errors.standardRatedSales}
-                  {...inputFieldProps}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label={t('Zero-rated Sales (0%)')}
-                  placeholder={t('Sales with 0% VAT rate (exports, etc.)')}
-                  value={formData.zeroRatedSales || ''}
-                  onChange={handleInputChange('zeroRatedSales')}
-                  error={!!errors.zeroRatedSales}
-                  helperText={errors.zeroRatedSales}
-                  {...inputFieldProps}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label={t('Exempt Sales')}
-                  placeholder={t('Sales exempt from VAT')}
-                  value={formData.exemptSales || ''}
-                  onChange={handleInputChange('exemptSales')}
-                  error={!!errors.exemptSales}
-                  helperText={errors.exemptSales}
-                  {...inputFieldProps}
-                />
-              </Grid>
-            </Grid>
-
-            <Divider sx={{ my: 4 }} />
+            <Card sx={{ mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'success.main' }}>
+                  💰 {t('Sales')}
+                </Typography>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label={t('Standard-rated Sales (5%)')}
+                      placeholder={t('Sales subject to 5% VAT rate')}
+                      value={formData.standardRatedSales || ''}
+                      onChange={handleInputChange('standardRatedSales')}
+                      error={!!errors.standardRatedSales}
+                      helperText={errors.standardRatedSales}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label={t('Zero-rated Sales (0%)')}
+                      placeholder={t('Sales with 0% VAT rate (exports, etc.)')}
+                      value={formData.zeroRatedSales || ''}
+                      onChange={handleInputChange('zeroRatedSales')}
+                      error={!!errors.zeroRatedSales}
+                      helperText={errors.zeroRatedSales}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label={t('Exempt Sales')}
+                      placeholder={t('Sales exempt from VAT')}
+                      value={formData.exemptSales || ''}
+                      onChange={handleInputChange('exemptSales')}
+                      error={!!errors.exemptSales}
+                      helperText={errors.exemptSales}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
 
             {/* Purchases Section */}
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-              {t('Purchases')}
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label={t('Purchases with Recoverable VAT')}
-                  placeholder={t('Business purchases where VAT can be recovered')}
-                  value={formData.purchasesWithVAT || ''}
-                  onChange={handleInputChange('purchasesWithVAT')}
-                  error={!!errors.purchasesWithVAT}
-                  helperText={errors.purchasesWithVAT}
-                  {...inputFieldProps}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label={t('Purchases without Recoverable VAT')}
-                  placeholder={t('Purchases where VAT cannot be recovered')}
-                  value={formData.purchasesWithoutVAT || ''}
-                  onChange={handleInputChange('purchasesWithoutVAT')}
-                  error={!!errors.purchasesWithoutVAT}
-                  helperText={errors.purchasesWithoutVAT}
-                  {...inputFieldProps}
-                />
-              </Grid>
-            </Grid>
-
-            <Divider sx={{ my: 4 }} />
+            <Card sx={{ mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'warning.main' }}>
+                  🛒 {t('Purchases')}
+                </Typography>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      label={t('Purchases with Recoverable VAT')}
+                      placeholder={t('Business purchases where VAT can be recovered')}
+                      value={formData.purchasesWithVAT || ''}
+                      onChange={handleInputChange('purchasesWithVAT')}
+                      error={!!errors.purchasesWithVAT}
+                      helperText={errors.purchasesWithVAT}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      label={t('Purchases without Recoverable VAT')}
+                      placeholder={t('Purchases where VAT cannot be recovered')}
+                      value={formData.purchasesWithoutVAT || ''}
+                      onChange={handleInputChange('purchasesWithoutVAT')}
+                      error={!!errors.purchasesWithoutVAT}
+                      helperText={errors.purchasesWithoutVAT}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
 
             {/* Reverse Charge Section */}
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-              {t('Reverse Charge Mechanism')}
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label={t('Imports of Goods/Services')}
-                  placeholder={t('Imported goods and services subject to reverse charge')}
-                  value={formData.importsGoods || ''}
-                  onChange={handleInputChange('importsGoods')}
-                  error={!!errors.importsGoods}
-                  helperText={errors.importsGoods}
-                  {...inputFieldProps}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label={t('Local Services')}
-                  placeholder={t('Local services subject to reverse charge')}
-                  value={formData.localServices || ''}
-                  onChange={handleInputChange('localServices')}
-                  error={!!errors.localServices}
-                  helperText={errors.localServices}
-                  {...inputFieldProps}
-                />
-              </Grid>
-              {formData.isDesignatedZone && (
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    label={t('Designated Zone Mainland Imports')}
-                    placeholder={t('Imports from mainland UAE subject to reverse charge')}
-                    value={formData.designatedZoneImports || ''}
-                    onChange={handleInputChange('designatedZoneImports')}
-                    error={!!errors.designatedZoneImports}
-                    helperText={errors.designatedZoneImports || t('Reverse charge applies on supplies from mainland UAE')}
-                    {...inputFieldProps}
-                    sx={{
-                      ...inputFieldProps.sx,
-                      '& .MuiOutlinedInput-root': {
-                        ...inputFieldProps.sx['& .MuiOutlinedInput-root'],
-                        backgroundColor: alpha(theme.palette.info.main, 0.05),
-                        borderColor: theme.palette.info.main,
-                      },
-                    }}
-                  />
+            <Card sx={{ mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'info.main' }}>
+                  🔄 {t('Reverse Charge')}
+                </Typography>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      label={t('Imports of Goods or Services')}
+                      placeholder={t('Imported goods and services subject to reverse charge')}
+                      value={formData.importsGoods || ''}
+                      onChange={handleInputChange('importsGoods')}
+                      error={!!errors.importsGoods}
+                      helperText={errors.importsGoods}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      label={t('Local Reverse Charge Services')}
+                      placeholder={t('Local services subject to reverse charge')}
+                      value={formData.localServices || ''}
+                      onChange={handleInputChange('localServices')}
+                      error={!!errors.localServices}
+                      helperText={errors.localServices}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                  {formData.isDesignatedZone && (
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label={t('Designated Zone Mainland Imports')}
+                        placeholder={t('Imports from mainland UAE subject to reverse charge')}
+                        value={formData.designatedZoneImports || ''}
+                        onChange={handleInputChange('designatedZoneImports')}
+                        error={!!errors.designatedZoneImports}
+                        helperText={errors.designatedZoneImports || t('Reverse charge applies on supplies from mainland UAE')}
+                        {...inputFieldProps}
+                        sx={{
+                          ...inputFieldProps.sx,
+                          '& .MuiOutlinedInput-root': {
+                            ...inputFieldProps.sx['& .MuiOutlinedInput-root'],
+                            backgroundColor: alpha(theme.palette.info.main, 0.05),
+                            borderColor: theme.palette.info.main,
+                          },
+                        }}
+                      />
+                    </Grid>
+                  )}
+                  <Grid item xs={12}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={formData.isDesignatedZone}
+                          onChange={(e) => setFormData(prev => ({ 
+                            ...prev, 
+                            isDesignatedZone: e.target.checked,
+                            designatedZoneImports: e.target.checked ? prev.designatedZoneImports : 0
+                          }))}
+                          color="primary"
+                        />
+                      }
+                      label={t('Operating in Designated Zone (applies reverse charge on mainland imports)')}
+                    />
+                  </Grid>
                 </Grid>
-              )}
-            </Grid>
-
-            <Divider sx={{ my: 4 }} />
+              </CardContent>
+            </Card>
 
             {/* Adjustments Section */}
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-              {t('Adjustments')}
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  label={t('Late Invoices')}
-                  placeholder={t('VAT adjustments for late invoices')}
-                  value={formData.lateInvoices || ''}
-                  onChange={handleInputChange('lateInvoices')}
-                  error={!!errors.lateInvoices}
-                  helperText={errors.lateInvoices}
-                  {...inputFieldProps}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  label={t('Bad Debt Relief')}
-                  placeholder={t('VAT relief for bad debts')}
-                  value={formData.badDebtRelief || ''}
-                  onChange={handleInputChange('badDebtRelief')}
-                  error={!!errors.badDebtRelief}
-                  helperText={errors.badDebtRelief}
-                  {...inputFieldProps}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  label={t('VAT Corrections')}
-                  placeholder={t('Other VAT corrections and adjustments')}
-                  value={formData.vatCorrections || ''}
-                  onChange={handleInputChange('vatCorrections')}
-                  error={!!errors.vatCorrections}
-                  helperText={errors.vatCorrections}
-                  {...inputFieldProps}
-                />
-              </Grid>
-            </Grid>
+            <Card sx={{ mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'error.main' }}>
+                  ⚖️ {t('Adjustments')}
+                </Typography>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label={t('Late Invoices')}
+                      placeholder={t('VAT adjustments for late invoices')}
+                      value={formData.lateInvoices || ''}
+                      onChange={handleInputChange('lateInvoices')}
+                      error={!!errors.lateInvoices}
+                      helperText={errors.lateInvoices}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label={t('Bad Debt Relief')}
+                      placeholder={t('VAT relief for bad debts')}
+                      value={formData.badDebtRelief || ''}
+                      onChange={handleInputChange('badDebtRelief')}
+                      error={!!errors.badDebtRelief}
+                      helperText={errors.badDebtRelief}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label={t('VAT Corrections')}
+                      placeholder={t('Other VAT corrections and adjustments')}
+                      value={formData.vatCorrections || ''}
+                      onChange={handleInputChange('vatCorrections')}
+                      error={!!errors.vatCorrections}
+                      helperText={errors.vatCorrections}
+                      {...inputFieldProps}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
 
-            <Divider sx={{ my: 4 }} />
-
-            {/* File Upload Section */}
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-              {t('Supporting Documents')}
-            </Typography>
-            <Box
-              sx={{
-                border: `2px dashed ${theme.palette.divider}`,
-                borderRadius: 2,
-                p: 4,
-                textAlign: 'center',
-                backgroundColor: alpha(theme.palette.primary.main, 0.02),
-                cursor: 'pointer',
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                  backgroundColor: alpha(theme.palette.primary.main, 0.05),
-                  borderColor: theme.palette.primary.main,
-                },
-              }}
-            >
-              <UploadIcon sx={{ fontSize: 32, color: theme.palette.primary.main }} />
-              <Typography variant="body1" sx={{ mt: 2, fontWeight: 500 }}>
-                {t('Upload invoices, receipts, and reports')}
-              </Typography>
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                {t('PDF, JPEG, PNG, XLSX - Max 10MB per file')}
-              </Typography>
-            </Box>
+            {/* Supporting Documents Section */}
+            <Card sx={{ mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'secondary.main' }}>
+                  📁 {t('Supporting Documents')}
+                </Typography>
+                <input
+                  type="file"
+                  multiple
+                  id="vat-file-upload"
+                  accept=".pdf,.jpg,.jpeg,.png,.xlsx"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (files && files.length > 0) {
+                      console.log('Files uploaded:', Array.from(files).map(f => f.name));
+                    }
+                  }}
+                />
+                <label htmlFor="vat-file-upload">
+                  <Box
+                    sx={{
+                      border: `2px dashed ${theme.palette.divider}`,
+                      borderRadius: 2,
+                      p: 4,
+                      textAlign: 'center',
+                      backgroundColor: alpha(theme.palette.primary.main, 0.02),
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease-in-out',
+                      '&:hover': {
+                        backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                        borderColor: theme.palette.primary.main,
+                      },
+                    }}
+                  >
+                    <UploadIcon sx={{ fontSize: 48, color: theme.palette.primary.main, mb: 2 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                      {t('Upload invoices, receipts, and reports')}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                      {t('PDF, JPEG, PNG, XLSX - Max 10MB per file')}
+                    </Typography>
+                    <Box sx={{ mt: 2, display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
+                      <Chip label="PDF" size="small" variant="outlined" />
+                      <Chip label="JPEG" size="small" variant="outlined" />
+                      <Chip label="PNG" size="small" variant="outlined" />
+                      <Chip label="XLSX" size="small" variant="outlined" />
+                    </Box>
+                  </Box>
+                </label>
+              </CardContent>
+            </Card>
           </Paper>
         </Grid>
 
@@ -1331,13 +1357,27 @@ const VAT: React.FC = () => {
                   className="w-16 h-16 object-cover rounded-lg opacity-80"
                 />
                 <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-                  {t('VAT Calculation Summary')}
+                  📊 {t('VAT Summary')}
                 </Typography>
               </Box>
 
+              {/* Live Sync Feedback */}
+              <Alert 
+                severity={revenue.length > 0 && expenses.length > 0 ? "success" : "warning"} 
+                sx={{ mb: 3 }}
+                icon={revenue.length > 0 && expenses.length > 0 ? <CheckCircleIcon /> : <ExclamationTriangleIcon />}
+              >
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {revenue.length > 0 && expenses.length > 0 
+                    ? '✅ AUTO-SYNC: Live Financial Data Connected'
+                    : '❗WARNING: No Accounting Data Available'
+                  }
+                </Typography>
+              </Alert>
+
               <Box sx={{ mb: 3, p: 2, bgcolor: 'success.50', borderRadius: 2, border: '1px solid', borderColor: 'success.200' }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1, color: 'success.main' }}>
-                  {isUpdating ? '🔄 UPDATING Live Financial Data...' : '✅ AUTO-SYNC Live Financial Data'}
+                  💰 Financial Overview
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2">Total Revenue ({revenue.length} entries)</Typography>
@@ -1353,16 +1393,21 @@ const VAT: React.FC = () => {
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>Taxable Income</Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: netIncome >= 0 ? 'success.main' : 'error.main' }}>
                     AED {netIncome.toLocaleString()}
+                    {netIncome >= 0 ? ' ✅' : ' ❌'}
                   </Typography>
                 </Box>
                 <Typography variant="caption" sx={{ color: 'success.600', fontSize: '0.65rem' }}>
-                  Last updated: {new Date(summary.lastUpdated).toLocaleTimeString()}
+                  🕓 Last updated: {new Date(summary.lastUpdated).toLocaleTimeString()}
                 </Typography>
               </Box>
 
-              <Box sx={{ mb: 3 }}>
+              {/* VAT Calculation Details */}
+              <Box sx={{ mb: 3, p: 2, bgcolor: 'info.50', borderRadius: 2, border: '1px solid', borderColor: 'info.200' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2, color: 'info.main' }}>
+                  🧮 VAT Calculations
+                </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2">{t('Output VAT')}</Typography>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -1388,7 +1433,7 @@ const VAT: React.FC = () => {
                 <Divider sx={{ my: 2 }} />
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    {calculations.isRefundable ? t('VAT Refundable') : t('VAT Payable')}
+                    {calculations.isRefundable ? t('Net VAT Refundable') : t('Net VAT Payable')}
                   </Typography>
                   <Typography 
                     variant="h6" 
@@ -1398,30 +1443,26 @@ const VAT: React.FC = () => {
                     }}
                   >
                     {formatCurrency(calculations.netVAT)}
+                    {calculations.isRefundable ? ' ✅' : ' ❌'}
                   </Typography>
                 </Box>
               </Box>
 
-              <Button
-                variant="outlined"
-                fullWidth
-                startIcon={<CalculateIcon />}
-                sx={{ mb: 2 }}
-                onClick={() => {/* Recalculate logic */}}
-              >
-                {t('Recalculate')}
-              </Button>
-
-              <Grid container spacing={2}>
+              {/* Download Tools */}
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>
+                📁 Download Tools
+              </Typography>
+              <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid item xs={6}>
                   <Button
                     variant="outlined"
                     fullWidth
                     startIcon={<FileText />}
-                    onClick={handleExportPDF}
+                    onClick={handleGenerateFTAPDF}
                     size="small"
+                    disabled={!formData.companyName || !formData.trn}
                   >
-                    {t('PDF')}
+                    📄 PDF
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
@@ -1432,56 +1473,53 @@ const VAT: React.FC = () => {
                     onClick={handleExportExcel}
                     size="small"
                   >
-                    {t('Excel')}
+                    📊 Excel
                   </Button>
                 </Grid>
               </Grid>
 
-              <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  startIcon={<FileText />}
-                  onClick={handleGenerateFTAPDF}
-                  disabled={!formData.companyName || !formData.trn}
-                  sx={{ 
-                    bgcolor: '#006A4E', 
-                    '&:hover': { bgcolor: '#005A42' },
-                    fontWeight: 600,
-                    py: 2
-                  }}
-                >
-                  {t('vat.export.generateFTAPDF', 'Generate FTA PDF')}
-                </Button>
+              {/* Submission Button */}
+              <Button
+                fullWidth
+                variant="contained"
+                size="large"
+                startIcon={<SendIcon />}
+                onClick={() => setShowSubmissionModal(true)}
+                disabled={isSubmitting || !formData.companyName || !formData.trn}
+                sx={{ 
+                  bgcolor: '#006A4E', 
+                  '&:hover': { bgcolor: '#005A42' },
+                  fontWeight: 600,
+                  py: 2,
+                  mb: 2
+                }}
+              >
+                📨 {isSubmitting ? t('Submitting...') : t('Submit VAT Return')}
+              </Button>
 
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  startIcon={<CloudUpload />}
-                  sx={{ py: 2 }}
-                  onClick={() => setShowSubmissionModal(true)}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? t('vat.fta.submitting', 'Submitting...') : t('vat.submitReturn')}
-                </Button>
-
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  size="large"
-                  onClick={handleSubmitToFTA}
-                  disabled={!formData.companyName || !formData.trn}
-                  startIcon={<CloudUpload />}
-                  sx={{ py: 1.5, fontWeight: 600 }}
-                >
-                  {t('Submit to FTA')}
-                </Button>
-              </Box>
-
-              <Alert severity="info" sx={{ mt: 3, fontSize: '0.875rem' }}>
+              <Alert severity="info" sx={{ fontSize: '0.875rem' }}>
                 {t('This VAT return complies with UAE Federal Tax Authority requirements. Ensure all amounts are accurate before submission.')}
               </Alert>
+            </CardContent>
+          </Card>
+
+          {/* Smart VAT Sidebar */}
+          <Card sx={{ borderRadius: 3, boxShadow: theme.shadows[2], mt: 3 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'secondary.main' }}>
+                💡 Compliance Tips
+              </Typography>
+              <Box sx={{ space: 2 }}>
+                <Alert severity="info" sx={{ mb: 2, fontSize: '0.8rem' }}>
+                  💼 Ensure invoices over AED 10,000 include TRN and line VAT breakdown.
+                </Alert>
+                <Alert severity="warning" sx={{ mb: 2, fontSize: '0.8rem' }}>
+                  📅 VAT returns must be filed within 28 days of the tax period end.
+                </Alert>
+                <Alert severity="success" sx={{ fontSize: '0.8rem' }}>
+                  ✅ Keep all supporting documents for 5 years as per FTA requirements.
+                </Alert>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
