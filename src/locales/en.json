@@ -40,21 +40,17 @@
   },
   "nav": {
     "dashboard": "Dashboard",
-    "cit": "Corporate Tax",
-    "vat": "VAT",
     "accounting": "Accounting",
+    "vat": "VAT",
+    "cit": "Corporate Tax",
+    "filing": "Filing",
     "financials": "Financials",
     "transferPricing": "Transfer Pricing",
-    "assistant": "Tax Assistant",
+    "simpleInvoice": "Simple Invoice",
+    "assistant": "Assistant",
     "setup": "Setup",
-    "filing": "Filing",
-    "trnSearch": "TRN Search",
-    "systemOnline": "System Online",
-    "calendar": "Tax Calendar",
-    "admin": "Administration",
-    "logout": "Logout",
-    "profile": "Profile",
-    "settings": "Settings"
+    "admin": "Admin",
+    "calendar": "Calendar"
   },
   "dashboard": {
     "title": "Dashboard",

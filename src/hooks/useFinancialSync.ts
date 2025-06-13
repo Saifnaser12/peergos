@@ -70,7 +70,7 @@ export const useFinancialSync = (options: FinancialSyncOptions = {}) => {
     }, syncInterval);
 
     return () => clearInterval(interval);
-  }, [autoSync, syncInterval, syncStatus.isConnected, performSync]);
+  }, [autoSync, syncInterval, syncStatus.isConnected]);
 
   const performSync = useCallback(async () => {
     setSyncStatus(prev => ({
@@ -107,7 +107,7 @@ export const useFinancialSync = (options: FinancialSyncOptions = {}) => {
   const syncData = useCallback(async (data: any) => {
     console.log('🔄 Manual sync initiated with data:', data);
     return performSync();
-  }, []);
+  }, [performSync]);
 
   const forceReconnect = useCallback(async () => {
     console.log('🔄 Force reconnecting...');

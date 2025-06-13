@@ -33,37 +33,37 @@ const Navbar: React.FC = () => {
 
   const navItems = [
     {
-      name: t('nav.dashboard'),
+      name: t('nav.dashboard', 'Dashboard'),
       path: '/dashboard',
       icon: <HomeIcon className="h-5 w-5" />
     },
     {
-      name: t('nav.vat'),
+      name: t('nav.vat', 'VAT'),
       path: '/vat',
       icon: <DocumentTextIcon className="h-5 w-5" />
     },
     {
-      name: t('nav.cit'),
+      name: t('nav.cit', 'Corporate Tax'),
       path: '/cit',
       icon: <DocumentTextIcon className="h-5 w-5" />
     },
     {
-      name: t('nav.financials'),
+      name: t('nav.financials', 'Financials'),
       path: '/financials',
       icon: <ChartBarIcon className="h-5 w-5" />
     },
     {
-      name: t('nav.transferPricing'),
+      name: t('nav.transferPricing', 'Transfer Pricing'),
       path: '/transfer-pricing',
       icon: <CurrencyDollarIcon className="h-5 w-5" />
     },
     {
-      name: t('nav.setup'),
-      path: '/setup',
+      name: t('nav.calendar', 'Calendar'),
+      path: '/calendar',
       icon: <Cog6ToothIcon className="h-5 w-5" />
     },
     {
-      name: t('nav.assistant'),
+      name: t('nav.assistant', 'Assistant'),
       path: '/assistant',
       icon: <ChatBubbleLeftRightIcon className="h-5 w-5" />
     }

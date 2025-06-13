@@ -37,7 +37,6 @@ import Assistant from './pages/Assistant';
 import Calendar from './pages/Calendar';
 import TaxWizard from './pages/TaxWizard';
 import Admin from './pages/Admin';
-import Calendar from './pages/Calendar';
 import Setup from './pages/Setup';
 import Unauthorized from './pages/Unauthorized';
 import Login from './pages/Login';
