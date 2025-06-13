@@ -671,5 +671,42 @@
         "description": "Supporting documentation including local file, master file, and economic analysis"
       }
     }
-  }
+  },
+  "taxWizard": {
+    "title": "UAE Tax Filing Wizard",
+    "stepCounter": "Step {{current}} of {{total}}",
+    "estimatedTime": "Estimated time: {{time}}",
+    "submitToFTA": "Submit to FTA",
+    "steps": {
+      "businessInfo": {
+        "title": "Business Information",
+        "description": "Tell us about your business",
+        "companyName": "Company Name",
+        "companyNamePlaceholder": "Enter your company name",
+        "trn": "Tax Registration Number"
+      },
+      "incomeReview": {
+        "title": "Income Review",
+        "description": "Review your revenue streams",
+        "placeholder": "Income review form will be implemented here"
+      },
+      "expenseDeductions": {
+        "title": "Expenses & Deductions",
+        "description": "Maximize your tax savings",
+        "placeholder": "Expense deductions form will be implemented here"
+      },
+      "taxCalculations": {
+        "title": "Tax Calculations",
+        "description": "See your tax liability",
+        "placeholder": "Tax calculations display will be implemented here"
+      },
+      "reviewSubmit": {
+        "title": "Review & Submit",
+        "description": "Final review before FTA submission",
+        "placeholder": "Review and submit form will be implemented here"
+      }
+    }
+  },
+  "customer": "Customer",
+  "category": "Category"
 }

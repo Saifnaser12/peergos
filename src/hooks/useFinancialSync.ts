@@ -30,12 +30,14 @@ export const useFinancialSync = (options: FinancialSyncOptions = {}) => {
 
     const initializeSync = async () => {
       try {
-        // Load required libraries
-        await libraryLoader.loadJsSHA();
-        await libraryLoader.loadQRCode();
+        // Load required libraries with proper error handling
+        await Promise.allSettled([
+          libraryLoader.loadJsSHA(),
+          libraryLoader.loadQRCode()
+        ]);
 
         // Simulate connection to external services
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         setSyncStatus(prev => ({
           ...prev,
@@ -50,7 +52,7 @@ export const useFinancialSync = (options: FinancialSyncOptions = {}) => {
         setSyncStatus(prev => ({
           ...prev,
           isConnected: false,
-          syncError: 'Failed to connect to sync service'
+          syncError: error instanceof Error ? error.message : 'Failed to connect to sync service'
         }));
       }
     };

@@ -111,7 +111,7 @@ const Navbar: React.FC = () => {
               <button
                 onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
                 className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                aria-label={t('language.select')}
+                aria-label={t('common.language', 'Language')}
               >
                 <LanguageIcon className="h-5 w-5" />
                 <span className="sr-only">{language === 'en' ? 'English' : 'العربية'}</span>
@@ -123,7 +123,7 @@ const Navbar: React.FC = () => {
               <button
                 onClick={() => setCurrency(currency === 'AED' ? 'USD' : 'AED')}
                 className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                aria-label={t('currency.select')}
+                aria-label={t('common.currency', 'Currency')}
               >
                 <CurrencyDollarIcon className="h-5 w-5" />
                 <span className="sr-only">{currency}</span>

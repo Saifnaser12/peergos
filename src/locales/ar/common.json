@@ -299,6 +299,41 @@
       "fileTooLarge": "يجب أن يكون حجم الملف أقل من 5 ميجابايت"
     }
   },
+  "taxWizard": {
+    "title": "معالج التقديم الضريبي الإماراتي",
+    "stepCounter": "الخطوة {{current}} من {{total}}",
+    "estimatedTime": "الوقت المقدر: {{time}}",
+    "submitToFTA": "إرسال للهيئة الاتحادية للضرائب",
+    "steps": {
+      "businessInfo": {
+        "title": "معلومات الأعمال",
+        "description": "أخبرنا عن عملك",
+        "companyName": "اسم الشركة",
+        "companyNamePlaceholder": "أدخل اسم شركتك",
+        "trn": "رقم التسجيل الضريبي"
+      },
+      "incomeReview": {
+        "title": "مراجعة الدخل",
+        "description": "راجع مصادر إيراداتك",
+        "placeholder": "سيتم تنفيذ نموذج مراجعة الدخل هنا"
+      },
+      "expenseDeductions": {
+        "title": "المصروفات والخصومات",
+        "description": "زيادة مدخراتك الضريبية",
+        "placeholder": "سيتم تنفيذ نموذج خصومات المصروفات هنا"
+      },
+      "taxCalculations": {
+        "title": "حسابات الضرائب",
+        "description": "راجع التزامك الضريبي",
+        "placeholder": "سيتم تنفيذ عرض حسابات الضرائب هنا"
+      },
+      "reviewSubmit": {
+        "title": "مراجعة وإرسال",
+        "description": "المراجعة النهائية قبل الإرسال للهيئة الاتحادية للضرائب",
+        "placeholder": "سيتم تنفيذ نموذج المراجعة والإرسال هنا"
+      }
+    }
+  },
   "customer": "العميل",
   "category": "الفئة"
 }

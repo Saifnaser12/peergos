@@ -20,22 +20,22 @@ const SMEDashboard: React.FC = () => {
 
   const complianceChecks = [
     {
-      title: 'VAT Registration',
+      title: t('sme.compliance.vatRegistration', 'VAT Registration'),
       threshold: smeThresholds.vatRegistration,
-      status: 'compliant',
-      description: 'Required if annual revenue > AED 375,000'
+      status: 'compliant' as const,
+      description: t('sme.compliance.vatRegistrationDesc', 'Required if annual revenue > AED 375,000')
     },
     {
-      title: 'CIT Registration', 
+      title: t('sme.compliance.citRegistration', 'CIT Registration'), 
       threshold: smeThresholds.citRegistration,
-      status: 'pending',
-      description: 'Required for most businesses'
+      status: 'pending' as const,
+      description: t('sme.compliance.citRegistrationDesc', 'Required for most businesses')
     },
     {
-      title: 'Transfer Pricing Docs',
+      title: t('sme.compliance.transferPricingDocs', 'Transfer Pricing Docs'),
       threshold: smeThresholds.transferPricingDoc,
-      status: 'not-required',
-      description: 'Required if related party transactions > AED 3M'
+      status: 'not-required' as const,
+      description: t('sme.compliance.transferPricingDesc', 'Required if related party transactions > AED 3M')
     }
   ];
 
