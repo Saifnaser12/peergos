@@ -65,3 +65,19 @@ export const smeClientPermissions: PermissionSet = {
 export const userPermissions = smeClientPermissions;
 export const auditorPermissions = assistantPermissions;
 export const superAdminPermissions = adminPermissions;
+
+export const ROUTE_PERMISSIONS: Record<string, UserRole[]> = {
+  '/dashboard': ['admin', 'accountant', 'assistant', 'sme_client'],
+  '/setup': ['admin', 'accountant', 'assistant', 'sme_client'],
+  '/vat': ['admin', 'accountant'],
+  '/accounting': ['admin', 'sme_client'],
+  '/cit': ['admin', 'accountant'],
+  '/financials': ['admin', 'accountant'],
+  '/transfer-pricing': ['admin', 'accountant'],
+  '/filing': ['admin', 'accountant'],
+  '/assistant': ['admin', 'accountant', 'assistant', 'sme_client'],
+  '/calendar': ['admin', 'accountant', 'assistant', 'sme_client'],
+  '/admin': ['admin'],
+  '/qa-checklist': ['admin', 'accountant'],
+  '/unauthorized': ['admin', 'accountant', 'assistant', 'sme_client'],
+};

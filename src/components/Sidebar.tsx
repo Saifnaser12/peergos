@@ -43,6 +43,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       icon: HomeIcon,
     },
     {
+      name: t('nav.setup'),
+      path: '/setup',
+      icon: Cog6ToothIcon,
+    },
+    {
       name: t('nav.cit'),
       path: '/cit',
       icon: DocumentTextIcon,
@@ -73,18 +78,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       icon: ChatBubbleLeftRightIcon,
     },
     {
-      name: t('nav.setup'),
-      path: '/setup',
-      icon: Cog6ToothIcon,
-    },
-    {
       name: t('nav.calendar', 'Calendar'),
       path: '/calendar',
       icon: CalendarDaysIcon,
     }
   ];
 
-  const filteredNavItems = navigationItems.filter(item => canAccess(item.path));
+  const filteredNavItems = navigationItems.filter(item => 
+    item.path === '/setup' || canAccess(item.path)
+  );
 
   const isActive = (path: string) => location.pathname === path;
 
