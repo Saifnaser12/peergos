@@ -457,6 +457,47 @@ const Assistant: React.FC = () => {
 
   const handleSuggestionClick = (suggestion: SuggestedQuestion) => {
     setInput(suggestion.question);
+    // Auto-submit the question after a brief delay to show the input
+    setTimeout(() => {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        content: suggestion.question,
+        type: 'user',
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, userMessage]);
+      setInput('');
+      setIsLoading(true);
+
+      // Add typing indicator
+      const typingMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: '',
+        type: 'assistant',
+        timestamp: new Date(),
+        isTyping: true
+      };
+      setMessages(prev => [...prev, typingMessage]);
+
+      // Call OpenAI API
+      callOpenAI(suggestion.question).then(response => {
+        const filingIntent = detectFilingIntent(response);
+        const assistantMessage: Message = {
+          id: (Date.now() + 2).toString(),
+          content: response,
+          type: 'assistant',
+          timestamp: new Date(),
+          filingIntent
+        };
+        setMessages(prev => prev.filter(msg => !msg.isTyping).concat([assistantMessage]));
+      }).catch(err => {
+        setError(t('assistant.error', 'Error getting response from assistant. Please check your API key or try again.'));
+        setMessages(prev => prev.filter(msg => !msg.isTyping));
+      }).finally(() => {
+        setIsLoading(false);
+      });
+    }, 100);
   };
 
   const clearChat = () => {
