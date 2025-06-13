@@ -52,7 +52,9 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
     amount: '',
     invoiceGenerated: false,
     freeZoneIncomeType: '',
-    freeZoneSubcategory: ''
+    freeZoneSubcategory: '',
+    vatType: 'standard',
+    paymentMethod: 'bank_transfer'
   });
 
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -249,6 +251,43 @@ const RevenueModal: React.FC<RevenueModalProps> = ({
               ))}
             </select>
             {errors.category && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.category}</p>}
+          </div>
+
+          {/* VAT Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <BanknotesIcon className="h-4 w-4 inline mr-2" />
+              {t('accounting.revenue.form.vatType', 'VAT Type')}
+            </label>
+            <select
+              value={formData.vatType || 'standard'}
+              onChange={(e) => handleInputChange('vatType', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-150"
+            >
+              <option value="standard">{t('accounting.vatTypes.standard', 'Standard 5%')}</option>
+              <option value="zero">{t('accounting.vatTypes.zero', 'Zero-rated 0%')}</option>
+              <option value="exempt">{t('accounting.vatTypes.exempt', 'Exempt')}</option>
+            </select>
+          </div>
+
+          {/* Payment Method */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <BanknotesIcon className="h-4 w-4 inline mr-2" />
+              {t('accounting.revenue.form.paymentMethod', 'Payment Method')}
+            </label>
+            <select
+              value={formData.paymentMethod || 'bank_transfer'}
+              onChange={(e) => handleInputChange('paymentMethod', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-150"
+            >
+              <option value="bank_transfer">{t('accounting.paymentMethods.bankTransfer', 'Bank Transfer')}</option>
+              <option value="wps">{t('accounting.paymentMethods.wps', 'WPS')}</option>
+              <option value="taqa">{t('accounting.paymentMethods.taqa', 'TAQA')}</option>
+              <option value="cash">{t('accounting.paymentMethods.cash', 'Cash')}</option>
+              <option value="card">{t('accounting.paymentMethods.card', 'Card Payment')}</option>
+              <option value="cheque">{t('accounting.paymentMethods.cheque', 'Cheque')}</option>
+            </select>
           </div>
 
           {/* Amount */}

@@ -478,7 +478,7 @@
         "description": "Description",
         "customer": "Customer",
         "amount": "Amount (AED)",
-        "invoice": "Invoice",
+        "evidence": "Evidence",
         "actions": "Actions"
       },
       "form": {
@@ -489,14 +489,24 @@
         "description": "Description",
         "descriptionPlaceholder": "Enter revenue description",
         "customer": "Customer",
-        "customerPlaceholder": "Customer name or email (optional)",
+        "customerPlaceholder": "Customer name (optional)",
+        "category": "Category",
+        "categoryPlaceholder": "Select revenue category",
         "amount": "Amount (AED)",
         "amountPlaceholder": "0.00",
+        "vatType": "VAT Type",
+        "paymentMethod": "Payment Method",
         "generateInvoice": "Generate Invoice",
-        "generateInvoiceHelp": "Automatically create an invoice for this revenue entry",
+        "generateInvoiceHelp": "Create FTA-compliant invoice",
         "save": "Save Revenue",
         "cancel": "Cancel",
-        "update": "Update Revenue"
+        "update": "Update Revenue",
+        "freeZoneClassification": "Free Zone Income Classification",
+        "incomeType": "Income Type",
+        "selectIncomeType": "Select Income Type",
+        "subcategory": "Subcategory",
+        "selectSubcategory": "Select Subcategory",
+        "nonQualifyingWarning": "Non-qualifying income may affect QFZP status if it exceeds de minimis thresholds (5% or AED 5M)"
       },
       "actions": {
         "edit": "Edit",
@@ -812,6 +822,19 @@
     "totalLiabilitiesEquity": "Total Liabilities + Equity",
     "imbalanceWarning": "Warning: Balance Sheet is not balanced. Assets must equal Liabilities + Equity.",
     "difference": "Difference"
+  },
+  "vatTypes": {
+    "standard": "Standard 5%",
+    "zero": "Zero-rated 0%",
+    "exempt": "Exempt"
+  },
+  "paymentMethods": {
+    "bankTransfer": "Bank Transfer",
+    "wps": "WPS",
+    "taqa": "TAQA",
+    "cash": "Cash",
+    "card": "Card Payment",
+    "cheque": "Cheque"
   },
   "accounting": {
     "messages": {

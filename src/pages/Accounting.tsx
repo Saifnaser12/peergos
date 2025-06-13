@@ -486,6 +486,9 @@ const Accounting: React.FC = () => {
                           {t('accounting.revenue.table.amount')}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          {t('accounting.revenue.table.evidence', 'Evidence')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           {t('accounting.revenue.table.actions')}
                         </th>
                       </tr>
@@ -504,6 +507,15 @@ const Accounting: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600 dark:text-green-400">
                             {formatCurrency(revenueItem.amount)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {revenueItem.invoiceGenerated ? (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                📄 Invoice
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div className="flex items-center space-x-2">
@@ -583,6 +595,9 @@ const Accounting: React.FC = () => {
                           {t('accounting.expenses.table.amount')}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          {t('accounting.expenses.table.evidence', 'Evidence')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           {t('accounting.expenses.table.actions')}
                         </th>
                       </tr>
@@ -606,6 +621,15 @@ const Accounting: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">
                             {formatCurrency(expense.amount)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {expense.receiptUrl ? (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                                📎 Receipt
+                              </span>
+                            ) : (
+                              <span className="text-orange-500">⚠️ Missing</span>
+                            )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div className="flex items-center space-x-2">
