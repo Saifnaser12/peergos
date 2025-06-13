@@ -214,32 +214,61 @@
   },
   "setup": {
     "title": "Setup Your Tax System",
-    "subtitle": "Configure your organization details to get started",
-    "progress": "Setup Progress",
-    "complete": "Complete Setup",
+    "description": "Configure your organization settings and SME-specific requirements",
     "step1": {
       "title": "Organization Details",
-      "orgName": "Organization Name",
-      "trn": "Tax Registration Number (TRN)",
-      "description": "Enter your basic organization information"
+      "description": "Enter your organization information"
     },
     "step2": {
-      "title": "Fiscal Year",
-      "startDate": "Fiscal Year Start",
-      "endDate": "Fiscal Year End"
+      "title": "Business Categorization",
+      "description": "Categorize your business for compliance requirements"
     },
     "step3": {
-      "title": "Business Information",
-      "businessType": "Business Type",
-      "address": "Business Address"
+      "title": "Fiscal Year",
+      "description": "Set your fiscal year dates"
     },
     "step4": {
-      "title": "Tax Agent Selection",
-      "description": "Choose a tax agent to help with compliance"
+      "title": "Business Information",
+      "description": "Configure business type and address"
     },
     "step5": {
+      "title": "System Configuration",
+      "description": "Connect integrations and finalize setup"
+    },
+    "organization": {
+      "name": "Organization Name",
+      "namePlaceholder": "Enter your organization name",
+      "trn": "Tax Registration Number (TRN)",
+      "trnPlaceholder": "Enter your TRN"
+    },
+    "fiscal": {
+      "start": "Fiscal Year Start",
+      "end": "Fiscal Year End"
+    },
+    "business": {
+      "type": "Business Type",
+      "selectType": "Select business type",
+      "address": "Business Address",
+      "addressPlaceholder": "Enter your business address"
+    },
+    "taxAgent": {
+      "title": "Tax Agent",
+      "selectAgent": "Select a tax agent",
+      "optional": "Optional - You can skip this step"
+    },
+    "integrations": {
       "title": "System Integrations",
-      "description": "Connect your POS and accounting systems"
-    }
+      "pos": "POS Integration",
+      "posDescription": "Connect your Point-of-Sale system",
+      "accounting": "Accounting Integration",
+      "accountingDescription": "Connect your accounting system"
+    },
+    "complete": {
+      "title": "Setup Complete!",
+      "description": "Your Peergos Tax system is now configured and ready to use.",
+      "button": "Go to Dashboard"
+    },
+    "next": "Next",
+    "previous": "Previous"
   }
 }
