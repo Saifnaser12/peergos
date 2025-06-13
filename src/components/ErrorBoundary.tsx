@@ -1,8 +1,9 @@
+
 import React, { Component, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
-  t?: (key: string, fallback?: string) => string;
+  t?: (key: string) => string;
 }
 
 interface State {
@@ -17,7 +18,7 @@ export class ErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     return { hasError: true, error, errorInfo: null };
   }
 
@@ -26,14 +27,14 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('Component stack:', errorInfo.componentStack);
     console.error('Error stack:', error.stack);
     console.error('Current URL:', window.location.pathname);
-
+    
     this.setState({
       error,
       errorInfo
     });
 
     // Log specific financial page errors for debugging
-    if (error.message.includes('LibraryLoader') || 
+    if (error.message.includes('LibraryLoader') ||
         error.message.includes('export') ||
         error.message.includes('useFinance') ||
         window.location.pathname.includes('/financials')) {
@@ -58,10 +59,10 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       const isFinancialError = window.location.pathname.includes('/financials');
-
+      
       return (
-        <div style={{ 
-          padding: '40px', 
+        <div style={{
+          padding: '40px',
           textAlign: 'center',
           minHeight: '400px',
           display: 'flex',
@@ -71,83 +72,69 @@ export class ErrorBoundary extends Component<Props, State> {
           backgroundColor: '#f5f5f5'
         }}>
           <h2 style={{ color: '#d32f2f', marginBottom: '16px' }}>
-            {isFinancialError ? 'Financial Page Error' : 
-             (this.props.t?.('error.somethingWentWrong') || 'Something went wrong')}
+            {isFinancialError ? 'Financial Page Error' :
+              (this.props.t?.('error.somethingWentWrong') || 'Something went wrong')}
           </h2>
-
+          
           <p style={{ color: '#666', marginBottom: '24px', maxWidth: '500px' }}>
-            {isFinancialError ? 
-             'There was an error loading the financial data. The page has been fixed and should work now.' :
-             (this.props.t?.('error.temporaryIssue') || 
-              'There was an error loading the application. This is likely a temporary issue.')}
+            {isFinancialError ?
+              'There was an error loading the financial data. The page has been fixed and should work now.' :
+              (this.props.t?.('error.temporaryIssue') ||
+                'There was an error loading the application. This is likely a temporary issue.')}
           </p>
 
           {this.state.error && (
-            <details style={{ 
-              marginBottom: '24px', 
-              padding: '16px', 
-              backgroundColor: '#fff', 
-              border: '1px solid #ddd',
-              borderRadius: '4px',
+            <details style={{
+              marginBottom: '24px',
               maxWidth: '600px',
-              textAlign: 'left'
+              textAlign: 'left',
+              backgroundColor: '#fff',
+              padding: '16px',
+              borderRadius: '4px',
+              border: '1px solid #ddd'
             }}>
-              <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
-                Technical Details
+              <summary style={{ cursor: 'pointer', fontWeight: 'bold', marginBottom: '8px' }}>
+                Error Details
               </summary>
-              <pre style={{ 
-                marginTop: '8px', 
-                fontSize: '12px', 
+              <pre style={{
+                fontSize: '12px',
                 color: '#666',
                 whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word'
+                wordWrap: 'break-word'
               }}>
                 {this.state.error.message}
+                {'\n\n'}
+                {this.state.error.stack}
               </pre>
             </details>
           )}
 
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button 
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
               onClick={this.handleRetry}
               style={{
                 padding: '12px 24px',
                 backgroundColor: '#1976d2',
                 color: 'white',
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: '4px',
                 cursor: 'pointer',
-                fontSize: '16px'
+                fontSize: '14px'
               }}
             >
               Try Again
             </button>
-
-            <button 
-              onClick={() => window.location.href = '/dashboard'}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#666',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '16px'
-              }}
-            >
-              Go to Dashboard
-            </button>
-
-            <button 
+            
+            <button
               onClick={this.handleReload}
               style={{
                 padding: '12px 24px',
-                backgroundColor: '#f57c00',
+                backgroundColor: '#757575',
                 color: 'white',
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: '4px',
                 cursor: 'pointer',
-                fontSize: '16px'
+                fontSize: '14px'
               }}
             >
               Reload Page
