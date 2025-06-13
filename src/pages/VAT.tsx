@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
@@ -7,37 +7,64 @@ import {
   Grid,
   TextField,
   Button,
-  Divider,
+  Alert,
+  Stepper,
+  Step,
+  StepLabel,
+  StepContent,
   Card,
   CardContent,
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
-  Alert,
   Switch,
   FormControlLabel,
-  useTheme,
-  alpha,
   Chip,
-  Snackbar,
-  Fab,
-  Tooltip
+  LinearProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Tabs,
+  Tab,
+  Divider
 } from '@mui/material';
+import {
+  Calculate as CalculateIcon,
+  Upload as UploadIcon,
+  Send as SendIcon,
+  Receipt as ReceiptIcon,
+  Assessment as AssessmentIcon,
+  CloudUpload as CloudUploadIcon,
+  CheckCircle as CheckCircleIcon,
+  FileDownload as FileDownloadIcon,
+  Sync as SyncIcon,
+  AccountBalance as BankIcon,
+  Scanner as ScanIcon,
+  Integration as IntegrationIcon,
+  ExpandMore as ExpandMoreIcon,
+  Settings as SettingsIcon,
+  Verified as VerifiedIcon,
+  Payment as PaymentIcon,
+  Description as ReportIcon
+} from '@mui/icons-material';
 import { 
   WbSunny as Sun, 
   NightlightRound as Moon, 
-  Upload, 
   Description as FileText, 
   Download,
-  Calculate,
   TableChart as TableCells,
   CloudUpload,
 } from '@mui/icons-material';
 import {
   DocumentTextIcon,
   ArrowDownTrayIcon,
-  CheckCircleIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
   CogIcon,
@@ -326,6 +353,590 @@ const VAT: React.FC = () => {
     }
   }, []);
 
+  const [activeStep, setActiveStep] = useState(0);
+  const [vatData, setVatData] = useState({
+    standardSales: 0,
+    zeroRatedSales: 0,
+    exemptSales: 0,
+    recoverablePurchases: 0,
+    nonRecoverablePurchases: 0,
+    reverseChargeImports: 0,
+    reverseChargeServices: 0,
+    lateInvoiceAdjustments: 0,
+    badDebtRelief: 0,
+    otherAdjustments: 0
+  });
+
+  const [workflowStatus, setWorkflowStatus] = useState({
+    dataCollection: {
+      posIntegration: false,
+      directPosIntegration: true,
+      systemCompatibility: true,
+      scanInvoices: false,
+      accountingIntegration: false,
+      dataVerification: false
+    },
+    documentManagement: {
+      invoiceScanning: false,
+      systemIntegration: false,
+      manualEntryBackup: true
+    },
+    vatCalculation: {
+      vatCalculationEngine: false,
+      vatReturnGeneration: false,
+      detailedReports: false
+    },
+    submissionReporting: {
+      ftaAccess: false,
+      automaticSubmission: false,
+      realTimeAccess: false
+    },
+    vatSettlement: {
+      netVatCalculation: false,
+      uploadBankSlip: false,
+      vatRefunds: false
+    }
+  });
+
+  const [uploadedDocuments, setUploadedDocuments] = useState([]);
+  const [submissionStatus, setSubmissionStatus] = useState('pending');
+
+  const vatWorkflowSteps = [
+    {
+      id: 1,
+      title: 'Data Collection',
+      description: 'POS Integration (Automated), Direct POS Integration, System Compatibility',
+      icon: <IntegrationIcon />,
+      color: '#2196F3',
+      features: ['POS Integration (Automated)', 'Direct POS Integration', 'System Compatibility', 'For SMEs Without POS', 'FTA Approved Accounting System', 'Data Verification']
+    },
+    {
+      id: 2,
+      title: 'Document Management',
+      description: 'Invoice Scanning, System Integration',
+      icon: <ScanIcon />,
+      color: '#4CAF50',
+      features: ['Invoice Scanning', 'System Integration']
+    },
+    {
+      id: 3,
+      title: 'VAT Calculation & Reporting',
+      description: 'VAT Calculation Engine, VAT Return Generation, Detailed Reports',
+      icon: <CalculateIcon />,
+      color: '#FF9800',
+      features: ['VAT Calculation Engine', 'VAT Return Generation', 'Detailed Reports']
+    },
+    {
+      id: 4,
+      title: 'Submission & Reporting to FTA',
+      description: 'FTA Access (Real-Time), Automatic Submission',
+      icon: <SendIcon />,
+      color: '#9C27B0',
+      features: ['FTA Access (Real-Time)', 'Detailed Financials Report', 'VAT Payable', 'Payment Transfer Slip', 'Automatic Submission']
+    },
+    {
+      id: 5,
+      title: 'VAT Settlement & Calculation',
+      description: 'Net VAT Calculation, Upload Bank Slip',
+      icon: <PaymentIcon />,
+      color: '#F44336',
+      features: ['Net VAT Calculation', 'Upload Bank Slip', 'VAT Refunds (if applicable)']
+    }
+  ];
+
+  const handleDocumentUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newDocuments = Array.from(files).map(file => ({
+        id: Date.now() + Math.random(),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        uploadDate: new Date().toISOString()
+      }));
+      setUploadedDocuments(prev => [...prev, ...newDocuments]);
+
+      setWorkflowStatus(prev => ({
+        ...prev,
+        documentManagement: {
+          ...prev.documentManagement,
+          invoiceScanning: true,
+          systemIntegration: true
+        }
+      }));
+    }
+  };
+
+  const simulateVATCalculation = () => {
+    const outputVAT = (vatData.standardSales * 0.05) + (vatData.reverseChargeImports * 0.05);
+    const inputVAT = (vatData.recoverablePurchases * 0.05);
+    const netVAT = outputVAT - inputVAT;
+
+    setWorkflowStatus(prev => ({
+      ...prev,
+      vatCalculation: {
+        ...prev.vatCalculation,
+        vatCalculationEngine: true,
+        vatReturnGeneration: true,
+        detailedReports: true
+      }
+    }));
+
+    return { outputVAT, inputVAT, netVAT };
+  };
+
+  const simulateFTASubmission = () => {
+    setSubmissionStatus('submitting');
+    setTimeout(() => {
+      setSubmissionStatus('submitted');
+      setWorkflowStatus(prev => ({
+        ...prev,
+        submissionReporting: {
+          ...prev.submissionReporting,
+          ftaAccess: true,
+          automaticSubmission: true,
+          realTimeAccess: true
+        }
+      }));
+    }, 3000);
+  };
+
+  const renderStepContent = (stepIndex: number) => {
+    switch (stepIndex) {
+      case 0: // Data Collection
+        return (
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    <IntegrationIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                    Data Collection Systems
+                  </Typography>
+
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={workflowStatus.dataCollection.posIntegration}
+                        onChange={(e) => setWorkflowStatus(prev => ({
+                          ...prev,
+                          dataCollection: {
+                            ...prev.dataCollection,
+                            posIntegration: e.target.checked
+                          }
+                        }))}
+                      />
+                    }
+                    label="POS Integration (Automated)"
+                  />
+                  <br />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={workflowStatus.dataCollection.directPosIntegration}
+                        onChange={(e) => setWorkflowStatus(prev => ({
+                          ...prev,
+                          dataCollection: {
+                            ...prev.dataCollection,
+                            directPosIntegration: e.target.checked
+                          }
+                        }))}
+                      />
+                    }
+                    label="Direct POS Integration"
+                  />
+                  <br />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={workflowStatus.dataCollection.systemCompatibility}
+                        onChange={(e) => setWorkflowStatus(prev => ({
+                          ...prev,
+                          dataCollection: {
+                            ...prev.dataCollection,
+                            systemCompatibility: e.target.checked
+                          }
+                        }))}
+                      />
+                    }
+                    label="System Compatibility"
+                  />
+
+                  <Alert severity="info" sx={{ mt: 2 }}>
+                    All Manual Entry shall be backed with proof evidence, which could be captured using a phone.
+                  </Alert>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Sales Data Input
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    label="Standard-rated Sales (5%) - AED"
+                    type="number"
+                    value={vatData.standardSales}
+                    onChange={(e) => handleInputChange('standardSales', e.target.value)}
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Zero-rated Sales (0%) - AED"
+                    type="number"
+                    value={vatData.zeroRatedSales}
+                    onChange={(e) => handleInputChange('zeroRatedSales', e.target.value)}
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Exempt Sales - AED"
+                    type="number"
+                    value={vatData.exemptSales}
+                    onChange={(e) => handleInputChange('exemptSales', e.target.value)}
+                    sx={{ mb: 2 }}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        );
+
+      case 1: // Document Management
+        return (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    <ScanIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                    Document Management & Invoice Scanning
+                  </Typography>
+                  <Box
+                    sx={{
+                      border: `2px dashed #ccc`,
+                      borderRadius: 2,
+                      p: 4,
+                      textAlign: 'center',
+                      mb: 3,
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0,0,0,0.05)'
+                      }
+                    }}
+                  >
+                    <input
+                      type="file"
+                      multiple
+                      onChange={handleDocumentUpload}
+                      style={{ display: 'none' }}
+                      id="vat-document-upload"
+                      accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls"
+                    />
+                    <label htmlFor="vat-document-upload">
+                      <UploadIcon sx={{ fontSize: 48, color: '#2196F3', mb: 2 }} />
+                      <Typography variant="h6">Upload VAT Documents</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Invoices, receipts, bank statements, purchase records
+                      </Typography>
+                    </label>
+                  </Box>
+
+                  {uploadedDocuments.length > 0 && (
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Document Name</TableCell>
+                            <TableCell>Size</TableCell>
+                            <TableCell>Upload Date</TableCell>
+                            <TableCell>Scan Status</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {uploadedDocuments.map((doc) => (
+                            <TableRow key={doc.id}>
+                              <TableCell>{doc.name}</TableCell>
+                              <TableCell>{(doc.size / 1024).toFixed(1)} KB</TableCell>
+                              <TableCell>{new Date(doc.uploadDate).toLocaleDateString()}</TableCell>
+                              <TableCell>
+                                <Chip
+                                  label="Scanned & Processed"
+                                  color="success"
+                                  size="small"
+                                  icon={<CheckCircleIcon />}
+                                />
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        );
+
+      case 2: // VAT Calculation & Reporting
+        return (
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={8}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    <CalculateIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                    VAT Calculation Engine
+                  </Typography>
+
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        label="Recoverable Purchases - AED"
+                        type="number"
+                        value={vatData.recoverablePurchases}
+                        onChange={(e) => handleInputChange('recoverablePurchases', e.target.value)}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        label="Reverse Charge Imports - AED"
+                        type="number"
+                        value={vatData.reverseChargeImports}
+                        onChange={(e) => handleInputChange('reverseChargeImports', e.target.value)}
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Button
+                    variant="contained"
+                    onClick={simulateVATCalculation}
+                    startIcon={<CalculateIcon />}
+                    sx={{ mt: 3 }}
+                    fullWidth
+                  >
+                    Calculate VAT
+                  </Button>
+
+                  <Box sx={{ mt: 3 }}>
+                    <Typography variant="subtitle1" gutterBottom>
+                      Generated Reports:
+                    </Typography>
+                    <Chip
+                      label="VAT Return Generation"
+                      color={workflowStatus.vatCalculation.vatReturnGeneration ? 'success' : 'default'}
+                      icon={workflowStatus.vatCalculation.vatReturnGeneration ? <CheckCircleIcon /> : <ReportIcon />}
+                      sx={{ mr: 1, mb: 1 }}
+                    />
+                    <Chip
+                      label="Detailed Reports"
+                      color={workflowStatus.vatCalculation.detailedReports ? 'success' : 'default'}
+                      icon={workflowStatus.vatCalculation.detailedReports ? <CheckCircleIcon /> : <AssessmentIcon />}
+                      sx={{ mr: 1, mb: 1 }}
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    VAT Summary
+                  </Typography>
+                  {(() => {
+                    const calc = simulateVATCalculation();
+                    return (
+                      <>
+                        <Typography variant="body2">
+                          Output VAT: AED {calc.outputVAT.toFixed(2)}
+                        </Typography>
+                        <Typography variant="body2">
+                          Input VAT: AED {calc.inputVAT.toFixed(2)}
+                        </Typography>
+                        <Typography variant="h6" color="primary">
+                          Net VAT: AED {calc.netVAT.toFixed(2)}
+                        </Typography>
+                      </>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        );
+
+      case 3: // Submission & Reporting to FTA
+        return (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    <SendIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                    FTA Submission & Reporting
+                  </Typography>
+
+                  <Alert severity="info" sx={{ mb: 3 }}>
+                    All data will be stored in UAE cloud. FTA will have live access to all SME data via TRN number.
+                  </Alert>
+
+                  {submissionStatus === 'pending' && (
+                    <Box>
+                      <Typography variant="subtitle1" gutterBottom>
+                        Ready for FTA Submission
+                      </Typography>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} md={4}>
+                          <Paper elevation={2} sx={{ p: 2, textAlign: 'center' }}>
+                            <ReportIcon sx={{ fontSize: 40, color: '#9C27B0', mb: 1 }} />
+                            <Typography variant="body2">Detailed Financials Report</Typography>
+                          </Paper>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                          <Paper elevation={2} sx={{ p: 2, textAlign: 'center' }}>
+                            <PaymentIcon sx={{ fontSize: 40, color: '#9C27B0', mb: 1 }} />
+                            <Typography variant="body2">VAT Payable</Typography>
+                          </Paper>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                          <Paper elevation={2} sx={{ p: 2, textAlign: 'center' }}>
+                            <BankIcon sx={{ fontSize: 40, color: '#9C27B0', mb: 1 }} />
+                            <Typography variant="body2">Payment Transfer Slip</Typography>
+                          </Paper>
+                        </Grid>
+                      </Grid>
+                      <Button
+                        variant="contained"
+                        size="large"
+                        onClick={simulateFTASubmission}
+                        startIcon={<SendIcon />}
+                        sx={{ mt: 3 }}
+                        fullWidth
+                      >
+                        Submit to FTA
+                      </Button>
+                    </Box>
+                  )}
+
+                  {submissionStatus === 'submitting' && (
+                    <Box>
+                      <Typography variant="subtitle1" gutterBottom>
+                        Submitting to FTA...
+                      </Typography>
+                      <LinearProgress sx={{ mt: 2 }} />
+                    </Box>
+                  )}
+
+                  {submissionStatus === 'submitted' && (
+                    <Box>
+                      <Alert severity="success" sx={{ mb: 2 }}>
+                        Successfully submitted to FTA
+                      </Alert>
+                      <Typography variant="subtitle1" gutterBottom>
+                        Submission Status:
+                      </Typography>
+                      <Chip label="FTA Access: Real-Time ✅" color="success" sx={{ mr: 1, mb: 1 }} />
+                      <Chip label="Automatic Submission: Active ✅" color="success" sx={{ mr: 1, mb: 1 }} />
+                      <Chip label="Submission ID: VAT-2024-001" color="primary" sx={{ mr: 1, mb: 1 }} />
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        );
+
+      case 4: // VAT Settlement & Calculation
+        return (
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    <PaymentIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                    VAT Settlement & Calculation
+                  </Typography>
+
+                  <Typography variant="subtitle2" gutterBottom>
+                    Net VAT Calculation
+                  </Typography>
+                  {(() => {
+                    const calc = simulateVATCalculation();
+                    return (
+                      <Alert severity={calc.netVAT > 0 ? "warning" : "success"} sx={{ mb: 2 }}>
+                        Net VAT {calc.netVAT > 0 ? 'Payable' : 'Refundable'}: AED {Math.abs(calc.netVAT).toFixed(2)}
+                      </Alert>
+                    );
+                  })()}
+
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={workflowStatus.vatSettlement.uploadBankSlip}
+                        onChange={(e) => setWorkflowStatus(prev => ({
+                          ...prev,
+                          vatSettlement: {
+                            ...prev.vatSettlement,
+                            uploadBankSlip: e.target.checked
+                          }
+                        }))}
+                      />
+                    }
+                    label="Upload Bank Slip"
+                  />
+                  <br />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={workflowStatus.vatSettlement.vatRefunds}
+                        onChange={(e) => setWorkflowStatus(prev => ({
+                          ...prev,
+                          vatSettlement: {
+                            ...prev.vatSettlement,
+                            vatRefunds: e.target.checked
+                          }
+                        }))}
+                      />
+                    }
+                    label="VAT Refunds Processing"
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    PEERGOS VAT Refunds
+                  </Typography>
+                  <Alert severity="info" sx={{ mb: 2 }}>
+                    PEERGOS allows VAT Refunds (if any). Notifications will be available on the system
+                  </Alert>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    startIcon={<BankIcon />}
+                    disabled={!workflowStatus.vatSettlement.uploadBankSlip}
+                  >
+                    Process VAT Settlement
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
       {/* Header */}
@@ -371,6 +982,80 @@ const VAT: React.FC = () => {
           </Typography>
         </Alert>
       )}
+
+      {/* Workflow Progress */}
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Grid container spacing={1}>
+          {vatWorkflowSteps.map((step, index) => (
+            <Grid item xs={2.4} key={step.id}>
+              <Box
+                sx={{
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  p: 2,
+                  borderRadius: 2,
+                  backgroundColor: activeStep === index ? `${step.color}20` : 'transparent',
+                  border: activeStep === index ? `2px solid ${step.color}` : '2px solid transparent'
+                }}
+                onClick={() => setActiveStep(index)}
+              >
+                <Box
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    backgroundColor: step.color,
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',                    mx: 'auto',
+                    mb: 1
+                  }}
+                >
+                  {step.icon}
+                </Box>
+                <Typography variant="caption" sx={{ fontWeight: activeStep === index ? 'bold' : 'normal' }}>
+                  {step.title}
+                </Typography>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Paper>
+
+      {/* Step Content */}
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h5" gutterBottom sx={{ color: vatWorkflowSteps[activeStep].color }}>
+          {vatWorkflowSteps[activeStep].title}
+        </Typography>
+        <Typography variant="body1" color="text.secondary" gutterBottom>
+          {vatWorkflowSteps[activeStep].description}
+        </Typography>
+
+        {renderStepContent(activeStep)}
+
+        {/* Navigation */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+          <Button
+            onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
+            disabled={activeStep === 0}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setActiveStep(Math.min(vatWorkflowSteps.length - 1, activeStep + 1))}
+            disabled={activeStep === vatWorkflowSteps.length - 1}
+          >
+            Next
+          </Button>
+        </Box>
+      </Paper>
+
+      {/* UAE Cloud Storage Notice */}
+      <Alert severity="info" sx={{ mt: 3 }}>
+        All data will be stored in UAE cloud. FTA will have live access to all SME data via TRN number.
+      </Alert>
 
       <Grid container spacing={3}>
         {/* Form Section */}
@@ -624,7 +1309,7 @@ const VAT: React.FC = () => {
                 },
               }}
             >
-              <Upload sx={{ fontSize: 32, color: theme.palette.primary.main }} />
+              <UploadIcon sx={{ fontSize: 32, color: theme.palette.primary.main }} />
               <Typography variant="body1" sx={{ mt: 2, fontWeight: 500 }}>
                 {t('Upload invoices, receipts, and reports')}
               </Typography>
@@ -720,7 +1405,7 @@ const VAT: React.FC = () => {
               <Button
                 variant="outlined"
                 fullWidth
-                startIcon={<Calculate />}
+                startIcon={<CalculateIcon />}
                 sx={{ mb: 2 }}
                 onClick={() => {/* Recalculate logic */}}
               >

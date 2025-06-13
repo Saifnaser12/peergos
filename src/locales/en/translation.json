@@ -120,8 +120,31 @@
     }
   },
   "vat": {
-    "title": "VAT Return Filing",
-    "subtitle": "File your VAT return for the UAE",
+    "title": "VAT Workflow",
+    "subtitle": "Comprehensive VAT management for UAE SMEs",
+    "workflow": {
+      "dataCollection": "Data Collection",
+      "documentManagement": "Document Management", 
+      "vatCalculation": "VAT Calculation & Reporting",
+      "submissionReporting": "Submission & Reporting to FTA",
+      "vatSettlement": "VAT Settlement & Calculation",
+      "posIntegration": "POS Integration (Automated)",
+      "directPosIntegration": "Direct POS Integration", 
+      "systemCompatibility": "System Compatibility",
+      "invoiceScanning": "Invoice Scanning",
+      "systemIntegration": "System Integration",
+      "vatCalculationEngine": "VAT Calculation Engine",
+      "vatReturnGeneration": "VAT Return Generation",
+      "detailedReports": "Detailed Reports",
+      "ftaAccess": "FTA Access (Real-Time)",
+      "automaticSubmission": "Automatic Submission",
+      "netVatCalculation": "Net VAT Calculation",
+      "uploadBankSlip": "Upload Bank Slip",
+      "vatRefunds": "VAT Refunds (if applicable)",
+      "manualEntryNote": "All Manual Entry shall be backed with proof evidence, which could be captured using a phone.",
+      "uaeCloudNote": "All data will be stored in UAE cloud. FTA will have live access to all SME data via TRN number.",
+      "peergosRefunds": "PEERGOS allows VAT Refunds (if any). Notifications will be available on the system"
+    },
     "sales": {
       "title": "Sales",
       "standardRated": "Standard-rated sales (5%)",
