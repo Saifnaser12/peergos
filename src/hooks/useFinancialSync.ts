@@ -133,22 +133,6 @@ export const useFinancialSync = (options: FinancialSyncOptions = {}) => {
     }));
   }, []);
 
-  // Auto-sync functionality
-  useEffect(() => {
-    if (!autoSync || !syncStatus.isConnected) return;
-
-    console.log('🔄 Setting up auto-sync interval');
-    const interval = setInterval(() => {
-      console.log('🔄 Auto-sync triggered');
-      performSync();
-    }, syncInterval);
-
-    return () => {
-      console.log('🔄 Clearing auto-sync interval');
-      clearInterval(interval);
-    };
-  }, [autoSync, syncInterval, syncStatus.isConnected, performSync]);
-
   return {
     ...syncStatus,
     syncData,
