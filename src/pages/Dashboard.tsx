@@ -448,7 +448,7 @@ const Dashboard: React.FC = () => {
                 <span>File VAT Return</span>
               </button>
               <button
-                onClick={() => navigate('/cit')}
+                onClick={() => navigate('/corporate-tax')}
                 className="flex items-center justify-center space-x-2 px-6 py-4 bg-blue-50 hover:bg-blue-100 border border-blue-200 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:border-blue-700 rounded-lg text-blue-800 dark:text-blue-200 font-medium transition-colors duration-200"
               >
                 <span>🧮</span>
