@@ -174,6 +174,21 @@
       "ftaPdfSuccess": "FTA-style PDF generated successfully",
       "ftaPdfError": "Error generating FTA PDF"
     },
+    "workflow": {
+      "title": "CIT Workflow",
+      "subtitle": "Comprehensive CIT management for UAE SMEs",
+      "revenueRecording": "Revenue Recording",
+      "documentManagement": "Document Management",
+      "citCalculation": "CIT Calculation & Reporting",
+      "submissionReporting": "Submission & Reporting to FTA",
+      "verificationPayment": "Verification & Payment",
+      "dataStorage": "Data Storage & Access",
+      "manualEntryNote": "All manual entries must be backed with proof evidence, which could be captured using a phone.",
+      "uaeCloudNote": "All data will be stored in UAE cloud. FTA will have live access to all SME data via TRN number.",
+      "ftaCompliant": "Calculations performed as per FTA requirements",
+      "taxAgentRequired": "FTA approved Tax Agent Selection required",
+      "eSignRequired": "Verification & confirmation with e-sign and stamp required"
+    },
     "responses": {
       "greeting": "Hello! I'm your UAE tax assistant. I can help with CIT, VAT, filing deadlines, and FTA compliance. What would you like to know?",
       "default": "I'm here to help with UAE tax compliance. Please try rephrasing your question.",
