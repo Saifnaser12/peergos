@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { libraryLoader } from '../utils/libraryLoader';
 
@@ -17,7 +16,7 @@ interface FinancialSyncOptions {
 
 export const useFinancialSync = (options: FinancialSyncOptions = {}) => {
   const { autoSync = true, syncInterval = 30000, retryAttempts = 3 } = options;
-  
+
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     isConnected: false,
     lastSyncTime: null,
@@ -28,23 +27,23 @@ export const useFinancialSync = (options: FinancialSyncOptions = {}) => {
   // Initialize connection
   useEffect(() => {
     console.log('🔄 Initializing financial sync service...');
-    
+
     const initializeSync = async () => {
       try {
         // Load required libraries
         await libraryLoader.loadJsSHA();
         await libraryLoader.loadQRCode();
-        
+
         // Simulate connection to external services
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         setSyncStatus(prev => ({
           ...prev,
           isConnected: true,
           lastSyncTime: new Date(),
           syncError: null
         }));
-        
+
         console.log('✅ Financial sync service connected');
       } catch (error) {
         console.error('❌ Failed to initialize sync service:', error);
@@ -118,7 +117,7 @@ export const useFinancialSync = (options: FinancialSyncOptions = {}) => {
 
     // Simulate reconnection
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     setSyncStatus(prev => ({
       ...prev,
       isConnected: true,

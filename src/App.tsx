@@ -46,6 +46,7 @@ import Landing from './pages/Landing';
 import WhitelabelPage from './pages/WhitelabelPage';
 import FreeZoneSubstance from './pages/FreeZoneSubstance';
 import FinancialsTest from './components/FinancialsTest';
+import TaxWizard from './pages/TaxWizard';
 
 const App: React.FC = () => {
   const theme = createTheme({
@@ -160,6 +161,11 @@ const App: React.FC = () => {
                                             <Assistant />
                                           </ProtectedRoute>
                                         } />
+                                          <Route path="tax-wizard" element={
+                                            <ProtectedRoute allowedRoles={['admin', 'accountant', 'assistant', 'sme_client']}>
+                                              <TaxWizard />
+                                            </ProtectedRoute>
+                                          } />
                                         <Route path="admin" element={
                                           <ProtectedRoute allowedRoles={['admin']}>
                                             <Admin />

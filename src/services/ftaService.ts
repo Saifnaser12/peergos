@@ -90,8 +90,10 @@ const MOCK_TRN_DATABASE: Record<string, TRNLookupResult> = {
 };
 
 class FTAService {
-  private baseUrl = 'https://api.fta.gov.ae/v1'; // Mock endpoint
-  private apiKey = 'mock-api-key';
+  private baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://api.fta.gov.ae/v1' 
+    : 'https://api-staging.fta.gov.ae/v1'; // Use staging for dev
+  private apiKey = process.env.VITE_FTA_API_KEY || 'mock-api-key';
 
   // Simulate API delay
   private async delay(ms: number = 1000): Promise<void> {
