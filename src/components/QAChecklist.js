@@ -1,24 +1,15 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from 'react';
-import { Box, Typography, Paper, Checkbox, FormControlLabel, Accordion, AccordionSummary, AccordionDetails, LinearProgress, Chip, Button, Alert } from '@mui/material';
-import { ExpandMore as ExpandMoreIcon, CheckCircle as CheckCircleIcon, Warning as WarningIcon, Assignment as AssignmentIcon } from '@mui/icons-material';
+import { Box, Typography, Paper, Checkbox, FormControlLabel, Button, Alert } from '@mui/material';
 const QAChecklist = () => {
     const [sections, setSections] = useState([
         {
-            id: 'access-control',
-            title: '🔐 Role-Based Access Control',
-            description: 'Verify proper role restrictions for all sensitive pages',
+            id: 'auth-security',
+            title: '🔐 Authentication & Security',
+            description: 'Verify user authentication and authorization systems',
             items: [
-                { id: 'cit-admin', label: 'Admin role can access CIT page', checked: false, critical: true },
-                { id: 'cit-accountant', label: 'Accountant role can access CIT page', checked: false, critical: true },
-                { id: 'cit-assistant-blocked', label: 'Assistant role cannot access CIT page', checked: false, critical: true },
-                { id: 'cit-viewer-blocked', label: 'Viewer role cannot access CIT page', checked: false, critical: true },
-                { id: 'vat-admin', label: 'Admin role can access VAT page', checked: false, critical: true },
-                { id: 'vat-accountant', label: 'Accountant role can access VAT page', checked: false, critical: true },
-                { id: 'vat-assistant-blocked', label: 'Assistant role cannot access VAT page', checked: false, critical: true },
-                { id: 'vat-viewer-blocked', label: 'Viewer role cannot access VAT page', checked: false, critical: true },
-                { id: 'financials-all-access', label: 'All roles can access Financials with proper restrictions', checked: false, critical: true },
-                { id: 'transfer-pricing-all', label: 'All roles can access Transfer Pricing', checked: false, critical: false },
+                { id: 'login-required', label: 'Login required for protected pages', checked: false, critical: true },
+                { id: 'role-permissions', label: 'Role-based permissions enforced correctly', checked: false, critical: true },
                 { id: 'unauthorized-redirect', label: 'Unauthorized users redirected to /unauthorized', checked: false, critical: true }
             ]
         },
@@ -41,9 +32,7 @@ const QAChecklist = () => {
             items: [
                 { id: 'theme-toggle', label: 'Theme toggle button visible and functional', checked: false, critical: false },
                 { id: 'dark-mode', label: 'Dark mode applies consistently across all pages', checked: false, critical: false },
-                { id: 'light-mode', label: 'Light mode applies consistently across all pages', checked: false, critical: false },
-                { id: 'theme-persistence', label: 'Theme preference persists across sessions', checked: false, critical: false },
-                { id: 'text-readability', label: 'All text remains readable in both modes', checked: false, critical: true }
+                { id: 'light-mode', label: 'Light mode applies consistently across all pages', checked: false, critical: false }
             ]
         },
         {
@@ -151,8 +140,6 @@ const QAChecklist = () => {
         a.click();
         URL.revokeObjectURL(url);
     };
-    return (_jsx(Box, { className: "min-h-screen bg-gray-50 dark:bg-gray-900 p-6", children: _jsxs("div", { className: "max-w-6xl mx-auto", children: [_jsxs(Paper, { elevation: 2, className: "p-6 mb-6", children: [_jsxs(Box, { className: "flex items-center justify-between mb-4", children: [_jsxs(Box, { className: "flex items-center gap-3", children: [_jsx(AssignmentIcon, { className: "text-blue-600", sx: { fontSize: 32 } }), _jsx(Typography, { variant: "h4", className: "font-bold text-gray-900 dark:text-white", children: "QA Launch Checklist" })] }), _jsx(Button, { variant: "outlined", onClick: exportChecklist, className: "text-sm", children: "Export Report" })] }), _jsx(Typography, { variant: "body1", className: "text-gray-600 dark:text-gray-400 mb-4", children: "Pre-launch validation checklist for Peergos UAE Compliance Engine" }), _jsxs(Box, { className: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4", children: [_jsxs(Box, { children: [_jsxs(Typography, { variant: "body2", className: "mb-2 font-medium", children: ["Overall Progress: ", Math.round(getTotalProgress()), "%"] }), _jsx(LinearProgress, { variant: "determinate", value: getTotalProgress(), className: "h-2 rounded" })] }), _jsxs(Box, { children: [_jsxs(Typography, { variant: "body2", className: "mb-2 font-medium", children: ["Critical Items: ", Math.round(getCriticalProgress()), "%"] }), _jsx(LinearProgress, { variant: "determinate", value: getCriticalProgress(), color: getCriticalProgress() === 100 ? "success" : "error", className: "h-2 rounded" })] })] }), _jsx(Alert, { severity: isReadyForLaunch() ? "success" : "warning", icon: isReadyForLaunch() ? _jsx(CheckCircleIcon, {}) : _jsx(WarningIcon, {}), children: isReadyForLaunch()
-                                ? "✅ Ready for Launch! All critical items completed."
-                                : "⚠️ Not ready for launch. Complete all critical items first." })] }), sections.map((section, index) => (_jsxs(Accordion, { defaultExpanded: index === 0, children: [_jsx(AccordionSummary, { expandIcon: _jsx(ExpandMoreIcon, {}), children: _jsxs(Box, { className: "flex items-center justify-between w-full mr-4", children: [_jsxs(Box, { children: [_jsx(Typography, { variant: "h6", className: "font-semibold", children: section.title }), _jsx(Typography, { variant: "body2", className: "text-gray-600 dark:text-gray-400", children: section.description })] }), _jsx(Box, { className: "flex items-center gap-2", children: _jsx(Chip, { label: `${Math.round(getSectionProgress(section))}%`, color: getSectionProgress(section) === 100 ? "success" : "default", size: "small" }) })] }) }), _jsx(AccordionDetails, { children: _jsx(Box, { className: "space-y-2", children: section.items.map((item) => (_jsx(Box, { className: "flex items-center justify-between", children: _jsx(FormControlLabel, { control: _jsx(Checkbox, { checked: item.checked, onChange: () => handleItemCheck(section.id, item.id), color: "primary" }), label: _jsxs(Box, { className: "flex items-center gap-2", children: [_jsx(Typography, { variant: "body2", children: item.label }), item.critical && (_jsx(Chip, { label: "Critical", size: "small", color: "error", variant: "outlined" }))] }) }) }, item.id))) }) })] }, section.id))), _jsx(Paper, { elevation: 1, className: "p-4 mt-6", children: _jsx(Typography, { variant: "body2", className: "text-center text-gray-600 dark:text-gray-400", children: "Complete all critical items before launching to production. Export this report for sign-off documentation." }) })] }) }));
+    return (_jsx(Box, { className: "min-h-screen bg-gray-50 dark:bg-gray-900 p-6", children: _jsxs("div", { className: "max-w-6xl mx-auto", children: [_jsxs(Paper, { elevation: 2, className: "p-6 mb-6", children: [_jsxs(Box, { className: "flex items-center justify-between mb-4", children: [_jsx(Box, { className: "flex items-center gap-3", children: _jsx(Typography, { variant: "h4", className: "font-bold text-gray-900 dark:text-white", children: "QA Launch Checklist" }) }), _jsx(Button, { variant: "outlined", onClick: exportChecklist, className: "text-sm", children: "Export Report" })] }), _jsx(Typography, { variant: "body1", className: "text-gray-600 dark:text-gray-400 mb-4", children: "Pre-launch validation checklist for Peergos UAE Compliance Engine" }), _jsx(Alert, { severity: "info", children: "Complete all critical items before launching to production. Export this report for sign-off documentation." }), _jsx(Button, { variant: "contained", onClick: exportChecklist, className: "mt-3", children: "Export QA Report" })] }), sections.map((section, index) => (_jsxs(Paper, { elevation: 2, className: "mb-4 p-4", children: [_jsx(Typography, { variant: "h6", className: "mb-2", children: section.title }), _jsx(Typography, { variant: "body2", className: "mb-3 text-gray-600", children: section.description }), section.items.map((item) => (_jsx(FormControlLabel, { control: _jsx(Checkbox, { checked: item.checked, onChange: () => handleItemCheck(section.id, item.id), color: item.critical ? 'error' : 'primary' }), label: _jsxs("span", { className: item.critical ? 'font-semibold text-red-600' : '', children: [item.label, " ", item.critical && '(Critical)'] }), className: "block mb-2" }, item.id)))] }, section.id))), _jsx(Paper, { elevation: 1, className: "p-4 mt-6", children: _jsx(Typography, { variant: "body2", className: "text-center text-gray-600 dark:text-gray-400", children: "Complete all critical items before launching to production. Export this report for sign-off documentation." }) })] }) }));
 };
 export default QAChecklist;

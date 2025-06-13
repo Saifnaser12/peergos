@@ -7,8 +7,7 @@ export const LanguageToggle = () => {
     const toggleLanguage = () => {
         const newLang = i18n.language === 'ar' ? 'en' : 'ar';
         i18n.changeLanguage(newLang);
-        document.dir = newLang === 'ar' ? 'rtl' : 'ltr';
-        localStorage.setItem('language', newLang);
+        // Document direction will be handled by i18n language change listener
     };
     return (_jsx(Tooltip, { title: i18n.language === 'ar' ? 'English' : 'العربية', children: _jsx(IconButton, { color: "inherit", onClick: toggleLanguage, children: _jsx(TranslateIcon, {}) }) }));
 };

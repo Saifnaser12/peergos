@@ -47,13 +47,15 @@ class FTAService {
             enumerable: true,
             configurable: true,
             writable: true,
-            value: 'https://api.fta.gov.ae/v1'
-        }); // Mock endpoint
+            value: process.env.NODE_ENV === 'production'
+                ? 'https://api.fta.gov.ae/v1'
+                : 'https://api-staging.fta.gov.ae/v1'
+        }); // Use staging for dev
         Object.defineProperty(this, "apiKey", {
             enumerable: true,
             configurable: true,
             writable: true,
-            value: 'mock-api-key'
+            value: process.env.VITE_FTA_API_KEY || 'mock-api-key'
         });
     }
     // Simulate API delay

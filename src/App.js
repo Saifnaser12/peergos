@@ -1,62 +1,75 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useEffect, useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import AppLayout from './components/AppLayout';
-import { createTheme } from './theme';
-import { ThemeProvider as CustomThemeProvider } from './context/ThemeContext';
-import { TaxProvider } from './context/TaxContext';
-import { UserRoleProvider } from './context/UserRoleContext';
-import { SettingsProvider } from './context/SettingsContext';
-import { I18nextProvider } from 'react-i18next';
-import i18n from './i18n';
-import { NotificationProvider } from './context/NotificationContext';
-import { TaxAgentProvider } from './context/TaxAgentContext';
-import { POSIntegrationProvider } from './context/POSIntegrationContext';
+import { createTheme } from '@mui/material/styles';
+// Context Providers
+import { ThemeProvider } from './context/ThemeContext';
 import { FinanceProvider } from './context/FinanceContext';
-// Import your existing pages
-import Setup from './pages/Setup';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Unauthorized from './pages/Unauthorized';
+import { UserRoleProvider } from './context/UserRoleContext';
+import { NotificationProvider } from './context/NotificationContext';
+import { TransferPricingProvider } from './context/TransferPricingContext';
+import { TaxProvider } from './context/TaxContext';
+import { TaxAgentProvider } from './context/TaxAgentProvider';
+import { InvoiceProvider } from './context/InvoiceContext';
+import { POSIntegrationProvider } from './context/POSIntegrationContext';
+import { RelatedPartyProvider } from './context/RelatedPartyContext';
+import { SettingsProvider } from './context/SettingsContext';
+import { BalanceSheetProvider } from './context/BalanceSheetContext';
+import { WhitelabelProvider } from './context/WhitelabelContext';
+// Components
+import Layout from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
+// Pages
 import Dashboard from './pages/Dashboard';
-import VAT from './pages/VAT';
 import Accounting from './pages/Accounting';
+import VAT from './pages/VAT';
 import CIT from './pages/CIT';
+import Filing from './pages/Filing';
 import Financials from './pages/Financials';
 import TransferPricing from './pages/TransferPricing';
-import Calendar from './pages/Calendar';
-import Assistant from './pages/Assistant';
 import SimpleInvoice from './pages/SimpleInvoice';
-import Filing from './pages/Filing';
-import QAChecklist from './components/QAChecklist';
+import Assistant from './pages/Assistant';
+import Admin from './pages/Admin';
+import Calendar from './pages/Calendar';
+import Setup from './pages/Setup';
+import Unauthorized from './pages/Unauthorized';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import AssistantTest from './pages/AssistantTest';
 import QATest from './pages/QATest';
-// Internal component to handle theme with i18n
-function AppContent() {
-    const direction = i18n.language === 'ar' ? 'rtl' : 'ltr';
-    const theme = createTheme(direction);
-    const [isSetupComplete, setIsSetupComplete] = useState(null);
-    useEffect(() => {
+import Landing from './pages/Landing';
+import WhitelabelPage from './pages/WhitelabelPage';
+import FreeZoneSubstance from './pages/FreeZoneSubstance';
+import FinancialsTest from './components/FinancialsTest';
+import TaxWizard from './pages/TaxWizard';
+const App = () => {
+    const theme = createTheme({
+        palette: {
+            mode: 'light',
+        },
+    });
+    const [isSetupComplete, setIsSetupComplete] = React.useState(null);
+    React.useEffect(() => {
         try {
-            // Check if setup is complete
             const setupComplete = localStorage.getItem('peergos_setup_complete') === 'true';
+            console.log('🔍 Setup status check:', setupComplete);
+            console.log('📝 Raw localStorage value:', localStorage.getItem('peergos_setup_complete'));
             setIsSetupComplete(setupComplete);
         }
         catch (error) {
-            console.error('Error checking setup status:', error);
+            console.error('❌ Error checking setup status:', error);
             setIsSetupComplete(false);
         }
     }, []);
-    // Show loading while checking setup status
+    // Show a loading state while checking setup status
     if (isSetupComplete === null) {
-        return (_jsx("div", { className: "min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center", children: _jsx("div", { className: "animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" }) }));
+        return (_jsx("div", { className: "min-h-screen bg-gray-50 flex items-center justify-center", children: _jsxs("div", { className: "text-center", children: [_jsx("div", { className: "animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4" }), _jsx("p", { className: "text-gray-600", children: "Loading..." })] }) }));
     }
-    return (_jsxs(ThemeProvider, { theme: theme, children: [_jsx(CssBaseline, {}), _jsx(ErrorBoundary, { children: _jsx(Router, { children: _jsxs(Routes, { children: [_jsx(Route, { path: "/login", element: _jsx(Login, {}) }), _jsx(Route, { path: "/register", element: _jsx(Register, {}) }), _jsx(Route, { path: "/setup", element: _jsx(Setup, {}) }), _jsxs(Route, { path: "/", element: isSetupComplete ? (_jsx(AppLayout, {})) : (_jsx(Navigate, { to: "/setup", replace: true })), children: [_jsx(Route, { index: true, element: _jsx(Navigate, { to: "/dashboard", replace: true }) }), _jsx(Route, { path: "dashboard", element: _jsx(ProtectedRoute, { rolesAllowed: ["admin", "accountant", "assistant", "sme_client"], children: _jsx(Dashboard, {}) }) }), _jsx(Route, { path: "vat", element: _jsx(ProtectedRoute, { rolesAllowed: ["admin", "accountant"], children: _jsx(VAT, {}) }) }), _jsx(Route, { path: "accounting", element: _jsx(ProtectedRoute, { rolesAllowed: ["admin", "sme_client"], children: _jsx(Accounting, {}) }) }), _jsx(Route, { path: "cit", element: _jsx(ProtectedRoute, { rolesAllowed: ["admin", "accountant"], children: _jsx(CIT, {}) }) }), _jsx(Route, { path: "financials", element: _jsx(ProtectedRoute, { rolesAllowed: ["admin", "accountant"], children: _jsx(Financials, {}) }) }), _jsx(Route, { path: "transfer-pricing", element: _jsx(ProtectedRoute, { rolesAllowed: ["admin", "accountant"], children: _jsx(TransferPricing, {}) }) }), _jsx(Route, { path: "/qa-checklist", element: _jsx(ProtectedRoute, { rolesAllowed: ['admin'], children: _jsx(QAChecklist, {}) }) }), _jsx(Route, { path: "filing", element: _jsx(ProtectedRoute, { rolesAllowed: ["admin", "accountant"], children: _jsx(Filing, {}) }) }), _jsx(Route, { path: "assistant", element: _jsx(ProtectedRoute, { rolesAllowed: ["admin", "accountant", "assistant", "sme_client"], children: _jsx(Assistant, {}) }) }), _jsx(Route, { path: "calendar", element: _jsx(ProtectedRoute, { rolesAllowed: ["admin", "accountant", "assistant", "sme_client"], children: _jsx(Calendar, {}) }) }), _jsx(Route, { path: "simple-invoice", element: _jsx(ProtectedRoute, { rolesAllowed: ["admin", "accountant"], children: _jsx(SimpleInvoice, {}) }) }), _jsx(Route, { path: "unauthorized", element: _jsx(Unauthorized, {}) }), _jsx(Route, { path: "qa-check", element: _jsx(ProtectedRoute, { rolesAllowed: ["admin"], children: _jsx(QATest, {}) }) })] })] }) }) })] }));
-}
-function App() {
-    return (_jsx(I18nextProvider, { i18n: i18n, children: _jsx(SettingsProvider, { children: _jsx(FinanceProvider, { children: _jsx(CustomThemeProvider, { children: _jsx(TaxProvider, { children: _jsx(UserRoleProvider, { children: _jsx(NotificationProvider, { children: _jsx(TaxAgentProvider, { children: _jsx(POSIntegrationProvider, { children: _jsx(AppContent, {}) }) }) }) }) }) }) }) }) }));
-}
+    return (_jsx(ErrorBoundary, { children: _jsxs(MuiThemeProvider, { theme: theme, children: [_jsx(CssBaseline, {}), _jsx(WhitelabelProvider, { children: _jsx(ThemeProvider, { children: _jsx(UserRoleProvider, { children: _jsx(NotificationProvider, { children: _jsx(SettingsProvider, { children: _jsx(TaxAgentProvider, { children: _jsx(POSIntegrationProvider, { children: _jsx(FinanceProvider, { children: _jsx(TaxProvider, { children: _jsx(InvoiceProvider, { children: _jsx(TransferPricingProvider, { children: _jsx(RelatedPartyProvider, { children: _jsx(BalanceSheetProvider, { children: _jsx(Router, { children: _jsxs(Routes, { children: [_jsx(Route, { path: "/login", element: _jsx(Login, {}) }), _jsx(Route, { path: "/register", element: _jsx(Register, {}) }), _jsx(Route, { path: "/landing", element: _jsx(Landing, {}) }), _jsx(Route, { path: "/unauthorized", element: _jsx(Unauthorized, {}) }), _jsxs(Route, { path: "/", element: _jsx(Layout, {}), children: [_jsx(Route, { index: true, element: isSetupComplete === true ?
+                                                                                                _jsx(Navigate, { to: "/dashboard", replace: true }) :
+                                                                                                _jsx(Navigate, { to: "/setup", replace: true }) }), _jsx(Route, { path: "setup", element: _jsx(Setup, {}) }), _jsx(Route, { path: "dashboard", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant', 'assistant', 'sme_client'], children: _jsx(Dashboard, {}) }) }), _jsx(Route, { path: "accounting", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant'], children: _jsx(Accounting, {}) }) }), _jsx(Route, { path: "vat", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant'], children: _jsx(VAT, {}) }) }), _jsx(Route, { path: "cit", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant'], children: _jsx(CIT, {}) }) }), _jsx(Route, { path: "filing", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant'], children: _jsx(Filing, {}) }) }), _jsx(Route, { path: "financials", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant', 'assistant'], children: _jsx(ErrorBoundary, { children: _jsx(Financials, {}) }) }) }), _jsx(Route, { path: "transfer-pricing", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant'], children: _jsx(TransferPricing, {}) }) }), _jsx(Route, { path: "simple-invoice", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant', 'assistant'], children: _jsx(SimpleInvoice, {}) }) }), _jsx(Route, { path: "assistant", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant', 'assistant', 'sme_client'], children: _jsx(Assistant, {}) }) }), _jsx(Route, { path: "tax-wizard", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant', 'assistant', 'sme_client'], children: _jsx(TaxWizard, {}) }) }), _jsx(Route, { path: "admin", element: _jsx(ProtectedRoute, { allowedRoles: ['admin'], children: _jsx(Admin, {}) }) }), _jsx(Route, { path: "calendar", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant', 'assistant', 'sme_client'], children: _jsx(Calendar, {}) }) }), _jsx(Route, { path: "assistant-test", element: _jsx(ProtectedRoute, { allowedRoles: ['admin'], children: _jsx(AssistantTest, {}) }) }), _jsx(Route, { path: "qa-test", element: _jsx(ProtectedRoute, { allowedRoles: ['admin'], children: _jsx(QATest, {}) }) }), _jsx(Route, { path: "whitelabel", element: _jsx(ProtectedRoute, { allowedRoles: ['admin'], children: _jsx(WhitelabelPage, {}) }) }), _jsx(Route, { path: "freezone-substance", element: _jsx(ProtectedRoute, { allowedRoles: ['admin', 'accountant'], children: _jsx(FreeZoneSubstance, {}) }) }), _jsx(Route, { path: "financials-test", element: _jsx(FinancialsTest, {}) })] })] }) }) }) }) }) }) }) }) }) }) }) }) }) }) })] }) }));
+};
 export default App;

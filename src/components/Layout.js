@@ -6,12 +6,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const drawerWidth = 240;
 const navigationItems = [
     { text: 'Dashboard', path: '/dashboard', icon: _jsx(DashboardIcon, {}) },
+    { text: 'Setup', path: '/setup', icon: _jsx(SetupIcon, {}) },
     { text: 'VAT', path: '/vat', icon: _jsx(VATIcon, {}) },
     { text: 'CIT', path: '/cit', icon: _jsx(CITIcon, {}) },
     { text: 'Financials', path: '/financials', icon: _jsx(FinancialsIcon, {}) },
     { text: 'Transfer Pricing', path: '/transfer-pricing', icon: _jsx(TransferPricingIcon, {}) },
     { text: 'Filing', path: '/filing', icon: _jsx(FilingIcon, {}) },
-    { text: 'Setup', path: '/setup', icon: _jsx(SetupIcon, {}) },
     { text: 'Assistant', path: '/assistant', icon: _jsx(AssistantIcon, {}) },
 ];
 const Layout = ({ children }) => {

@@ -52,3 +52,26 @@ export const smeClientPermissions = {
 export const userPermissions = smeClientPermissions;
 export const auditorPermissions = assistantPermissions;
 export const superAdminPermissions = adminPermissions;
+export const ROUTE_PERMISSIONS = {
+    '/dashboard': ['admin', 'accountant', 'assistant', 'sme_client'],
+    '/setup': ['admin', 'accountant', 'assistant', 'sme_client'],
+    '/vat': ['admin', 'accountant'],
+    '/accounting': ['admin', 'sme_client'],
+    '/cit': ['admin', 'accountant'],
+    '/financials': ['admin', 'accountant'],
+    '/transfer-pricing': ['admin', 'accountant'],
+    '/filing': ['admin', 'accountant'],
+    '/assistant': ['admin', 'accountant', 'assistant', 'sme_client'],
+    '/calendar': ['admin', 'accountant', 'assistant', 'sme_client'],
+    '/admin': ['admin'],
+    '/qa-checklist': ['admin', 'accountant'],
+    '/unauthorized': ['admin', 'accountant', 'assistant', 'sme_client'],
+};
+export const ROLE_PERMISSIONS = {
+    admin: ['*'], // Admin can access everything
+    accountant: ['/dashboard', '/setup', '/vat', '/cit', '/financials', '/filing', '/assistant', '/accounting', '/transfer-pricing', '/calendar'],
+    assistant: ['/dashboard', '/setup', '/vat', '/cit', '/financials', '/filing', '/assistant', '/accounting', '/calendar'],
+    sme_client: ['/dashboard', '/setup', '/vat', '/financials', '/assistant', '/accounting', '/calendar'],
+    client: ['/dashboard', '/setup', '/vat', '/financials', '/assistant'],
+    auditor: ['/dashboard', '/setup', '/vat', '/cit', '/financials', '/filing', '/assistant']
+};

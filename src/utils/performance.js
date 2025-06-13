@@ -35,13 +35,17 @@ export function measurePerformance() {
         const originalMethod = descriptor.value;
         const monitor = PerformanceMonitor.getInstance();
         descriptor.value = function (...args) {
-            const result = monitor.measure(() => originalMethod.apply(this, args));
+            const start = performance.now();
+            const result = originalMethod.apply(this, args);
             // Handle both synchronous and asynchronous functions
             if (result && typeof result === 'object' && 'then' in result) {
                 return result.finally(() => {
-                    monitor.log(`${target.constructor.name}.${propertyKey}`, performance.now());
+                    const duration = performance.now() - start;
+                    monitor.log(`${target.constructor.name}.${propertyKey}`, duration);
                 });
             }
+            const duration = performance.now() - start;
+            monitor.log(`${target.constructor.name}.${propertyKey}`, duration);
             return result;
         };
         return descriptor;

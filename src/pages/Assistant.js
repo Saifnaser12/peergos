@@ -232,17 +232,38 @@ const Assistant = () => {
         }
         catch (error) {
             console.error('OpenAI API Error:', error);
-            // Enhanced fallback responses with UAE context
-            if (userMessage.toLowerCase().includes('hello') || userMessage.toLowerCase().includes('hi')) {
-                return t('assistant.responses.greeting', 'Hello! I\'m your UAE tax assistant. I can help with CIT, VAT, filing deadlines, and FTA compliance. What would you like to know?');
+            // Enhanced fallback responses with UAE context and Arabic support
+            const isArabic = i18n.language === 'ar';
+            const lowerMsg = userMessage.toLowerCase();
+            // Arabic greetings
+            if (lowerMsg.includes('مرحبا') || lowerMsg.includes('أهلا') || lowerMsg.includes('السلام') ||
+                lowerMsg.includes('hello') || lowerMsg.includes('hi')) {
+                return isArabic
+                    ? 'مرحباً! أنا مساعدك الضريبي للإمارات. يمكنني المساعدة في ضريبة الشركات، ضريبة القيمة المضافة، والامتثال لهيئة الضرائب. ماذا تريد أن تعرف؟'
+                    : t('assistant.responses.greeting', 'Hello! I\'m your UAE tax assistant. I can help with CIT, VAT, filing deadlines, and FTA compliance. What would you like to know?');
             }
-            if (userMessage.toLowerCase().includes('cit') || userMessage.toLowerCase().includes('corporate tax')) {
-                return 'I can help with UAE Corporate Tax! Key facts: 9% rate on income above AED 375,000, Small Business Relief available, filing due 9 months after year-end. What specific CIT question do you have?';
+            // CIT questions
+            if (lowerMsg.includes('ضريبة الشركات') || lowerMsg.includes('cit') || lowerMsg.includes('corporate tax')) {
+                return isArabic
+                    ? 'يمكنني المساعدة في ضريبة الشركات الإماراتية! الحقائق الأساسية: معدل 9% على الدخل أعلى من 375,000 درهم، إعفاء الأعمال الصغيرة متاح، الإيداع مستحق خلال 9 أشهر من نهاية السنة المالية. ما هو سؤالك المحدد؟'
+                    : 'I can help with UAE Corporate Tax! Key facts: 9% rate on income above AED 375,000, Small Business Relief available, filing due 9 months after year-end. What specific CIT question do you have?';
             }
-            if (userMessage.toLowerCase().includes('vat')) {
-                return 'I can assist with UAE VAT compliance! Key facts: 5% standard rate, AED 375,000 registration threshold, monthly/quarterly filing. What VAT question can I help with?';
+            // VAT questions
+            if (lowerMsg.includes('ضريبة القيمة المضافة') || lowerMsg.includes('vat')) {
+                return isArabic
+                    ? 'يمكنني المساعدة في الامتثال لضريبة القيمة المضافة الإماراتية! الحقائق الأساسية: معدل 5% قياسي، حد التسجيل 375,000 درهم، إيداع شهري/ربع سنوي. ما هو سؤالك حول ضريبة القيمة المضافة؟'
+                    : 'I can assist with UAE VAT compliance! Key facts: 5% standard rate, AED 375,000 registration threshold, monthly/quarterly filing. What VAT question can I help with?';
             }
-            return t('assistant.responses.apiError', 'I\'m having trouble connecting to my knowledge base right now. Please try again in a moment, or contact support if the issue persists.');
+            // Security - detect potential injection attempts
+            if (lowerMsg.includes('drop table') || lowerMsg.includes('select *') ||
+                lowerMsg.includes('<script') || lowerMsg.includes('javascript:')) {
+                return isArabic
+                    ? 'يمكنني فقط المساعدة في أسئلة الامتثال الضريبي للإمارات. يرجى السؤال عن ضريبة الشركات أو ضريبة القيمة المضافة أو متطلبات الإيداع.'
+                    : 'I can only help with UAE tax compliance questions. Please ask about CIT, VAT, or filing requirements.';
+            }
+            return isArabic
+                ? 'أعتذر، أواجه مشكلة في الاتصال بقاعدة المعرفة الخاصة بي الآن. يرجى المحاولة مرة أخرى لاحقاً أو الاتصال بالدعم إذا استمرت المشكلة.'
+                : t('assistant.responses.apiError', 'I\'m having trouble connecting to my knowledge base right now. Please try again in a moment, or contact support if the issue persists.');
         }
     };
     const suggestedQuestions = [
@@ -347,6 +368,44 @@ const Assistant = () => {
     };
     const handleSuggestionClick = (suggestion) => {
         setInput(suggestion.question);
+        // Auto-submit the question after a brief delay to show the input
+        setTimeout(() => {
+            const userMessage = {
+                id: Date.now().toString(),
+                content: suggestion.question,
+                type: 'user',
+                timestamp: new Date(),
+            };
+            setMessages(prev => [...prev, userMessage]);
+            setInput('');
+            setIsLoading(true);
+            // Add typing indicator
+            const typingMessage = {
+                id: (Date.now() + 1).toString(),
+                content: '',
+                type: 'assistant',
+                timestamp: new Date(),
+                isTyping: true
+            };
+            setMessages(prev => [...prev, typingMessage]);
+            // Call OpenAI API
+            callOpenAI(suggestion.question).then(response => {
+                const filingIntent = detectFilingIntent(response);
+                const assistantMessage = {
+                    id: (Date.now() + 2).toString(),
+                    content: response,
+                    type: 'assistant',
+                    timestamp: new Date(),
+                    filingIntent
+                };
+                setMessages(prev => prev.filter(msg => !msg.isTyping).concat([assistantMessage]));
+            }).catch(err => {
+                setError(t('assistant.error', 'Error getting response from assistant. Please check your API key or try again.'));
+                setMessages(prev => prev.filter(msg => !msg.isTyping));
+            }).finally(() => {
+                setIsLoading(false);
+            });
+        }, 100);
     };
     const clearChat = () => {
         setMessages([]);
@@ -392,7 +451,7 @@ Assistant: ${log.assistantReply}
             default: return 'text-indigo-600 dark:text-indigo-400';
         }
     };
-    return (_jsx(Box, { className: "min-h-screen bg-gray-50 dark:bg-gray-900", children: _jsxs("div", { className: "max-w-4xl mx-auto p-6", children: [_jsx(Paper, { elevation: 0, className: "p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-6", children: _jsxs(Box, { className: "flex items-center justify-between mb-4", children: [_jsxs(Box, { className: "flex items-center gap-4", children: [_jsx("div", { className: "p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl", children: _jsx(SparklesIcon, { className: "h-8 w-8 text-white" }) }), _jsxs(Box, { children: [_jsx(Typography, { variant: "h4", className: "text-gray-900 dark:text-white font-semibold", children: t('assistant.title', 'Tax Assistant') }), _jsx(Typography, { variant: "body1", className: "text-gray-600 dark:text-gray-400", children: t('assistant.subtitle', 'AI-powered guidance for UAE tax compliance') })] })] }), _jsxs(Box, { className: "flex items-center gap-3", children: [uaeMode && (_jsxs(Box, { className: "flex items-center gap-2 px-3 py-1 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-full", children: [_jsx("span", { className: "text-lg", children: "\uD83C\uDDE6\uD83C\uDDEA" }), _jsx(Typography, { variant: "caption", className: "text-green-700 dark:text-green-300 font-medium", children: "CIT/VAT UAE Mode: Active" })] })), messages.length > 0 && (_jsxs(_Fragment, { children: [_jsx(IconButton, { onClick: clearChat, className: "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200", children: _jsx(ArrowPathIcon, { className: "h-5 w-5" }) }), _jsx(IconButton, { onClick: (e) => setExportMenuAnchor(e.currentTarget), className: "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200", children: _jsx(ShareIcon, { className: "h-5 w-5" }) })] }))] })] }) }), _jsxs(Paper, { className: "bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden", children: [_jsxs(Box, { className: "h-[500px] overflow-y-auto p-6 space-y-4", children: [messages.length === 0 ? (_jsx(Box, { className: "flex items-center justify-center h-full text-center", children: _jsxs(Box, { children: [_jsx(ChatBubbleLeftRightIcon, { className: "h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" }), _jsx(Typography, { variant: "h6", className: "text-gray-500 dark:text-gray-400 mb-2", children: t('assistant.welcome', 'Welcome to your Tax Assistant') }), _jsx(Typography, { variant: "body2", className: "text-gray-400 dark:text-gray-500", children: t('assistant.welcomeDesc', 'Ask questions about UAE tax compliance, or try a suggested question below') })] }) })) : (messages.map((message) => (_jsx(Box, { className: `flex ${message.type === 'user' ? (isRTL ? 'justify-start' : 'justify-end') : (isRTL ? 'justify-end' : 'justify-start')}`, children: _jsx(Box, { className: `max-w-[75%] rounded-2xl px-4 py-3 ${message.type === 'user'
+    return (_jsx(Box, { className: "min-h-screen bg-gray-50 dark:bg-gray-900", children: _jsxs("div", { className: "max-w-4xl mx-auto p-6", children: [_jsx(Paper, { elevation: 0, className: "p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-6", children: _jsxs(Box, { className: "flex items-center justify-between mb-4", children: [_jsxs(Box, { className: "flex items-center gap-4", children: [_jsx("div", { className: "p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl", children: _jsx(SparklesIcon, { className: "h-8 w-8 text-white" }) }), _jsxs(Box, { children: [_jsx(Typography, { variant: "h4", className: "text-gray-900 dark:text-white font-semibold", children: t('assistant.title', 'Tax Assistant') }), _jsx(Typography, { variant: "body1", className: "text-gray-600 dark:text-gray-400", children: t('assistant.subtitle', 'AI-powered guidance for UAE tax compliance') })] })] }), _jsxs(Box, { className: "flex items-center gap-3", children: [uaeMode && (_jsxs(Box, { className: "flex items-center gap-2 px-3 py-1 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-full", children: [_jsx("span", { className: "text-lg", children: "\uD83C\uDDE6\uD83C\uDDEA" }), _jsx(Typography, { variant: "caption", className: "text-green-700 dark:text-green-300 font-medium", children: "CIT/VAT UAE Mode: Active" })] })), messages.length > 0 && (_jsxs(_Fragment, { children: [_jsx(IconButton, { onClick: clearChat, className: "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200", children: _jsx(ArrowPathIcon, { className: "h-5 w-5" }) }), _jsx(IconButton, { onClick: (e) => setExportMenuAnchor(e.currentTarget), className: "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200", children: _jsx(ShareIcon, { className: "h-5 w-5" }) })] }))] })] }) }), _jsxs(Paper, { className: "bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden", children: [_jsxs(Box, { className: "h-[500px] overflow-y-auto p-6 space-y-4 relative", children: [_jsx("div", { className: "absolute bottom-4 right-4 opacity-20 hidden lg:block", children: _jsx("img", { src: "/images/peergos_slide_15.png", alt: "AI Assistant", className: "w-20 h-20 object-cover rounded-full" }) }), messages.length === 0 ? (_jsx(Box, { className: "flex items-center justify-center h-full text-center", children: _jsxs(Box, { children: [_jsx(ChatBubbleLeftRightIcon, { className: "h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" }), _jsx(Typography, { variant: "h6", className: "text-gray-500 dark:text-gray-400 mb-2", children: t('assistant.welcome', 'Welcome to your Tax Assistant') }), _jsx(Typography, { variant: "body2", className: "text-gray-400 dark:text-gray-500", children: t('assistant.welcomeDesc', 'Ask questions about UAE tax compliance, or try a suggested question below') })] }) })) : (messages.map((message) => (_jsx(Box, { className: `flex ${message.type === 'user' ? (isRTL ? 'justify-start' : 'justify-end') : (isRTL ? 'justify-end' : 'justify-start')}`, children: _jsx(Box, { className: `max-w-[75%] rounded-2xl px-4 py-3 ${message.type === 'user'
                                             ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
                                             : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'}`, children: message.isTyping ? (_jsx(Box, { className: "flex items-center space-x-1", children: _jsxs("div", { className: "flex space-x-1", children: [_jsx("div", { className: "w-2 h-2 bg-gray-400 rounded-full animate-bounce" }), _jsx("div", { className: "w-2 h-2 bg-gray-400 rounded-full animate-bounce", style: { animationDelay: '0.1s' } }), _jsx("div", { className: "w-2 h-2 bg-gray-400 rounded-full animate-bounce", style: { animationDelay: '0.2s' } })] }) })) : (_jsxs(_Fragment, { children: [_jsx(Typography, { variant: "body1", className: "whitespace-pre-wrap", children: message.content }), message.filingIntent && message.filingIntent.confidence > 0.7 && (_jsxs(Box, { className: "mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800", children: [_jsxs(Box, { className: "flex items-center gap-2 mb-2", children: [_jsx(BeakerIcon, { className: "h-4 w-4 text-blue-600 dark:text-blue-400" }), _jsx(Typography, { variant: "caption", className: "text-blue-700 dark:text-blue-300 font-semibold uppercase tracking-wide", children: t('assistant.draftFiling.detected', 'Draft Filing Detected') }), _jsx(Chip, { label: `🧪 ${message.filingIntent.type}`, size: "small", className: "bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200" })] }), _jsx(Typography, { variant: "body2", className: "text-blue-600 dark:text-blue-300 mb-3", children: message.filingIntent.type === 'CIT'
                                                                 ? t('assistant.draftFiling.citDetected', 'I detected CIT filing information in my response. Would you like to simulate a draft filing?')

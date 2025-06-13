@@ -18,6 +18,12 @@ export const UserRoleProvider = ({ children }) => {
         if (!allowedRoles) {
             return role === ROLES.ADMIN; // Default to admin only for undefined routes
         }
+        // Special handling for setup page - always accessible during onboarding
+        if (path === '/setup') {
+            const setupComplete = localStorage.getItem('peergos_setup_complete') === 'true';
+            if (!setupComplete)
+                return true; // Allow access during setup
+        }
         return allowedRoles.includes(role);
     };
     const hasPermission = (resource, permission) => {

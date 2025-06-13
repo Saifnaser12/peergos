@@ -76,3 +76,41 @@ export const taxCategoryMapping = {
     "VAT Paid": { vatApplicable: false, reverseCharge: false }, // VAT payment itself
     "Other Expenses": { vatApplicable: true, reverseCharge: false }
 };
+// Free Zone Income Classification
+export const freeZoneIncomeTypes = [
+    'qualifying',
+    'non-qualifying'
+];
+export const freeZoneIncomeSubcategories = {
+    qualifying: [
+        'exports',
+        'intraZoneTrade',
+        'servicesOutsideUAE',
+        'intellectualProperty',
+        'financialServices'
+    ],
+    'non-qualifying': [
+        'mainlandSales',
+        'servicesInUAE',
+        'domesticConsumption',
+        'localMarketSales'
+    ]
+};
+export const freeZoneIncomeTranslations = {
+    qualifying: 'accounting.revenue.freeZone.qualifying',
+    'non-qualifying': 'accounting.revenue.freeZone.nonQualifying',
+    exports: 'accounting.revenue.freeZone.subcategories.exports',
+    intraZoneTrade: 'accounting.revenue.freeZone.subcategories.intraZoneTrade',
+    servicesOutsideUAE: 'accounting.revenue.freeZone.subcategories.servicesOutsideUAE',
+    intellectualProperty: 'accounting.revenue.freeZone.subcategories.intellectualProperty',
+    financialServices: 'accounting.revenue.freeZone.subcategories.financialServices',
+    mainlandSales: 'accounting.revenue.freeZone.subcategories.mainlandSales',
+    servicesInUAE: 'accounting.revenue.freeZone.subcategories.servicesInUAE',
+    domesticConsumption: 'accounting.revenue.freeZone.subcategories.domesticConsumption',
+    localMarketSales: 'accounting.revenue.freeZone.subcategories.localMarketSales'
+};
+// Free Zone Compliance Thresholds
+export const FREE_ZONE_THRESHOLDS = {
+    DE_MINIMIS_PERCENTAGE: 5, // 5%
+    DE_MINIMIS_AMOUNT: 5000000 // AED 5 million
+};

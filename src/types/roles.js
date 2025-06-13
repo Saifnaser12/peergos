@@ -24,5 +24,6 @@ export const ROLE_PERMISSIONS = {
     '/simple-invoice': [ROLES.ADMIN, ROLES.ACCOUNTANT],
     '/admin': [ROLES.ADMIN],
     '/qa-checklist': [ROLES.ADMIN],
-    '/setup': [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.ASSISTANT, ROLES.SME_CLIENT]
+    '/whitelabel': [ROLES.ADMIN],
+    '/setup': [ROLES.ADMIN, ROLES.ACCOUNTANT, ROLES.SME_CLIENT]
 };

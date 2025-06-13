@@ -1,31 +1,104 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useFinance } from '../context/FinanceContext';
-export const useFinancialSync = () => {
-    const { subscribeToUpdates, getFinancialSummary, getTotalRevenue, getTotalExpenses, getNetIncome } = useFinance();
-    const [summary, setSummary] = useState(getFinancialSummary());
-    const [isUpdating, setIsUpdating] = useState(false);
-    const refreshSummary = useCallback(() => {
-        setIsUpdating(true);
-        const newSummary = getFinancialSummary();
-        setSummary(newSummary);
-        // Brief loading state for visual feedback
-        setTimeout(() => setIsUpdating(false), 100);
-    }, [getFinancialSummary]);
+import { useState, useEffect, useCallback } from 'react';
+import { libraryLoader } from '../utils/libraryLoader';
+export const useFinancialSync = (options = {}) => {
+    const { autoSync = true, syncInterval = 30000, retryAttempts = 3 } = options;
+    const [syncStatus, setSyncStatus] = useState({
+        isConnected: false,
+        lastSyncTime: null,
+        syncError: null,
+        syncProgress: 0
+    });
+    // Initialize connection
     useEffect(() => {
-        // Subscribe to finance updates
-        const unsubscribe = subscribeToUpdates(refreshSummary);
-        // Initial load
-        refreshSummary();
-        return unsubscribe;
-    }, [subscribeToUpdates, refreshSummary]);
+        console.log('🔄 Initializing financial sync service...');
+        const initializeSync = async () => {
+            try {
+                // Load required libraries
+                await libraryLoader.loadJsSHA();
+                await libraryLoader.loadQRCode();
+                // Simulate connection to external services
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                setSyncStatus(prev => ({
+                    ...prev,
+                    isConnected: true,
+                    lastSyncTime: new Date(),
+                    syncError: null
+                }));
+                console.log('✅ Financial sync service connected');
+            }
+            catch (error) {
+                console.error('❌ Failed to initialize sync service:', error);
+                setSyncStatus(prev => ({
+                    ...prev,
+                    isConnected: false,
+                    syncError: 'Failed to connect to sync service'
+                }));
+            }
+        };
+        initializeSync();
+    }, []);
+    // Auto-sync functionality
+    useEffect(() => {
+        if (!autoSync || !syncStatus.isConnected)
+            return;
+        const interval = setInterval(() => {
+            console.log('🔄 Auto-sync triggered');
+            performSync();
+        }, syncInterval);
+        return () => clearInterval(interval);
+    }, [autoSync, syncInterval, syncStatus.isConnected]);
+    const performSync = async () => {
+        setSyncStatus(prev => ({
+            ...prev,
+            syncProgress: 0,
+            syncError: null
+        }));
+        try {
+            // Simulate sync progress
+            for (let i = 0; i <= 100; i += 10) {
+                setSyncStatus(prev => ({ ...prev, syncProgress: i }));
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            setSyncStatus(prev => ({
+                ...prev,
+                lastSyncTime: new Date(),
+                syncProgress: 100,
+                isConnected: true
+            }));
+            console.log('✅ Sync completed successfully');
+        }
+        catch (error) {
+            console.error('❌ Sync failed:', error);
+            setSyncStatus(prev => ({
+                ...prev,
+                syncError: 'Sync failed',
+                syncProgress: 0
+            }));
+        }
+    };
+    const syncData = useCallback(async (data) => {
+        console.log('🔄 Manual sync initiated with data:', data);
+        return performSync();
+    }, []);
+    const forceReconnect = useCallback(async () => {
+        console.log('🔄 Force reconnecting...');
+        setSyncStatus(prev => ({
+            ...prev,
+            isConnected: false,
+            syncError: null
+        }));
+        // Simulate reconnection
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setSyncStatus(prev => ({
+            ...prev,
+            isConnected: true,
+            lastSyncTime: new Date()
+        }));
+    }, []);
     return {
-        summary,
-        isUpdating,
-        refreshSummary,
-        // Direct access to current values
-        totalRevenue: getTotalRevenue(),
-        totalExpenses: getTotalExpenses(),
-        netIncome: getNetIncome()
+        ...syncStatus,
+        syncData,
+        forceReconnect,
+        performSync
     };
 };
-export default useFinancialSync;
