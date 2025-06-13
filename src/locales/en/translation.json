@@ -197,5 +197,47 @@
     "goBack": "Go Back",
     "goHome": "Return to Dashboard",
     "contactAdmin": "Contact your administrator if you believe this is an error."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "setup": "Setup",
+    "vat": "VAT",
+    "cit": "CIT",
+    "financials": "Financials",
+    "transferPricing": "Transfer Pricing",
+    "filing": "Filing",
+    "assistant": "Assistant",
+    "admin": "Admin",
+    "accounting": "Accounting",
+    "calendar": "Calendar"
+  },
+  "setup": {
+    "title": "Setup Your Tax System",
+    "subtitle": "Configure your organization details to get started",
+    "progress": "Setup Progress",
+    "complete": "Complete Setup",
+    "step1": {
+      "title": "Organization Details",
+      "orgName": "Organization Name",
+      "trn": "Tax Registration Number (TRN)"
+    },
+    "step2": {
+      "title": "Fiscal Year",
+      "startDate": "Fiscal Year Start",
+      "endDate": "Fiscal Year End"
+    },
+    "step3": {
+      "title": "Business Information",
+      "businessType": "Business Type",
+      "address": "Business Address"
+    },
+    "step4": {
+      "title": "Tax Agent Selection",
+      "description": "Choose a tax agent to help with compliance"
+    },
+    "step5": {
+      "title": "System Integrations",
+      "description": "Connect your POS and accounting systems"
+    }
   }
 }
