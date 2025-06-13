@@ -48,9 +48,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       icon: Cog6ToothIcon,
     },
     {
-      name: t('nav.cit'),
-      path: '/cit',
-      icon: DocumentTextIcon,
+      name: t('nav.accounting'),
+      path: '/accounting',
+      icon: CalculatorIcon,
     },
     {
       name: t('nav.vat'),
@@ -58,9 +58,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       icon: ReceiptPercentIcon,
     },
     {
-      name: t('nav.accounting'),
-      path: '/accounting',
-      icon: CalculatorIcon,
+      name: t('nav.cit'),
+      path: '/cit',
+      icon: DocumentTextIcon,
     },
     {
       name: t('nav.financials'),
@@ -73,12 +73,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       icon: CurrencyDollarIcon,
     },
     {
+      name: t('nav.filing'),
+      path: '/filing',
+      icon: DocumentTextIcon,
+    },
+    {
       name: t('nav.assistant'),
       path: '/assistant',
       icon: ChatBubbleLeftRightIcon,
     },
     {
-      name: t('nav.calendar', 'Calendar'),
+      name: t('nav.calendar'),
       path: '/calendar',
       icon: CalendarDaysIcon,
     }

@@ -202,14 +202,14 @@
     "dashboard": "Dashboard",
     "setup": "Setup",
     "vat": "VAT",
-    "cit": "CIT",
+    "cit": "Corporate Tax",
     "financials": "Financials",
     "transferPricing": "Transfer Pricing",
     "filing": "Filing",
-    "assistant": "Assistant",
+    "assistant": "Tax Assistant",
     "admin": "Admin",
     "accounting": "Accounting",
-    "calendar": "Calendar"
+    "calendar": "Tax Calendar"
   },
   "setup": {
     "title": "Setup Your Tax System",
