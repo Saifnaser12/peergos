@@ -468,6 +468,13 @@ const Dashboard: React.FC = () => {
                 <span>📁</span>
                 <span>Upload Agent Certificate</span>
               </button>
+              <button
+                onClick={() => navigate('/transfer-pricing')}
+                className="flex items-center justify-center space-x-2 px-6 py-4 bg-purple-50 hover:bg-purple-100 border border-purple-200 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 dark:border-purple-700 rounded-lg text-purple-800 dark:text-purple-200 font-medium transition-colors duration-200"
+              >
+                <span>🧾</span>
+                <span>Transfer Pricing – 75% Complete</span>
+              </button>
             </div>
           </div>
         </div>
