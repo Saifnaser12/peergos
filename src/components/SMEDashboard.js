@@ -11,22 +11,22 @@ const SMEDashboard = () => {
     };
     const complianceChecks = [
         {
-            title: 'VAT Registration',
+            title: t('sme.compliance.vatRegistration', 'VAT Registration'),
             threshold: smeThresholds.vatRegistration,
             status: 'compliant',
-            description: 'Required if annual revenue > AED 375,000'
+            description: t('sme.compliance.vatRegistrationDesc', 'Required if annual revenue > AED 375,000')
         },
         {
-            title: 'CIT Registration',
+            title: t('sme.compliance.citRegistration', 'CIT Registration'),
             threshold: smeThresholds.citRegistration,
             status: 'pending',
-            description: 'Required for most businesses'
+            description: t('sme.compliance.citRegistrationDesc', 'Required for most businesses')
         },
         {
-            title: 'Transfer Pricing Docs',
+            title: t('sme.compliance.transferPricingDocs', 'Transfer Pricing Docs'),
             threshold: smeThresholds.transferPricingDoc,
             status: 'not-required',
-            description: 'Required if related party transactions > AED 3M'
+            description: t('sme.compliance.transferPricingDesc', 'Required if related party transactions > AED 3M')
         }
     ];
     return (_jsxs("div", { className: "bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6", children: [_jsx("div", { className: "flex items-center justify-between mb-6", children: _jsxs("div", { children: [_jsxs("h3", { className: "text-lg font-semibold text-gray-900 dark:text-white flex items-center", children: [_jsx(BuildingOffice2Icon, { className: "w-5 h-5 mr-2" }), "SME Compliance Dashboard"] }), _jsx("p", { className: "text-sm text-gray-600 dark:text-gray-400", children: "UAE-specific requirements for Small & Medium Enterprises" })] }) }), _jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: complianceChecks.map((check, index) => (_jsxs("div", { className: `p-4 rounded-lg border-2 ${check.status === 'compliant' ? 'border-green-200 bg-green-50' :

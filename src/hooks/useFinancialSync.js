@@ -13,11 +13,13 @@ export const useFinancialSync = (options = {}) => {
         console.log('🔄 Initializing financial sync service...');
         const initializeSync = async () => {
             try {
-                // Load required libraries
-                await libraryLoader.loadJsSHA();
-                await libraryLoader.loadQRCode();
+                // Load required libraries with proper error handling
+                await Promise.allSettled([
+                    libraryLoader.loadJsSHA(),
+                    libraryLoader.loadQRCode()
+                ]);
                 // Simulate connection to external services
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => setTimeout(resolve, 500));
                 setSyncStatus(prev => ({
                     ...prev,
                     isConnected: true,
@@ -31,7 +33,7 @@ export const useFinancialSync = (options = {}) => {
                 setSyncStatus(prev => ({
                     ...prev,
                     isConnected: false,
-                    syncError: 'Failed to connect to sync service'
+                    syncError: error instanceof Error ? error.message : 'Failed to connect to sync service'
                 }));
             }
         };
@@ -41,13 +43,17 @@ export const useFinancialSync = (options = {}) => {
     useEffect(() => {
         if (!autoSync || !syncStatus.isConnected)
             return;
+        console.log('🔄 Setting up auto-sync interval');
         const interval = setInterval(() => {
             console.log('🔄 Auto-sync triggered');
             performSync();
         }, syncInterval);
-        return () => clearInterval(interval);
-    }, [autoSync, syncInterval, syncStatus.isConnected]);
-    const performSync = async () => {
+        return () => {
+            console.log('🔄 Clearing auto-sync interval');
+            clearInterval(interval);
+        };
+    }, [autoSync, syncInterval, syncStatus.isConnected, performSync]);
+    const performSync = useCallback(async () => {
         setSyncStatus(prev => ({
             ...prev,
             syncProgress: 0,
@@ -75,11 +81,11 @@ export const useFinancialSync = (options = {}) => {
                 syncProgress: 0
             }));
         }
-    };
+    }, []);
     const syncData = useCallback(async (data) => {
         console.log('🔄 Manual sync initiated with data:', data);
         return performSync();
-    }, []);
+    }, [performSync]);
     const forceReconnect = useCallback(async () => {
         console.log('🔄 Force reconnecting...');
         setSyncStatus(prev => ({
