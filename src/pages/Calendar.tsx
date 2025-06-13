@@ -59,13 +59,33 @@ const Calendar: React.FC = () => {
   const deadlines = generateDeadlines();
   const currentMonth = new Date(selectedYear, selectedMonth, 1);
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'text-red-600 bg-red-100 border-red-300';
-      case 'high': return 'text-orange-600 bg-orange-100 border-orange-300';
-      case 'medium': return 'text-yellow-600 bg-yellow-100 border-yellow-300';
-      default: return 'text-blue-600 bg-blue-100 border-blue-300';
+  const getPriorityColor = (deadline: any) => {
+    // Smart urgency based on days remaining
+    const daysRemaining = Math.ceil((deadline.date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (deadline.status === 'completed') {
+      return 'text-green-600 bg-green-100 border-green-300';
     }
+    if (deadline.status === 'overdue' || daysRemaining < 0) {
+      return 'text-red-600 bg-red-100 border-red-300';
+    }
+    if (daysRemaining <= 7) {
+      return 'text-red-600 bg-red-100 border-red-300'; // 🔴 High (due in < 7 days)
+    }
+    if (daysRemaining <= 30) {
+      return 'text-yellow-600 bg-yellow-100 border-yellow-300'; // 🟡 Medium (7–30 days)
+    }
+    return 'text-blue-600 bg-blue-100 border-blue-300'; // 🟢 Low (> 30 days)
+  };
+
+  const getUrgencyFlag = (deadline: any) => {
+    const daysRemaining = Math.ceil((deadline.date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (deadline.status === 'completed') return '✅';
+    if (deadline.status === 'overdue' || daysRemaining < 0) return '🔴';
+    if (daysRemaining <= 7) return '🔴';
+    if (daysRemaining <= 30) return '🟡';
+    return '🟢';
   };
 
   const getStatusIcon = (status: string) => {
@@ -137,13 +157,23 @@ const Calendar: React.FC = () => {
             const date = new Date(selectedYear, selectedMonth, 1 - currentMonth.getDay() + i);
             const isCurrentMonth = date.getMonth() === selectedMonth;
             const isToday = date.toDateString() === new Date().toDateString();
-            const hasDeadline = deadlines.some(d => d.date.toDateString() === date.toDateString());
+            const dayDeadlines = deadlines.filter(d => d.date.toDateString() === date.toDateString());
+            const hasDeadline = dayDeadlines.length > 0;
+            
+            // Smart completion logic - check if deadline is completed
+            const getDeadlineColor = (deadline: any) => {
+              if (deadline.status === 'completed') return 'bg-green-500'; // ✅ submitted
+              if (deadline.status === 'overdue') return 'bg-red-500'; // 🔴 overdue
+              const daysUntil = Math.ceil((deadline.date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+              if (daysUntil <= 7) return 'bg-yellow-500'; // 🟡 due soon
+              return 'bg-blue-500'; // 🟢 future
+            };
 
             return (
               <div
                 key={i}
                 className={`
-                  p-2 text-center text-sm border rounded
+                  relative p-2 text-center text-sm border rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors
                   ${isCurrentMonth 
                     ? 'text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700' 
                     : 'text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-gray-900 border-gray-100 dark:border-gray-800'
@@ -151,15 +181,28 @@ const Calendar: React.FC = () => {
                   ${isToday ? 'ring-2 ring-indigo-500' : ''}
                   ${hasDeadline ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' : ''}
                 `}
+                title={dayDeadlines.length > 0 ? dayDeadlines.map(d => `${d.title} - ${d.type}`).join('\n') : ''}
               >
                 <div className="flex items-center justify-center h-8">
-                  {date.getDate()}
+                  <span className={dayDeadlines.some(d => d.status === 'completed') ? 'line-through' : ''}>
+                    {date.getDate()}
+                  </span>
                   {hasDeadline && (
-                    <div className="ml-1">
-                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                    <div className="ml-1 flex flex-col space-y-1">
+                      {dayDeadlines.slice(0, 3).map((deadline, idx) => (
+                        <div key={idx} className={`w-2 h-2 rounded-full ${getDeadlineColor(deadline)}`} />
+                      ))}
+                      {dayDeadlines.length > 3 && (
+                        <div className="text-xs text-gray-500">+{dayDeadlines.length - 3}</div>
+                      )}
                     </div>
                   )}
                 </div>
+                {dayDeadlines.some(d => d.status === 'completed') && (
+                  <div className="absolute top-1 right-1">
+                    <CheckCircleIcon className="h-3 w-3 text-green-500" />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -185,28 +228,43 @@ const Calendar: React.FC = () => {
               </p>
             </div>
           ) : (
-            deadlines.map((deadline) => (
-              <div key={deadline.id} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    {getStatusIcon(deadline.status)}
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-                        {deadline.title}
-                      </h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {deadline.type} • {deadline.date.toLocaleDateString(i18n.language)}
-                      </p>
+            deadlines.map((deadline) => {
+              const daysRemaining = Math.ceil((deadline.date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+              return (
+                <div key={deadline.id} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      {getStatusIcon(deadline.status)}
+                      <div>
+                        <h4 className={`text-sm font-medium ${deadline.status === 'completed' ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}>
+                          {deadline.title}
+                        </h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {deadline.type} • {deadline.date.toLocaleDateString(i18n.language)}
+                          {daysRemaining >= 0 && deadline.status !== 'completed' && (
+                            <span className="ml-2">
+                              ({daysRemaining === 0 ? t('calendar.dueToday', 'Due Today') : 
+                                daysRemaining === 1 ? t('calendar.dueTomorrow', 'Due Tomorrow') :
+                                t('calendar.daysRemaining', `${daysRemaining} days remaining`)})
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg">{getUrgencyFlag(deadline)}</span>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(deadline)}`}>
+                        {deadline.status === 'completed' ? t('calendar.completed', 'Completed') :
+                         daysRemaining < 0 ? t('calendar.overdue', 'Overdue') :
+                         daysRemaining <= 7 ? t('calendar.urgent', 'Urgent') :
+                         daysRemaining <= 30 ? t('calendar.medium', 'Medium') :
+                         t('calendar.low', 'Low')}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(deadline.priority)}`}>
-                      {t(`calendar.priority.${deadline.priority}`, deadline.priority)}
-                    </span>
-                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
@@ -220,30 +278,113 @@ const Calendar: React.FC = () => {
           </h3>
         </div>
         <div className="divide-y divide-gray-200 dark:divide-gray-700">
+          {/* Integration Alerts */}
+          {(!profile?.isSetupComplete) && (
+            <div className="px-6 py-4 bg-yellow-50 dark:bg-yellow-900/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-start space-x-3">
+                  <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500 mt-0.5" />
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                      ❗ {t('calendar.setupIncomplete', 'Setup Incomplete')}
+                    </h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      {t('calendar.completeSetup', 'Complete your company setup to ensure compliance')}
+                    </p>
+                    <a href="/setup" className="text-sm text-indigo-600 hover:text-indigo-500 mt-1 inline-block">
+                      {t('calendar.goToSetup', 'Go to Setup →')}
+                    </a>
+                  </div>
+                </div>
+                <button className="text-gray-400 hover:text-gray-500">
+                  <span className="sr-only">{t('calendar.dismiss', 'Dismiss')}</span>
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {(!profile?.taxAgentCertificate) && (
+            <div className="px-6 py-4 bg-red-50 dark:bg-red-900/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-start space-x-3">
+                  <ExclamationTriangleIcon className="h-5 w-5 text-red-500 mt-0.5" />
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                      ❗ {t('calendar.taxAgentMissing', 'Tax Agent Certificate Missing')}
+                    </h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      {t('calendar.uploadCertificate', 'Upload your tax agent certificate to complete filing')}
+                    </p>
+                    <a href="/corporate-tax" className="text-sm text-indigo-600 hover:text-indigo-500 mt-1 inline-block">
+                      {t('calendar.goToFiling', 'Go to Filing →')}
+                    </a>
+                  </div>
+                </div>
+                <button className="text-gray-400 hover:text-gray-500">
+                  <span className="sr-only">{t('calendar.remindLater', 'Remind Me Later')}</span>
+                  ⏰
+                </button>
+              </div>
+            </div>
+          )}
+
+          {(!profile?.bankSlip) && (
+            <div className="px-6 py-4 bg-orange-50 dark:bg-orange-900/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-start space-x-3">
+                  <ExclamationTriangleIcon className="h-5 w-5 text-orange-500 mt-0.5" />
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                      ❗ {t('calendar.bankSlipMissing', 'Bank Slip Missing')}
+                    </h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      {t('calendar.uploadBankSlip', 'Upload payment transfer slip for tax compliance')}
+                    </p>
+                    <a href="/corporate-tax" className="text-sm text-indigo-600 hover:text-indigo-500 mt-1 inline-block">
+                      {t('calendar.goToFiling', 'Go to Filing →')}
+                    </a>
+                  </div>
+                </div>
+                <button className="text-gray-400 hover:text-gray-500">
+                  <span className="sr-only">{t('calendar.dismiss', 'Dismiss')}</span>
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Regular Notifications */}
           {notifications.slice(0, 5).map((notification) => (
             <div key={notification.id} className="px-6 py-4">
-              <div className="flex items-start space-x-3">
-                <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
-                  notification.priority === 'urgent' ? 'bg-red-500' :
-                  notification.priority === 'high' ? 'bg-orange-500' :
-                  notification.priority === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'
-                }`} />
-                <div className="flex-1">
-                  <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-                    {notification.title}
-                  </h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {notification.message}
-                  </p>
-                  {notification.daysRemaining !== undefined && (
-                    <p className="text-xs text-gray-400 mt-1">
-                      {notification.daysRemaining === 0 
-                        ? t('notifications.dueToday')
-                        : t('notifications.daysRemaining', { days: notification.daysRemaining })
-                      }
+              <div className="flex items-center justify-between">
+                <div className="flex items-start space-x-3">
+                  <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
+                    notification.priority === 'urgent' ? 'bg-red-500' :
+                    notification.priority === 'high' ? 'bg-orange-500' :
+                    notification.priority === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'
+                  }`} />
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                      {notification.title}
+                    </h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      {notification.message}
                     </p>
-                  )}
+                    {notification.daysRemaining !== undefined && (
+                      <p className="text-xs text-gray-400 mt-1">
+                        {notification.daysRemaining === 0 
+                          ? t('notifications.dueToday')
+                          : t('notifications.daysRemaining', { days: notification.daysRemaining })
+                        }
+                      </p>
+                    )}
+                  </div>
                 </div>
+                <button className="text-gray-400 hover:text-gray-500">
+                  <span className="sr-only">{t('calendar.dismiss', 'Dismiss')}</span>
+                  ✕
+                </button>
               </div>
             </div>
           ))}
