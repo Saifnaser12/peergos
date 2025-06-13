@@ -169,7 +169,7 @@ const Setup: React.FC = () => {
         setIsPageLoading(false);
       }
     };
-    
+
     initializePage();
   }, []);
 

@@ -81,3 +81,10 @@ export const ROUTE_PERMISSIONS: Record<string, UserRole[]> = {
   '/qa-checklist': ['admin', 'accountant'],
   '/unauthorized': ['admin', 'accountant', 'assistant', 'sme_client'],
 };
+
+export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
+  admin: ['*'], // Admin can access everything
+  accountant: ['/dashboard', '/setup', '/vat', '/cit', '/financials', '/filing', '/assistant', '/accounting'],
+  client: ['/dashboard', '/setup', '/vat', '/financials', '/assistant'],
+  auditor: ['/dashboard', '/setup', '/vat', '/cit', '/financials', '/filing', '/assistant']
+};

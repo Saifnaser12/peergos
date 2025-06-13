@@ -89,9 +89,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     }
   ];
 
-  const filteredNavItems = navigationItems.filter(item => 
-    item.path === '/setup' || canAccess(item.path)
-  );
+  const filteredNavItems = navigationItems.filter(item => {
+    // Setup page should always be visible for initial configuration
+    if (item.path === '/setup') {
+      return true;
+    }
+    // All other pages require proper access permissions
+    return canAccess(item.path);
+  });
 
   const isActive = (path: string) => location.pathname === path;
 

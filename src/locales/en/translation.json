@@ -219,7 +219,8 @@
     "step1": {
       "title": "Organization Details",
       "orgName": "Organization Name",
-      "trn": "Tax Registration Number (TRN)"
+      "trn": "Tax Registration Number (TRN)",
+      "description": "Enter your basic organization information"
     },
     "step2": {
       "title": "Fiscal Year",
