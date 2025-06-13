@@ -77,11 +77,13 @@ export const useFinancialSync = (options: FinancialSyncOptions = {}) => {
   }, [autoSync, syncInterval, syncStatus.isConnected, performSync]);
 
   const performSync = useCallback(async () => {
-    setSyncStatus(prev => ({
-      ...prev,
-      syncProgress: 0,
-      syncError: null
-    }));
+    if (!syncStatus.isConnected) {
+      console.log('❌ Cannot sync: Not connected to financial system');
+      return;
+    }
+
+    console.log('🔄 Starting financial data sync...');
+    setSyncStatus(prev => ({ ...prev, syncProgress: 0, syncError: null }));
 
     try {
       // Simulate sync progress
@@ -106,7 +108,7 @@ export const useFinancialSync = (options: FinancialSyncOptions = {}) => {
         syncProgress: 0
       }));
     }
-  }, []);
+  }, [syncStatus.isConnected]);
 
   const syncData = useCallback(async (data: any) => {
     console.log('🔄 Manual sync initiated with data:', data);

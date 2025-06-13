@@ -21,7 +21,7 @@ import { WhitelabelProvider } from './context/WhitelabelContext';
 
 // Components
 import Layout from './components/Layout';
-import { ErrorBoundary } from './components/ErrorBoundary';
+import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
